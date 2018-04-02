@@ -19,7 +19,7 @@
         <vr-plugin.component-type>service</vr-plugin.component-type>
         <vr-plugin.name>ENISo Info Custom Plugin</vr-plugin.name>
         <vr-plugin.description>ENISo Info Custom Plugin</vr-plugin.description>
-        <version.vr-core-service>1.13.3</version.vr-core-service>
+        <version.vr-core-service>1.13.4</version.vr-core-service>
     </properties>
 
     <dependencies>

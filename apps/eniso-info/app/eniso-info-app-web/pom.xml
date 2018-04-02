@@ -47,20 +47,20 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <github.global.server>github</github.global.server>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
-        <version.vr-core-web>1.13.3</version.vr-core-web>
+        <version.vr-core-web-jsf>1.13.4</version.vr-core-web-jsf>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>net.vpc.app.vain-ruling.apps.eniso-info.plugins</groupId>
             <artifactId>eniso-info-main-web</artifactId>
-            <version>1.13.3</version>
+            <version>1.13.4</version>
         </dependency>
 
         <dependency>
             <groupId>net.vpc.app.vain-ruling.apps.eniso-info</groupId>
             <artifactId>eniso-info-app-service</artifactId>
-            <version>1.13.3</version>
+            <version>1.13.4</version>
         </dependency>
         <dependency>
             <groupId>org.apache.tomcat</groupId>
@@ -84,7 +84,7 @@
         <dependency>
             <groupId>net.bull.javamelody</groupId>
             <artifactId>javamelody-core</artifactId>
-            <version>1.60.0</version>
+            <version>1.71.0</version>
         </dependency>
 
     </dependencies>

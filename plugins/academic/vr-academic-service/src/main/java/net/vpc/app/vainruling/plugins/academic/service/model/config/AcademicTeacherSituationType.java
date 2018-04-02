@@ -5,9 +5,6 @@
  */
 package net.vpc.app.vainruling.plugins.academic.service.model.config;
 
-import net.vpc.common.strings.StringUtils;
-import net.vpc.upa.config.*;
-
 /**
  * @author taha.bensalah@gmail.com
  */

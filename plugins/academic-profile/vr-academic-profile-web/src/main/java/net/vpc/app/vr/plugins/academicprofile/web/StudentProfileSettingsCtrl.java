@@ -4,14 +4,14 @@ import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppContact;
 import net.vpc.app.vainruling.core.web.*;
-import net.vpc.app.vainruling.core.web.ctrl.MyProfileAlternative;
-import net.vpc.app.vainruling.core.web.fs.files.DocumentUploadListener;
-import net.vpc.app.vainruling.core.web.fs.files.DocumentsCtrl;
-import net.vpc.app.vainruling.core.web.fs.files.DocumentsUploadDialogCtrl;
+import net.vpc.app.vainruling.core.web.jsf.ctrl.DocumentUploadListener;
+import net.vpc.app.vainruling.core.web.jsf.ctrl.DocumentsCtrl;
+import net.vpc.app.vainruling.core.web.jsf.ctrl.dialog.DocumentsUploadDialogCtrl;
+import net.vpc.app.vainruling.core.web.jsf.ctrl.FileUploadEventHandler;
+import net.vpc.app.vainruling.core.web.jsf.Vr;
 import net.vpc.app.vainruling.core.web.themes.VrTheme;
 import net.vpc.app.vainruling.core.web.themes.VrThemeFace;
 import net.vpc.app.vainruling.core.web.themes.VrThemeFactory;
-import net.vpc.app.vainruling.core.web.util.FileUploadEventHandler;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
 import net.vpc.app.vr.plugins.academicprofile.service.AcademicProfilePlugin;
@@ -37,10 +37,12 @@ import java.util.logging.Logger;
                 @UPathItem(title = "Paramètres", css = "fa-dashboard", ctrl = "")},
         title = "Mon profil étudiant",
         menu = "/Config",
-        url = "modules/academic/profile/student-profile-settings"
+        url = "modules/academic/profile/student-profile-settings",
+        replacementFor = "myProfileCtrl",
+        priority = 2
         //securityKey = "Custom.StudentProfileSettings"
 )
-public class StudentProfileSettingsCtrl implements DocumentUploadListener, VrActionEnabler, MyProfileAlternative {
+public class StudentProfileSettingsCtrl implements DocumentUploadListener, VrActionEnabler {
 
     private static final Logger log = Logger.getLogger(StudentProfileSettingsCtrl.class.getName());
     @Autowired

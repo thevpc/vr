@@ -48,13 +48,12 @@ public class GlobalStat {
     private double relativeOverloadTeacherCount;
     private double unassignedLoadTeacherCount;
 
-
     private int courseAssignmentCount;
     private int coursePlanCount;
-    private VMap<String,DisciplineStat> nonPermanentLoadValueByNonOfficialDiscipline =new VMap<String, DisciplineStat>(V_MAP_VALUE_FACTORY_LOAD_VALUE);
-    private VMap<String,DisciplineStat> nonPermanentLoadValueByOfficialDiscipline=new VMap<String, DisciplineStat>(V_MAP_VALUE_FACTORY_LOAD_VALUE);
-    private VMap<String,DisciplineStat> permanentLoadValueByNonOfficialDiscipline =new VMap<String, DisciplineStat>(V_MAP_VALUE_FACTORY_LOAD_VALUE);
-    private VMap<String,DisciplineStat> permanentLoadValueByOfficialDiscipline=new VMap<String, DisciplineStat>(V_MAP_VALUE_FACTORY_LOAD_VALUE);
+    private VMap<String, DisciplineStat> nonPermanentLoadValueByNonOfficialDiscipline = new VMap<String, DisciplineStat>(V_MAP_VALUE_FACTORY_LOAD_VALUE);
+    private VMap<String, DisciplineStat> nonPermanentLoadValueByOfficialDiscipline = new VMap<String, DisciplineStat>(V_MAP_VALUE_FACTORY_LOAD_VALUE);
+    private VMap<String, DisciplineStat> permanentLoadValueByNonOfficialDiscipline = new VMap<String, DisciplineStat>(V_MAP_VALUE_FACTORY_LOAD_VALUE);
+    private VMap<String, DisciplineStat> permanentLoadValueByOfficialDiscipline = new VMap<String, DisciplineStat>(V_MAP_VALUE_FACTORY_LOAD_VALUE);
     /**
      * les charge manquante independament des vacataire et contractuel basee sur
      * la charge dun assistant
@@ -106,7 +105,10 @@ public class GlobalStat {
     public LoadValue getAssignmentSumValue(AcademicSemester semester, List<AcademicTeacherSituation> situations, AcademicTeacherDegree degree) {
         LoadValue v = new LoadValue();
         for (AcademicTeacherSituation situation : situations) {
-            v.add(getAssignment(semester, situation, degree).getValue());
+            GlobalAssignmentStat a = getAssignment(semester, situation, degree);
+            if (a != null) {
+                v.add(a.getValue());
+            }
         }
         return v;
     }
@@ -114,7 +116,10 @@ public class GlobalStat {
     public LoadValue getAssignmentSumDue(AcademicSemester semester, List<AcademicTeacherSituation> situations, AcademicTeacherDegree degree) {
         LoadValue v = new LoadValue();
         for (AcademicTeacherSituation situation : situations) {
-            v.add(getAssignment(semester, situation, degree).getDue());
+            GlobalAssignmentStat a = getAssignment(semester, situation, degree);
+            if (a != null) {
+                v.add(a.getDue());
+            }
         }
         return v;
     }
@@ -122,17 +127,24 @@ public class GlobalStat {
     public int getAssignmentTeacherCount(AcademicSemester semester, List<AcademicTeacherSituation> situations, AcademicTeacherDegree degree) {
         int count = 0;
         for (AcademicTeacherSituation situation : situations) {
-            count += getAssignment(semester, situation, degree).getTeachersCount();
+            GlobalAssignmentStat a = getAssignment(semester, situation, degree);
+            if (a != null) {
+                count += a.getTeachersCount();
+            }
         }
         return count;
     }
 
     public GlobalAssignmentStat getAssignment(AcademicSemester semester, AcademicTeacherSituation situation, AcademicTeacherDegree degree) {
+        return getAssignment(semester, situation, degree, false);
+    }
+
+    public GlobalAssignmentStat getAssignment(AcademicSemester semester, AcademicTeacherSituation situation, AcademicTeacherDegree degree, boolean create) {
         String s = (situation == null ? "%" : situation.getId())
                 + ";" + (degree == null ? "%" : degree.getId())
                 + ";" + (semester == null ? "%" : semester.getId());
         GlobalAssignmentStat r = detailsMap.get(s);
-        if (r == null) {
+        if (r == null && create) {
             r = new GlobalAssignmentStat();
             r.setDegree(degree);
             r.setSituation(situation);
@@ -166,7 +178,6 @@ public class GlobalStat {
     public void setTeachersCount(double teachersCount) {
         this.teachersCount = teachersCount;
     }
-
 
     public double getOverload() {
         return overload;
@@ -247,11 +258,9 @@ public class GlobalStat {
         this.neededRelative = neededRelative;
     }
 
-
     public GlobalAssignmentStat getMissing() {
         return missing;
     }
-
 
     public SituationTypeStat getTeachersLeaveStat() {
         return teachersLeaveStat;
@@ -285,7 +294,7 @@ public class GlobalStat {
         this.referenceTeacherDueLoad = referenceTeacherDueLoad;
     }
 
-    public VMap<String,DisciplineStat> getNonPermanentLoadValueByNonOfficialDiscipline() {
+    public VMap<String, DisciplineStat> getNonPermanentLoadValueByNonOfficialDiscipline() {
         return nonPermanentLoadValueByNonOfficialDiscipline;
     }
 

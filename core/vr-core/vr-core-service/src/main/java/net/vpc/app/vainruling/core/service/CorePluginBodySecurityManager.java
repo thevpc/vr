@@ -169,13 +169,17 @@ class CorePluginBodySecurityManager extends CorePluginBody {
         }
         int modifications = 0;
         for (AppProfileRight r : oldRigths) {
-            if (baseSet.contains(r.getRight().getName())) {
-                //ok
-            } else {
-                pu.remove(r);
-                modifications++;
+            if (r.getRight() != null) {
+                if (baseSet.contains(r.getRight().getName())) {
+                    //ok
+                } else {
+                    pu.remove(r);
+                    modifications++;
+                }
+                visitedSet.add(r.getRight().getName());
+            }else{
+                    pu.remove(r);
             }
-            visitedSet.add(r.getRight().getName());
         }
         for (String s : baseSet) {
             if (!visitedSet.contains(s)) {
@@ -493,7 +497,6 @@ class CorePluginBodySecurityManager extends CorePluginBody {
 //        }
 //        return all;
 //    }
-    
     public List<AppProfile> findAdministrableProfiles() {
         List<AppProfile> profiles = new ArrayList<>();
         boolean admin = this.getContext().getCorePlugin().isCurrentSessionAdmin();

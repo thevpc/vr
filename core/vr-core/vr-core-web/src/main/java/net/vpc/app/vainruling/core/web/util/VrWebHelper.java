@@ -7,19 +7,15 @@ package net.vpc.app.vainruling.core.web.util;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.security.UserToken;
-import net.vpc.app.vainruling.core.service.util.VrPlatformUtils;
-import net.vpc.app.vainruling.core.web.Vr;
-import net.vpc.common.io.FileUtils;
-import net.vpc.common.jsf.FacesUtils;
+import net.vpc.app.vainruling.core.service.util.ObjectHolder;
+import net.vpc.app.vainruling.core.web.themes.VrTheme;
+import net.vpc.app.vainruling.core.web.themes.VrThemeFace;
+import net.vpc.app.vainruling.core.web.themes.VrThemeFactory;
 import net.vpc.common.strings.StringConverter;
 import net.vpc.common.strings.StringUtils;
-import net.vpc.common.vfs.VFile;
-import net.vpc.common.vfs.VirtualFileSystem;
 import net.vpc.upa.*;
 import net.vpc.upa.exceptions.UPAIllegalArgumentException;
-import org.primefaces.event.FileUploadEvent;
 import org.springframework.context.expression.BeanFactoryResolver;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
@@ -29,71 +25,100 @@ import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
-import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.File;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 /**
  * @author taha.bensalah@gmail.com
  */
 public class VrWebHelper {
+    public static final Map<String, String> extensionsToCss = new HashMap<String, String>();
+
+    static {
+        extensionsToCss.put("csv", "file-csv");
+
+        extensionsToCss.put("txt", "file-txt");
+        extensionsToCss.put("properties", "file-txt");
+
+        extensionsToCss.put("log", "file-log");
+
+        extensionsToCss.put("xls", "file-xls");
+        extensionsToCss.put("xlsx", "file-xls");
+        extensionsToCss.put("ods", "file-xls");
+
+        extensionsToCss.put("doc", "file-doc");
+        extensionsToCss.put("docx", "file-doc");
+        extensionsToCss.put("odt", "file-doc");
+
+        extensionsToCss.put("zip", "file-zip");
+        extensionsToCss.put("tar", "file-zip");
+        extensionsToCss.put("rar", "file-zip");
+
+        extensionsToCss.put("pdf", "file-pdf");
+        extensionsToCss.put("xml", "file-xml");
+        extensionsToCss.put("css", "file-css");
+        extensionsToCss.put("html", "file-html");
+
+        extensionsToCss.put("png", "file-img");
+        extensionsToCss.put("gif", "file-img");
+        extensionsToCss.put("jpg", "file-img");
+        extensionsToCss.put("jpeg", "file-img");
+    }
+
+    private static boolean invoke(Object o, String method, Class[] params, ObjectHolder ret, Object... values) {
+        try {
+            Method m = o.getClass().getDeclaredMethod(method, params);
+            m.setAccessible(true);
+            ret.setValue(m.invoke(values));
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
 
     public static HttpServletRequest getHttpServletRequest() {
-        HttpServletRequest req=null;
+        HttpServletRequest req = null;
         try {
             RequestAttributes requestAttributes = RequestContextHolder.currentRequestAttributes();
-            if(requestAttributes instanceof ServletRequestAttributes){
-                req=((ServletRequestAttributes) requestAttributes).getRequest();
-            }else if(requestAttributes.getClass().getSimpleName().equals("JaxrsRequestAttributes")){
-                try {
-                    Method m = requestAttributes.getClass().getDeclaredMethod("getHttpServletRequest");
-                    m.setAccessible(true);
-                    req = (HttpServletRequest) m.invoke(requestAttributes);
-                }catch(Exception e){
-                    e.printStackTrace();
-                }
-            }else if(requestAttributes.getClass().getSimpleName().equals("FacesRequestAttributes")){
-                try {
-                    Method m = requestAttributes.getClass().getDeclaredMethod("getFacesContext");
-                    m.setAccessible(true);
-                    FacesContext fc= (FacesContext) m.invoke(requestAttributes);
-                    if(fc!=null) {
-                        ExternalContext externalContext = fc.getExternalContext();
-                        if(externalContext!=null) {
-                            req = (HttpServletRequest) externalContext.getRequest();
+            if (requestAttributes instanceof ServletRequestAttributes) {
+                req = ((ServletRequestAttributes) requestAttributes).getRequest();
+            } else if (requestAttributes.getClass().getSimpleName().equals("JaxrsRequestAttributes")) {
+                ObjectHolder ret = new ObjectHolder();
+                invoke(requestAttributes, "getHttpServletRequest", new Class[0], ret);
+                req = (HttpServletRequest) ret.getValue();
+            } else if (requestAttributes.getClass().getSimpleName().equals("FacesRequestAttributes")) {
+                ObjectHolder ret = new ObjectHolder();
+                if (invoke(requestAttributes, "getFacesContext", new Class[0], ret)) {
+                    if (invoke(ret.getValue(), "getExternalContext", new Class[0], ret)) {
+                        if (invoke(ret.getValue(), "getRequest", new Class[0], ret)) {
+                            req = (HttpServletRequest) ret.getValue();
                         }
                     }
-                }catch(Exception e){
-                    e.printStackTrace();
                 }
-            }else{
+            } else {
                 throw new UPAIllegalArgumentException("Unsupported");
             }
+        } catch (java.lang.IllegalStateException e) {
+            System.err.println("Unexpected Exception " + e);
         } catch (Exception e) {
             System.err.println("Unexpected Exception " + e);
-            e.printStackTrace();
+//            e.printStackTrace();
         }
         return req;
     }
+
     public static void prepareUserSession() {
 
         UserToken s = CorePlugin.get().getCurrentToken();
         if (s != null) {
-            Vr vr = Vr.get();
-            if(s.getUserLogin() != null) {
-                s.setPublicTheme(vr.getUserPublicTheme(s.getUserLogin()).getId());
-                s.setPrivateTheme(vr.getUserPrivateTheme(s.getUserLogin()).getId());
-            }else{
-                s.setPublicTheme(vr.getAppPublicTheme().getId());
-                s.setPrivateTheme(vr.getAppPrivateTheme().getId());
+            if (s.getUserLogin() != null) {
+                s.setPublicTheme(getUserPublicTheme(s.getUserLogin()).getId());
+                s.setPrivateTheme(getUserPrivateTheme(s.getUserLogin()).getId());
+            } else {
+                s.setPublicTheme(getAppPublicTheme().getId());
+                s.setPrivateTheme(getAppPrivateTheme().getId());
             }
             HttpServletRequest req = getHttpServletRequest();
             if (s.getSessionId() == null) {
@@ -102,7 +127,7 @@ public class VrWebHelper {
             }
             if (s.getLocale() == null) {
                 Locale locale = req.getLocale();
-                s.setLocale(locale==null?null:locale.toString());
+                s.setLocale(locale == null ? null : locale.toString());
             }
             if (s.getIpAddress() == null) {
                 String ipAddress = req.getHeader("X-FORWARDED-FOR");
@@ -114,143 +139,247 @@ public class VrWebHelper {
         }
     }
 
-
     public static Object evalSpringExpr(String expr) {
-        if(expr==null){
+        if (expr == null) {
             return null;
         }
         StandardEvaluationContext context = new StandardEvaluationContext();
         context.setBeanResolver(new BeanFactoryResolver(VrApp.getContext()));
-        ExpressionParser parser=new SpelExpressionParser();
+        ExpressionParser parser = new SpelExpressionParser();
         Expression expression = parser.parseExpression(expr);
         return expression.getValue(context);
     }
 
     public static String evalSpringExprMessage(String message) {
-        if(message==null){
+        if (message == null) {
             return null;
         }
-        if(message.contains("#{")){
-            message= StringUtils.replacePlaceHolders(message, "#{", "}",new StringConverter() {
+        if (message.contains("#{")) {
+            message = StringUtils.replacePlaceHolders(message, "#{", "}", new StringConverter() {
                 @Override
                 public String convert(String str) {
                     //TODO
-                    if("vr.publicThemeContext".equals(str)){
-                        return Vr.get().getPublicThemeContext();
+                    if ("vr.publicThemeContext".equals(str)) {
+                        return getPublicThemeContext();
                     }
-                    if("vr.privateThemeContext".equals(str)){
-                        return Vr.get().getPublicThemeContext();
+                    if ("vr.privateThemeContext".equals(str)) {
+                        return getPublicThemeContext();
                     }
-                    if("vr.publicThemePath".equals(str)){
-                        return Vr.get().getPublicThemePath();
+                    if ("vr.publicThemePath".equals(str)) {
+                        return getPublicThemePath();
                     }
-                    if("vr.privateThemePath".equals(str)){
-                        return Vr.get().getPrivateThemePath();
+                    if ("vr.privateThemePath".equals(str)) {
+                        return getPrivateThemePath();
                     }
-                    if("vr.publicThemeRelativePath".equals(str)){
-                        String themePath = Vr.get().getPublicThemePath();
-                        if(themePath.startsWith("/")){
+                    if ("vr.publicThemeRelativePath".equals(str)) {
+                        String themePath = getPublicThemePath();
+                        if (themePath.startsWith("/")) {
                             return themePath.substring(1);
                         }
                         return themePath;
                     }
-                    if("vr.privateThemeRelativePath".equals(str)){
-                        String themePath = Vr.get().getPrivateThemePath();
-                        if(themePath.startsWith("/")){
+                    if ("vr.privateThemeRelativePath".equals(str)) {
+                        String themePath = getPrivateThemePath();
+                        if (themePath.startsWith("/")) {
                             return themePath.substring(1);
                         }
                         return themePath;
                     }
-                    return (String)evalSpringExpr(str);
+                    return (String) evalSpringExpr(str);
                 }
             });
         }
         return message;
     }
 
-    public static VFile handleFileUpload(FileUploadEvent event, String destinationPath, boolean userhome, boolean override) throws Exception {
-        String fileName = event.getFile().getFileName();
-        CorePlugin core = VrApp.getBean(CorePlugin.class);
-        if(destinationPath==null){
-            destinationPath="";
-        }
-        if(StringUtils.indexOfWord(destinationPath,"..",0,"/")>=0){
-            throw new RuntimeException("Invalid path : "+destinationPath);
-        }
-        if(destinationPath.endsWith("/*")){
-            destinationPath=destinationPath.substring(0,destinationPath.length()-2)+"/"+fileName;
-        }
-
-        String path="";
-        if(userhome) {
-            AppUser user = core.getCurrentUser();
-            if (user == null) {
-                return null;
-            }
-            path=core.getUserFolder(user.getLogin()).getPath()+"/"+destinationPath;
-        }else{
-            path=destinationPath;
-        }
-        if(!path.startsWith("/")){
-            path="/"+path;
-        }
-        VirtualFileSystem rootfs = UPA.getContext().invokePrivileged(new Action<VirtualFileSystem>() {
+    public static VrTheme getAppPublicTheme() {
+        CorePlugin core = CorePlugin.get();
+        String oldValue = UPA.getPersistenceUnit().invokePrivileged(new Action<String>() {
             @Override
-            public VirtualFileSystem run() {
-                return core.getRootFileSystem();
+            public String run() {
+                return (String) core.getOrCreateAppPropertyValue("System.DefaultPublicTheme", null, "");
             }
         });
-        VFile nativeFile = rootfs.get(path).getBaseFile("NativeFS");
-        String p=nativeFile.getPath();
-
-        File f = new File(VrPlatformUtils.validatePath(p));
-        if(f.exists() && !override){
-           int index=2;
-            while(true) {
-                File f2 = FileUtils.changeFileSuffix(f, "-" + index);
-                if(!f2.exists()){
-                    f=f2;
-                    break;
-                }
-                index++;
-            }
+        if (StringUtils.isEmpty(oldValue)) {
+            oldValue = core.getAppVersion().getDefaultPublicTheme();
         }
-        f.getParentFile().mkdirs();
-        event.getFile().write(f.getPath());
-        return rootfs.get(path).getParentFile().get(f.getName());
+        if (StringUtils.isEmpty(oldValue)) {
+            oldValue = "default";
+        }
+        VrThemeFactory tfactory = VrApp.getBean(VrThemeFactory.class);
+        VrTheme theme = tfactory.getTheme(VrThemeFace.PUBLIC, oldValue);
+        if (theme != null) {
+            return theme;
+        }
+        //force to default
+        theme = tfactory.getTheme(VrThemeFace.PUBLIC, "default");
+        if (theme != null) {
+            return theme;
+        }
+        throw new IllegalArgumentException("Invalid Theme");
     }
 
-    public static List<SelectItem> toSelectItemList(List any){
-        Class<?> lastEntityClass=null;
-        EntityBuilder lastBuilder=null;
-        PersistenceUnit pu = UPA.getPersistenceUnit();
-        List<SelectItem> list=new ArrayList<>();
-        for (Object o : any) {
-            if(o==null){
-                list.add(FacesUtils.createSelectItem("",""));
-            }else if(o instanceof SelectItem){
-                list.add((SelectItem) o);
-            }else if(o instanceof NamedId){
-                NamedId n=(NamedId) o;
-                list.add(FacesUtils.createSelectItem(n.getStringId(),n.getStringName()));
-            }else{
-                Class<?> newClass = o.getClass();
-                if(newClass.equals(lastEntityClass)){
-                    NamedId n = lastBuilder.objectToNamedId(o);
-                    list.add(FacesUtils.createSelectItem(n.getStringId(), n.getStringName()));
-                }else {
-                    Entity entity = pu.findEntity(newClass);
-                    if (entity != null) {
-                        lastBuilder = entity.getBuilder();
-                        NamedId n = lastBuilder.objectToNamedId(o);
-                        list.add(FacesUtils.createSelectItem(n.getStringId(), n.getStringName()));
-                        lastEntityClass=newClass;
-                    }else{
-                        list.add(FacesUtils.createSelectItem(String.valueOf(o), String.valueOf(o)));
-                    }
+    public static VrTheme getAppPrivateTheme() {
+        CorePlugin core = CorePlugin.get();
+        String oldValue = UPA.getPersistenceUnit().invokePrivileged(new Action<String>() {
+            @Override
+            public String run() {
+                return (String) core.getOrCreateAppPropertyValue("System.DefaultPrivateTheme", null, "");
+            }
+        });
+        if (StringUtils.isEmpty(oldValue)) {
+            oldValue = core.getAppVersion().getDefaultPrivateTheme();
+        }
+        if (StringUtils.isEmpty(oldValue)) {
+            oldValue = "default";
+        }
+        VrThemeFactory tfactory = VrApp.getBean(VrThemeFactory.class);
+        VrTheme theme = tfactory.getTheme(VrThemeFace.PRIVATE, oldValue);
+        if (theme != null) {
+            return theme;
+        }
+        //force to default
+        theme = tfactory.getTheme(VrThemeFace.PRIVATE, "default");
+        if (theme != null) {
+            return theme;
+        }
+        throw new IllegalArgumentException("Invalid Theme");
+    }
+
+
+    public static String getPublicThemeContext() {
+        HttpServletRequest req = VrWebHelper.getHttpServletRequest();
+        String contextPath = req.getContextPath();
+        return contextPath + "/public-themes/" + getPublicTheme().getId();
+//        return contextPath+"/META-INF/resources/themes/"+getTheme().getId();
+    }
+
+    public static String getPrivateThemeContext() {
+        HttpServletRequest req = VrWebHelper.getHttpServletRequest();
+        String contextPath = req.getContextPath();
+        return contextPath + "/private-themes/" + getPrivateTheme().getId();
+//        return contextPath+"/META-INF/resources/themes/"+getTheme().getId();
+    }
+
+    public static VrTheme getPublicTheme() {
+        CorePlugin core = CorePlugin.get();
+        UserToken s = core.getCurrentToken();
+        if (s != null) {
+            VrThemeFactory tfactory = VrApp.getBean(VrThemeFactory.class);
+            String themeId = s.getPublicTheme();
+            if (StringUtils.isEmpty(themeId)) {
+                themeId = (String) core.getAppPropertyValue("System.DefaultPublicTheme", s.getUserLogin());
+                if (StringUtils.isEmpty(themeId)) {
+                    themeId = getAppPublicTheme().getId();
+                }
+                if (StringUtils.isEmpty(themeId)) {
+                    themeId = "default";
                 }
             }
+            VrTheme theme = tfactory.getTheme(VrThemeFace.PUBLIC, themeId);
+            if (theme != null) {
+                s.setPublicTheme(themeId);
+                return theme;
+            }
         }
-        return list;
+        return getAppPublicTheme();
+    }
+
+    public static VrTheme getPrivateTheme() {
+        CorePlugin core = CorePlugin.get();
+        UserToken s = core.getCurrentToken();
+        if (s != null) {
+            VrThemeFactory tfactory = VrApp.getBean(VrThemeFactory.class);
+            String themeId = s.getPrivateTheme();
+            if (StringUtils.isEmpty(themeId)) {
+                themeId = (String) core.getAppPropertyValue("System.DefaultPrivateTheme", s.getUserLogin());
+                if (StringUtils.isEmpty(themeId)) {
+                    themeId = getAppPrivateTheme().getId();
+                }
+                if (StringUtils.isEmpty(themeId)) {
+                    themeId = "default";
+                }
+            }
+            VrTheme theme = tfactory.getTheme(VrThemeFace.PRIVATE, themeId);
+            if (theme != null) {
+                s.setPrivateTheme(themeId);
+                return theme;
+            }
+        }
+        return getAppPrivateTheme();
+    }
+
+    public static VrTheme getUserPrivateTheme(String login) {
+        CorePlugin core = CorePlugin.get();
+        String oldValue = (String) core.getAppPropertyValue("System.DefaultPrivateTheme", login);
+        if (StringUtils.isEmpty(oldValue)) {
+            oldValue = getAppPrivateTheme().getId();
+        }
+        if (StringUtils.isEmpty(oldValue)) {
+            oldValue = "default";
+        }
+        VrThemeFactory tfactory = VrApp.getBean(VrThemeFactory.class);
+        VrTheme theme = tfactory.getTheme(VrThemeFace.PRIVATE, oldValue);
+        if (theme != null) {
+            return theme;
+        }
+        throw new IllegalArgumentException("Invalid Theme");
+    }
+
+    public static VrTheme getUserPublicTheme(String login) {
+        CorePlugin core = CorePlugin.get();
+        String oldValue = (String) core.getAppPropertyValue("System.DefaultPublicTheme", login);
+        if (StringUtils.isEmpty(oldValue)) {
+            oldValue = getAppPublicTheme().getId();
+        }
+        if (StringUtils.isEmpty(oldValue)) {
+            oldValue = "default";
+        }
+        VrThemeFactory tfactory = VrApp.getBean(VrThemeFactory.class);
+        VrTheme theme = tfactory.getTheme(VrThemeFace.PUBLIC, oldValue);
+        if (theme != null) {
+            return theme;
+        }
+        throw new IllegalArgumentException("Invalid Theme");
+    }
+
+    public static String getPublicThemePath() {
+//        HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+//        String contextPath = req.getContextPath();
+        return "/public-themes/" + getPublicTheme().getId();
+    }
+
+    public static String getPrivateThemePath() {
+//        HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+//        String contextPath = req.getContextPath();
+        return "/private-themes/" + getPrivateTheme().getId();
+    }
+
+    public static String getPrivateTemplatePath() {
+        if (isPrintableLayout()) {
+            return getPrivateThemePath() + "/templates/private-template-printable.xhtml";
+        }
+        return getPrivateThemePath() + "/templates/private-template.xhtml";
+    }
+
+    public static boolean isPrintableLayout() {
+        HttpServletRequest req = getHttpServletRequest();
+        String paramValue = req == null ? null : req.getParameter("vr-layout");
+        if ("printable".equals(paramValue)) {
+            return true;
+        }
+        return false;
+    }
+
+    public static String getContext() {
+        HttpServletRequest req = getHttpServletRequest();
+        if (req == null) {
+            return null;
+        }
+        return req.getContextPath();
+    }
+
+    public static String getFacesContextPrefix() {
+        return "r";
     }
 }

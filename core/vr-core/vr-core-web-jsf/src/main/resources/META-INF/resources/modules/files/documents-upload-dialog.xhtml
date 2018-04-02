@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+        >
+
+<h:head>
+</h:head>
+
+<h:body>
+
+    <!--@elvariable id="documentsUploadDialogCtrl" type="net.vpc.app.vainruling.core.web.jsf.ctrl.dialog.DocumentsUploadDialogCtrl"-->
+    <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.jsf.Vr"-->
+    <ui:composition template="#{vr.privateThemePath}/templates/dialog-template.xhtml">
+        <ui:define name="dialog-title">
+            <h:outputText value="#{documentsUploadDialogCtrl.model.title}"/> </ui:define>
+        <ui:define name="dialog-body">
+
+
+            <h:form id="listForm" enctype="multipart/form-data" style="margin-top: 10px;min-height: 300px;">
+                <div style="margin-bottom: 10px;">
+                    Glissez/Deposez votre fichier dans cette zone ou Cliquez su le bouton pour accéder à votre disque local
+                </div>
+                <div style="margin-bottom: 10px;">
+                    <p:fileUpload multiple="false"
+                                  fileUploadListener="#{documentsUploadDialogCtrl.handleNewFile}"
+                                  dragDropSupport="true"
+                                  label="ajouter fichier"
+                                  mode="advanced"
+                                  auto="true"
+                                  skinSimple="true"
+                                  uploadLabel="Téléverser"
+                                  cancelLabel="Annuler"
+                                  update=":listForm"
+                                  style="margin-top: 5px;"
+                                  sizeLimit="#{documentsUploadDialogCtrl.model.config.sizeLimit}"
+                                  accept="#{vr.fileExtensionPattern(documentsUploadDialogCtrl.model.config.extensions)}"
+                    />
+                </div>
+                <div class="btn-group vr-form-button-group">
+                        <p:commandButton styleClass="btn btn-lg btn-default vr-dialog-button" value="Fermer" style="margin-right: 10px;"
+                                         action="#{documentsCtrl.fireEventExtraDialogClosed}"
+                                         />
+                    </div>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</h:body>
+
+</html>

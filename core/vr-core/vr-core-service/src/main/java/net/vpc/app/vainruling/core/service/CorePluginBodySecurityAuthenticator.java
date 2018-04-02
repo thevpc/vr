@@ -12,9 +12,11 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-class CorePluginBodySecurityAuthenticator extends CorePluginBody{
+class CorePluginBodySecurityAuthenticator extends CorePluginBody {
+
     private List<UserSessionConfigurator> userSessionConfigurators;
-    private static Logger log=Logger.getLogger(CorePluginBodySecurityAuthenticator.class.getName());
+    private static Logger log = Logger.getLogger(CorePluginBodySecurityAuthenticator.class.getName());
+
     @Override
     public void onInstall() {
         CorePlugin core = getContext().getCorePlugin();
@@ -75,15 +77,13 @@ class CorePluginBodySecurityAuthenticator extends CorePluginBody{
     private List<UserSessionConfigurator> getUserSessionConfigurators() {
         if (userSessionConfigurators == null) {
             ArrayList all = new ArrayList<>();
-            ApplicationContext context = VrApp.getContext();
-            for (String bn : context.getBeanNamesForType(UserSessionConfigurator.class)) {
-                all.add(context.getBean(bn));
+            for (UserSessionConfigurator bn : VrApp.getBeansForType(UserSessionConfigurator.class)) {
+                all.add(bn);
             }
             userSessionConfigurators = all;
         }
         return userSessionConfigurators;
     }
-
 
     public UserSessionInfo authenticate(String login, String password, String clientAppId, String clientApp) {
         try {
@@ -113,26 +113,26 @@ class CorePluginBodySecurityAuthenticator extends CorePluginBody{
                 }
             }
             return populateSessionInfo(token, new UserSessionInfo(), true, new Date());
-        }catch (Exception any){
-            log.severe("Login failed ("+login+"): "+any.getMessage());
+        } catch (Exception any) {
+            log.severe("Login failed (" + login + "): " + any.getMessage());
             return null;
         }
     }
 
-    private String toUniformLogin(String login){
+    private String toUniformLogin(String login) {
         if (login == null) {
             login = "";
         }
         login = StringUtils.normalize(login.trim()).toLowerCase();
-        StringBuilder sb=new StringBuilder();
-        boolean firstSpace=true;
+        StringBuilder sb = new StringBuilder();
+        boolean firstSpace = true;
         for (char c : login.toCharArray()) {
-            if(Character.isSpaceChar(c)){
-                if(firstSpace){
+            if (Character.isSpaceChar(c)) {
+                if (firstSpace) {
                     sb.append('.');
-                    firstSpace=false;
+                    firstSpace = false;
                 }
-            }else{
+            } else {
                 sb.append(c);
             }
         }
@@ -140,7 +140,7 @@ class CorePluginBodySecurityAuthenticator extends CorePluginBody{
     }
 
     private AppUser authenticateByLoginPassword(String login, String password, UserToken token, String clientAppId, String clientApp) {
-        login =toUniformLogin(login);
+        login = toUniformLogin(login);
         AppUser user = findEnabledUser(login, password);
         if (user == null) {
             AppUser user2 = getContext().getCorePlugin().findUser(login);
@@ -177,7 +177,6 @@ class CorePluginBodySecurityAuthenticator extends CorePluginBody{
                 .getFirstResultOrNull();
     }
 
-
     private AppUser onUserLoggedIn(AppUser user, UserToken token, String clientAppId, String clientApp) {
         if (token == null) {
             throw new SecurityException("No Session Found");
@@ -193,12 +192,12 @@ class CorePluginBodySecurityAuthenticator extends CorePluginBody{
                     TraceService.makeSilenced(
                             new Action<Object>() {
 
-                                @Override
-                                public Object run() {
-                                    UPA.getPersistenceUnit().merge(user);
-                                    return null;
-                                }
-                            }), null);
+                        @Override
+                        public Object run() {
+                            UPA.getPersistenceUnit().merge(user);
+                            return null;
+                        }
+                    }), null);
             token.setClientApp(StringUtils.isEmpty(clientApp) ? "default" : clientApp);
             token.setClientAppId(StringUtils.isEmpty(clientAppId) ? "unknown" : clientAppId);
             token.setDestroyed(false);
@@ -295,7 +294,7 @@ class CorePluginBodySecurityAuthenticator extends CorePluginBody{
             if (s.getRootUserId() != null) {
                 getContext().getTrace().trace("logout", "successful logout " + login + " to " + s.getRootLogin(),
                         login + " => "
-                                + s.getRootLogin(),
+                        + s.getRootLogin(),
                         "/System/Access", null, null, login, id, Level.INFO, s.getIpAddress()
                 );
                 s.setUserId(s.getRootUserId());
@@ -314,7 +313,7 @@ class CorePluginBodySecurityAuthenticator extends CorePluginBody{
     public void logout(String sessionId) {
         PersistenceUnit persistenceUnit = UPA.getPersistenceUnit();
         Session cs = persistenceUnit.getCurrentSession();
-        if(!"SessionDestroyed".equals(cs.getParam(persistenceUnit,String.class,"Event",null))){
+        if (!"SessionDestroyed".equals(cs.getParam(persistenceUnit, String.class, "Event", null))) {
             CorePluginSecurity.requireAdmin();
         }
 
@@ -350,25 +349,25 @@ class CorePluginBodySecurityAuthenticator extends CorePluginBody{
     }
 
     public AppUser impersonate(String login, String password) {
-        login =toUniformLogin(login);
+        login = toUniformLogin(login);
         UserToken s = getCurrentToken();
         if (s.isAdmin() && s.getRootUserId() == null) {
             AppUser user = findEnabledUser(login, password);
             if (user != null) {
-                getContext().getTrace().trace("impersonate", "successfull impersonate of " + s.getUserLogin() + " as "+login, s.getUserLogin()+","+login, "/System/Access", null, null, s.getUserLogin(),
+                getContext().getTrace().trace("impersonate", "successfull impersonate of " + s.getUserLogin() + " as " + login, s.getUserLogin() + "," + login, "/System/Access", null, null, s.getUserLogin(),
                         s.getUserId(), Level.INFO, s.getIpAddress()
                 );
             } else {
                 user = getContext().getCorePlugin().findUser(login);
                 if (user != null) {
                     if (!user.isEnabled()) {
-                        getContext().getTrace().trace("impersonate", "successful impersonate of " +s.getUserLogin() + " as "+login + ". but user is not enabled!", s.getUserLogin()+","+login, "/System/Access", null, null, s.getUserLogin(), s.getUserId(), Level.WARNING, s.getIpAddress());
+                        getContext().getTrace().trace("impersonate", "successful impersonate of " + s.getUserLogin() + " as " + login + ". but user is not enabled!", s.getUserLogin() + "," + login, "/System/Access", null, null, s.getUserLogin(), s.getUserId(), Level.WARNING, s.getIpAddress());
                     } else {
-                        getContext().getTrace().trace("impersonate", "successful impersonate of " +s.getUserLogin() + " as "+ login + ". but password " + password + " seems not to be correct", s.getUserLogin()+","+login, "/System/Access", null, null, s.getUserLogin(), s.getUserId(), Level.WARNING, s.getIpAddress());
+                        getContext().getTrace().trace("impersonate", "successful impersonate of " + s.getUserLogin() + " as " + login + ". but password " + password + " seems not to be correct", s.getUserLogin() + "," + login, "/System/Access", null, null, s.getUserLogin(), s.getUserId(), Level.WARNING, s.getIpAddress());
                     }
                 } else {
                     getContext().getTrace().trace(
-                            "impersonate", "failed impersonate of " + s.getUserLogin() + " as "+login, s.getUserLogin()+","+login, "/System/Access", null, null, s.getUserLogin(), s.getUserId(), Level.SEVERE, s.getIpAddress()
+                            "impersonate", "failed impersonate of " + s.getUserLogin() + " as " + login, s.getUserLogin() + "," + login, "/System/Access", null, null, s.getUserLogin(), s.getUserId(), Level.SEVERE, s.getIpAddress()
                     );
                 }
             }
@@ -381,7 +380,7 @@ class CorePluginBodySecurityAuthenticator extends CorePluginBody{
             getContext().getCorePlugin().onPoll();
             return user;
         } else {
-            getContext().getTrace().trace("impersonate", "failed impersonate of " + s.getUserLogin() + " as "+login + ". not admin or already impersonating", s.getUserLogin()+","+login, "/System/Access", null, null, s.getUserLogin(), s.getUserId(), Level.WARNING, s.getIpAddress());
+            getContext().getTrace().trace("impersonate", "failed impersonate of " + s.getUserLogin() + " as " + login + ". not admin or already impersonating", s.getUserLogin() + "," + login, "/System/Access", null, null, s.getUserLogin(), s.getUserId(), Level.WARNING, s.getIpAddress());
         }
         return null;
     }
@@ -426,7 +425,7 @@ class CorePluginBodySecurityAuthenticator extends CorePluginBody{
         if (i.getUserLogin() == null) {
             i.setUserLogin(login);
             i.setSessionId(t.getSessionId());
-            AppUser u = userId==null?null:getContext().getCorePlugin().findUser(userId);
+            AppUser u = userId == null ? null : getContext().getCorePlugin().findUser(userId);
             i.setUserFullTitle(u == null ? null : u.resolveFullTitle());
             i.setUserFullName(u == null ? null : u.resolveFullName());
             i.setFemale(t.isFemale());
@@ -499,7 +498,7 @@ class CorePluginBodySecurityAuthenticator extends CorePluginBody{
                     if (anonymous.getLastAccessTime() == null || (p.getLastAccessedTime() != null && anonymous.getLastAccessTime().compareTo(p.getLastAccessedTime()) < 0)) {
                         anonymous.setLastAccessTime(p.getLastAccessedTime());
                     }
-                } else if(showAnonymous){
+                } else if (showAnonymous) {
                     UserSessionInfo i = new UserSessionInfo();
                     i.setSessionId(p.getSessionId());
                     i.setUserFullName("Anonymous");
@@ -612,7 +611,6 @@ class CorePluginBodySecurityAuthenticator extends CorePluginBody{
         }
         return s;
     }
-
 
     //    public boolean isSessionAdmin() {
 //        UserSession us = getCurrentSession();
@@ -759,6 +757,7 @@ class CorePluginBodySecurityAuthenticator extends CorePluginBody{
         }
         return us != null && us.isAdmin();
     }
+
     public boolean isCurrentSessionAdminOrContact(int contactId) {
         if (contactId <= 0) {
             return isCurrentSessionAdmin();
@@ -773,7 +772,7 @@ class CorePluginBodySecurityAuthenticator extends CorePluginBody{
                 AppUser u = (AppUser) up.getObject();
                 if (us.getUserLogin() != null) {
                     String login2 = u.getLogin();
-                    if (u.getContact()!=null && u.getContact().getId() == contactId) {
+                    if (u.getContact() != null && u.getContact().getId() == contactId) {
                         return true;
                     }
                     if (login2.equals(us.getUserLogin())) {
@@ -795,7 +794,7 @@ class CorePluginBodySecurityAuthenticator extends CorePluginBody{
             }
             if (us.getUserId() != null) {
                 AppUser user = getContext().getCorePlugin().findUser(us.getUserId());
-                if(user!=null && user.getContact()!=null && user.getContact().getId()==contactId) {
+                if (user != null && user.getContact() != null && user.getContact().getId() == contactId) {
                     return true;
                 }
             }
@@ -853,7 +852,6 @@ class CorePluginBodySecurityAuthenticator extends CorePluginBody{
         List<AppCivility> civilities;
         List<AppGender> genders;
     }
-
 
     public String getCurrentDomain() {
         return UPA.getPersistenceUnit().getName();

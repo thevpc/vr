@@ -17,8 +17,19 @@ import net.vpc.upa.config.*;
  */
 @Entity(listOrder = "period.name desc")
 @Path("Contact")
-@Properties(
-        @Property(name = "cache.navigationDepth", valueType = "int", value = "1")
+@Properties({
+    @Property(name = "cache.navigationDepth", valueType = "int", value = "1")
+    ,
+                @Property(name = "cache.navigationDepth", valueType = "int", value = "5")
+    ,
+                @Property(name = "ui.auto-filter.teacher", value = "{expr='this.teacher',order=1}")
+    ,
+                @Property(name = "ui.auto-filter.degree", value = "{expr='this.degree',order=2}")
+    ,
+                @Property(name = "ui.auto-filter.situation", value = "{expr='this.situation',order=3}")
+    ,
+                @Property(name = "ui.auto-filter.department", value = "{expr='this.department',order=3}")
+}
 )
 public class AcademicTeacherPeriod {
 
@@ -31,7 +42,8 @@ public class AcademicTeacherPeriod {
     @ManyToOne(relationType = RelationshipType.COMPOSITION)
     private AppPeriod period;
 
-    @Summary @ManyToOne(relationType = RelationshipType.COMPOSITION)
+    @Summary
+    @ManyToOne(relationType = RelationshipType.COMPOSITION)
     private AcademicTeacher teacher;
 
     @Summary

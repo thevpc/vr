@@ -6,7 +6,7 @@
 package net.vpc.app.vainruling.core.service;
 
 import net.vpc.app.vainruling.core.service.cache.CacheService;
-import net.vpc.app.vainruling.core.service.event.Event;
+import net.vpc.app.vainruling.core.service.model.AppEvent;
 import net.vpc.app.vainruling.core.service.fs.FileInfo;
 import net.vpc.app.vainruling.core.service.fs.VrFSEntry;
 import net.vpc.app.vainruling.core.service.fs.VrFSTable;
@@ -25,7 +25,6 @@ import net.vpc.common.vfs.VirtualFileSystem;
 import net.vpc.upa.*;
 import net.vpc.upa.expressions.Expression;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -77,7 +76,7 @@ public class CorePlugin {
     private final CorePluginBodyConfig bodyConfig = new CorePluginBodyConfig();
     private final CorePluginBody[] bodies = new CorePluginBody[]{bodyFileSystem, bodyConfig, bodySecurityAuth, bodySecurityManager, bodyDaoManager, bodyContentManager, bodyPluginManager};
     private CorePluginBodyContext bodyContext;
-    
+
     public static CorePlugin get() {
         return VrApp.getBean(CorePlugin.class);
     }
@@ -119,9 +118,7 @@ public class CorePlugin {
             updatingPoll = true;
             try {
                 synchronized (this) {
-                    ApplicationContext context = VrApp.getContext();
-                    for (String pn : context.getBeanNamesForType(PollAware.class)) {
-                        PollAware b = (PollAware) context.getBean(pn);
+                    for (PollAware b : VrApp.getBeansForType(PollAware.class)) {
                         b.onPoll();
                     }
                 }
@@ -777,20 +774,16 @@ public class CorePlugin {
     }
 
     public List<String> getAllCompletionLists(int monitorUserId) {
-        String[] appPluginBeans = VrApp.getContext().getBeanNamesForType(CompletionProvider.class);
         TreeSet<String> cats = new TreeSet<>();
-        for (String beanName : appPluginBeans) {
-            CompletionProvider bean = (CompletionProvider) VrApp.getContext().getBean(beanName);
+        for (CompletionProvider bean : VrApp.getBeansForType(CompletionProvider.class)) {
             cats.addAll(bean.getCompletionLists(monitorUserId));
         }
         return new ArrayList<>(cats);
     }
 
     public List<CompletionInfo> findAllCompletions(int monitorUserId, String category, String objectType, Object objectId, Level minLevel) {
-        String[] appPluginBeans = VrApp.getContext().getBeanNamesForType(CompletionProvider.class);
         List<CompletionInfo> cats = new ArrayList<>();
-        for (String beanName : appPluginBeans) {
-            CompletionProvider bean = (CompletionProvider) VrApp.getContext().getBean(beanName);
+        for (CompletionProvider bean : VrApp.getBeansForType(CompletionProvider.class)) {
             cats.addAll(bean.findCompletions(monitorUserId, category, objectType, objectId, minLevel));
         }
         return new ArrayList<>(cats);
@@ -812,7 +805,7 @@ public class CorePlugin {
         return bodyDaoManager.getFieldValues(entityName, fieldName, constraints, currentInstance);
     }
 
-    public List<Event> findAllEventsByCurrentMonth() {
+    public List<AppEvent> findAllEventsByCurrentMonth() {
         Calendar c = Calendar.getInstance();
         c.set(Calendar.HOUR_OF_DAY, 00);
         c.set(Calendar.MINUTE, 00);
@@ -825,7 +818,7 @@ public class CorePlugin {
         Date d2 = c.getTime();
 
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        return pu.createQuery("Select e from Event e where e.beginDate >=:d1 and e.beginDate < :d2 ")
+        return pu.createQuery("Select e from AppEvent e where e.beginDate >=:d1 and e.beginDate < :d2 ")
                 .setParameter("d1", d1)
                 .setParameter("d2", d2)
                 .getResultList();
@@ -1006,5 +999,6 @@ public class CorePlugin {
     public boolean hasProfile(String key) {
         return getCurrentToken().getProfileNames().contains(key);
     }
+
 
 }

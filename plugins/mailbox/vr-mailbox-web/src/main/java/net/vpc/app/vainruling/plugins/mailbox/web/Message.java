@@ -2,7 +2,6 @@ package net.vpc.app.vainruling.plugins.mailbox.web;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.obj.AppFile;
-import net.vpc.app.vainruling.core.web.Vr;
 import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxReceived;
 import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxSent;
 

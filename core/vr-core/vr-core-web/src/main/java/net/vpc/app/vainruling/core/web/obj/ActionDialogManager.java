@@ -48,10 +48,7 @@ public class ActionDialogManager {
     public synchronized Map<String, ActionDialogAdapter> getByActionName() {
         if (byActionName == null) {
             byActionName = new HashMap<>();
-            ApplicationContext c = VrApp.getContext();
-            String[] beanNames = c.getBeanNamesForAnnotation(EntityAction.class);
-            for (String beanName : beanNames) {
-                Object o = c.getBean(beanName);
+            for (Object o : VrApp.getBeansMapForAnnotations(EntityAction.class).values()) {
                 if (o instanceof ActionDialog) {
                     ActionDialog a = (ActionDialog) o;
                     ActionDialogAdapter aa = new ActionDialogAdapter(a);

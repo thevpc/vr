@@ -10,7 +10,7 @@ and open the template in the editor.
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:p="http://primefaces.org/ui"
 >
-<!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.Vr"-->
+<!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.jsf.Vr"-->
 <!--@elvariable id="core" type="net.vpc.app.vainruling.core.service.CorePlugin"-->
 <h:head>
     <meta charset="utf-8"/>
@@ -887,8 +887,8 @@ and open the template in the editor.
                             <ul class="footer-links">
                                 <ui:repeat value="#{vr.cmsTextService.getContentTextListHead('Footer.Links',10)}"
                                            var="i">
-                                    <li><h:outputLink value="#{i.linkURL}">
-                                        <h:graphicImage value="#{i.imageURL}" rendered="#{not vr.isEmpty(i.imageURL)}"/>
+                                    <li><h:outputLink value="#{vr.url(i.linkURL)}">
+                                        <h:graphicImage value="#{vr.url(i.imageURL)}" rendered="#{not vr.isEmpty(i.imageURL)}"/>
                                         #{i.linkText}
                                     </h:outputLink></li>
                                 </ui:repeat>

@@ -29,9 +29,10 @@ public class VrControllerInfo implements VrActionInfo{
     public VrControllerInfo() {
     }
 
-    public VrControllerInfo(String title, String subTitle, String url, String css, String securityKey, BreadcrumbItem... breadcrumb) {
+    public VrControllerInfo(String title, String subTitle, String menuPath,String url, String css, String securityKey, BreadcrumbItem... breadcrumb) {
         this.title = title;
         this.subTitle = subTitle;
+        this.menuPath = menuPath;
         this.url = url;
         this.css = css;
         this.securityKey = securityKey;

@@ -1,7 +1,6 @@
 package net.vpc.app.vainruling.plugins.academic.web.photo;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
-import net.vpc.app.vainruling.core.web.Vr;
 import net.vpc.app.vainruling.core.web.obj.MainPhotoProvider;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;

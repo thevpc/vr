@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.vpc.app.vain-ruling.core</groupId>
     <artifactId>vr-core-web</artifactId>
-    <version>1.13.3</version>
+    <version>1.13.4</version>
     <packaging>jar</packaging>
     <name>net.vpc.app.vain-ruling.core.vr-core-web</name>
     <url>https://github.com/thevpc/vr/wiki</url>
@@ -18,7 +18,7 @@
 
     <properties>
         <vr-plugin.component-type>web</vr-plugin.component-type>
-        <version.vr-core-service>1.13.3</version.vr-core-service>
+        <version.vr-core-service>1.13.4</version.vr-core-service>
         <version.upa-web>1.2.0.44.0</version.upa-web>
     </properties>
 
@@ -34,6 +34,11 @@
             <version>7.0</version>
             <scope>provided</scope>
         </dependency>
+<!--        <dependency>
+            <groupId>javax.enterprise</groupId>
+            <artifactId>cdi-api</artifactId>
+            <version>1.2</version>
+        </dependency>-->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
@@ -44,26 +49,21 @@
             <artifactId>spring-web</artifactId>
             <version>4.1.2.RELEASE</version>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>org.glassfish.jersey.media</groupId>-->
-            <!--<artifactId>jersey-media-json-jackson</artifactId>-->
-            <!--<version>2.14</version>-->
-        <!--</dependency>-->
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.faces</artifactId>
-            <version>2.2.7</version>
+            <version>2.2.16</version>
         </dependency>
-        <dependency>
+<!--        <dependency>
             <groupId>org.primefaces</groupId>
             <artifactId>primefaces</artifactId>
             <version>6.2</version>
-        </dependency>
-        <dependency>
+        </dependency>-->
+<!--        <dependency>
             <groupId>org.primefaces.extensions</groupId>
             <artifactId>primefaces-extensions</artifactId>
             <version>6.2</version>
-        </dependency>
+        </dependency>-->
 
         <dependency>
             <groupId>net.vpc.upa</groupId>
@@ -73,53 +73,13 @@
         <dependency>
             <groupId>net.vpc.common</groupId>
             <artifactId>vpc-common-web-jsf</artifactId>
-            <version>1.2.4</version>
+            <version>1.2.5</version>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>org.glassfish.jersey.ext</groupId>-->
-            <!--<artifactId>jersey-spring3</artifactId>-->
-            <!--&lt;!&ndash;<version>2.14</version>&ndash;&gt;-->
-            <!--<version>2.17-custom-vpc-u1.0</version>-->
-            <!--<exclusions>-->
-                <!--<exclusion>-->
-                    <!--<groupId>org.springframework</groupId>-->
-                    <!--<artifactId>spring-core</artifactId>-->
-                <!--</exclusion>-->
-                <!--<exclusion>-->
-                    <!--<groupId>org.springframework</groupId>-->
-                    <!--<artifactId>spring-web</artifactId>-->
-                <!--</exclusion>-->
-                <!--<exclusion>-->
-                    <!--<groupId>org.springframework</groupId>-->
-                    <!--<artifactId>spring-beans</artifactId>-->
-                <!--</exclusion>-->
-            <!--</exclusions>-->
-        <!--</dependency>-->
-        <dependency>
+<!--        <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>jstl</artifactId>
             <version>1.2</version>
-        </dependency>
-        <!--<dependency>-->
-            <!--<groupId>org.glassfish.jersey.containers</groupId>-->
-            <!--<artifactId>jersey-container-servlet</artifactId>-->
-            <!--<version>2.14</version>-->
-        <!--</dependency>-->
-        <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi</artifactId>
-            <version>3.9</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi-ooxml</artifactId>
-            <version>3.9</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi-ooxml-schemas</artifactId>
-            <version>3.9</version>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>commons-fileupload</groupId>
             <artifactId>commons-fileupload</artifactId>

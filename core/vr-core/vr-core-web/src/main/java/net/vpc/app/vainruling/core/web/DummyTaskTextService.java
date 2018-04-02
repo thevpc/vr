@@ -6,7 +6,7 @@ import net.vpc.app.vainruling.core.service.content.TaskTextService;
 import java.util.Collections;
 import java.util.List;
 
-class DummyTaskTextService implements TaskTextService {
+public class DummyTaskTextService implements TaskTextService {
     @Override
     public int getActiveCount() {
         return 0;

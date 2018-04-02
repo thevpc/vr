@@ -8,14 +8,13 @@ package net.vpc.app.vainruling.plugins.academic.pbl.web;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppUser;
-import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.UPathItem;
-import net.vpc.app.vainruling.core.web.Vr;
+import net.vpc.app.vainruling.core.web.jsf.Vr;
 import net.vpc.app.vainruling.core.web.VrController;
-import net.vpc.app.vainruling.core.web.fs.files.DocumentsDialogCtrl;
+import net.vpc.app.vainruling.core.web.jsf.ctrl.dialog.DocumentsDialogCtrl;
 import net.vpc.app.vainruling.core.web.obj.DialogResult;
-import net.vpc.app.vainruling.core.web.util.VrWebHelper;
+import net.vpc.app.vainruling.core.web.jsf.VrJsf;
 import net.vpc.app.vainruling.plugins.academic.pbl.service.ApblPlugin;
 import net.vpc.app.vainruling.plugins.academic.pbl.service.dto.*;
 import net.vpc.app.vainruling.plugins.academic.pbl.service.model.*;
@@ -804,7 +803,7 @@ public class AcademicAppProjectsCtrl {
         try {
             ApblProject p = getModel().getSelectedProject();
             ApblSession s = p.getSession();
-            VFile file = VrWebHelper.handleFileUpload(event, "/Documents/Services/Ext/pbl/" + s.getId() + "-" + s.getName() + "/Projects/" + p.getId() + "-" + p.getName() + "/*", false, true);
+            VFile file = VrJsf.handleFileUpload(event, "/Documents/Services/Ext/pbl/" + s.getId() + "-" + s.getName() + "/Projects/" + p.getId() + "-" + p.getName() + "/*", false, true);
             if (file != null) {
                 getModel().setSelectedPathBeforeUpload(p.getSpecFilePath());
                 getModel().setSelectedPathUploaded(file.getPath());
@@ -821,7 +820,7 @@ public class AcademicAppProjectsCtrl {
         try {
             ApblTeam p = getModel().getSelectedTeam();
             ApblSession s = p.getSession();
-            VFile file = VrWebHelper.handleFileUpload(event, "/Documents/Services/Ext/pbl/" + s.getId() + "-" + s.getName() + "/Teams/" + p.getId() + "-" + p.getName() + "/*", false, true);
+            VFile file = VrJsf.handleFileUpload(event, "/Documents/Services/Ext/pbl/" + s.getId() + "-" + s.getName() + "/Teams/" + p.getId() + "-" + p.getName() + "/*", false, true);
             if (file != null) {
                 getModel().setSelectedPathBeforeUpload(p.getReport());
                 getModel().setSelectedPathUploaded(file.getPath());

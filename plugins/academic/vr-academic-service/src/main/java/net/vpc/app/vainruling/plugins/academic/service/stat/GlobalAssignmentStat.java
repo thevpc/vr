@@ -5,6 +5,7 @@
  */
 package net.vpc.app.vainruling.plugins.academic.service.stat;
 
+import java.util.Comparator;
 import net.vpc.app.vainruling.plugins.academic.service.util.AcademicCourseAssignmentIdConverter;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSemester;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacherSituation;
@@ -15,11 +16,32 @@ import net.vpc.common.util.MapList;
 
 import java.util.HashMap;
 import java.util.Map;
+import net.vpc.common.strings.StringUtils;
 
 /**
  * @author taha.bensalah@gmail.com
  */
 public class GlobalAssignmentStat {
+
+    public static final Comparator<GlobalAssignmentStat> NAME_COMPARATOR = new Comparator<GlobalAssignmentStat>() {
+
+        public String getStringValue(GlobalAssignmentStat o1) {
+            if (o1 == null) {
+                return "";
+            }
+            AcademicSemester p = o1.getSemester();
+            AcademicTeacherSituation s = o1.getSituation();
+            AcademicTeacherDegree d = o1.getDegree();
+            return StringUtils.trim(p == null ? null : p.getName())
+                    + ";" + StringUtils.trim(s == null ? null : s.getName())
+                    + ";" + StringUtils.trim(d == null ? null : d.getName());
+        }
+
+        @Override
+        public int compare(GlobalAssignmentStat o1, GlobalAssignmentStat o2) {
+            return getStringValue(o1).compareTo(getStringValue(o2));
+        }
+    };
 
     private AcademicTeacherSituation situation;
     private AcademicTeacherDegree degree;
@@ -111,7 +133,6 @@ public class GlobalAssignmentStat {
 //    public void setExtraWeek(LoadValue extraWeek) {
 //        this.extraWeek = extraWeek;
 //    }
-
     public LoadValue getValue() {
         return value;
     }
@@ -119,7 +140,6 @@ public class GlobalAssignmentStat {
 //    public void setValue(LoadValue value) {
 //        this.value = value;
 //    }
-
     public LoadValue getValueWeek() {
         return valueWeek;
     }
@@ -127,7 +147,6 @@ public class GlobalAssignmentStat {
 //    public void setValueWeek(LoadValue valueWeek) {
 //        this.valueWeek = valueWeek;
 //    }
-
     public double getWeeks() {
         return weeks;
     }
@@ -179,7 +198,6 @@ public class GlobalAssignmentStat {
 //    public void setAvgExtraWeek(LoadValue avgExtraWeek) {
 //        this.avgExtraWeek = avgExtraWeek;
 //    }
-
     public LoadValue getTargetEquiv() {
         return targetEquiv;
     }
@@ -188,9 +206,8 @@ public class GlobalAssignmentStat {
         this.targetEquiv = targetEquiv;
     }
 
-
-    public void addTeacherStat(TeacherBaseStat semLoad){
-        GlobalAssignmentStat y=this;
+    public void addTeacherStat(TeacherBaseStat semLoad) {
+        GlobalAssignmentStat y = this;
         y.getValue().add(semLoad.getValue());
         y.getExtra().add(semLoad.getExtra());
         y.getDue().add(semLoad.getDue());
@@ -214,10 +231,10 @@ public class GlobalAssignmentStat {
 
     @Override
     public String toString() {
-        return "GlobalAssignmentStat{" +
-                "situation=" + situation +
-                ", degree=" + degree +
-                ", semester=" + semester +
-                '}';
+        return "GlobalAssignmentStat{"
+                + "situation=" + situation
+                + ", degree=" + degree
+                + ", semester=" + semester
+                + '}';
     }
 }

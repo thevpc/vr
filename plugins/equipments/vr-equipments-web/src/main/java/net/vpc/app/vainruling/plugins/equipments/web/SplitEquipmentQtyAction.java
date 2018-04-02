@@ -9,9 +9,9 @@ import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.obj.EntityAction;
 import net.vpc.app.vainruling.core.web.obj.ActionDialog;
 import net.vpc.app.vainruling.core.web.obj.ActionDialogResult;
+import net.vpc.app.vainruling.core.web.obj.ActionDialogResultPostProcess;
 import net.vpc.app.vainruling.plugins.equipments.service.EquipmentPlugin;
 import net.vpc.app.vainruling.plugins.equipments.service.model.Equipment;
-import net.vpc.common.jsf.FacesUtils;
 import net.vpc.upa.*;
 
 import java.util.List;
@@ -43,9 +43,10 @@ public class SplitEquipmentQtyAction implements ActionDialog {
         EntityBuilder builder = entity.getBuilder();
         Equipment eq = (Equipment) builder.getObject(obj);
 
+        String message=null;
         if (equipmentPlugin.splitEquipmentQuantities(eq.getId()) > 0) {
-            FacesUtils.addInfoMessage("Separation réussie");
+            message = "Separation réussie";
         }
-        return ActionDialogResult.RELOAD_ALL;
+        return new ActionDialogResult(message, ActionDialogResultPostProcess.RELOAD_ALL);
     }
 }

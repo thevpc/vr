@@ -30,19 +30,21 @@ import org.primefaces.model.chart.PieChartModel;
 
 import javax.faces.model.SelectItem;
 import java.util.*;
+import org.springframework.stereotype.Controller;
 
 /**
  * @author taha.bensalah@gmail.com
  */
 @VrController(
         breadcrumb = {
-                @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
-//        css = "fa-table",
-//        title = "Stats Charge",
+            @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
+        //        css = "fa-table",
+        //        title = "Stats Charge",
         url = "modules/academic/global-stat",
         menu = "/Education/Load",
         securityKey = AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_GLOBAL_STAT
 )
+@Controller
 public class GlobalStatCtrl {
 
     private Model model = new Model();
@@ -79,7 +81,6 @@ public class GlobalStatCtrl {
 //
 //        getOthersCourseFilter().getModel().setRefreshFilterItems(refreshableFilters);
 //        getOthersCourseFilter().onChangePeriod();
-
         onRefresh();
     }
 
@@ -107,7 +108,7 @@ public class GlobalStatCtrl {
         CourseAssignmentFilter courseAssignmentFilter = getCourseFilter().getCourseAssignmentFilter();
         GlobalStat allTeachers = p.evalGlobalStat(periodId <= 0 ? -100 : periodId,
                 teacherFilter, courseAssignmentFilter,
-                deviationConfig,null);
+                deviationConfig, null);
         getModel().setStat(allTeachers);
         List<GlobalStatByDiscipline> globalStatByDisciplines = new ArrayList<>();
         globalStatByDisciplines.add(new GlobalStatByDiscipline(null, allTeachers));
@@ -118,7 +119,7 @@ public class GlobalStatCtrl {
                                     TeacherFilterFactory.custom().addAcceptedOfficialDisciplines(_discipline.getId()),
                                     teacherFilter
                             ), courseAssignmentFilter,
-                            deviationConfig,null)
+                            deviationConfig, null)
             ));
         }
         getModel().setGlobalStatByDisciplines(globalStatByDisciplines);
@@ -170,7 +171,6 @@ public class GlobalStatCtrl {
         pieModel4.setShowDataLabels(true);
         getModel().chart4 = pieModel4;
 
-
         PieChartModel pieModel5 = new PieChartModel();
         setValue(pieModel5, "Permanents", stat.getTeachersPermanentStat().getValue().getTp());
         setValue(pieModel5, "Contractuels", stat.getTeachersContractualStat().getValue().getTp());
@@ -191,15 +191,15 @@ public class GlobalStatCtrl {
             for (String officialDiscipline : officialDisciplines) {
                 double npv = stat.getNonPermanentLoadValueByOfficialDiscipline().getOrCreate(officialDiscipline).getValue().getEquiv();
                 double pv = stat.getPermanentLoadValueByOfficialDiscipline().getOrCreate(officialDiscipline).getValue().getEquiv();
-                double tot =
-                        stat.getTeachersPermanentStat().getValue().getEquiv()
-                                + stat.getTeachersContractualStat().getValue().getEquiv()
-                                + stat.getTeachersTemporaryStat().getValue().getEquiv()
-                                + stat.getTeachersOtherStat().getValue().getEquiv();
+                double tot
+                        = stat.getTeachersPermanentStat().getValue().getEquiv()
+                        + stat.getTeachersContractualStat().getValue().getEquiv()
+                        + stat.getTeachersTemporaryStat().getValue().getEquiv()
+                        + stat.getTeachersOtherStat().getValue().getEquiv();
                 double s = npv + pv;
-                if (npv != 0 && tot!=0) {
+                if (npv != 0 && tot != 0) {
                     String category = StringUtils.isEmpty(officialDiscipline) ? "Sans Discipline" : officialDiscipline;
-                    pie.set(category+" ("+VrUtils.dformat(npv/tot,"0.00%")+")",npv/tot);
+                    pie.set(category + " (" + VrUtils.dformat(npv / tot, "0.00%") + ")", npv / tot);
 //                    setValuePercent(pie, category, npv / s);
                 }
             }
@@ -274,7 +274,7 @@ public class GlobalStatCtrl {
             for (String officialDiscipline : officialDisciplines) {
                 double s = stat.getNonPermanentLoadValueByOfficialDiscipline().getOrCreate(officialDiscipline).getValue().getEquiv();
                 if (s != 0) {
-                    s=stat.getReferenceTeacherDueLoad()==0?0:s/stat.getReferenceTeacherDueLoad();
+                    s = stat.getReferenceTeacherDueLoad() == 0 ? 0 : s / stat.getReferenceTeacherDueLoad();
                     String category = StringUtils.isEmpty(officialDiscipline) ? "Sans Discipline" : officialDiscipline;
                     setValue(pie, category, s);
                 }
@@ -293,7 +293,7 @@ public class GlobalStatCtrl {
             for (String officialDiscipline : officialDisciplines) {
                 double s = stat.getNonPermanentLoadValueByNonOfficialDiscipline().getOrCreate(officialDiscipline).getValue().getEquiv();
                 if (s != 0) {
-                    s=stat.getReferenceTeacherDueLoad()==0?0:s/stat.getReferenceTeacherDueLoad();
+                    s = stat.getReferenceTeacherDueLoad() == 0 ? 0 : s / stat.getReferenceTeacherDueLoad();
                     String category = StringUtils.isEmpty(officialDiscipline) ? "Sans Discipline" : officialDiscipline;
                     setValue(pie, category, s);
                 }
@@ -306,8 +306,7 @@ public class GlobalStatCtrl {
 
         Set<String> nonOfficialDisciplines = new TreeSet<>(stat.getNonPermanentLoadValueByNonOfficialDiscipline().keySet());
         nonOfficialDisciplines.addAll(stat.getPermanentLoadValueByNonOfficialDiscipline().keySet());
-
-
+        onCalcFiltersChanged();
     }
 
     @OnPageLoad
@@ -317,8 +316,31 @@ public class GlobalStatCtrl {
         onChangePeriod();
     }
 
-    public void onFiltersChanged() {
+    public void onViewFiltersChanged() {
         //onRefresh();
+    }
+
+    public void onCalcFiltersChanged() {
+        if ("situation".equalsIgnoreCase(getModel().getDetailsType())) {
+            List<GlobalAssignmentStat> all = new ArrayList<>();
+            for (GlobalAssignmentStat assignment : getModel().getStat().getAssignments()) {
+                if (assignment.getSituation() != null && assignment.getDegree() == null) {
+                    all.add(assignment);
+                }
+            }
+            getModel().setDetails(all);
+        } else if ("degree".equalsIgnoreCase(getModel().getDetailsType())) {
+            List<GlobalAssignmentStat> all = new ArrayList<>();
+            for (GlobalAssignmentStat assignment : getModel().getStat().getAssignments()) {
+                if (assignment.getSituation() == null && assignment.getDegree() != null) {
+                    all.add(assignment);
+                }
+            }
+            getModel().setDetails(all);
+        } else {
+            getModel().setDetails(getModel().getStat().getAssignments());
+        }
+        Collections.sort(getModel().getStat().getAssignments(), GlobalAssignmentStat.NAME_COMPARATOR);
     }
 
     public void onRefreshFiltersChanged() {
@@ -387,10 +409,28 @@ public class GlobalStatCtrl {
         PieChartModel chart10;
         PieChartModel chart11;
         GlobalStat stat = new GlobalStat();
+        String detailsType;
+        List<GlobalAssignmentStat> details = new ArrayList<>();
         List<AcademicSemester> semesters = new ArrayList<>();
         List<GlobalStatByDiscipline> globalStatByDisciplines = new ArrayList<>();
         String[] defaultFilters = {"situation", "degree", "valueWeek", "extraWeek", "C", "TD", "TP", "PM"};
         String[] filters = defaultFilters;
+
+        public String getDetailsType() {
+            return detailsType;
+        }
+
+        public void setDetailsType(String detailsType) {
+            this.detailsType = detailsType;
+        }
+
+        public List<GlobalAssignmentStat> getDetails() {
+            return details;
+        }
+
+        public void setDetails(List<GlobalAssignmentStat> details) {
+            this.details = details;
+        }
 
         public GlobalStat getStat() {
             return stat;
@@ -444,7 +484,6 @@ public class GlobalStatCtrl {
             }
             return all;
         }
-
 
         public void setGlobalStatByDisciplines(List<GlobalStatByDiscipline> globalStatByDisciplines) {
             this.globalStatByDisciplines = globalStatByDisciplines;
@@ -524,6 +563,7 @@ public class GlobalStatCtrl {
     }
 
     public static class GlobalStatByDiscipline {
+
         private GlobalStat stat;
         private AcademicOfficialDiscipline discipline;
 

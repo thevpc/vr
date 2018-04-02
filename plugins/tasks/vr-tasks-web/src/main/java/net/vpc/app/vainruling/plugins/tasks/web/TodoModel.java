@@ -5,7 +5,7 @@
  */
 package net.vpc.app.vainruling.plugins.tasks.web;
 
-import net.vpc.app.vainruling.core.web.ctrl.AbstractObjectCtrl;
+import net.vpc.app.vainruling.core.web.jsf.ctrl.AbstractObjectCtrl;
 import net.vpc.app.vainruling.plugins.tasks.service.model.Todo;
 import net.vpc.app.vainruling.plugins.tasks.service.model.TodoCategory;
 import net.vpc.app.vainruling.plugins.tasks.service.model.TodoList;

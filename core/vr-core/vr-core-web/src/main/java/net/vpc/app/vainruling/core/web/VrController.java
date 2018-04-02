@@ -54,4 +54,11 @@ public @interface VrController {
      * @return priority value, le higher the more priority
      */
     int priority() default 0;
+
+    /**
+     * if this mentioned, whenever contract is called, this controller
+     * will be used as long as this one have a greater priority
+     * @return
+     */
+    String replacementFor() default "";
 }

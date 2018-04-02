@@ -10,11 +10,9 @@ import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.service.model.AppUser;
-import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.service.util.*;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.core.web.menu.VrMenuManager;
-import net.vpc.app.vainruling.core.web.obj.ObjCtrl;
+import net.vpc.app.vainruling.core.web.obj.ObjConfig;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPluginSecurity;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
@@ -28,7 +26,7 @@ import net.vpc.common.util.Chronometer;
 
 import javax.faces.model.SelectItem;
 import java.util.*;
-import net.vpc.app.vainruling.core.web.Vr;
+import net.vpc.app.vainruling.core.web.jsf.Vr;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -104,7 +102,7 @@ public abstract class AbstractCourseLoadCtrl {
 
     public String gotoCourseAssignment(AcademicCourseAssignment a) {
         if (a != null) {
-            ObjCtrl.Config c = new ObjCtrl.Config();
+            ObjConfig c = new ObjConfig();
             c.entity = "AcademicCourseAssignment";
             c.id = String.valueOf(a.getId());
             return Vr.get().gotoPage("obj", VrUtils.formatJSONObject(c));

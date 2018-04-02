@@ -44,7 +44,7 @@
 
     <filter>
         <filter-name>TokenFilter</filter-name>
-        <filter-class>net.vpc.app.vainruling.core.web.ws.TokenManagerFilter</filter-class>
+        <filter-class>net.vpc.app.vainruling.core.web.srv.TokenManagerFilter</filter-class>
     </filter>
     <filter-mapping>
         <filter-name>TokenFilter</filter-name>
@@ -108,7 +108,7 @@
 
     <filter>
         <filter-name>security</filter-name>
-        <filter-class>net.vpc.app.vainruling.core.web.ctrl.VrWebSecurityFilter</filter-class>
+        <filter-class>net.vpc.app.vainruling.core.web.srv.VrWebSecurityFilter</filter-class>
     </filter>
     <filter-mapping>
         <filter-name>security</filter-name>

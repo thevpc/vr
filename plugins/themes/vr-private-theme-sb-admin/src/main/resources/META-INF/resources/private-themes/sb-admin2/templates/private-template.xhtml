@@ -10,7 +10,7 @@ and open the template in the editor.
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:p="http://primefaces.org/ui"
       >
-    <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.Vr"-->
+<!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.jsf.Vr"-->
     <!--@elvariable id="corePlugin" type="net.vpc.app.vainruling.core.service.CorePlugin"-->
 
     <h:head>
@@ -24,8 +24,8 @@ and open the template in the editor.
         <title>#{vr.getAppProperty('System.App.Title.Minor.Main')} #{vr.getAppProperty('System.App.Title.Minor.Secondary')}</title>
 
         <!-- Bootstrap Core CSS -->
-        <link rel="stylesheet"
-              href="#{vr.privateThemeContext}/wplugins/sb-admin2/bower_components/bootstrap/css/bootstrap.min.css"/>
+        <!--<link rel="stylesheet" href="# {vr.privateThemeContext}/wplugins/sb-admin2/bower_components/bootstrap/css/bootstrap.min.css"/>-->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"/>
 
         <!-- MetisMenu CSS -->
         <link rel="stylesheet"
@@ -358,7 +358,8 @@ and open the template in the editor.
         <!-- /#wrapper -->
 
         <!-- Bootstrap Core JavaScript -->
-        <script src="#{vr.privateThemeContext}/wplugins/sb-admin2/bower_components/bootstrap/js/bootstrap.min.js"></script>
+        <!--<script src="#{vr.privateThemeContext}/wplugins/sb-admin2/bower_components/bootstrap/js/bootstrap.min.js"></script>-->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 
         <!-- Metis Menu Plugin JavaScript -->
         <script src="#{vr.privateThemeContext}/wplugins/sb-admin2/bower_components/metisMenu/js/metisMenu.min.js"></script>

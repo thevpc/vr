@@ -11,7 +11,6 @@ import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicTeacherDegree;
-import net.vpc.upa.AccessLevel;
 import net.vpc.upa.FormulaType;
 import net.vpc.upa.ProtectionLevel;
 import net.vpc.upa.UserFieldModifier;

@@ -2,7 +2,6 @@ package net.vpc.app.vainruling.core.web.util;
 
 import net.vpc.app.vainruling.core.service.security.UserSessionConfigurator;
 import net.vpc.app.vainruling.core.service.security.UserToken;
-import net.vpc.app.vainruling.core.web.Vr;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
@@ -35,11 +34,11 @@ public class WebUserSessionConfigurator implements UserSessionConfigurator {
     public void postConfigure(UserToken token) {
 //        UserToken token=s==null?null:s.getToken();
         if (token != null && token.getUserLogin() != null) {
-            token.setPublicTheme(Vr.get().getUserPublicTheme(token.getUserLogin()).getId());
-            token.setPrivateTheme(Vr.get().getUserPrivateTheme(token.getUserLogin()).getId());
+            token.setPublicTheme(VrWebHelper.getUserPublicTheme(token.getUserLogin()).getId());
+            token.setPrivateTheme(VrWebHelper.getUserPrivateTheme(token.getUserLogin()).getId());
         } else {
-            token.setPublicTheme(Vr.get().getAppPublicTheme().getId());
-            token.setPrivateTheme(Vr.get().getAppPrivateTheme().getId());
+            token.setPublicTheme(VrWebHelper.getAppPublicTheme().getId());
+            token.setPrivateTheme(VrWebHelper.getAppPrivateTheme().getId());
         }
     }
 }

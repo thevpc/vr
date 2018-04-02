@@ -11,12 +11,11 @@ import net.vpc.app.vainruling.core.service.model.*;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.UPathItem;
-import net.vpc.app.vainruling.core.web.util.VrWebHelper;
+import net.vpc.app.vainruling.core.web.jsf.VrJsf;
 import net.vpc.app.vainruling.plugins.calendars.service.CalendarsPlugin;
 import net.vpc.app.vainruling.plugins.calendars.service.CalendarsPluginSecurity;
 import net.vpc.app.vainruling.plugins.calendars.service.model.CalendarWeek;
 import net.vpc.app.vainruling.plugins.calendars.service.model.CalendarDay;
-import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.Convert;
 import net.vpc.common.util.IntegerParserConfig;
@@ -77,7 +76,7 @@ public class UserCalendarsCtrl extends AbstractPlanningCtrl {
                 return StringUtils.nonNull((o1==null?"":o1.resolveFullTitle())).compareTo(StringUtils.nonNull((o2==null?"":o2.resolveFullTitle())));
             }
         });
-        getModel().setUsers(VrWebHelper.toSelectItemList(users));
+        getModel().setUsers(VrJsf.toSelectItemList(users));
         for (AppUser user : users) {
             if (oldSelectedUser == user.getId()) {
                 oldSelectedUserFound = true;
@@ -124,8 +123,8 @@ public class UserCalendarsCtrl extends AbstractPlanningCtrl {
     @OnPageLoad
     public void onRefresh(String cmd) {
         getModel().setUserTypeId(null);
-        getModel().setUserTypes(VrWebHelper.toSelectItemList(core.findUserTypes()));
-        getModel().setDepartments(VrWebHelper.toSelectItemList(core.findDepartments()));
+        getModel().setUserTypes(VrJsf.toSelectItemList(core.findUserTypes()));
+        getModel().setDepartments(VrJsf.toSelectItemList(core.findDepartments()));
 
         onChangeUserType();
     }

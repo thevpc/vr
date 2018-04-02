@@ -7,9 +7,8 @@ package net.vpc.app.vainruling.plugins.academic.web.internship.actions;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.web.obj.PropertyView;
-import net.vpc.app.vainruling.core.web.obj.PropertyViewManager;
-import net.vpc.app.vainruling.core.web.obj.defaultimpl.FieldPropertyView;
+import net.vpc.app.vainruling.core.web.jsf.ctrl.obj.PropertyViewManager;
+import net.vpc.app.vainruling.core.web.jsf.ctrl.obj.FieldPropertyView;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.internship.config.AcademicInternshipStatus;
 import net.vpc.app.vainruling.plugins.academic.service.model.internship.config.AcademicInternshipVariant;

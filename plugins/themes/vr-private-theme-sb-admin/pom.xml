@@ -5,7 +5,7 @@
     <groupId>net.vpc.app.vain-ruling.plugins.themes</groupId>
     <artifactId>vr-private-theme-sb-admin</artifactId>
     <name>net.vpc.app.vain-ruling.plugins.themes.vr-private-theme-sb-admin</name>
-    <version>1.13.3</version>
+    <version>1.13.4</version>
     <packaging>jar</packaging>
     <url>https://github.com/thevpc/vr/wiki</url>
 
@@ -20,14 +20,14 @@
         <vr-plugin.component-type>web</vr-plugin.component-type>
         <vr-plugin.name>SB Admin Theme</vr-plugin.name>
         <vr-plugin.description>Infusion Theme Plugin (2015)</vr-plugin.description>
-        <version.vr-core-web>1.13.3</version.vr-core-web>
+        <version.vr-core-web-jsf>1.13.4</version.vr-core-web-jsf>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>net.vpc.app.vain-ruling.core</groupId>
-            <artifactId>vr-core-web</artifactId>
-            <version>${version.vr-core-web}</version>
+            <artifactId>vr-core-web-jsf</artifactId>
+            <version>${version.vr-core-web-jsf}</version>
         </dependency>
     </dependencies>
 

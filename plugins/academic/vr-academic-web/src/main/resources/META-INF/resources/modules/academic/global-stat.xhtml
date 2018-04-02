@@ -11,516 +11,375 @@ and open the template in the editor.
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://java.sun.com/jsf/core"
 
->
+      >
 
-<h:head>
-</h:head>
+    <h:head>
+    </h:head>
 
-<h:body>
+    <h:body>
 
-    <!--@elvariable id="globalStatCtrl" type="net.vpc.app.vainruling.plugins.academic.web.load.GlobalStatCtrl"-->
-    <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.Vr"-->
+        <!--@elvariable id="globalStatCtrl" type="net.vpc.app.vainruling.plugins.academic.web.load.GlobalStatCtrl"-->
+        <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.jsf.Vr"-->
 
-    <ui:composition template="#{vr.privateTemplatePath}">
-        <ui:define name="content">
-            <h:form id="buttonsForm">
+        <ui:composition template="#{vr.privateTemplatePath}">
+            <ui:define name="content">
+                <h:form id="buttonsForm">
 
-                <!-- /.row -->
-                <div >
-                    <p:outputLabel id="buttons">
-                        <p:commandButton value="Rafr." icon="a-refresh" style="height: 40px;"
-                                         styleClass="ui-ribbon-bigbutton " ajax="true"
-                                         actionListener="#{globalStatCtrl.onRefresh}" update=":listForm"/>
-                    </p:outputLabel>
-                </div>
-                <p:fieldset legend="Filtres" toggleable="true" toggleSpeed="500">
-                    <div>
-                        <p:outputLabel value="Période" styleClass="vr-form-field vr-form-fixed-width-medium"/>
-                        <p:selectOneMenu styleClass="vr-form-field"
-                                         value="#{globalStatCtrl.teacherFilter.model.selectedPeriod}">
-                            <p:ajax listener="#{globalStatCtrl.onChangePeriod}" update=":buttonsForm :listForm"/>
-                            <f:selectItem itemLabel="Selectionner Période..." itemValue=""/>
-                            <f:selectItems value="#{globalStatCtrl.teacherFilter.model.periodItems}"/>
-                        </p:selectOneMenu>
+                    <!-- /.row -->
+                    <div >
+                        <p:outputLabel id="buttons">
+                            <p:commandButton value="Rafr." icon="a-refresh" style="height: 40px;"
+                                             styleClass="ui-ribbon-bigbutton " ajax="true"
+                                             actionListener="#{globalStatCtrl.onRefresh}" update=":listForm"/>
+                        </p:outputLabel>
                     </div>
-                    <div>
-                        <p:outputLabel value="Enseignant" styleClass="vr-form-field vr-form-fixed-width-medium"/>
-                        <p:selectCheckboxMenu styleClass="vr-form-field"
-                                              value="#{globalStatCtrl.teacherFilter.model.selectedDepartments}"
-                                              label="Departements"
-                                              filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
-                            <p:ajax listener="#{globalStatCtrl.onRefreshFiltersChanged}" update=":listForm"/>
-                            <f:selectItems value="#{globalStatCtrl.teacherFilter.model.departmentItems}"/>
-                        </p:selectCheckboxMenu>
+                    <p:fieldset legend="Filtres" toggleable="true" toggleSpeed="500">
+                        <div>
+                            <p:outputLabel value="Période" styleClass="vr-form-field vr-form-fixed-width-medium"/>
+                            <p:selectOneMenu styleClass="vr-form-field"
+                                             value="#{globalStatCtrl.teacherFilter.model.selectedPeriod}">
+                                <p:ajax listener="#{globalStatCtrl.onChangePeriod}" update=":buttonsForm :listForm"/>
+                                <f:selectItem itemLabel="Selectionner Période..." itemValue=""/>
+                                <f:selectItems value="#{globalStatCtrl.teacherFilter.model.periodItems}"/>
+                            </p:selectOneMenu>
+                        </div>
+                        <div>
+                            <p:outputLabel value="Enseignant" styleClass="vr-form-field vr-form-fixed-width-medium"/>
+                            <p:selectCheckboxMenu styleClass="vr-form-field"
+                                                  value="#{globalStatCtrl.teacherFilter.model.selectedDepartments}"
+                                                  label="Departements"
+                                                  filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
+                                <p:ajax listener="#{globalStatCtrl.onRefreshFiltersChanged}" update=":listForm"/>
+                                <f:selectItems value="#{globalStatCtrl.teacherFilter.model.departmentItems}"/>
+                            </p:selectCheckboxMenu>
 
-                        <p:selectCheckboxMenu styleClass="vr-form-field"
-                                              value="#{globalStatCtrl.teacherFilter.model.selectedDegrees}"
-                                              label="Grades"
-                                              filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
-                            <p:ajax listener="#{globalStatCtrl.onRefreshFiltersChanged}" update=":listForm"/>
-                            <f:selectItems value="#{globalStatCtrl.teacherFilter.model.degreeItems}"/>
-                        </p:selectCheckboxMenu>
-                        <p:selectCheckboxMenu styleClass="vr-form-field"
-                                              value="#{globalStatCtrl.teacherFilter.model.selectedSituations}"
-                                              label="Situations"
-                                              filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
-                            <p:ajax listener="#{globalStatCtrl.onRefreshFiltersChanged}" update=":listForm"/>
-                            <f:selectItems value="#{globalStatCtrl.teacherFilter.model.situationItems}"/>
-                        </p:selectCheckboxMenu>
-                        <p:selectCheckboxMenu styleClass="vr-form-field"
-                                              value="#{globalStatCtrl.teacherFilter.model.selectedTeacherDisciplines}"
-                                              label="Disciplines"
-                                              filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
-                            <p:ajax listener="#{globalStatCtrl.onRefreshFiltersChanged}" update=":listForm"/>
-                            <f:selectItems value="#{globalStatCtrl.teacherFilter.model.teacherDisciplineItems}"/>
-                        </p:selectCheckboxMenu>
-                    </div>
-                    <div>
-                        <p:outputLabel value="Modules"
-                                       styleClass="vr-form-field vr-form-fixed-width-medium vr-form-indented-child"/>
-                        <div class="vr-form-sub-rows">
-                            <div class="vr-form-sub-row">
-                                <p:selectCheckboxMenu styleClass="vr-form-field"
-                                                      value="#{globalStatCtrl.courseFilter.model.selectedSemesters}"
-                                                      label="Semestres"
-                                                      filter="true" filterMatchMode="startsWith"
-                                                      panelStyle="width:250px">
-                                    <p:ajax listener="#{globalStatCtrl.onRefreshFiltersChanged}" update=":listForm"/>
-                                    <f:selectItems value="#{globalStatCtrl.courseFilter.model.semesterItems}"/>
-                                </p:selectCheckboxMenu>
-                                <p:selectCheckboxMenu styleClass="vr-form-field"
-                                                      value="#{globalStatCtrl.courseFilter.model.selectedCourseTypes}"
-                                                      label="Types Modules"
-                                                      filter="true" filterMatchMode="startsWith"
-                                                      panelStyle="width:250px">
-                                    <p:ajax listener="#{globalStatCtrl.onRefreshFiltersChanged}" update=":listForm"/>
-                                    <f:selectItems value="#{globalStatCtrl.courseFilter.model.courseTypeItems}"/>
-                                </p:selectCheckboxMenu>
-                                <p:selectCheckboxMenu styleClass="vr-form-field"
-                                                      value="#{globalStatCtrl.courseFilter.model.selectedClasses}"
-                                                      label="Classes"
-                                                      filter="true" filterMatchMode="startsWith"
-                                                      panelStyle="width:250px">
-                                    <p:ajax listener="#{globalStatCtrl.onRefreshFiltersChanged}" update=":listForm"/>
-                                    <f:selectItems value="#{globalStatCtrl.courseFilter.model.classItems}"/>
-                                </p:selectCheckboxMenu>
-                            </div>
-                            <div class="vr-form-sub-row">
-                                <p:selectCheckboxMenu
+                            <p:selectCheckboxMenu styleClass="vr-form-field"
+                                                  value="#{globalStatCtrl.teacherFilter.model.selectedDegrees}"
+                                                  label="Grades"
+                                                  filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
+                                <p:ajax listener="#{globalStatCtrl.onRefreshFiltersChanged}" update=":listForm"/>
+                                <f:selectItems value="#{globalStatCtrl.teacherFilter.model.degreeItems}"/>
+                            </p:selectCheckboxMenu>
+                            <p:selectCheckboxMenu styleClass="vr-form-field"
+                                                  value="#{globalStatCtrl.teacherFilter.model.selectedSituations}"
+                                                  label="Situations"
+                                                  filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
+                                <p:ajax listener="#{globalStatCtrl.onRefreshFiltersChanged}" update=":listForm"/>
+                                <f:selectItems value="#{globalStatCtrl.teacherFilter.model.situationItems}"/>
+                            </p:selectCheckboxMenu>
+                            <p:selectCheckboxMenu styleClass="vr-form-field"
+                                                  value="#{globalStatCtrl.teacherFilter.model.selectedTeacherDisciplines}"
+                                                  label="Disciplines"
+                                                  filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
+                                <p:ajax listener="#{globalStatCtrl.onRefreshFiltersChanged}" update=":listForm"/>
+                                <f:selectItems value="#{globalStatCtrl.teacherFilter.model.teacherDisciplineItems}"/>
+                            </p:selectCheckboxMenu>
+                        </div>
+                        <div>
+                            <p:outputLabel value="Modules"
+                                           styleClass="vr-form-field vr-form-fixed-width-medium vr-form-indented-child"/>
+                            <div class="vr-form-sub-rows">
+                                <div class="vr-form-sub-row">
+                                    <p:selectCheckboxMenu styleClass="vr-form-field"
+                                                          value="#{globalStatCtrl.courseFilter.model.selectedSemesters}"
+                                                          label="Semestres"
+                                                          filter="true" filterMatchMode="startsWith"
+                                                          panelStyle="width:250px">
+                                        <p:ajax listener="#{globalStatCtrl.onRefreshFiltersChanged}" update=":listForm"/>
+                                        <f:selectItems value="#{globalStatCtrl.courseFilter.model.semesterItems}"/>
+                                    </p:selectCheckboxMenu>
+                                    <p:selectCheckboxMenu styleClass="vr-form-field"
+                                                          value="#{globalStatCtrl.courseFilter.model.selectedCourseTypes}"
+                                                          label="Types Modules"
+                                                          filter="true" filterMatchMode="startsWith"
+                                                          panelStyle="width:250px">
+                                        <p:ajax listener="#{globalStatCtrl.onRefreshFiltersChanged}" update=":listForm"/>
+                                        <f:selectItems value="#{globalStatCtrl.courseFilter.model.courseTypeItems}"/>
+                                    </p:selectCheckboxMenu>
+                                    <p:selectCheckboxMenu styleClass="vr-form-field"
+                                                          value="#{globalStatCtrl.courseFilter.model.selectedClasses}"
+                                                          label="Classes"
+                                                          filter="true" filterMatchMode="startsWith"
+                                                          panelStyle="width:250px">
+                                        <p:ajax listener="#{globalStatCtrl.onRefreshFiltersChanged}" update=":listForm"/>
+                                        <f:selectItems value="#{globalStatCtrl.courseFilter.model.classItems}"/>
+                                    </p:selectCheckboxMenu>
+                                </div>
+                                <div class="vr-form-sub-row">
+                                    <p:selectCheckboxMenu
                                         styleClass="vr-form-field #{globalStatCtrl.courseFilter.model.selectedDepartments.isEmpty() ?'':'vr-form-selected-many-selected'}"
                                         value="#{globalStatCtrl.courseFilter.model.selectedDepartments}"
                                         label="Modules du Departement"
                                         filter="true" filterMatchMode="startsWith"
                                         panelStyle="width:250px">
-                                    <p:ajax listener="#{globalStatCtrl.onRefreshFiltersChanged}"
-                                            update=":listForm :buttonsForm"/>
-                                    <f:selectItems
+                                        <p:ajax listener="#{globalStatCtrl.onRefreshFiltersChanged}"
+                                                update=":listForm :buttonsForm"/>
+                                        <f:selectItems
                                             value="#{globalStatCtrl.courseFilter.model.departmentItems}"/>
-                                </p:selectCheckboxMenu>
-                                <p:selectCheckboxMenu
+                                    </p:selectCheckboxMenu>
+                                    <p:selectCheckboxMenu
                                         styleClass="vr-form-field #{globalStatCtrl.courseFilter.model.selectedOwnerDepartments.isEmpty() ?'':'vr-form-selected-many-selected'}"
                                         value="#{globalStatCtrl.courseFilter.model.selectedOwnerDepartments}"
                                         label="Modules Gérés par..."
                                         filter="true" filterMatchMode="startsWith"
                                         panelStyle="width:250px">
-                                    <p:ajax listener="#{globalStatCtrl.onRefreshFiltersChanged}"
-                                            update=":listForm :buttonsForm"/>
-                                    <f:selectItems
-                                            value="#{globalStatCtrl.courseFilter.model.departmentItems}"/>
-                                </p:selectCheckboxMenu>
-                                <p:selectCheckboxMenu styleClass="vr-form-field"
-                                                      value="#{globalStatCtrl.courseFilter.model.selectedProgramTypes}"
-                                                      label="Type Formation"
-                                                      filter="true" filterMatchMode="startsWith"
-                                                      panelStyle="width:250px">
-                                    <p:ajax listener="#{globalStatCtrl.onRefreshFiltersChanged}" update=":listForm"/>
-                                    <f:selectItems value="#{globalStatCtrl.courseFilter.model.programTypeItems}"/>
-                                </p:selectCheckboxMenu>
-                                <p:selectCheckboxMenu styleClass="vr-form-field"
-                                                      value="#{globalStatCtrl.courseFilter.model.selectedLabels}"
-                                                      label="Label"
-                                                      filter="true" filterMatchMode="startsWith"
-                                                      panelStyle="width:250px">
-                                    <p:ajax listener="#{globalStatCtrl.onRefreshFiltersChanged}" update=":listForm"/>
-                                    <f:selectItems value="#{globalStatCtrl.courseFilter.model.labelItems}"/>
-                                </p:selectCheckboxMenu>
-                                <p:selectCheckboxMenu styleClass="vr-form-field"
-                                                      value="#{globalStatCtrl.courseFilter.model.selectedDeviationGroups}"
-                                                      label="Groupe Balance"
-                                                      filter="true" filterMatchMode="startsWith"
-                                                      panelStyle="width:250px">
-                                    <p:ajax listener="#{globalStatCtrl.onRefreshFiltersChanged}" update=":listForm"/>
-                                    <f:selectItems value="#{globalStatCtrl.courseFilter.model.deviationGroupItems}"/>
-                                </p:selectCheckboxMenu>
-                            </div>
-                            <div>
-                                <div class="table-responsive">
-                                    <p:selectManyCheckbox value="#{globalStatCtrl.courseFilter.model.refreshFilterSelected}"
-                                                          layout="grid"
-                                                          columns="5">
                                         <p:ajax listener="#{globalStatCtrl.onRefreshFiltersChanged}"
-                                                update=":listForm"/>
-                                        <f:selectItems value="#{globalStatCtrl.courseFilter.model.refreshFilterItems}"/>
-                                    </p:selectManyCheckbox>
+                                                update=":listForm :buttonsForm"/>
+                                        <f:selectItems
+                                            value="#{globalStatCtrl.courseFilter.model.departmentItems}"/>
+                                    </p:selectCheckboxMenu>
+                                    <p:selectCheckboxMenu styleClass="vr-form-field"
+                                                          value="#{globalStatCtrl.courseFilter.model.selectedProgramTypes}"
+                                                          label="Type Formation"
+                                                          filter="true" filterMatchMode="startsWith"
+                                                          panelStyle="width:250px">
+                                        <p:ajax listener="#{globalStatCtrl.onRefreshFiltersChanged}" update=":listForm"/>
+                                        <f:selectItems value="#{globalStatCtrl.courseFilter.model.programTypeItems}"/>
+                                    </p:selectCheckboxMenu>
+                                    <p:selectCheckboxMenu styleClass="vr-form-field"
+                                                          value="#{globalStatCtrl.courseFilter.model.selectedLabels}"
+                                                          label="Label"
+                                                          filter="true" filterMatchMode="startsWith"
+                                                          panelStyle="width:250px">
+                                        <p:ajax listener="#{globalStatCtrl.onRefreshFiltersChanged}" update=":listForm"/>
+                                        <f:selectItems value="#{globalStatCtrl.courseFilter.model.labelItems}"/>
+                                    </p:selectCheckboxMenu>
+                                    <p:selectCheckboxMenu styleClass="vr-form-field"
+                                                          value="#{globalStatCtrl.courseFilter.model.selectedDeviationGroups}"
+                                                          label="Groupe Balance"
+                                                          filter="true" filterMatchMode="startsWith"
+                                                          panelStyle="width:250px">
+                                        <p:ajax listener="#{globalStatCtrl.onRefreshFiltersChanged}" update=":listForm"/>
+                                        <f:selectItems value="#{globalStatCtrl.courseFilter.model.deviationGroupItems}"/>
+                                    </p:selectCheckboxMenu>
+                                </div>
+                                <div>
+                                    <div class="table-responsive">
+                                        <p:selectManyCheckbox value="#{globalStatCtrl.courseFilter.model.refreshFilterSelected}"
+                                                              layout="grid"
+                                                              columns="5">
+                                            <p:ajax listener="#{globalStatCtrl.onRefreshFiltersChanged}"
+                                                    update=":listForm"/>
+                                            <f:selectItems value="#{globalStatCtrl.courseFilter.model.refreshFilterItems}"/>
+                                        </p:selectManyCheckbox>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </p:fieldset>
+                    </p:fieldset>
 
-            </h:form>
-            <h:form id="listForm">
-                <p:tabView>
-                    <p:tab title="Enseignants">
-                        <div >
-                            <div class="table-responsive">
-                                <p:column styleClass="ui-widget-header_" colspan="6"><h1><p:outputLabel
-                                        value="Enseignants par Disciplines"/></h1></p:column>
-                                <p:dataTable id="tbl1" value="#{globalStatCtrl.globalStatByDisciplines}"
-                                             var="item"
-                                             paginatorAlwaysVisible="false"
-                                             paginator="true"
-                                             paginatorPosition="bottom"
-                                             rows="10"
-                                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
-                                             rowsPerPageTemplate="10,20,50,100,200,1000"
-                                             emptyMessage=""
-                                >
-                                    <f:facet name="{Exporters}">
-                                        <h:commandLink>
-                                            <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-xls16.png"
-                                                            width="16"/>
-                                            <p:dataExporter type="xls" target="tbl1"
-                                                            fileName="#{corePlugin.getPreferredFileName('teaches-count-a')}" postProcessor="#{vr.postProcessDataExporterXLS}"/>
-                                        </h:commandLink>
-
-                                        <h:commandLink>
-                                            <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-pdf16.png"
-                                                            width="16"/>
-                                            <p:dataExporter type="pdf" target="tbl1"
-                                                            fileName="#{corePlugin.getPreferredFileName('teaches-count-a')}"/>
-                                        </h:commandLink>
-
-                                        <h:commandLink>
-                                            <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-csv16.png"
-                                                            width="16"/>
-                                            <p:dataExporter type="csv" target="tbl1"
-                                                            fileName="#{corePlugin.getPreferredFileName('teaches-count-a')}"/>
-                                        </h:commandLink>
-
-                                        <h:commandLink>
-                                            <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-xml16.png"
-                                                            width="16"/>
-                                            <p:dataExporter type="xml" target="tbl1"
-                                                            fileName="#{corePlugin.getPreferredFileName('teaches-count-a')}"/>
-                                        </h:commandLink>
-                                    </f:facet>
-                                    <p:column headerText="Discipline">
-                                        <p:outputLabel value="#{item.discipline.name}"/>
-                                    </p:column>
-                                    <p:column headerText="Total Enseignants">
-                                        <p:outputLabel
-                                                value="#{vr.valOrPercentString(globalStatCtrl.percent,item.stat.teachersCount,globalStatCtrl.model.stat.teachersCount)}"/>
-                                    </p:column>
-                                    <p:column headerText="Congés">
-                                        <p:outputLabel
-                                                value="#{vr.valOrPercentString(globalStatCtrl.percent,item.stat.teachersLeaveStat.teachersCount,globalStatCtrl.model.stat.teachersCount)}"/>
-                                    </p:column>
-                                    <p:column headerText="Permanents">
-                                        <p:outputLabel
-                                                value="#{vr.valOrPercentString(globalStatCtrl.percent,item.stat.teachersPermanentStat.teachersCount,globalStatCtrl.model.stat.teachersCount)}"/>
-                                    </p:column>
-                                    <p:column headerText="Contractuel">
-                                        <p:outputLabel
-                                                value="#{vr.valOrPercentString(globalStatCtrl.percent,item.stat.teachersContractualStat.teachersCount,globalStatCtrl.model.stat.teachersCount)}"/>
-                                    </p:column>
-                                    <p:column headerText="Vacataires">
-                                        <p:outputLabel
-                                                value="#{vr.valOrPercentString(globalStatCtrl.percent,item.stat.teachersTemporaryStat.teachersCount,globalStatCtrl.model.stat.teachersCount)}"/>
-                                    </p:column>
-                                </p:dataTable>
-                            </div>
-                        </div>
-                        <div >
-                            <div class="table-responsive">
-                                <p:column styleClass="ui-widget-header_" colspan="6"><h1><p:outputLabel
-                                        value="Enseignants par Disciplines et Situation"/></h1></p:column>
-                                <p:dataTable id="tbl2" value="#{globalStatCtrl.globalStatByDisciplines}"
-                                             var="item"
-                                             paginatorAlwaysVisible="false"
-                                             paginator="true"
-                                             paginatorPosition="bottom"
-                                             rows="10"
-                                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
-                                             rowsPerPageTemplate="10,20,50,100,200,1000"
-                                             emptyMessage=""
-                                >
-                                    <f:facet name="{Exporters}">
-                                        <h:commandLink>
-                                            <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-xls16.png"
-                                                            width="16"/>
-                                            <p:dataExporter type="xls" target="tbl2"
-                                                            fileName="#{corePlugin.getPreferredFileName('teaches-count-b')" postProcessor="#{vr.postProcessDataExporterXLS}"/>
-                                        </h:commandLink>
-
-                                        <h:commandLink>
-                                            <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-pdf16.png"
-                                                            width="16"/>
-                                            <p:dataExporter type="pdf" target="tbl2"
-                                                            fileName="#{corePlugin.getPreferredFileName('teaches-count-b')"/>
-                                        </h:commandLink>
-
-                                        <h:commandLink>
-                                            <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-csv16.png"
-                                                            width="16"/>
-                                            <p:dataExporter type="csv" target="tbl2"
-                                                            fileName="#{corePlugin.getPreferredFileName('teaches-count-b')"/>
-                                        </h:commandLink>
-
-                                        <h:commandLink>
-                                            <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-xml16.png"
-                                                            width="16"/>
-                                            <p:dataExporter type="xml" target="tbl2"
-                                                            fileName="#{corePlugin.getPreferredFileName('teaches-count-b')"/>
-                                        </h:commandLink>
-                                    </f:facet>
-
-                                    <p:column headerText="Discipline">
-                                        <p:outputLabel value="#{item.discipline.name}"/>
-                                    </p:column>
-                                    <p:columns value="#{globalStatCtrl.globalStatSituations}" var="sit"
-                                               headerText="#{sit.name}">
-                                        <p:outputLabel
-                                                value="#{vr.valOrPercentString(globalStatCtrl.percent,item.stat.getAssignment(null,sit,null).teachersCount,globalStatCtrl.model.stat.teachersCount)}"/>
-                                    </p:columns>
-                                </p:dataTable>
-                            </div>
-                        </div>
-                        <div >
-                            <div class="table-responsive">
-                                <p:row>
+                </h:form>
+                <h:form id="listForm">
+                    <p:tabView>
+                        <p:tab title="Enseignants">
+                            <div >
+                                <div class="table-responsive">
                                     <p:column styleClass="ui-widget-header_" colspan="6"><h1><p:outputLabel
-                                            value="Estimations"/></h1></p:column>
-                                </p:row>
-                                <p:panelGrid>
-                                    <p:row>
+                                                value="Enseignants par Disciplines"/></h1></p:column>
+                                    <p:dataTable id="tbl1" value="#{globalStatCtrl.globalStatByDisciplines}"
+                                                 var="item"
+                                                 paginatorAlwaysVisible="true"
+                                                 paginator="true"
+                                                 paginatorPosition="bottom"
+                                                 rows="10"
+                                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+                                                 rowsPerPageTemplate="10,20,50,100,200,1000"
+                                                 emptyMessage=""
+                                                 >
+                                        <f:facet name="footer">
+                                            <p:outputLabel value="Total #{globalStatCtrl.globalStatByDisciplines.size()}"/>
+                                            <div style="float: right;">
+                                                <h:commandLink>
+                                                    <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-xls16.png"
+                                                                    width="16"/>
+                                                    <p:dataExporter type="xls" target="tbl1"
+                                                                    fileName="#{corePlugin.getPreferredFileName('teaches-count-a')}" postProcessor="#{vr.postProcessDataExporterXLS}"/>
+                                                </h:commandLink>
 
-                                        <p:column styleClass="ui-widget-header"><p:outputLabel style="font-weight: bold"
-                                                                                               value="Enseignants Permanents"/></p:column>
-                                        <p:column><p:outputLabel value="#{globalStatCtrl.model.stat.teachersPermanentStat.teachersCount}">
-                                            <f:convertNumber type="number" groupingUsed="true" minFractionDigits="2" pattern="#0"/>
-                                        </p:outputLabel></p:column>
+                                                <h:commandLink>
+                                                    <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-pdf16.png"
+                                                                    width="16"/>
+                                                    <p:dataExporter type="pdf" target="tbl1"
+                                                                    fileName="#{corePlugin.getPreferredFileName('teaches-count-a')}"/>
+                                                </h:commandLink>
 
-                                        <p:column styleClass="ui-widget-header"><p:outputLabel style="font-weight: bold"
-                                                                                               value="Maitres Assistants pour assurer charge heures supp permanents"/></p:column>
-                                        <p:column><p:outputLabel value="#{globalStatCtrl.model.stat.permanentOverloadTeacherCount}">
-                                            <f:convertNumber type="number" groupingUsed="true" minFractionDigits="2" pattern="#0.00"/>
-                                        </p:outputLabel></p:column>
+                                                <h:commandLink>
+                                                    <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-csv16.png"
+                                                                    width="16"/>
+                                                    <p:dataExporter type="csv" target="tbl1"
+                                                                    fileName="#{corePlugin.getPreferredFileName('teaches-count-a')}"/>
+                                                </h:commandLink>
 
-
-                                        <p:column styleClass="ui-widget-header"><p:outputLabel style="font-weight: bold"
-                                                                                               value="Maitres Assistants pour assurer charge non permanents"/></p:column>
-                                        <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.nonPermanentLoadTeacherCount}">
-                                            <f:convertNumber type="number" groupingUsed="true" minFractionDigits="2" pattern="#0.00"/>
-                                        </p:outputLabel></p:column>
-
-
-                                    </p:row>
-                                    <p:row>
-                                        <p:column styleClass="ui-widget-header"><p:outputLabel style="font-weight: bold"
-                                                                                               value="Maitres Assistants pour assurer charge manquant"/></p:column>
-                                        <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.unassignedLoadTeacherCount}" >
-                                            <f:convertNumber type="number" groupingUsed="true" minFractionDigits="2" pattern="#0.00"/>
-                                        </p:outputLabel>
+                                                <h:commandLink>
+                                                    <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-xml16.png"
+                                                                    width="16"/>
+                                                    <p:dataExporter type="xml" target="tbl1"
+                                                                    fileName="#{corePlugin.getPreferredFileName('teaches-count-a')}"/>
+                                                </h:commandLink>
+                                            </div>
+                                        </f:facet>
+                                        <p:column headerText="Discipline">
+                                            <p:outputLabel value="#{item.discipline.name}"/>
                                         </p:column>
-
-
-                                        <p:column styleClass="ui-widget-header"><p:outputLabel style="font-weight: bold"
-                                                                                               value="Enseignants restant à recruter"/></p:column>
-                                        <p:column><p:outputLabel value="#{globalStatCtrl.model.stat.missing.teachersCount}">
-                                            <f:convertNumber type="number" groupingUsed="true" minFractionDigits="2" pattern="#0.00"/>
-                                        </p:outputLabel></p:column>
-                                    </p:row>
-                                </p:panelGrid>
+                                        <p:column headerText="Total Enseignants">
+                                            <p:outputLabel
+                                                value="#{vr.valOrPercentString(globalStatCtrl.percent,item.stat.teachersCount,globalStatCtrl.model.stat.teachersCount)}"/>
+                                        </p:column>
+                                        <p:column headerText="Congés">
+                                            <p:outputLabel
+                                                value="#{vr.valOrPercentString(globalStatCtrl.percent,item.stat.teachersLeaveStat.teachersCount,globalStatCtrl.model.stat.teachersCount)}"/>
+                                        </p:column>
+                                        <p:column headerText="Permanents">
+                                            <p:outputLabel
+                                                value="#{vr.valOrPercentString(globalStatCtrl.percent,item.stat.teachersPermanentStat.teachersCount,globalStatCtrl.model.stat.teachersCount)}"/>
+                                        </p:column>
+                                        <p:column headerText="Contractuel">
+                                            <p:outputLabel
+                                                value="#{vr.valOrPercentString(globalStatCtrl.percent,item.stat.teachersContractualStat.teachersCount,globalStatCtrl.model.stat.teachersCount)}"/>
+                                        </p:column>
+                                        <p:column headerText="Vacataires">
+                                            <p:outputLabel
+                                                value="#{vr.valOrPercentString(globalStatCtrl.percent,item.stat.teachersTemporaryStat.teachersCount,globalStatCtrl.model.stat.teachersCount)}"/>
+                                        </p:column>
+                                    </p:dataTable>
+                                </div>
                             </div>
-                        </div>
-                    </p:tab>
-                    <p:tab title="Modules">
-                        <div >
+                            <div >
+                                <div class="table-responsive">
+                                    <p:column styleClass="ui-widget-header_" colspan="6"><h1><p:outputLabel
+                                                value="Enseignants par Disciplines et Situation"/></h1></p:column>
+                                    <p:dataTable id="tbl2" value="#{globalStatCtrl.globalStatByDisciplines}"
+                                                 var="item"
+                                                 paginatorAlwaysVisible="true"
+                                                 paginator="true"
+                                                 paginatorPosition="bottom"
+                                                 rows="10"
+                                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+                                                 rowsPerPageTemplate="10,20,50,100,200,1000"
+                                                 emptyMessage=""
+                                                 >
+                                        <f:facet name="footer">
+                                            <p:outputLabel value="Total #{globalStatCtrl.globalStatByDisciplines.size()}"/>
+                                            <div style="float: right;">
+                                                <h:commandLink>
+                                                    <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-xls16.png"
+                                                                    width="16"/>
+                                                    <p:dataExporter type="xls" target="tbl2"
+                                                                    fileName="#{corePlugin.getPreferredFileName('teaches-count-b')}" postProcessor="#{vr.postProcessDataExporterXLS}"/>
+                                                </h:commandLink>
 
-                            <div class="table-responsive">
-                                <p:panelGrid>
+                                                <h:commandLink>
+                                                    <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-pdf16.png"
+                                                                    width="16"/>
+                                                    <p:dataExporter type="pdf" target="tbl2"
+                                                                    fileName="#{corePlugin.getPreferredFileName('teaches-count-b')}"/>
+                                                </h:commandLink>
+
+                                                <h:commandLink>
+                                                    <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-csv16.png"
+                                                                    width="16"/>
+                                                    <p:dataExporter type="csv" target="tbl2"
+                                                                    fileName="#{corePlugin.getPreferredFileName('teaches-count-b')}"/>
+                                                </h:commandLink>
+
+                                                <h:commandLink>
+                                                    <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-xml16.png"
+                                                                    width="16"/>
+                                                    <p:dataExporter type="xml" target="tbl2"
+                                                                    fileName="#{corePlugin.getPreferredFileName('teaches-count-b')}"/>
+                                                </h:commandLink>
+                                            </div>
+                                        </f:facet>
+
+                                        <p:column headerText="Discipline">
+                                            <p:outputLabel value="#{item.discipline.name}"/>
+                                        </p:column>
+                                        <p:columns value="#{globalStatCtrl.globalStatSituations}" var="sit"
+                                                   headerText="#{sit.name}">
+                                            <p:outputLabel
+                                                value="#{vr.valOrPercentString(globalStatCtrl.percent,item.stat.getAssignment(null,sit,null).teachersCount,globalStatCtrl.model.stat.teachersCount)}"/>
+                                        </p:columns>
+                                    </p:dataTable>
+                                </div>
+                            </div>
+                            <div >
+                                <div class="table-responsive">
                                     <p:row>
                                         <p:column styleClass="ui-widget-header_" colspan="6"><h1><p:outputLabel
-                                                value="Modules"/></h1></p:column>
+                                                    value="Estimations"/></h1></p:column>
                                     </p:row>
-                                    <p:row>
-                                        <p:column styleClass="ui-widget-header"><p:outputLabel style="font-weight: bold"
-                                                                                               value="Nombre Modules"/></p:column>
-                                        <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.coursePlanCount}"/></p:column>
+                                    <p:panelGrid>
+                                        <p:row>
 
-                                        <p:column styleClass="ui-widget-header"><p:outputLabel
-                                                value="Nombre Affectations"/></p:column>
-                                        <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.courseAssignmentCount}"/></p:column>
-                                    </p:row>
-                                </p:panelGrid>
-                            </div>
-                        </div>
-                    </p:tab>
-                    <p:tab title="Détails Charge">
-                        <div >
-                            <h1><p:outputLabel value="Charge Annuelle"/></h1>
+                                            <p:column styleClass="ui-widget-header"><p:outputLabel style="font-weight: bold"
+                                                                                                   value="Enseignants Permanents"/></p:column>
+                                            <p:column><p:outputLabel value="#{globalStatCtrl.model.stat.teachersPermanentStat.teachersCount}">
+                                                    <f:convertNumber type="number" groupingUsed="true" minFractionDigits="2" pattern="#0"/>
+                                                </p:outputLabel></p:column>
 
-                            <div class="table-responsive">
-                                <p:panelGrid>
-                                    <p:row>
-                                        <p:column styleClass="ui-widget-header"><p:outputLabel value=""/></p:column>
-                                        <p:column styleClass="ui-widget-header"><p:outputLabel
-                                                value="Du"/></p:column>
-                                        <p:column styleClass="ui-widget-header"><p:outputLabel
-                                                value="Charge"/></p:column>
-                                        <p:column styleClass="ui-widget-header"><p:outputLabel
-                                                value="H. Supp."/></p:column>
-                                        <p:column styleClass="ui-widget-header"><p:outputLabel
-                                                value="Du/Sem"/></p:column>
-                                        <p:column styleClass="ui-widget-header"><p:outputLabel
-                                                value="Charge/Sem"/></p:column>
-                                        <p:column styleClass="ui-widget-header"><p:outputLabel
-                                                value="H. Supp./Sem"/></p:column>
-                                        <p:column styleClass="ui-widget-header"><p:outputLabel
-                                                value="A faire"/></p:column>
-                                    </p:row>
-                                    <p:row>
-                                        <p:column styleClass="ui-widget-header"><p:outputLabel value="C"/></p:column>
-                                        <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.totalAssignment.due.c}"><f:convertNumber
-                                                pattern="#0.#"/></p:outputLabel></p:column>
-                                        <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.totalAssignment.value.c}"><f:convertNumber
-                                                pattern="#0.#"/></p:outputLabel></p:column>
-                                        <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.totalAssignment.extra.c}"><f:convertNumber
-                                                pattern="#0.#"/></p:outputLabel></p:column>
-                                        <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.totalAssignment.dueWeek.c}"><f:convertNumber
-                                                pattern="#0.#"/></p:outputLabel></p:column>
-                                        <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.totalAssignment.valueWeek.c}"><f:convertNumber
-                                                pattern="#0.#"/></p:outputLabel></p:column>
-                                        <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.totalAssignment.extraWeek.c}"><f:convertNumber
-                                                pattern="#0.#"/></p:outputLabel></p:column>
-                                        <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.totalAssignment.missingAssignmentsLoad.c}"><f:convertNumber
-                                                pattern="#0.#"/></p:outputLabel></p:column>
-                                    </p:row>
-                                    <p:row>
-                                        <p:column styleClass="ui-widget-header"><p:outputLabel value="TD"/></p:column>
-                                        <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.totalAssignment.due.td}"><f:convertNumber
-                                                pattern="#0.#"/></p:outputLabel></p:column>
-                                        <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.totalAssignment.value.td}"><f:convertNumber
-                                                pattern="#0.#"/></p:outputLabel></p:column>
-                                        <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.totalAssignment.extra.td}"><f:convertNumber
-                                                pattern="#0.#"/></p:outputLabel></p:column>
-                                        <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.totalAssignment.dueWeek.td}"><f:convertNumber
-                                                pattern="#0.#"/></p:outputLabel></p:column>
-                                        <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.totalAssignment.valueWeek.td}"><f:convertNumber
-                                                pattern="#0.#"/></p:outputLabel></p:column>
-                                        <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.totalAssignment.extraWeek.td}"><f:convertNumber
-                                                pattern="#0.#"/></p:outputLabel></p:column>
-                                        <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.totalAssignment.missingAssignmentsLoad.td}"><f:convertNumber
-                                                pattern="#0.#"/></p:outputLabel></p:column>
-                                    </p:row>
-                                    <p:row>
-                                        <p:column styleClass="ui-widget-header"><p:outputLabel value="TP"/></p:column>
-                                        <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.totalAssignment.due.tp}"><f:convertNumber
-                                                pattern="#0.#"/></p:outputLabel></p:column>
-                                        <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.totalAssignment.value.tp}"><f:convertNumber
-                                                pattern="#0.#"/></p:outputLabel></p:column>
-                                        <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.totalAssignment.extra.tp}"><f:convertNumber
-                                                pattern="#0.#"/></p:outputLabel></p:column>
-                                        <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.totalAssignment.dueWeek.tp}"><f:convertNumber
-                                                pattern="#0.#"/></p:outputLabel></p:column>
-                                        <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.totalAssignment.valueWeek.tp}"><f:convertNumber
-                                                pattern="#0.#"/></p:outputLabel></p:column>
-                                        <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.totalAssignment.extraWeek.tp}"><f:convertNumber
-                                                pattern="#0.#"/></p:outputLabel></p:column>
-                                        <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.totalAssignment.missingAssignmentsLoad.tp}"><f:convertNumber
-                                                pattern="#0.#"/></p:outputLabel></p:column>
-                                    </p:row>
-                                    <p:row>
-                                        <p:column styleClass="ui-widget-header"><p:outputLabel value="PM"/></p:column>
-                                        <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.totalAssignment.due.pm}"><f:convertNumber
-                                                pattern="#0.#"/></p:outputLabel></p:column>
-                                        <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.totalAssignment.value.pm}"><f:convertNumber
-                                                pattern="#0.#"/></p:outputLabel></p:column>
-                                        <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.totalAssignment.extra.pm}"><f:convertNumber
-                                                pattern="#0.#"/></p:outputLabel></p:column>
-                                        <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.totalAssignment.dueWeek.pm}"><f:convertNumber
-                                                pattern="#0.#"/></p:outputLabel></p:column>
-                                        <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.totalAssignment.valueWeek.pm}"><f:convertNumber
-                                                pattern="#0.#"/></p:outputLabel></p:column>
-                                        <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.totalAssignment.extraWeek.pm}"><f:convertNumber
-                                                pattern="#0.#"/></p:outputLabel></p:column>
-                                        <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.totalAssignment.missingAssignmentsLoad.pm}"><f:convertNumber
-                                                pattern="#0.#"/></p:outputLabel></p:column>
-                                    </p:row>
-                                    <p:row>
-                                        <p:column styleClass="ui-widget-header"><p:outputLabel
-                                                value="Equiv"/></p:column>
-                                        <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.totalAssignment.due.equiv}"><f:convertNumber
-                                                pattern="#0.#"/></p:outputLabel></p:column>
-                                        <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.totalAssignment.value.equiv}"><f:convertNumber
-                                                pattern="#0.#"/></p:outputLabel></p:column>
-                                        <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.totalAssignment.extra.equiv}"><f:convertNumber
-                                                pattern="#0.#"/></p:outputLabel></p:column>
-                                        <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.totalAssignment.dueWeek.equiv}"><f:convertNumber
-                                                pattern="#0.#"/></p:outputLabel></p:column>
-                                        <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.totalAssignment.valueWeek.equiv}"><f:convertNumber
-                                                pattern="#0.#"/></p:outputLabel></p:column>
-                                        <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.totalAssignment.extraWeek.equiv}"><f:convertNumber
-                                                pattern="#0.#"/></p:outputLabel></p:column>
-                                        <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.totalAssignment.missingAssignmentsLoad.equiv}"><f:convertNumber
-                                                pattern="#0.#"/></p:outputLabel></p:column>
-                                    </p:row>
-                                </p:panelGrid>
+                                            <p:column styleClass="ui-widget-header"><p:outputLabel style="font-weight: bold"
+                                                                                                   value="Maitres Assistants pour assurer charge heures supp permanents"/></p:column>
+                                            <p:column><p:outputLabel value="#{globalStatCtrl.model.stat.permanentOverloadTeacherCount}">
+                                                    <f:convertNumber type="number" groupingUsed="true" minFractionDigits="2" pattern="#0.00"/>
+                                                </p:outputLabel></p:column>
+
+
+                                            <p:column styleClass="ui-widget-header"><p:outputLabel style="font-weight: bold"
+                                                                                                   value="Maitres Assistants pour assurer charge non permanents"/></p:column>
+                                            <p:column><p:outputLabel
+                                                    value="#{globalStatCtrl.model.stat.nonPermanentLoadTeacherCount}">
+                                                    <f:convertNumber type="number" groupingUsed="true" minFractionDigits="2" pattern="#0.00"/>
+                                                </p:outputLabel></p:column>
+
+
+                                        </p:row>
+                                        <p:row>
+                                            <p:column styleClass="ui-widget-header"><p:outputLabel style="font-weight: bold"
+                                                                                                   value="Maitres Assistants pour assurer charge manquant"/></p:column>
+                                            <p:column><p:outputLabel
+                                                    value="#{globalStatCtrl.model.stat.unassignedLoadTeacherCount}" >
+                                                    <f:convertNumber type="number" groupingUsed="true" minFractionDigits="2" pattern="#0.00"/>
+                                                </p:outputLabel>
+                                            </p:column>
+
+
+                                            <p:column styleClass="ui-widget-header"><p:outputLabel style="font-weight: bold"
+                                                                                                   value="Enseignants restant à recruter"/></p:column>
+                                            <p:column><p:outputLabel value="#{globalStatCtrl.model.stat.missing.teachersCount}">
+                                                    <f:convertNumber type="number" groupingUsed="true" minFractionDigits="2" pattern="#0.00"/>
+                                                </p:outputLabel></p:column>
+                                        </p:row>
+                                    </p:panelGrid>
+                                </div>
                             </div>
-                        </div>
-                        <ui:repeat var="sem" value="#{globalStatCtrl.model.semesters}">
+                        </p:tab>
+                        <p:tab title="Modules">
                             <div >
-                                <h1><p:outputLabel value="Semestre #{sem.name}"/></h1>
+
+                                <div class="table-responsive">
+                                    <p:panelGrid>
+                                        <p:row>
+                                            <p:column styleClass="ui-widget-header_" colspan="6"><h1><p:outputLabel
+                                                        value="Modules"/></h1></p:column>
+                                        </p:row>
+                                        <p:row>
+                                            <p:column styleClass="ui-widget-header"><p:outputLabel style="font-weight: bold"
+                                                                                                   value="Nombre Modules"/></p:column>
+                                            <p:column><p:outputLabel
+                                                    value="#{globalStatCtrl.model.stat.coursePlanCount}"/></p:column>
+
+                                            <p:column styleClass="ui-widget-header"><p:outputLabel
+                                                    value="Nombre Affectations"/></p:column>
+                                            <p:column><p:outputLabel
+                                                    value="#{globalStatCtrl.model.stat.courseAssignmentCount}"/></p:column>
+                                        </p:row>
+                                    </p:panelGrid>
+                                </div>
+                            </div>
+                        </p:tab>
+                        <p:tab title="Détails Charge">
+                            <div >
+                                <h1><p:outputLabel value="Charge Annuelle"/></h1>
 
                                 <div class="table-responsive">
                                     <p:panelGrid>
@@ -542,486 +401,659 @@ and open the template in the editor.
                                                     value="A faire"/></p:column>
                                         </p:row>
                                         <p:row>
-                                            <p:column styleClass="ui-widget-header"><p:outputLabel
-                                                    value="C"/></p:column>
+                                            <p:column styleClass="ui-widget-header"><p:outputLabel value="C"/></p:column>
                                             <p:column><p:outputLabel
-                                                    value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).due.c}"><f:convertNumber
-                                                    pattern="#0.#"/></p:outputLabel></p:column>
+                                                    value="#{globalStatCtrl.model.stat.totalAssignment.due.c}"><f:convertNumber
+                                                        pattern="#0.#"/></p:outputLabel></p:column>
                                             <p:column><p:outputLabel
-                                                    value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).value.c}"><f:convertNumber
-                                                    pattern="#0.#"/></p:outputLabel></p:column>
+                                                    value="#{globalStatCtrl.model.stat.totalAssignment.value.c}"><f:convertNumber
+                                                        pattern="#0.#"/></p:outputLabel></p:column>
                                             <p:column><p:outputLabel
-                                                    value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).extra.c}"><f:convertNumber
-                                                    pattern="#0.#"/></p:outputLabel></p:column>
+                                                    value="#{globalStatCtrl.model.stat.totalAssignment.extra.c}"><f:convertNumber
+                                                        pattern="#0.#"/></p:outputLabel></p:column>
                                             <p:column><p:outputLabel
-                                                    value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).dueWeek.c}"><f:convertNumber
-                                                    pattern="#0.#"/></p:outputLabel></p:column>
+                                                    value="#{globalStatCtrl.model.stat.totalAssignment.dueWeek.c}"><f:convertNumber
+                                                        pattern="#0.#"/></p:outputLabel></p:column>
                                             <p:column><p:outputLabel
-                                                    value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).value.c}"><f:convertNumber
-                                                    pattern="#0.#"/></p:outputLabel></p:column>
+                                                    value="#{globalStatCtrl.model.stat.totalAssignment.valueWeek.c}"><f:convertNumber
+                                                        pattern="#0.#"/></p:outputLabel></p:column>
                                             <p:column><p:outputLabel
-                                                    value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).extraWeek.c}"><f:convertNumber
-                                                    pattern="#0.#"/></p:outputLabel></p:column>
+                                                    value="#{globalStatCtrl.model.stat.totalAssignment.extraWeek.c}"><f:convertNumber
+                                                        pattern="#0.#"/></p:outputLabel></p:column>
                                             <p:column><p:outputLabel
-                                                    value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).missingAssignmentsLoad.c}"><f:convertNumber
-                                                    pattern="#0.#"/></p:outputLabel></p:column>
+                                                    value="#{globalStatCtrl.model.stat.totalAssignment.missingAssignmentsLoad.c}"><f:convertNumber
+                                                        pattern="#0.#"/></p:outputLabel></p:column>
                                         </p:row>
                                         <p:row>
-                                            <p:column styleClass="ui-widget-header"><p:outputLabel
-                                                    value="TD"/></p:column>
+                                            <p:column styleClass="ui-widget-header"><p:outputLabel value="TD"/></p:column>
                                             <p:column><p:outputLabel
-                                                    value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).due.td}"><f:convertNumber
-                                                    pattern="#0.#"/></p:outputLabel></p:column>
+                                                    value="#{globalStatCtrl.model.stat.totalAssignment.due.td}"><f:convertNumber
+                                                        pattern="#0.#"/></p:outputLabel></p:column>
                                             <p:column><p:outputLabel
-                                                    value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).value.td}"><f:convertNumber
-                                                    pattern="#0.#"/></p:outputLabel></p:column>
+                                                    value="#{globalStatCtrl.model.stat.totalAssignment.value.td}"><f:convertNumber
+                                                        pattern="#0.#"/></p:outputLabel></p:column>
                                             <p:column><p:outputLabel
-                                                    value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).extra.td}"><f:convertNumber
-                                                    pattern="#0.#"/></p:outputLabel></p:column>
+                                                    value="#{globalStatCtrl.model.stat.totalAssignment.extra.td}"><f:convertNumber
+                                                        pattern="#0.#"/></p:outputLabel></p:column>
                                             <p:column><p:outputLabel
-                                                    value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).dueWeek.td}"><f:convertNumber
-                                                    pattern="#0.#"/></p:outputLabel></p:column>
+                                                    value="#{globalStatCtrl.model.stat.totalAssignment.dueWeek.td}"><f:convertNumber
+                                                        pattern="#0.#"/></p:outputLabel></p:column>
                                             <p:column><p:outputLabel
-                                                    value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).value.td}"><f:convertNumber
-                                                    pattern="#0.#"/></p:outputLabel></p:column>
+                                                    value="#{globalStatCtrl.model.stat.totalAssignment.valueWeek.td}"><f:convertNumber
+                                                        pattern="#0.#"/></p:outputLabel></p:column>
                                             <p:column><p:outputLabel
-                                                    value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).extraWeek.td}"><f:convertNumber
-                                                    pattern="#0.#"/></p:outputLabel></p:column>
+                                                    value="#{globalStatCtrl.model.stat.totalAssignment.extraWeek.td}"><f:convertNumber
+                                                        pattern="#0.#"/></p:outputLabel></p:column>
                                             <p:column><p:outputLabel
-                                                    value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).missingAssignmentsLoad.td}"><f:convertNumber
-                                                    pattern="#0.#"/></p:outputLabel></p:column>
+                                                    value="#{globalStatCtrl.model.stat.totalAssignment.missingAssignmentsLoad.td}"><f:convertNumber
+                                                        pattern="#0.#"/></p:outputLabel></p:column>
                                         </p:row>
                                         <p:row>
-                                            <p:column styleClass="ui-widget-header"><p:outputLabel
-                                                    value="TP"/></p:column>
+                                            <p:column styleClass="ui-widget-header"><p:outputLabel value="TP"/></p:column>
                                             <p:column><p:outputLabel
-                                                    value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).due.tp}"><f:convertNumber
-                                                    pattern="#0.#"/></p:outputLabel></p:column>
+                                                    value="#{globalStatCtrl.model.stat.totalAssignment.due.tp}"><f:convertNumber
+                                                        pattern="#0.#"/></p:outputLabel></p:column>
                                             <p:column><p:outputLabel
-                                                    value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).value.tp}"><f:convertNumber
-                                                    pattern="#0.#"/></p:outputLabel></p:column>
+                                                    value="#{globalStatCtrl.model.stat.totalAssignment.value.tp}"><f:convertNumber
+                                                        pattern="#0.#"/></p:outputLabel></p:column>
                                             <p:column><p:outputLabel
-                                                    value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).extra.tp}"><f:convertNumber
-                                                    pattern="#0.#"/></p:outputLabel></p:column>
+                                                    value="#{globalStatCtrl.model.stat.totalAssignment.extra.tp}"><f:convertNumber
+                                                        pattern="#0.#"/></p:outputLabel></p:column>
                                             <p:column><p:outputLabel
-                                                    value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).dueWeek.tp}"><f:convertNumber
-                                                    pattern="#0.#"/></p:outputLabel></p:column>
+                                                    value="#{globalStatCtrl.model.stat.totalAssignment.dueWeek.tp}"><f:convertNumber
+                                                        pattern="#0.#"/></p:outputLabel></p:column>
                                             <p:column><p:outputLabel
-                                                    value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).value.tp}"><f:convertNumber
-                                                    pattern="#0.#"/></p:outputLabel></p:column>
+                                                    value="#{globalStatCtrl.model.stat.totalAssignment.valueWeek.tp}"><f:convertNumber
+                                                        pattern="#0.#"/></p:outputLabel></p:column>
                                             <p:column><p:outputLabel
-                                                    value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).extraWeek.tp}"><f:convertNumber
-                                                    pattern="#0.#"/></p:outputLabel></p:column>
+                                                    value="#{globalStatCtrl.model.stat.totalAssignment.extraWeek.tp}"><f:convertNumber
+                                                        pattern="#0.#"/></p:outputLabel></p:column>
                                             <p:column><p:outputLabel
-                                                    value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).missingAssignmentsLoad.tp}"><f:convertNumber
-                                                    pattern="#0.#"/></p:outputLabel></p:column>
+                                                    value="#{globalStatCtrl.model.stat.totalAssignment.missingAssignmentsLoad.tp}"><f:convertNumber
+                                                        pattern="#0.#"/></p:outputLabel></p:column>
                                         </p:row>
                                         <p:row>
-                                            <p:column styleClass="ui-widget-header"><p:outputLabel
-                                                    value="PM"/></p:column>
+                                            <p:column styleClass="ui-widget-header"><p:outputLabel value="PM"/></p:column>
                                             <p:column><p:outputLabel
-                                                    value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).due.pm}"><f:convertNumber
-                                                    pattern="#0.#"/></p:outputLabel></p:column>
+                                                    value="#{globalStatCtrl.model.stat.totalAssignment.due.pm}"><f:convertNumber
+                                                        pattern="#0.#"/></p:outputLabel></p:column>
                                             <p:column><p:outputLabel
-                                                    value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).value.pm}"><f:convertNumber
-                                                    pattern="#0.#"/></p:outputLabel></p:column>
+                                                    value="#{globalStatCtrl.model.stat.totalAssignment.value.pm}"><f:convertNumber
+                                                        pattern="#0.#"/></p:outputLabel></p:column>
                                             <p:column><p:outputLabel
-                                                    value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).extra.pm}"><f:convertNumber
-                                                    pattern="#0.#"/></p:outputLabel></p:column>
+                                                    value="#{globalStatCtrl.model.stat.totalAssignment.extra.pm}"><f:convertNumber
+                                                        pattern="#0.#"/></p:outputLabel></p:column>
                                             <p:column><p:outputLabel
-                                                    value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).dueWeek.pm}"><f:convertNumber
-                                                    pattern="#0.#"/></p:outputLabel></p:column>
+                                                    value="#{globalStatCtrl.model.stat.totalAssignment.dueWeek.pm}"><f:convertNumber
+                                                        pattern="#0.#"/></p:outputLabel></p:column>
                                             <p:column><p:outputLabel
-                                                    value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).value.pm}"><f:convertNumber
-                                                    pattern="#0.#"/></p:outputLabel></p:column>
+                                                    value="#{globalStatCtrl.model.stat.totalAssignment.valueWeek.pm}"><f:convertNumber
+                                                        pattern="#0.#"/></p:outputLabel></p:column>
                                             <p:column><p:outputLabel
-                                                    value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).extraWeek.pm}"><f:convertNumber
-                                                    pattern="#0.#"/></p:outputLabel></p:column>
+                                                    value="#{globalStatCtrl.model.stat.totalAssignment.extraWeek.pm}"><f:convertNumber
+                                                        pattern="#0.#"/></p:outputLabel></p:column>
                                             <p:column><p:outputLabel
-                                                    value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).missingAssignmentsLoad.pm}"><f:convertNumber
-                                                    pattern="#0.#"/></p:outputLabel></p:column>
+                                                    value="#{globalStatCtrl.model.stat.totalAssignment.missingAssignmentsLoad.pm}"><f:convertNumber
+                                                        pattern="#0.#"/></p:outputLabel></p:column>
                                         </p:row>
                                         <p:row>
                                             <p:column styleClass="ui-widget-header"><p:outputLabel
                                                     value="Equiv"/></p:column>
                                             <p:column><p:outputLabel
-                                                    value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).due.equiv}"><f:convertNumber
-                                                    pattern="#0.#"/></p:outputLabel></p:column>
+                                                    value="#{globalStatCtrl.model.stat.totalAssignment.due.equiv}"><f:convertNumber
+                                                        pattern="#0.#"/></p:outputLabel></p:column>
                                             <p:column><p:outputLabel
-                                                    value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).value.equiv}"><f:convertNumber
-                                                    pattern="#0.#"/></p:outputLabel></p:column>
+                                                    value="#{globalStatCtrl.model.stat.totalAssignment.value.equiv}"><f:convertNumber
+                                                        pattern="#0.#"/></p:outputLabel></p:column>
                                             <p:column><p:outputLabel
-                                                    value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).extra.equiv}"><f:convertNumber
-                                                    pattern="#0.#"/></p:outputLabel></p:column>
+                                                    value="#{globalStatCtrl.model.stat.totalAssignment.extra.equiv}"><f:convertNumber
+                                                        pattern="#0.#"/></p:outputLabel></p:column>
                                             <p:column><p:outputLabel
-                                                    value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).dueWeek.equiv}"><f:convertNumber
-                                                    pattern="#0.#"/></p:outputLabel></p:column>
+                                                    value="#{globalStatCtrl.model.stat.totalAssignment.dueWeek.equiv}"><f:convertNumber
+                                                        pattern="#0.#"/></p:outputLabel></p:column>
                                             <p:column><p:outputLabel
-                                                    value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).value.equiv}"><f:convertNumber
-                                                    pattern="#0.#"/></p:outputLabel></p:column>
+                                                    value="#{globalStatCtrl.model.stat.totalAssignment.valueWeek.equiv}"><f:convertNumber
+                                                        pattern="#0.#"/></p:outputLabel></p:column>
                                             <p:column><p:outputLabel
-                                                    value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).extraWeek.equiv}"><f:convertNumber
-                                                    pattern="#0.#"/></p:outputLabel></p:column>
+                                                    value="#{globalStatCtrl.model.stat.totalAssignment.extraWeek.equiv}"><f:convertNumber
+                                                        pattern="#0.#"/></p:outputLabel></p:column>
                                             <p:column><p:outputLabel
-                                                    value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).missingAssignmentsLoad.equiv}"><f:convertNumber
-                                                    pattern="#0.#"/></p:outputLabel></p:column>
+                                                    value="#{globalStatCtrl.model.stat.totalAssignment.missingAssignmentsLoad.equiv}"><f:convertNumber
+                                                        pattern="#0.#"/></p:outputLabel></p:column>
                                         </p:row>
                                     </p:panelGrid>
                                 </div>
                             </div>
+                            <ui:repeat var="sem" value="#{globalStatCtrl.model.semesters}">
+                                <div >
+                                    <h1><p:outputLabel value="Semestre #{sem.name}"/></h1>
 
-                        </ui:repeat>
+                                    <div class="table-responsive">
+                                        <p:panelGrid>
+                                            <p:row>
+                                                <p:column styleClass="ui-widget-header"><p:outputLabel value=""/></p:column>
+                                                <p:column styleClass="ui-widget-header"><p:outputLabel
+                                                        value="Du"/></p:column>
+                                                <p:column styleClass="ui-widget-header"><p:outputLabel
+                                                        value="Charge"/></p:column>
+                                                <p:column styleClass="ui-widget-header"><p:outputLabel
+                                                        value="H. Supp."/></p:column>
+                                                <p:column styleClass="ui-widget-header"><p:outputLabel
+                                                        value="Du/Sem"/></p:column>
+                                                <p:column styleClass="ui-widget-header"><p:outputLabel
+                                                        value="Charge/Sem"/></p:column>
+                                                <p:column styleClass="ui-widget-header"><p:outputLabel
+                                                        value="H. Supp./Sem"/></p:column>
+                                                <p:column styleClass="ui-widget-header"><p:outputLabel
+                                                        value="A faire"/></p:column>
+                                            </p:row>
+                                            <p:row>
+                                                <p:column styleClass="ui-widget-header"><p:outputLabel
+                                                        value="C"/></p:column>
+                                                <p:column><p:outputLabel
+                                                        value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).due.c}"><f:convertNumber
+                                                            pattern="#0.#"/></p:outputLabel></p:column>
+                                                <p:column><p:outputLabel
+                                                        value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).value.c}"><f:convertNumber
+                                                            pattern="#0.#"/></p:outputLabel></p:column>
+                                                <p:column><p:outputLabel
+                                                        value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).extra.c}"><f:convertNumber
+                                                            pattern="#0.#"/></p:outputLabel></p:column>
+                                                <p:column><p:outputLabel
+                                                        value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).dueWeek.c}"><f:convertNumber
+                                                            pattern="#0.#"/></p:outputLabel></p:column>
+                                                <p:column><p:outputLabel
+                                                        value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).value.c}"><f:convertNumber
+                                                            pattern="#0.#"/></p:outputLabel></p:column>
+                                                <p:column><p:outputLabel
+                                                        value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).extraWeek.c}"><f:convertNumber
+                                                            pattern="#0.#"/></p:outputLabel></p:column>
+                                                <p:column><p:outputLabel
+                                                        value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).missingAssignmentsLoad.c}"><f:convertNumber
+                                                            pattern="#0.#"/></p:outputLabel></p:column>
+                                            </p:row>
+                                            <p:row>
+                                                <p:column styleClass="ui-widget-header"><p:outputLabel
+                                                        value="TD"/></p:column>
+                                                <p:column><p:outputLabel
+                                                        value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).due.td}"><f:convertNumber
+                                                            pattern="#0.#"/></p:outputLabel></p:column>
+                                                <p:column><p:outputLabel
+                                                        value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).value.td}"><f:convertNumber
+                                                            pattern="#0.#"/></p:outputLabel></p:column>
+                                                <p:column><p:outputLabel
+                                                        value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).extra.td}"><f:convertNumber
+                                                            pattern="#0.#"/></p:outputLabel></p:column>
+                                                <p:column><p:outputLabel
+                                                        value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).dueWeek.td}"><f:convertNumber
+                                                            pattern="#0.#"/></p:outputLabel></p:column>
+                                                <p:column><p:outputLabel
+                                                        value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).value.td}"><f:convertNumber
+                                                            pattern="#0.#"/></p:outputLabel></p:column>
+                                                <p:column><p:outputLabel
+                                                        value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).extraWeek.td}"><f:convertNumber
+                                                            pattern="#0.#"/></p:outputLabel></p:column>
+                                                <p:column><p:outputLabel
+                                                        value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).missingAssignmentsLoad.td}"><f:convertNumber
+                                                            pattern="#0.#"/></p:outputLabel></p:column>
+                                            </p:row>
+                                            <p:row>
+                                                <p:column styleClass="ui-widget-header"><p:outputLabel
+                                                        value="TP"/></p:column>
+                                                <p:column><p:outputLabel
+                                                        value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).due.tp}"><f:convertNumber
+                                                            pattern="#0.#"/></p:outputLabel></p:column>
+                                                <p:column><p:outputLabel
+                                                        value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).value.tp}"><f:convertNumber
+                                                            pattern="#0.#"/></p:outputLabel></p:column>
+                                                <p:column><p:outputLabel
+                                                        value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).extra.tp}"><f:convertNumber
+                                                            pattern="#0.#"/></p:outputLabel></p:column>
+                                                <p:column><p:outputLabel
+                                                        value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).dueWeek.tp}"><f:convertNumber
+                                                            pattern="#0.#"/></p:outputLabel></p:column>
+                                                <p:column><p:outputLabel
+                                                        value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).value.tp}"><f:convertNumber
+                                                            pattern="#0.#"/></p:outputLabel></p:column>
+                                                <p:column><p:outputLabel
+                                                        value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).extraWeek.tp}"><f:convertNumber
+                                                            pattern="#0.#"/></p:outputLabel></p:column>
+                                                <p:column><p:outputLabel
+                                                        value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).missingAssignmentsLoad.tp}"><f:convertNumber
+                                                            pattern="#0.#"/></p:outputLabel></p:column>
+                                            </p:row>
+                                            <p:row>
+                                                <p:column styleClass="ui-widget-header"><p:outputLabel
+                                                        value="PM"/></p:column>
+                                                <p:column><p:outputLabel
+                                                        value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).due.pm}"><f:convertNumber
+                                                            pattern="#0.#"/></p:outputLabel></p:column>
+                                                <p:column><p:outputLabel
+                                                        value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).value.pm}"><f:convertNumber
+                                                            pattern="#0.#"/></p:outputLabel></p:column>
+                                                <p:column><p:outputLabel
+                                                        value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).extra.pm}"><f:convertNumber
+                                                            pattern="#0.#"/></p:outputLabel></p:column>
+                                                <p:column><p:outputLabel
+                                                        value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).dueWeek.pm}"><f:convertNumber
+                                                            pattern="#0.#"/></p:outputLabel></p:column>
+                                                <p:column><p:outputLabel
+                                                        value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).value.pm}"><f:convertNumber
+                                                            pattern="#0.#"/></p:outputLabel></p:column>
+                                                <p:column><p:outputLabel
+                                                        value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).extraWeek.pm}"><f:convertNumber
+                                                            pattern="#0.#"/></p:outputLabel></p:column>
+                                                <p:column><p:outputLabel
+                                                        value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).missingAssignmentsLoad.pm}"><f:convertNumber
+                                                            pattern="#0.#"/></p:outputLabel></p:column>
+                                            </p:row>
+                                            <p:row>
+                                                <p:column styleClass="ui-widget-header"><p:outputLabel
+                                                        value="Equiv"/></p:column>
+                                                <p:column><p:outputLabel
+                                                        value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).due.equiv}"><f:convertNumber
+                                                            pattern="#0.#"/></p:outputLabel></p:column>
+                                                <p:column><p:outputLabel
+                                                        value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).value.equiv}"><f:convertNumber
+                                                            pattern="#0.#"/></p:outputLabel></p:column>
+                                                <p:column><p:outputLabel
+                                                        value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).extra.equiv}"><f:convertNumber
+                                                            pattern="#0.#"/></p:outputLabel></p:column>
+                                                <p:column><p:outputLabel
+                                                        value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).dueWeek.equiv}"><f:convertNumber
+                                                            pattern="#0.#"/></p:outputLabel></p:column>
+                                                <p:column><p:outputLabel
+                                                        value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).value.equiv}"><f:convertNumber
+                                                            pattern="#0.#"/></p:outputLabel></p:column>
+                                                <p:column><p:outputLabel
+                                                        value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).extraWeek.equiv}"><f:convertNumber
+                                                            pattern="#0.#"/></p:outputLabel></p:column>
+                                                <p:column><p:outputLabel
+                                                        value="#{globalStatCtrl.model.stat.getAssignment(sem,null,null).missingAssignmentsLoad.equiv}"><f:convertNumber
+                                                            pattern="#0.#"/></p:outputLabel></p:column>
+                                            </p:row>
+                                        </p:panelGrid>
+                                    </div>
+                                </div>
+
+                            </ui:repeat>
 
 
-                        <div >
+                            <div >
 
-                            <div class="table-responsive">
-                                <p:panelGrid>
-                                    <p:row>
-                                        <p:column styleClass="ui-widget-header_" colspan="6"><h1><p:outputLabel
-                                                value="Cumul Charge"/></h1></p:column>
-                                    </p:row>
-                                    <p:row>
-                                        <p:column styleClass="ui-widget-header"><p:outputLabel style="font-weight: bold"
-                                                                                               value="Charges Totale par an"/></p:column>
-                                        <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.totalAssignment.value.equiv}">
-                                            <f:convertNumber pattern="#0.000"/>
-                                        </p:outputLabel></p:column>
-                                        <p:column styleClass="ui-widget-header"><p:outputLabel style="font-weight: bold"
-                                                                                               value="Charges Totale par semaine"/></p:column>
-                                        <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.totalAssignment.valueWeek.equiv}">
-                                            <f:convertNumber pattern="#0.000"/>
-                                        </p:outputLabel></p:column>
-                                    </p:row>
+                                <div class="table-responsive">
+                                    <p:panelGrid>
+                                        <p:row>
+                                            <p:column styleClass="ui-widget-header_" colspan="6"><h1><p:outputLabel
+                                                        value="Cumul Charge"/></h1></p:column>
+                                        </p:row>
+                                        <p:row>
+                                            <p:column styleClass="ui-widget-header"><p:outputLabel style="font-weight: bold"
+                                                                                                   value="Charges Totale par an"/></p:column>
+                                            <p:column><p:outputLabel
+                                                    value="#{globalStatCtrl.model.stat.totalAssignment.value.equiv}">
+                                                    <f:convertNumber pattern="#0.000"/>
+                                                </p:outputLabel></p:column>
+                                            <p:column styleClass="ui-widget-header"><p:outputLabel style="font-weight: bold"
+                                                                                                   value="Charges Totale par semaine"/></p:column>
+                                            <p:column><p:outputLabel
+                                                    value="#{globalStatCtrl.model.stat.totalAssignment.valueWeek.equiv}">
+                                                    <f:convertNumber pattern="#0.000"/>
+                                                </p:outputLabel></p:column>
+                                        </p:row>
 
-                                    <p:row>
-                                        <p:column styleClass="ui-widget-header"><p:outputLabel style="font-weight: bold"
-                                                                                               value="Charges Supplémentaires hors du par an"/></p:column>
-                                        <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.neededAbsolute.value.equiv}">
-                                            <f:convertNumber pattern="#0.000"/>
-                                        </p:outputLabel></p:column>
-                                        <p:column styleClass="ui-widget-header"><p:outputLabel style="font-weight: bold"
-                                                                                               value="Charges Supplémentaires hors du par semaine"/></p:column>
-                                        <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.neededAbsolute.valueWeek.equiv}">
-                                            <f:convertNumber pattern="#0.000"/>
-                                        </p:outputLabel></p:column>
-                                    </p:row>
-                                    <p:row>
-                                        <p:column styleClass="ui-widget-header"><p:outputLabel style="font-weight: bold"
-                                                                                               value="Charges Non Permanents par an"/></p:column>
-                                        <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.neededRelative.value.equiv}">
-                                            <f:convertNumber pattern="#0.000"/>
-                                        </p:outputLabel>
-                                        </p:column>
-                                        <p:column styleClass="ui-widget-header"><p:outputLabel style="font-weight: bold"
-                                                                                               value="Charges Non Permanents par semaine"/></p:column>
-                                        <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.neededRelative.valueWeek.equiv}">
-                                            <f:convertNumber pattern="#0.000"/>
-                                        </p:outputLabel>
-                                        </p:column>
+                                        <p:row>
+                                            <p:column styleClass="ui-widget-header"><p:outputLabel style="font-weight: bold"
+                                                                                                   value="Charges Supplémentaires hors du par an"/></p:column>
+                                            <p:column><p:outputLabel
+                                                    value="#{globalStatCtrl.model.stat.neededAbsolute.value.equiv}">
+                                                    <f:convertNumber pattern="#0.000"/>
+                                                </p:outputLabel></p:column>
+                                            <p:column styleClass="ui-widget-header"><p:outputLabel style="font-weight: bold"
+                                                                                                   value="Charges Supplémentaires hors du par semaine"/></p:column>
+                                            <p:column><p:outputLabel
+                                                    value="#{globalStatCtrl.model.stat.neededAbsolute.valueWeek.equiv}">
+                                                    <f:convertNumber pattern="#0.000"/>
+                                                </p:outputLabel></p:column>
+                                        </p:row>
+                                        <p:row>
+                                            <p:column styleClass="ui-widget-header"><p:outputLabel style="font-weight: bold"
+                                                                                                   value="Charges Non Permanents par an"/></p:column>
+                                            <p:column><p:outputLabel
+                                                    value="#{globalStatCtrl.model.stat.neededRelative.value.equiv}">
+                                                    <f:convertNumber pattern="#0.000"/>
+                                                </p:outputLabel>
+                                            </p:column>
+                                            <p:column styleClass="ui-widget-header"><p:outputLabel style="font-weight: bold"
+                                                                                                   value="Charges Non Permanents par semaine"/></p:column>
+                                            <p:column><p:outputLabel
+                                                    value="#{globalStatCtrl.model.stat.neededRelative.valueWeek.equiv}">
+                                                    <f:convertNumber pattern="#0.000"/>
+                                                </p:outputLabel>
+                                            </p:column>
 
-                                    </p:row>
-                                    <p:row>
-                                        <p:column styleClass="ui-widget-header"><p:outputLabel style="font-weight: bold"
-                                                                                               value="Charges à completer par an"/></p:column>
-                                        <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.missing.value.formatString()}">
-                                        </p:outputLabel></p:column>
-                                        <p:column styleClass="ui-widget-header"><p:outputLabel style="font-weight: bold"
-                                                                                               value="Charges à completer par semaine"/></p:column>
-                                        <p:column><p:outputLabel
-                                                value="#{globalStatCtrl.model.stat.missing.valueWeek.formatString()}">
-                                        </p:outputLabel></p:column>
-                                    </p:row>
-                                </p:panelGrid>
+                                        </p:row>
+                                        <p:row>
+                                            <p:column styleClass="ui-widget-header"><p:outputLabel style="font-weight: bold"
+                                                                                                   value="Charges à completer par an"/></p:column>
+                                            <p:column><p:outputLabel
+                                                    value="#{globalStatCtrl.model.stat.missing.value.formatString()}">
+                                                </p:outputLabel></p:column>
+                                            <p:column styleClass="ui-widget-header"><p:outputLabel style="font-weight: bold"
+                                                                                                   value="Charges à completer par semaine"/></p:column>
+                                            <p:column><p:outputLabel
+                                                    value="#{globalStatCtrl.model.stat.missing.valueWeek.formatString()}">
+                                                </p:outputLabel></p:column>
+                                        </p:row>
+                                    </p:panelGrid>
+                                </div>
                             </div>
-                        </div>
-                    </p:tab>
-                    <p:tab title="Détails">
-                        <div >
-                            <div class="table-responsive">
-                                <p:selectManyCheckbox value="#{globalStatCtrl.model.filters}" layout="grid" columns="3">
-                                    <p:ajax listener="#{globalStatCtrl.onFiltersChanged}" update="tabstat"/>
+                        </p:tab>
+                        <p:tab title="Détails">
+                            <div >
+                                <div class="table-responsive">
+                                    Colonnes :
+                                    <p:selectManyCheckbox value="#{globalStatCtrl.model.filters}" layout="grid" columns="3">
+                                        <p:ajax listener="#{globalStatCtrl.onViewFiltersChanged}" update="tabstat"/>
 
-                                    <f:selectItem itemLabel="(#) Enseignants" itemValue="teachersCount"/>
-                                    <f:selectItem itemLabel="Charge" itemValue="value"/>
+                                        <f:selectItem itemLabel="(#) Enseignants" itemValue="teachersCount"/>
+                                        <f:selectItem itemLabel="Charge" itemValue="value"/>
 
-                                    <f:selectItem itemLabel="Charge Supp." itemValue="extra"/>
-                                    <f:selectItem itemLabel="H Supp. / Sem" itemValue="valueWeek"/>
+                                        <f:selectItem itemLabel="Charge Supp." itemValue="extra"/>
+                                        <f:selectItem itemLabel="H Supp. / Sem" itemValue="valueWeek"/>
 
-                                    <f:selectItem itemLabel="Charge Moy / Enseig." itemValue="avgValue"/>
-                                    <f:selectItem itemLabel="Charge Supp Moy / Enseig." itemValue="avgExtra"/>
+                                        <f:selectItem itemLabel="Charge Moy / Enseig." itemValue="avgValue"/>
+                                        <f:selectItem itemLabel="Charge Supp Moy / Enseig." itemValue="avgExtra"/>
 
-                                    <f:selectItem itemLabel="Charge Moy / Enseig. / Sem" itemValue="avgValueWeek"/>
-                                    <f:selectItem itemLabel="Cours" itemValue="C"/>
-                                    <f:selectItem itemLabel="TD" itemValue="TD"/>
-                                    <f:selectItem itemLabel="TP" itemValue="TP"/>
-                                    <f:selectItem itemLabel="PM" itemValue="PM"/>
-                                    <f:selectItem itemLabel="Equiv" itemValue="EQ"/>
-                                    <f:selectItem itemLabel="Du" itemValue="due"/>
-                                </p:selectManyCheckbox>
+                                        <f:selectItem itemLabel="Charge Moy / Enseig. / Sem" itemValue="avgValueWeek"/>
+                                        <f:selectItem itemLabel="Cours" itemValue="C"/>
+                                        <f:selectItem itemLabel="TD" itemValue="TD"/>
+                                        <f:selectItem itemLabel="TP" itemValue="TP"/>
+                                        <f:selectItem itemLabel="PM" itemValue="PM"/>
+                                        <f:selectItem itemLabel="Equiv" itemValue="EQ"/>
+                                        <f:selectItem itemLabel="Du" itemValue="due"/>
+                                        <f:selectItem itemLabel="Présensiel" itemValue="F2F"/>
+                                        <f:selectItem itemLabel="Non Présensiel" itemValue="nF2F"/>
+                                    </p:selectManyCheckbox>
+                                </div>
+                                Groupes :
+                                <p:selectOneRadio value="#{globalStatCtrl.model.detailsType}" layout="grid" columns="3">
+                                    <p:ajax listener="#{globalStatCtrl.onCalcFiltersChanged}" update="tabstat"/>
+                                    <f:selectItem itemLabel="Tous" itemValue="all"/>
+                                    <f:selectItem itemLabel="Situations" itemValue="situation"/>
+                                    <f:selectItem itemLabel="Grades" itemValue="degree"/>
+                                </p:selectOneRadio>
+
+                                <!--                                <div class="table-responsive">
+                                                                    <p:selectManyCheckbox value="# {globalStatCtrl.model.refreshFilterSelected}" layout="grid" columns="3">
+                                                                        <p:ajax listener="# {globalStatCtrl.onRefreshFiltersChanged}" update="tabstat"/>
+                                                                        <f:selectItem itemLabel="Inclure les Voeux" itemValue="intents" />
+                                                                    </p:selectManyCheckbox>
+                                                                </div>-->
                             </div>
-                            <!--                                <div class="table-responsive">
-                                                                <p:selectManyCheckbox value="# {globalStatCtrl.model.refreshFilterSelected}" layout="grid" columns="3">
-                                                                    <p:ajax listener="# {globalStatCtrl.onRefreshFiltersChanged}" update="tabstat"/>
-                                                                    <f:selectItem itemLabel="Inclure les Voeux" itemValue="intents" />
-                                                                </p:selectManyCheckbox>
-                                                            </div>-->
-                        </div>
-                        <div >
-                            <div class="table-responsive">
-                                <h1>Détails</h1>
+                            <div >
+                                <div class="table-responsive">
+                                    <h1>Détails</h1>
 
-                                <p:dataTable id="tabstat" var="i" value="#{globalStatCtrl.model.stat.assignments}"
-                                             class="table table-bordered table-hover"
-                                             paginatorAlwaysVisible="false"
-                                             paginator="true"
-                                             paginatorPosition="bottom"
-                                             rows="20"
-                                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
-                                             rowsPerPageTemplate="20,50,100,200,1000"
-                                >
-                                    <f:facet name="{Exporters}">
-                                        <h:commandLink>
-                                            <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-xls16.png"
-                                                            width="16"/>
-                                            <p:dataExporter type="xls" target="tabstat"
-                                                            fileName="#{corePlugin.getPreferredFileName('load-matrix')" postProcessor="#{vr.postProcessDataExporterXLS}"/>
-                                        </h:commandLink>
+                                    <p:dataTable id="tabstat" var="i" value="#{globalStatCtrl.model.details}"
+                                                 class="table table-bordered table-hover"
+                                                 paginatorAlwaysVisible="false"
+                                                 paginator="true"
+                                                 paginatorPosition="bottom"
+                                                 rows="20"
+                                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+                                                 rowsPerPageTemplate="20,50,100,200,1000"
+                                                 >
+                                        <f:facet name="footer">
+                                            <p:outputLabel value="Total #{globalStatCtrl.model.details.size()}"/>
+                                            <div style="float: right;">
+                                                <h:commandLink>
+                                                    <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-xls16.png"
+                                                                    width="16"/>
+                                                    <p:dataExporter type="xls" target="tabstat"
+                                                                    fileName="#{corePlugin.getPreferredFileName('load-matrix')}" postProcessor="#{vr.postProcessDataExporterXLS}"/>
+                                                </h:commandLink>
 
-                                        <h:commandLink>
-                                            <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-pdf16.png"
-                                                            width="16"/>
-                                            <p:dataExporter type="pdf" target="tabstat"
-                                                            fileName="#{corePlugin.getPreferredFileName('load-matrix')"/>
-                                        </h:commandLink>
+                                                <h:commandLink>
+                                                    <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-pdf16.png"
+                                                                    width="16"/>
+                                                    <p:dataExporter type="pdf" target="tabstat"
+                                                                    fileName="#{corePlugin.getPreferredFileName('load-matrix')}"/>
+                                                </h:commandLink>
 
-                                        <h:commandLink>
-                                            <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-csv16.png"
-                                                            width="16"/>
-                                            <p:dataExporter type="csv" target="tabstat"
-                                                            fileName="#{corePlugin.getPreferredFileName('load-matrix')"/>
-                                        </h:commandLink>
+                                                <h:commandLink>
+                                                    <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-csv16.png"
+                                                                    width="16"/>
+                                                    <p:dataExporter type="csv" target="tabstat"
+                                                                    fileName="#{corePlugin.getPreferredFileName('load-matrix')}"/>
+                                                </h:commandLink>
 
-                                        <h:commandLink>
-                                            <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-xml16.png"
-                                                            width="16"/>
-                                            <p:dataExporter type="xml" target="tabstat"
-                                                            fileName="#{corePlugin.getPreferredFileName('load-matrix')"/>
-                                        </h:commandLink>
-                                    </f:facet>
+                                                <h:commandLink>
+                                                    <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-xml16.png"
+                                                                    width="16"/>
+                                                    <p:dataExporter type="xml" target="tabstat"
+                                                                    fileName="#{corePlugin.getPreferredFileName('load-matrix')}"/>
+                                                </h:commandLink>
+                                            </div>
+                                        </f:facet>
 
-                                    <p:column styleClass="ui-widget-header" headerText="Sem/An" width="7%">
-                                        <h:outputText style="#{i.semester==null?'color:red':''}"
-                                                      value="#{i.semester==null?'Année':i.semester.name}"/>
-                                    </p:column>
-                                    <p:column styleClass="ui-widget-header" headerText="Situation" width="10%">
-                                        <h:outputText style="#{i.situation==null?'color:red':''}"
-                                                      value="#{i.situation==null?'Toutes':i.situation.name}"/>
-                                    </p:column>
-                                    <p:column styleClass="ui-widget-header" headerText="Grade" width="7%">
-                                        <h:outputText style="#{i.degree==null?'color:red':''}"
-                                                      value="#{i.degree==null?'Tous':i.degree.name}"/>
-                                    </p:column>
-                                    <p:column rendered="#{globalStatCtrl.containsFilter('teachersCount')}"
-                                              headerText="# Ens." width="7%">
-                                        <h:outputText value="#{i.teachersCount}"><f:convertNumber
-                                                pattern="#0.#"/></h:outputText>
-                                    </p:column>
-                                    <p:column
+                                        <p:column styleClass="ui-widget-header" headerText="Sem/An" width="7%">
+                                            <h:outputText style="#{i.semester==null?'color:red':''}"
+                                                          value="#{i.semester==null?'Année':i.semester.name}"/>
+                                        </p:column>
+                                        <p:column styleClass="ui-widget-header" headerText="Situation" width="10%">
+                                            <h:outputText style="#{i.situation==null?'color:red':''}"
+                                                          value="#{i.situation==null?'Toutes':i.situation.name}"/>
+                                        </p:column>
+                                        <p:column styleClass="ui-widget-header" headerText="Grade" width="7%">
+                                            <h:outputText style="#{i.degree==null?'color:red':''}"
+                                                          value="#{i.degree==null?'Tous':i.degree.name}"/>
+                                        </p:column>
+                                        <p:column rendered="#{globalStatCtrl.containsFilter('teachersCount')}"
+                                                  headerText="# Ens." width="7%">
+                                            <h:outputText value="#{i.teachersCount}"><f:convertNumber
+                                                    pattern="#0.#"/></h:outputText>
+                                        </p:column>
+                                        <p:column
                                             rendered="#{globalStatCtrl.containsFilter('value') and globalStatCtrl.containsFilter('C')}"
                                             headerText="C">
-                                        <h:outputText value="#{i.value.c}"><f:convertNumber
-                                                pattern="#0.#"/></h:outputText>
-                                    </p:column>
-                                    <p:column
+                                            <h:outputText value="#{i.value.c}"><f:convertNumber
+                                                    pattern="#0.#"/></h:outputText>
+                                        </p:column>
+                                        <p:column
                                             rendered="#{globalStatCtrl.containsFilter('value') and globalStatCtrl.containsFilter('TD')}"
                                             headerText="TD">
-                                        <h:outputText value="#{i.value.td}"><f:convertNumber
-                                                pattern="#0.#"/></h:outputText>
-                                    </p:column>
-                                    <p:column
+                                            <h:outputText value="#{i.value.td}"><f:convertNumber
+                                                    pattern="#0.#"/></h:outputText>
+                                        </p:column>
+                                        <p:column
                                             rendered="#{globalStatCtrl.containsFilter('value') and globalStatCtrl.containsFilter('TP')}"
                                             headerText="TP">
-                                        <h:outputText value="#{i.value.tp}"><f:convertNumber
-                                                pattern="#0.#"/></h:outputText>
-                                    </p:column>
-                                    <p:column
+                                            <h:outputText value="#{i.value.tp}"><f:convertNumber
+                                                    pattern="#0.#"/></h:outputText>
+                                        </p:column>
+                                        <p:column
                                             rendered="#{globalStatCtrl.containsFilter('value') and globalStatCtrl.containsFilter('PM')}"
                                             headerText="PM">
-                                        <h:outputText value="#{i.value.pm}"><f:convertNumber
-                                                pattern="#0.#"/></h:outputText>
-                                    </p:column>
-                                    <p:column
-                                            rendered="#{globalStatCtrl.containsFilter('value') and globalStatCtrl.containsFilter('EQ')}"
-                                            headerText="Eq">
-                                        <h:outputText value="#{i.value.equiv}"><f:convertNumber
-                                                pattern="#0.#"/></h:outputText>
-                                    </p:column>
-                                    <p:column rendered="#{globalStatCtrl.containsFilter('due')}" headerText="Du">
-                                        <h:outputText value="#{i.due.equiv}"><f:convertNumber
-                                                pattern="#0.#"/></h:outputText>
-                                    </p:column>
+                                            <h:outputText value="#{i.value.pm}"><f:convertNumber
+                                                    pattern="#0.#"/></h:outputText>
+                                        </p:column>
+                                        <p:column rendered="#{globalStatCtrl.containsFilter('value') and globalStatCtrl.containsFilter('EQ')}" headerText="Eq">
+                                            <h:outputText value="#{i.value.equiv}"><f:convertNumber pattern="#0.#"/></h:outputText>
+                                        </p:column>
+                                        <p:column rendered="#{globalStatCtrl.containsFilter('value') and globalStatCtrl.containsFilter('F2F')}" headerText="F2F">
+                                            <h:outputText value="#{i.value.f2f}"><f:convertNumber pattern="#0.#"/></h:outputText>
+                                        </p:column>
+                                        <p:column rendered="#{globalStatCtrl.containsFilter('value') and globalStatCtrl.containsFilter('nF2F')}" headerText="!F2F">
+                                            <h:outputText value="#{i.value.nonF2f}"><f:convertNumber pattern="#0.#"/></h:outputText>
+                                        </p:column>
+                                        <p:column rendered="#{globalStatCtrl.containsFilter('due')}" headerText="Du">
+                                            <h:outputText value="#{i.due.equiv}"><f:convertNumber
+                                                    pattern="#0.#"/></h:outputText>
+                                        </p:column>
 
-                                    <p:column rendered="#{globalStatCtrl.containsFilter('due')}" headerText="Du/s">
-                                        <h:outputText value="#{i.dueWeek.equiv}"><f:convertNumber
-                                                pattern="#0.#"/></h:outputText>
-                                    </p:column>
+                                        <p:column rendered="#{globalStatCtrl.containsFilter('due')}" headerText="Du/s">
+                                            <h:outputText value="#{i.dueWeek.equiv}"><f:convertNumber
+                                                    pattern="#0.#"/></h:outputText>
+                                        </p:column>
 
-                                    <p:column
+                                        <p:column
                                             rendered="#{globalStatCtrl.containsFilter('valueWeek') and globalStatCtrl.containsFilter('C')}"
                                             headerText="C/s">
-                                        <h:outputText value="#{i.valueWeek.c}"><f:convertNumber
-                                                pattern="#0.#"/></h:outputText>
-                                    </p:column>
-                                    <p:column
+                                            <h:outputText value="#{i.valueWeek.c}"><f:convertNumber
+                                                    pattern="#0.#"/></h:outputText>
+                                        </p:column>
+                                        <p:column
                                             rendered="#{globalStatCtrl.containsFilter('valueWeek') and globalStatCtrl.containsFilter('TD')}"
                                             headerText="TD/s">
-                                        <h:outputText value="#{i.valueWeek.td}"><f:convertNumber
-                                                pattern="#0.#"/></h:outputText>
-                                    </p:column>
-                                    <p:column
+                                            <h:outputText value="#{i.valueWeek.td}"><f:convertNumber
+                                                    pattern="#0.#"/></h:outputText>
+                                        </p:column>
+                                        <p:column
                                             rendered="#{globalStatCtrl.containsFilter('valueWeek') and globalStatCtrl.containsFilter('TP')}"
                                             headerText="TP/s">
-                                        <h:outputText value="#{i.valueWeek.tp}"><f:convertNumber
-                                                pattern="#0.#"/></h:outputText>
-                                    </p:column>
-                                    <p:column
+                                            <h:outputText value="#{i.valueWeek.tp}"><f:convertNumber
+                                                    pattern="#0.#"/></h:outputText>
+                                        </p:column>
+                                        <p:column
                                             rendered="#{globalStatCtrl.containsFilter('valueWeek') and globalStatCtrl.containsFilter('PM')}"
                                             headerText="PM/s">
-                                        <h:outputText value="#{i.valueWeek.pm}"><f:convertNumber
-                                                pattern="#0.#"/></h:outputText>
-                                    </p:column>
-                                    <p:column
-                                            rendered="#{globalStatCtrl.containsFilter('valueWeek') and globalStatCtrl.containsFilter('EQ')}"
-                                            headerText="Eq/s">
-                                        <h:outputText value="#{i.valueWeek.equiv}"><f:convertNumber
-                                                pattern="#0.#"/></h:outputText>
-                                    </p:column>
+                                            <h:outputText value="#{i.valueWeek.pm}"><f:convertNumber
+                                                    pattern="#0.#"/></h:outputText>
+                                        </p:column>
 
-                                    <p:column
+                                        <p:column rendered="#{globalStatCtrl.containsFilter('valueWeek') and globalStatCtrl.containsFilter('EQ')}" headerText="Eq/s">
+                                            <h:outputText value="#{i.valueWeek.equiv}"><f:convertNumber pattern="#0.#"/></h:outputText>
+                                        </p:column>
+
+                                        <p:column rendered="#{globalStatCtrl.containsFilter('valueWeek') and globalStatCtrl.containsFilter('F2F')}" headerText="F2F">
+                                            <h:outputText value="#{i.valueWeek.f2f}"><f:convertNumber pattern="#0.#"/></h:outputText>
+                                        </p:column>
+                                        <p:column rendered="#{globalStatCtrl.containsFilter('valueWeek') and globalStatCtrl.containsFilter('nF2F')}" headerText="!F2F">
+                                            <h:outputText value="#{i.valueWeek.nonF2f}"><f:convertNumber pattern="#0.#"/></h:outputText>
+                                        </p:column>
+
+                                        <p:column
                                             rendered="#{globalStatCtrl.containsFilter('extra') and globalStatCtrl.containsFilter('C')}"
                                             headerText="Supp C/s">
-                                        <h:outputText value="#{i.extraWeek.c}"><f:convertNumber
-                                                pattern="#0.#"/></h:outputText>
-                                    </p:column>
-                                    <p:column
+                                            <h:outputText value="#{i.extraWeek.c}"><f:convertNumber
+                                                    pattern="#0.#"/></h:outputText>
+                                        </p:column>
+                                        <p:column
                                             rendered="#{globalStatCtrl.containsFilter('extra') and globalStatCtrl.containsFilter('TD')}"
                                             headerText="Supp TD/s">
-                                        <h:outputText value="#{i.extraWeek.td}"><f:convertNumber
-                                                pattern="#0.#"/></h:outputText>
-                                    </p:column>
-                                    <p:column
-                                            rendered="#{globalStatCtrl.containsFilter('extra') and globalStatCtrl.containsFilter('EQ')}"
-                                            headerText="Supp Eq/s">
-                                        <h:outputText value="#{i.extraWeek.equiv}"><f:convertNumber
-                                                pattern="#0.#"/></h:outputText>
-                                    </p:column>
+                                            <h:outputText value="#{i.extraWeek.td}"><f:convertNumber
+                                                    pattern="#0.#"/></h:outputText>
+                                        </p:column>
+                                        <p:column rendered="#{globalStatCtrl.containsFilter('extra') and globalStatCtrl.containsFilter('EQ')}" headerText="Supp Eq/s">
+                                            <h:outputText value="#{i.extraWeek.equiv}"><f:convertNumber
+                                                    pattern="#0.#"/></h:outputText>
+                                        </p:column>
+                                        <p:column rendered="#{globalStatCtrl.containsFilter('extra') and globalStatCtrl.containsFilter('F2F')}" headerText="Supp F2F/s">
+                                            <h:outputText value="#{i.extraWeek.f2f}"><f:convertNumber pattern="#0.#"/></h:outputText>
+                                        </p:column>
+                                        <p:column rendered="#{globalStatCtrl.containsFilter('extra') and globalStatCtrl.containsFilter('!F2F')}" headerText="Supp !F2F/s">
+                                            <h:outputText value="#{i.extraWeek.nonF2f}"><f:convertNumber pattern="#0.#"/></h:outputText>
+                                        </p:column>
 
-                                    <p:column
+                                        <p:column
                                             rendered="#{globalStatCtrl.containsFilter('avgValue') and globalStatCtrl.containsFilter('C')}"
                                             headerText="Moy C">
-                                        <h:outputText value="#{i.avgValue.c}"><f:convertNumber
-                                                pattern="#0.#"/></h:outputText>
-                                    </p:column>
-                                    <p:column
+                                            <h:outputText value="#{i.avgValue.c}"><f:convertNumber
+                                                    pattern="#0.#"/></h:outputText>
+                                        </p:column>
+                                        <p:column
                                             rendered="#{globalStatCtrl.containsFilter('avgValue') and globalStatCtrl.containsFilter('TD')}"
                                             headerText="Moy TD">
-                                        <h:outputText value="#{i.avgValue.td}"><f:convertNumber
-                                                pattern="#0.#"/></h:outputText>
-                                    </p:column>
-                                    <p:column
+                                            <h:outputText value="#{i.avgValue.td}"><f:convertNumber
+                                                    pattern="#0.#"/></h:outputText>
+                                        </p:column>
+                                        <p:column
                                             rendered="#{globalStatCtrl.containsFilter('avgValue') and globalStatCtrl.containsFilter('TD')}"
                                             headerText="Moy TP">
-                                        <h:outputText value="#{i.avgValue.tp}"><f:convertNumber
-                                                pattern="#0.#"/></h:outputText>
-                                    </p:column>
-                                    <p:column
+                                            <h:outputText value="#{i.avgValue.tp}"><f:convertNumber
+                                                    pattern="#0.#"/></h:outputText>
+                                        </p:column>
+                                        <p:column
                                             rendered="#{globalStatCtrl.containsFilter('avgValue') and globalStatCtrl.containsFilter('PM')}"
                                             headerText="Moy PM">
-                                        <h:outputText value="#{i.avgValue.pm}"><f:convertNumber
-                                                pattern="#0.#"/></h:outputText>
-                                    </p:column>
-                                    <p:column
+                                            <h:outputText value="#{i.avgValue.pm}"><f:convertNumber
+                                                    pattern="#0.#"/></h:outputText>
+                                        </p:column>
+                                        <p:column
                                             rendered="#{globalStatCtrl.containsFilter('avgValue') and globalStatCtrl.containsFilter('EQ')}"
                                             headerText="Moy Eq">
-                                        <h:outputText value="#{i.avgValue.equiv}"><f:convertNumber
-                                                pattern="#0.#"/></h:outputText>
-                                    </p:column>
+                                            <h:outputText value="#{i.avgValue.equiv}"><f:convertNumber
+                                                    pattern="#0.#"/></h:outputText>
+                                        </p:column>
 
-                                    <p:column
+                                        <p:column
                                             rendered="#{globalStatCtrl.containsFilter('avgExtra') and globalStatCtrl.containsFilter('C')}"
                                             headerText="Moy Supp C">
-                                        <h:outputText value="#{i.avgExtra.c}"><f:convertNumber
-                                                pattern="#0.#"/></h:outputText>
-                                    </p:column>
-                                    <p:column
+                                            <h:outputText value="#{i.avgExtra.c}"><f:convertNumber
+                                                    pattern="#0.#"/></h:outputText>
+                                        </p:column>
+                                        <p:column
                                             rendered="#{globalStatCtrl.containsFilter('avgExtra') and globalStatCtrl.containsFilter('TD')}"
                                             headerText="Moy TD">
-                                        <h:outputText value="#{i.avgExtra.td}"><f:convertNumber
-                                                pattern="#0.#"/></h:outputText>
-                                    </p:column>
-                                    <p:column
+                                            <h:outputText value="#{i.avgExtra.td}"><f:convertNumber
+                                                    pattern="#0.#"/></h:outputText>
+                                        </p:column>
+                                        <p:column
                                             rendered="#{globalStatCtrl.containsFilter('avgExtra') and globalStatCtrl.containsFilter('EQ')}"
                                             headerText="Moy Supp Eq">
-                                        <h:outputText value="#{i.avgExtra.equiv}"><f:convertNumber
-                                                pattern="#0.#"/></h:outputText>
-                                    </p:column>
+                                            <h:outputText value="#{i.avgExtra.equiv}"><f:convertNumber
+                                                    pattern="#0.#"/></h:outputText>
+                                        </p:column>
 
-                                    <p:column
+                                        <p:column
                                             rendered="#{globalStatCtrl.containsFilter('avgValueWeek') and globalStatCtrl.containsFilter('C')}"
                                             headerText="Moy  Supp C/s">
-                                        <h:outputText value="#{i.avgValueWeek.c}"><f:convertNumber
-                                                pattern="#0.#"/></h:outputText>
-                                    </p:column>
-                                    <p:column
+                                            <h:outputText value="#{i.avgValueWeek.c}"><f:convertNumber
+                                                    pattern="#0.#"/></h:outputText>
+                                        </p:column>
+                                        <p:column
                                             rendered="#{globalStatCtrl.containsFilter('avgValueWeek') and globalStatCtrl.containsFilter('TD')}"
                                             headerText="Moy Supp TD/s">
-                                        <h:outputText value="#{i.avgValueWeek.td}"><f:convertNumber
-                                                pattern="#0.#"/></h:outputText>
-                                    </p:column>
-                                    <p:column
+                                            <h:outputText value="#{i.avgValueWeek.td}"><f:convertNumber
+                                                    pattern="#0.#"/></h:outputText>
+                                        </p:column>
+                                        <p:column
                                             rendered="#{globalStatCtrl.containsFilter('avgValueWeek') and globalStatCtrl.containsFilter('EQ')}"
                                             headerText="Moy Supp Eq/s">
-                                        <h:outputText value="#{i.avgValueWeek.equiv}"><f:convertNumber pattern="#0.#"/></h:outputText>
-                                    </p:column>
+                                            <h:outputText value="#{i.avgValueWeek.equiv}"><f:convertNumber pattern="#0.#"/></h:outputText>
+                                        </p:column>
 
-                                </p:dataTable>
+                                    </p:dataTable>
+                                </div>
+
                             </div>
-
-                        </div>
-                    </p:tab>
-                    <p:tab title="Graphiques">
-                        <p:chart type="pie" model="#{globalStatCtrl.model.chart1}" style="width:600px;height:500px"/>
-                        <p:chart type="pie" model="#{globalStatCtrl.model.chart2}" style="width:600px;height:500px"/>
-                        <p:chart type="pie" model="#{globalStatCtrl.model.chart3}" style="width:600px;height:500px"/>
-                        <p:chart type="pie" model="#{globalStatCtrl.model.chart4}" style="width:600px;height:500px"/>
-                        <p:chart type="pie" model="#{globalStatCtrl.model.chart5}" style="width:600px;height:500px"/>
-                        <p:chart type="pie" model="#{globalStatCtrl.model.chart6}" style="width:600px;height:500px"/>
-                        <p:chart type="pie" model="#{globalStatCtrl.model.chart7}" style="width:600px;height:500px"/>
-                        <p:chart type="pie" model="#{globalStatCtrl.model.chart8}" style="width:600px;height:500px"/>
-                        <p:chart type="pie" model="#{globalStatCtrl.model.chart9}" style="width:600px;height:500px"/>
-                        <p:chart type="pie" model="#{globalStatCtrl.model.chart10}" style="width:600px;height:500px"/>
-                        <p:chart type="pie" model="#{globalStatCtrl.model.chart11}" style="width:600px;height:500px"/>
-                    </p:tab>
-                </p:tabView>
+                        </p:tab>
+                        <p:tab title="Graphiques">
+                            <p:chart type="pie" model="#{globalStatCtrl.model.chart1}" style="width:600px;height:500px"/>
+                            <p:chart type="pie" model="#{globalStatCtrl.model.chart2}" style="width:600px;height:500px"/>
+                            <p:chart type="pie" model="#{globalStatCtrl.model.chart3}" style="width:600px;height:500px"/>
+                            <p:chart type="pie" model="#{globalStatCtrl.model.chart4}" style="width:600px;height:500px"/>
+                            <p:chart type="pie" model="#{globalStatCtrl.model.chart5}" style="width:600px;height:500px"/>
+                            <p:chart type="pie" model="#{globalStatCtrl.model.chart6}" style="width:600px;height:500px"/>
+                            <p:chart type="pie" model="#{globalStatCtrl.model.chart7}" style="width:600px;height:500px"/>
+                            <p:chart type="pie" model="#{globalStatCtrl.model.chart8}" style="width:600px;height:500px"/>
+                            <p:chart type="pie" model="#{globalStatCtrl.model.chart9}" style="width:600px;height:500px"/>
+                            <p:chart type="pie" model="#{globalStatCtrl.model.chart10}" style="width:600px;height:500px"/>
+                            <p:chart type="pie" model="#{globalStatCtrl.model.chart11}" style="width:600px;height:500px"/>
+                        </p:tab>
+                    </p:tabView>
 
 
-            </h:form>
+                </h:form>
 
 
-        </ui:define>
+            </ui:define>
 
 
-    </ui:composition>
+        </ui:composition>
 
 
-</h:body>
+    </h:body>
 
 </html>

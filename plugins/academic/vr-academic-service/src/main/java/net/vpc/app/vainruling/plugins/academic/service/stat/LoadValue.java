@@ -12,12 +12,12 @@ import java.text.DecimalFormat;
  */
 public class LoadValue {
 
-    private static final DecimalFormat f = new DecimalFormat("#0.000");
+    private static final DecimalFormat FORMAT1 = new DecimalFormat("#0.000");
+    private static final DecimalFormat FORMAT2 = new DecimalFormat("0.000");
     private double c;
     private double td;
     private double tp;
     private double pm;
-
 
     private double equiv;
     /**
@@ -39,18 +39,25 @@ public class LoadValue {
         this.pm = pm;
     }
 
+    public double getF2f() {
+        return c + td + tp;
+    }
+
+    public double getNonF2f() {
+        return pm;
+    }
 
     private String formatF(double d) {
         double r = ((int) d);
         if (r == d) {
             return String.valueOf((int) d);
         }
-        return new DecimalFormat("0.000").format(d);
+        return FORMAT2.format(d);
     }
 
     public String formatString() {
         StringBuilder b = new StringBuilder();
-        b.append(f.format(equiv));
+        b.append(FORMAT1.format(equiv));
         boolean addSep = false;
         if (c != 0 || td != 0 || tp != 0 || pm != 0) {
             b.append("=");
@@ -158,14 +165,13 @@ public class LoadValue {
 
     public LoadValue copy() {
 
-
         LoadValue loadValue = new LoadValue(c, td, tp, pm);
-        loadValue.equiv=equiv;
-        loadValue.equivC=equivC;
-        loadValue.equivTD=equivTD;
-        loadValue.tdtppm=tdtppm;
-        loadValue.tppm=tppm;
-                //double tdtppm
+        loadValue.equiv = equiv;
+        loadValue.equivC = equivC;
+        loadValue.equivTD = equivTD;
+        loadValue.tdtppm = tdtppm;
+        loadValue.tppm = tppm;
+        //double tdtppm
         return loadValue;
     }
 
@@ -252,53 +258,53 @@ public class LoadValue {
 
     @Override
     public String toString() {
-        if(c==0 && td==0 && pm==0 && tp==0 && equiv==0){
+        if (c == 0 && td == 0 && pm == 0 && tp == 0 && equiv == 0) {
             return "Value{0}";
         }
-        StringBuilder sb=new StringBuilder();
-        if(c!=0){
-            if(sb.length()>0){
+        StringBuilder sb = new StringBuilder();
+        if (c != 0) {
+            if (sb.length() > 0) {
                 sb.append(", ");
             }
-            sb.append("c=").append(f.format(c));
+            sb.append("c=").append(FORMAT1.format(c));
         }
-        if(td!=0){
-            if(sb.length()>0){
+        if (td != 0) {
+            if (sb.length() > 0) {
                 sb.append(", ");
             }
-            sb.append("td=").append(f.format(td));
+            sb.append("td=").append(FORMAT1.format(td));
         }
-        if(tp!=0){
-            if(sb.length()>0){
+        if (tp != 0) {
+            if (sb.length() > 0) {
                 sb.append(", ");
             }
-            sb.append("tp=").append(f.format(tp));
+            sb.append("tp=").append(FORMAT1.format(tp));
         }
-        if(pm!=0){
-            if(sb.length()>0){
+        if (pm != 0) {
+            if (sb.length() > 0) {
                 sb.append(", ");
             }
-            sb.append("pm=").append(f.format(pm));
+            sb.append("pm=").append(FORMAT1.format(pm));
         }
-        if(tppm!=0){
-            if(sb.length()>0){
+        if (tppm != 0) {
+            if (sb.length() > 0) {
                 sb.append(", ");
             }
-            sb.append("tppm=").append(f.format(tppm));
+            sb.append("tppm=").append(FORMAT1.format(tppm));
         }
-        if(tdtppm!=0){
-            if(sb.length()>0){
+        if (tdtppm != 0) {
+            if (sb.length() > 0) {
                 sb.append(", ");
             }
-            sb.append("tdtppm=").append(f.format(tdtppm));
+            sb.append("tdtppm=").append(FORMAT1.format(tdtppm));
         }
-        if(equiv!=0){
-            if(sb.length()>0){
+        if (equiv != 0) {
+            if (sb.length() > 0) {
                 sb.append(", ");
             }
-            sb.append("equiv=").append(f.format(equiv));
+            sb.append("equiv=").append(FORMAT1.format(equiv));
         }
-        sb.insert(0,"Value{");
+        sb.insert(0, "Value{");
         sb.append("}");
         return sb.toString();
     }

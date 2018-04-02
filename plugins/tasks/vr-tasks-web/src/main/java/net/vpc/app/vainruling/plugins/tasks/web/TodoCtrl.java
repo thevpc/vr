@@ -11,22 +11,20 @@ import net.vpc.app.vainruling.core.service.content.ContentText;
 import net.vpc.app.vainruling.core.service.content.TaskTextService;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.web.*;
-import net.vpc.app.vainruling.core.web.ctrl.AbstractObjectCtrl;
+import net.vpc.app.vainruling.core.web.jsf.ctrl.AbstractObjectCtrl;
 
 import net.vpc.app.vainruling.core.web.menu.BreadcrumbItem;
 import net.vpc.app.vainruling.core.web.menu.VRMenuInfo;
 import net.vpc.app.vainruling.core.web.menu.VRMenuLabel;
-import net.vpc.app.vainruling.core.web.util.VrWebHelper;
+import net.vpc.app.vainruling.core.web.jsf.VrJsf;
 import net.vpc.app.vainruling.plugins.tasks.service.TaskPlugin;
 import net.vpc.app.vainruling.plugins.tasks.service.TaskPluginSecurity;
 import net.vpc.app.vainruling.plugins.tasks.service.model.*;
-import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.AccessMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 
-import javax.faces.model.SelectItem;
 import java.util.ArrayList;
 import java.util.List;
 import net.vpc.app.vainruling.core.web.VRMenuProvider;
@@ -218,9 +216,9 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuProvider
         getModel().setDone(todoService.findTodosByResponsible(currentListId, null, new TodoStatusType[]{TodoStatusType.DONE}));
 
         getModel().setStatuses(todoService.findTodoStatuses(currentListId));
-        getModel().setStatusItems(VrWebHelper.toSelectItemList(getModel().getStatuses()));
+        getModel().setStatusItems(VrJsf.toSelectItemList(getModel().getStatuses()));
         getModel().setCategories(todoService.findTodoCategories(currentListId));
-        getModel().setCategoryItems(VrWebHelper.toSelectItemList(getModel().getCategories()));
+        getModel().setCategoryItems(VrJsf.toSelectItemList(getModel().getCategories()));
     }
 
     @Override

@@ -23,13 +23,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class AcademicPluginBodyLoad extends AcademicPluginBody {
+
     private static final Logger log = Logger.getLogger(AcademicPluginBodyLoad.class.getName());
     public static final Set<DeviationGroup> DEFAULT_DEVIATION_GROUPS = Collections.unmodifiableSet(new java.util.HashSet<DeviationGroup>(Arrays.asList(
             DeviationGroup.DEPARTMENT, DeviationGroup.DEGREE, DeviationGroup.SITUATION, DeviationGroup.DISCIPLINE
     )));
     public static final Comparator<GlobalAssignmentStat> GLOBAL_ASSIGNMENT_STAT_COMPARATOR = new GlobalAssignmentStatComparator();
-    public static final Converter<AcademicCoursePlan,Integer> academicCoursePlanIdConverter = new AcademicCoursePlanIdConverter();
-    private static Converter<TeacherPeriodStat,Integer> teacherPeriodStatMapListConverter = new TeacherPeriodStatMapListConverter();
+    public static final Converter<AcademicCoursePlan, Integer> academicCoursePlanIdConverter = new AcademicCoursePlanIdConverter();
+    private static Converter<TeacherPeriodStat, Integer> teacherPeriodStatMapListConverter = new TeacherPeriodStatMapListConverter();
 
     private CorePlugin core;
     private AcademicPlugin academic;
@@ -222,7 +223,7 @@ public class AcademicPluginBodyLoad extends AcademicPluginBody {
     }
 
     public double evalValueEquiv(LoadValue v, AcademicTeacherDegree dd, AcademicConversionTableHelper table) {
-        if (dd == null) {
+        if (dd == null || dd.getConversionRule()==null || table==null) {
             return 0;
         }
         AcademicLoadConversionRow r = table.get(dd.getConversionRule().getId());
@@ -252,7 +253,6 @@ public class AcademicPluginBodyLoad extends AcademicPluginBody {
         loadValue.setTppm(loadValue.getTp() + loadValue.getPm() * (r.getValuePM() / r.getValueTP()));
         return loadValue;
     }
-
 
     public TeacherPeriodStat evalTeacherStat0(
             int periodId,
@@ -285,10 +285,26 @@ public class AcademicPluginBodyLoad extends AcademicPluginBody {
         teacher_stat.setConfig(deviationConfig);
         teacher_stat.setCourseAssignmentFilter(filter);
         teacher_stat.setTeacher(teacher);
-        AcademicTeacherSituation situation = teacher.getSituation();
         teacher_stat.setTeacherPeriod(getContext().getPlugin().findAcademicTeacherPeriod(periodId, teacher_stat.getTeacher()));
-        AcademicTeacherDegree degree = teacher_stat.getTeacherPeriod().getDegree();
-        teacher_stat.getDueWeek().setEquiv(teacherHasDue(situation, degree) ? degree.getValueDU() : 0);
+
+        AcademicTeacherDegree td = teacher_stat.getTeacherPeriod().getDegree();
+        if (td == null) {
+            td = teacher.getDegree();
+        }
+        if (td == null) {
+            td = new AcademicTeacherDegree();
+        }
+        AcademicTeacherSituation ts = teacher_stat.getTeacherPeriod().getSituation();
+        if (ts == null) {
+            ts = teacher.getSituation();
+        }
+        if (ts == null) {
+            ts = new AcademicTeacherSituation();
+            ts.setType(AcademicTeacherSituationType.TEMPORARY);
+        }
+        double teacherDue = teacherDue(ts, td);
+
+        teacher_stat.getDueWeek().setEquiv(teacherDue);
 
         boolean hasDU = teacher_stat.getDueWeek().getEquiv() > 0;
         if (!hasDU) {
@@ -318,10 +334,7 @@ public class AcademicPluginBodyLoad extends AcademicPluginBody {
         LoadValue teacher_extra = teacher_stat.getExtra();
         int maxWeeks = getContext().getPlugin().getSemesterMaxWeeks();
         AcademicConversionTableHelper conversionTable = getContext().getPlugin().findConversionTableByPeriodId(periodId);
-        AcademicTeacherDegree td = teacher_stat.getTeacherPeriod().getDegree();
-        if (td == null) {
-            td = new AcademicTeacherDegree();
-        }
+
         AcademicLoadConversionRow r = td.getConversionRule() == null ? null : conversionTable.get(td.getConversionRule().getId());
         if (r == null) {
             r = new AcademicLoadConversionRow();
@@ -357,7 +370,7 @@ public class AcademicPluginBodyLoad extends AcademicPluginBody {
                 if (academicCourseAssignment.resolveSemester().getId() == ss.getId()) {
                     semesterAssignments.add(academicCourseAssignment);
                     if (academicCourseAssignment.getAssignment().isConfirmedTeacher()) {
-                        LoadValue v = getAssignmentLoadValue(academicCourseAssignment.getAssignment(), degree, conversionTable);
+                        LoadValue v = getAssignmentLoadValue(academicCourseAssignment.getAssignment(), td, conversionTable);
                         sem.getConfirmedTeacherAssignment().add(v);
                         sem.setConfirmedTeacherAssignmentCount(sem.getConfirmedTeacherAssignmentCount() + 1);
                         teacher_stat.getConfirmedTeacherAssignment().add(v);
@@ -381,28 +394,27 @@ public class AcademicPluginBodyLoad extends AcademicPluginBody {
                 sem_valueWeek.set(sem_value.copy().div(semesterWeeks));
                 sem_valueWeek.setTppm(sem_value.getTppm() / semesterWeeks);
                 sem_valueWeek.setTdtppm(sem_value.getTdtppm() / semesterWeeks);
-
                 if (r.getValueC() == 1) {
-                    sem_dueWeek.setC(td.getValueDU());
-                    sem_due.setC(td.getValueDU() * semesterWeeks);
+                    sem_dueWeek.setC(teacherDue);
+                    sem_due.setC(teacherDue * semesterWeeks);
                 } else if (ruleValueTD == 1) {
-                    sem_dueWeek.setTd(td.getValueDU());
-                    sem_due.setTd(td.getValueDU() * semesterWeeks);
+                    sem_dueWeek.setTd(teacherDue);
+                    sem_due.setTd(teacherDue * semesterWeeks);
                 } else if (r.getValueTP() == 1) {
-                    sem_dueWeek.setTp(td.getValueDU());
-                    sem_due.setTp(td.getValueDU() * semesterWeeks);
+                    sem_dueWeek.setTp(teacherDue);
+                    sem_due.setTp(teacherDue * semesterWeeks);
                 } else if (r.getValuePM() == 1) {
-                    sem_dueWeek.setPm(td.getValueDU());
-                    sem_due.setPm(td.getValueDU() * semesterWeeks);
+                    sem_dueWeek.setPm(teacherDue);
+                    sem_due.setPm(teacherDue * semesterWeeks);
                 }
                 if (hasDU) {
-                    sem_extra.setEquiv(sem_value.getEquiv() - td.getValueDU() * semesterWeeks);
+                    sem_extra.setEquiv(sem_value.getEquiv() - teacherDue * semesterWeeks);
                     sem_extra.setC(sem_value.getC() - sem_due.getC());
                     sem_extra.setTd(sem_value.getTd() - sem_due.getTd());
                     sem_extra.setTp(sem_value.getTp() - sem_due.getTp());
                     sem_extra.setPm(sem_value.getPm() - sem_due.getPm());
 
-                    sem_extraWeek.setEquiv(sem_valueWeek.getEquiv() - td.getValueDU() * (semesterWeeks / sem.getMaxWeeks()));
+                    sem_extraWeek.setEquiv(sem_valueWeek.getEquiv() - teacherDue * (semesterWeeks / sem.getMaxWeeks()));
                     sem_extraWeek.setC(sem_valueWeek.getC() - sem_dueWeek.getC());
                     sem_extraWeek.setTd(sem_valueWeek.getTd() - sem_dueWeek.getTd());
                     sem_extraWeek.setTp(sem_valueWeek.getTp() - sem_dueWeek.getTp());
@@ -411,8 +423,8 @@ public class AcademicPluginBodyLoad extends AcademicPluginBody {
 //                sem_value.setTppm(sem_value.getTp() + sem_value.getPm() * (r.getValuePM() / r.getValueTP()));
 
                 teacher_stat.getValue().add(sem_value);
-                sem_dueWeek.setEquiv(td.getValueDU());
-                sem_due.setEquiv(td.getValueDU() * semesterWeeks);
+                sem_dueWeek.setEquiv(teacherDue);
+                sem_due.setEquiv(teacherDue * semesterWeeks);
 
                 if (hasDU) {
                     sem.getExtraEff().set(evalHeureSupp(sem_extra, r));
@@ -424,7 +436,7 @@ public class AcademicPluginBodyLoad extends AcademicPluginBody {
                     teacher_extra.add(sem_extraWeek.copy().mul(semesterWeeks));
                 }
             }
-            sem_value.setEquiv(evalValueEquiv(sem_value, degree, conversionTable));
+            sem_value.setEquiv(evalValueEquiv(sem_value, td, conversionTable));
             sems[i] = sem;
         }
         if (sum_semester_weeks == 0) {
@@ -435,7 +447,7 @@ public class AcademicPluginBodyLoad extends AcademicPluginBody {
             teacher_extraWeek.set(new LoadValue());
             teacher_extra.set(new LoadValue());
         } else {
-            teacher_stat.getValue().setEquiv(evalValueEquiv(teacher_stat.getValue(), degree, conversionTable));
+            teacher_stat.getValue().setEquiv(evalValueEquiv(teacher_stat.getValue(), td, conversionTable));
             teacher_stat.getValueWeek().set(teacher_stat.getValue().copy().div(sum_semester_weeks));
             if (hasDU) {
                 teacher_stat.getDue().set(teacher_stat.getDueWeek().copy().mul(sum_semester_weeks));
@@ -447,8 +459,8 @@ public class AcademicPluginBodyLoad extends AcademicPluginBody {
         if (hasDU) {
 //            teacher_extraWeek.setEquiv(teacher_stat.getValueWeek().getEquiv() - teacher_stat.getDueWeek().getEquiv());
 //            teacher_extra.setEquiv(teacher_stat.getValue().getEquiv() - teacher_stat.getDueWeek().getEquiv() * sum_semester_weeks);
-            AcademicLoadConversionRow cr = conversionTable.get(degree.getConversionRule().getId());
-            if (cr.getValueC() == 1) {
+            AcademicLoadConversionRow cr = td.getConversionRule() == null ? null : conversionTable.get(td.getConversionRule().getId());
+            if (cr != null && cr.getValueC() == 1) {
                 //teacher_extraWeek.setC(teacher_extraWeek.getEquiv());
                 //teacher_extra.setC(teacher_extra.getEquiv());
                 teacher_stat.getDueWeek().setC(teacher_stat.getDueWeek().getEquiv());
@@ -456,7 +468,7 @@ public class AcademicPluginBodyLoad extends AcademicPluginBody {
                 for (TeacherSemesterStat sem : sems) {
                     //sem.getExtraWeek().setC(sem.getExtraWeek().getEquiv());
                 }
-            } else if (cr.getValueTD() == 1) {
+            } else if (cr != null && cr.getValueTD() == 1) {
                 //teacher_extraWeek.setTd(teacher_extraWeek.getEquiv());
                 //teacher_extra.setTd(teacher_extra.getEquiv());
                 teacher_stat.getDueWeek().setTd(teacher_stat.getDueWeek().getEquiv());
@@ -464,7 +476,7 @@ public class AcademicPluginBodyLoad extends AcademicPluginBody {
                 for (TeacherSemesterStat sem : sems) {
                     //sem.getExtraWeek().setTd(sem.getExtraWeek().getEquiv());
                 }
-            } else if (cr.getValueTP() == 1) {
+            } else if (cr != null && cr.getValueTP() == 1) {
                 //teacher_extraWeek.setTp(teacher_extraWeek.getEquiv());
                 //teacher_extra.setTp(teacher_extra.getEquiv());
                 teacher_stat.getDueWeek().setTp(teacher_stat.getDueWeek().getEquiv());
@@ -491,12 +503,19 @@ public class AcademicPluginBodyLoad extends AcademicPluginBody {
         return teacher_stat;
     }
 
+    private double teacherDue(AcademicTeacherSituation situation, AcademicTeacherDegree degree) {
+        if (teacherHasDue(situation, degree)) {
+            return degree.getValueDU();
+        }
+        return 0;
+    }
+
     private boolean teacherHasDue(AcademicTeacherSituation situation, AcademicTeacherDegree degree) {
-        return degree != null &&
-                degree.getValueDU() > 0 &&
-                situation != null &&
-                situation.getType() != null &&
-                situation.getType().isWithDue();
+        return degree != null
+                && degree.getValueDU() > 0
+                && situation != null
+                && situation.getType() != null
+                && situation.getType().isWithDue();
     }
 
     public TeacherPeriodStat evalTeacherStat(
@@ -575,8 +594,6 @@ public class AcademicPluginBodyLoad extends AcademicPluginBody {
                 + dd.getValuePM() * v.getPm();
     }
 
-
-
     public void addAcademicTeacherSemestrialLoad(int semester, int weeksLoad, int teacherId, int periodId) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         List<AcademicTeacherSemestrialLoad> allFound = pu.createQuery("Select u from AcademicTeacherSemestrialLoad u where u.teacherId=:teacherId and u.periodId=:periodId and u.semester=:semester")
@@ -597,8 +614,8 @@ public class AcademicPluginBodyLoad extends AcademicPluginBody {
             }
         } else if (allFound.size() > 1) {
             AcademicTeacherSemestrialLoad sample = allFound.get(0);
-            log.log(Level.SEVERE, "Some issue forced making multiple duplicates (" + allFound.size() + ") of AcademicTeacherSemestrialLoad for " +
-                    sample.getPeriod() + "-"
+            log.log(Level.SEVERE, "Some issue forced making multiple duplicates (" + allFound.size() + ") of AcademicTeacherSemestrialLoad for "
+                    + sample.getPeriod() + "-"
                     + sample.getTeacher()
                     + ". Cleaning up this mess now...");
             allFound.remove(0);
@@ -745,9 +762,10 @@ public class AcademicPluginBodyLoad extends AcademicPluginBody {
             AcademicTeacherSituation situation = trs.getSituation();
             AcademicTeacherDegree degree = trs.getDegree();
             GlobalAssignmentStat[] annStatAss = new GlobalAssignmentStat[]{
-                    s.getAssignment(null, situation, degree),
-                    s.getAssignment(null, situation, null),
-                    s.getAssignment(null, null, null)};
+                s.getAssignment(null, situation, degree, true),
+                s.getAssignment(null, situation, null, true),
+                s.getAssignment(null, null, degree, true),
+                s.getAssignment(null, null, null, true)};
 
             for (GlobalAssignmentStat y : annStatAss) {
                 y.addTeacherStat(t);
@@ -756,10 +774,10 @@ public class AcademicPluginBodyLoad extends AcademicPluginBody {
                 AcademicSemester semester = semLoad.getSemester();
 
                 GlobalAssignmentStat[] semStatAss = new GlobalAssignmentStat[]{
-                        s.getAssignment(semester, situation, degree),
-                        s.getAssignment(semester, situation, null),
-                        s.getAssignment(semester, null, degree),
-                        s.getAssignment(semester, null, null)
+                    s.getAssignment(semester, situation, degree, true),
+                    s.getAssignment(semester, situation, null, true),
+                    s.getAssignment(semester, null, degree, true),
+                    s.getAssignment(semester, null, null, true)
                 };
 
                 for (GlobalAssignmentStat y : semStatAss) {
@@ -771,7 +789,7 @@ public class AcademicPluginBodyLoad extends AcademicPluginBody {
         List<AcademicTeacherSituation> permanentsList = getContext().getPlugin().findTeacherSituations(AcademicTeacherSituationType.PERMANENT);
         List<AcademicTeacherSituation> temporaryList = getContext().getPlugin().findTeacherSituations(AcademicTeacherSituationType.TEMPORARY);
         List<AcademicTeacherSituation> leaveList = getContext().getPlugin().findTeacherSituations(AcademicTeacherSituationType.LEAVE);
-        AcademicTeacherDegree assistant = getContext().getPlugin().findTeacherDegree("MA");
+        AcademicTeacherDegree maitre_assistant = getContext().getPlugin().findTeacherDegree("MA");
         AcademicConversionTableHelper conversionTableByPeriodId = getContext().getPlugin().findConversionTableByPeriodId(periodId);
 
         List<AcademicCourseAssignment> courseAssignments = academic.findCourseAssignments(periodId, new CourseAssignmentFilterAnd().and(filter).and(new CourseAssignmentFilter() {
@@ -809,7 +827,7 @@ public class AcademicPluginBodyLoad extends AcademicPluginBody {
                     value.getValueTP() * grp * shr,
                     value.getValuePM() * grp * shr
             );
-            double g = evalValueEquiv(loadValue, assistant, conversionTableByPeriodId);
+            double g = evalValueEquiv(loadValue, maitre_assistant, conversionTableByPeriodId);
             loadValue.setEquiv(g);
             List<GlobalAssignmentStat> possibleGlobalAssignmentStats = new ArrayList<>();
             List<AcademicTeacherSituation> sits = new ArrayList<>();
@@ -835,11 +853,11 @@ public class AcademicPluginBodyLoad extends AcademicPluginBody {
             for (AcademicSemester sem : sems) {
                 for (AcademicTeacherSituation sit : sits) {
                     for (AcademicTeacherDegree deg : degs) {
-                        possibleGlobalAssignmentStats.add(s.getAssignment(sem, sit, deg));
+                        possibleGlobalAssignmentStats.add(s.getAssignment(sem, sit, deg, true));
                     }
                 }
             }
-            possibleGlobalAssignmentStats.add(s.getAssignment(null, null, null));
+            possibleGlobalAssignmentStats.add(s.getAssignment(null, null, null, true));
             for (GlobalAssignmentStat globalAssignmentStat : possibleGlobalAssignmentStats) {
                 if (value.getTeacher() == null) {
                     globalAssignmentStat.getMissingAssignmentsLoad().add(loadValue);
@@ -941,11 +959,10 @@ public class AcademicPluginBodyLoad extends AcademicPluginBody {
         s.getTeachersPermanentStat().setTeachersCount(s.getAssignmentTeacherCount(null, permanentsList, null));
         s.getTeachersLeaveStat().setTeachersCount(s.getAssignmentTeacherCount(null, leaveList, null));
 
-        int totalCount = (int) (
-                s.getTeachersTemporaryStat().getTeachersCount()
-                        + s.getTeachersPermanentStat().getTeachersCount()
-                        + s.getTeachersContractualStat().getTeachersCount()
-                        + s.getTeachersLeaveStat().getTeachersCount());
+        int totalCount = (int) (s.getTeachersTemporaryStat().getTeachersCount()
+                + s.getTeachersPermanentStat().getTeachersCount()
+                + s.getTeachersContractualStat().getTeachersCount()
+                + s.getTeachersLeaveStat().getTeachersCount());
 
         s.getTeachersOtherStat().setTeachersCount(s.getTeachersCount() - totalCount);
         GlobalAssignmentStat ta = s.getTotalAssignment();
@@ -970,25 +987,21 @@ public class AcademicPluginBodyLoad extends AcademicPluginBody {
         double permEquivTot = s.getAssignmentSumValue(null, permanentsList, null).getEquiv();
 
 //        double contrEquivDu=s.getAssignment(null, Contractuel, null).getDue().getEquiv();
-        double contrEquivTot = evalValueEquiv(s.getAssignmentSumValue(null, contractualsList, null), assistant, conversionTableByPeriodId);
-        double vacEquivTot = evalValueEquiv(s.getAssignmentSumValue(null, temporaryList, null), assistant, conversionTableByPeriodId);
-        double missingAss = evalValueEquiv(ta.getMissingAssignmentsLoad(), assistant, conversionTableByPeriodId);
+        double contrEquivTot = evalValueEquiv(s.getAssignmentSumValue(null, contractualsList, null), maitre_assistant, conversionTableByPeriodId);
+        double vacEquivTot = evalValueEquiv(s.getAssignmentSumValue(null, temporaryList, null), maitre_assistant, conversionTableByPeriodId);
+        double missingAss = evalValueEquiv(ta.getMissingAssignmentsLoad(), maitre_assistant, conversionTableByPeriodId);
         int maxWeeks = getContext().getPlugin().getSemesterMaxWeeks();
         neededByDue.getValue().setEquiv(Math.max(0, permEquivTot - permEquivDu + contrEquivTot + vacEquivTot + missingAss));
         List<AcademicSemester> semesters = getContext().getPlugin().findSemesters();
         neededByDue.getValueWeek().setEquiv(neededByDue.getValue().getEquiv() / maxWeeks / semesters.size());
         neededByDue.setTeachersCount(
-                /*(int) Math.ceil*/(
-                        neededByDue.getValueWeek().getEquiv() / assistant.getValueDU()
-                )
+                /*(int) Math.ceil*/(neededByDue.getValueWeek().getEquiv() / maitre_assistant.getValueDU())
         );
 
         neededRelative.getValue().setEquiv(contrEquivTot + vacEquivTot + missingAss);
         neededRelative.getValueWeek().setEquiv(neededRelative.getValue().getEquiv() / maxWeeks / semesters.size());
         neededRelative.setTeachersCount(
-                /*(int) Math.ceil*/(
-                        neededRelative.getValueWeek().getEquiv() / assistant.getValueDU()
-                )
+                /*(int) Math.ceil*/(neededRelative.getValueWeek().getEquiv() / maitre_assistant.getValueDU())
         );
 
         double contractMiss = 6;
@@ -996,9 +1009,7 @@ public class AcademicPluginBodyLoad extends AcademicPluginBody {
         missingStat.getValue().set(ta.getMissingAssignmentsLoad());
         missingStat.getValueWeek().set(missingStat.getValue()).div(maxWeeks * semesters.size());
         missingStat.setTeachersCount(
-                /*(int) Math.ceil*/(
-                        missingStat.getValueWeek().getEquiv() / contractMiss
-                )
+                /*(int) Math.ceil*/(missingStat.getValueWeek().getEquiv() / contractMiss)
         );
 
 //        double duAssistant = evalValueEquiv(s.getAssignment(null, Permanent, null).getDue(), assistant);
@@ -1013,15 +1024,12 @@ public class AcademicPluginBodyLoad extends AcademicPluginBody {
 //                        neededByDue.getExtra().getEquiv() / assistant.getValueDU()
 //                )
 //        );
-
         for (SituationTypeStat situationTypeStat : new SituationTypeStat[]{
-                s.getTeachersPermanentStat(),
-                s.getTeachersTemporaryStat(),
-                s.getTeachersLeaveStat(),
-                s.getTeachersOtherStat(),
-                s.getTeachersContractualStat(),
-
-        }) {
+            s.getTeachersPermanentStat(),
+            s.getTeachersTemporaryStat(),
+            s.getTeachersLeaveStat(),
+            s.getTeachersOtherStat(),
+            s.getTeachersContractualStat(),}) {
             situationTypeStat.setCourseAssignmentCount(situationTypeStat.getAssignments().size());
             situationTypeStat.setCoursePlanCount(extractCourses(situationTypeStat.getAssignments()).size());
             for (AcademicTeacher t : situationTypeStat.getTeachers()) {
@@ -1036,22 +1044,20 @@ public class AcademicPluginBodyLoad extends AcademicPluginBody {
                 }
             }
         }
-        LoadValue refDue = evalValueEquiv(assistant.getValueDU(), assistant, conversionTableByPeriodId);
+        LoadValue refDue = evalValueEquiv(maitre_assistant.getValueDU(), maitre_assistant, conversionTableByPeriodId);
 
         s.setReferenceTeacherDueLoad(refDue.getEquivTD() * maxWeeks * semestersIds.size());
         /**
-         * permanentLoad-permanentDue+Non
-         * overload of permanents with a
+         * permanentLoad-permanentDue+Non overload of permanents with a
          */
         s.setOverload(
                 Math.max(0,
                         s.getTeachersPermanentStat().getValue().getEquiv() - s.getTeachersPermanentStat().getDue().getEquiv()
-                                + s.getTeachersContractualStat().getValue().getEquiv()
-                                + s.getTeachersTemporaryStat().getValue().getEquiv()
-                                + s.getTeachersOtherStat().getValue().getEquiv()
-                                + s.getMissing().getValue().getEquiv()
+                        + s.getTeachersContractualStat().getValue().getEquiv()
+                        + s.getTeachersTemporaryStat().getValue().getEquiv()
+                        + s.getTeachersOtherStat().getValue().getEquiv()
+                        + s.getMissing().getValue().getEquiv()
                 )
-
         );
         s.setNonPermanentLoad(
                 Math.max(0, s.getTeachersContractualStat().getValue().getEquiv()
@@ -1089,7 +1095,7 @@ public class AcademicPluginBodyLoad extends AcademicPluginBody {
         EnhancedProgressMonitor monitor = ProgressMonitorFactory.enhance(mon);
         Chronometer ch = new Chronometer();
 
-        TeacherIdByTeacherPeriodComparator teacherIdByTeacherPeriodComparator = new TeacherIdByTeacherPeriodComparator(getContext().getPlugin(),periodId);
+        TeacherIdByTeacherPeriodComparator teacherIdByTeacherPeriodComparator = new TeacherIdByTeacherPeriodComparator(getContext().getPlugin(), periodId);
 
         List<AcademicTeacher> teachersList = new ArrayList<>(getContext().getPlugin().findTeachers(periodId, teacherFilter));
         Collections.sort(teachersList, teacherIdByTeacherPeriodComparator);
@@ -1233,9 +1239,9 @@ public class AcademicPluginBodyLoad extends AcademicPluginBody {
         List<TeacherSemesterStat> all = new ArrayList<>();
         EnhancedProgressMonitor monitor = ProgressMonitorFactory.enhance(mon);
         EnhancedProgressMonitor[] mons = monitor.split(new double[]{4, 1, 2});
-        MapList<Integer, TeacherPeriodStat> teacherPeriodStats = evalTeacherStatList(periodId, teacherFilter
-                , new CourseAssignmentFilterAnd().and(filter).and(new DefaultCourseAssignmentFilter().addAcceptedSemester(semesterId))
-                , deviationConfig, mons[0]);
+        MapList<Integer, TeacherPeriodStat> teacherPeriodStats = evalTeacherStatList(periodId, teacherFilter,
+                new CourseAssignmentFilterAnd().and(filter).and(new DefaultCourseAssignmentFilter().addAcceptedSemester(semesterId)),
+                deviationConfig, mons[0]);
 
         int i = 0;
         int max = teacherPeriodStats.size();
@@ -1267,6 +1273,5 @@ public class AcademicPluginBodyLoad extends AcademicPluginBody {
         }
         return m;
     }
-
 
 }

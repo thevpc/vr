@@ -101,45 +101,6 @@ class CorePluginBodyPluginManager extends CorePluginBody {
                 toStart.add(pp);
             }
         }
-        for (Plugin plugin : toStart) {
-            List<Object> instances = plugin.getBeanInstances();
-            //this is a workaround!
-            //dont know why beans are not initialized by spring
-            for (Object ins : instances) {
-
-                boolean requirePostContruct = false;
-                for (Field declaredField : ins.getClass().getDeclaredFields()) {
-                    Autowired a = declaredField.getAnnotation(Autowired.class);
-                    declaredField.setAccessible(true);
-                    if (a != null) {
-                        Object v = null;
-                        try {
-                            v = declaredField.get(ins);
-                            if (v == null) {
-                                v = VrApp.getBean(declaredField.getType());
-                                declaredField.set(ins, v);
-                                requirePostContruct = true;
-                            }
-                        } catch (Exception ex) {
-                            Logger.getLogger(CorePluginBodyPluginManager.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                    }
-                }
-                if (requirePostContruct) {
-                    for (Method declaredMethod : ins.getClass().getDeclaredMethods()) {
-                        PostConstruct a = declaredMethod.getAnnotation(PostConstruct.class);
-                        if (a != null) {
-                        declaredMethod.setAccessible(true);
-                            try {
-                                declaredMethod.invoke(ins);
-                            } catch (Exception ex) {
-                                Logger.getLogger(CorePluginBodyPluginManager.class.getName()).log(Level.SEVERE, null, ex);
-                            }
-                        }
-                    }
-                }
-            }
-        }
         HashSet<String> nonCoherent = new HashSet<>();
         Collections.sort(toInstall);
         for (Plugin plugin : toInstall) {
@@ -328,11 +289,10 @@ class CorePluginBodyPluginManager extends CorePluginBody {
     }
 
     public Map<String, List<String>> getPluginsAPI() {
-        String[] beanNames = VrApp.getContext().getBeanNamesForAnnotation(VrPlugin.class);
         Map<String, List<String>> api = new HashMap<>();
-        for (String beanName : beanNames) {
+        for (Map.Entry<String,Object> beanEntry : VrApp.getBeansMapForAnnotations(VrPlugin.class).entrySet()) {
 
-            Object bean = VrApp.getContext().getBean(beanName);
+            Object bean = beanEntry.getValue();
             ArrayList<String> a = new ArrayList<>();
             //declared Method
             for (Method method : bean.getClass().getMethods()) {
@@ -364,7 +324,7 @@ class CorePluginBodyPluginManager extends CorePluginBody {
                 StringBuilder sb = new StringBuilder();
                 sb.append(typeToString(method.getGenericReturnType()));
                 sb.append(" ");
-                sb.append(beanName);
+                sb.append(beanEntry.getKey());
                 sb.append(".");
                 sb.append(mname);
                 sb.append("(");
@@ -380,7 +340,7 @@ class CorePluginBodyPluginManager extends CorePluginBody {
                 sb.append(")");
                 a.add(sb.toString());
             }
-            api.put(beanName, a);
+            api.put(beanEntry.getKey(), a);
         }
         return api;
     }
@@ -388,13 +348,14 @@ class CorePluginBodyPluginManager extends CorePluginBody {
     public List<Plugin> getPlugins() {
         if (plugins == null) {
             buildPluginInfos();
-            String[] appPluginBeans = VrApp.getContext().getBeanNamesForAnnotation(VrPlugin.class);
+            Map<String, Object> appPluginBeans = VrApp.getBeansMapForAnnotations(VrPlugin.class);
             ListValueMap<String, Object> instances = new ListValueMap<>();
             ListValueMap<String, String> beanNames = new ListValueMap<>();
             List<String> errors = new ArrayList<>();
-            Arrays.sort(appPluginBeans); //just to have a reproducible error if any
-            for (String beanName : appPluginBeans) {
-                Object bean = VrApp.getContext().getBean(beanName);
+            String[] names = appPluginBeans.keySet().toArray(new String[appPluginBeans.size()]);
+            Arrays.sort(names); //just to have a reproducible error if any
+            for (String beanName : names) {
+                Object bean = appPluginBeans.get(beanName);
                 PluginBundle bundle = getPluginBundle(bean);
                 if (bundle != null) {
                     instances.put(bundle.getId(), bean);

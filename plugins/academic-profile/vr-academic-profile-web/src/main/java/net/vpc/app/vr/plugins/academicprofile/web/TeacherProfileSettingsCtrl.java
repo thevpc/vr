@@ -9,18 +9,15 @@ import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppCompany;
 import net.vpc.app.vainruling.core.service.model.AppContact;
-import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.core.web.UPathItem;
-import net.vpc.app.vainruling.core.web.Vr;
-import net.vpc.app.vainruling.core.web.VrController;
-import net.vpc.app.vainruling.core.web.ctrl.MyProfileAlternative;
-import net.vpc.app.vainruling.core.web.fs.files.DocumentUploadListener;
-import net.vpc.app.vainruling.core.web.fs.files.DocumentsCtrl;
-import net.vpc.app.vainruling.core.web.fs.files.DocumentsUploadDialogCtrl;
+import net.vpc.app.vainruling.core.web.*;
+import net.vpc.app.vainruling.core.web.jsf.ctrl.DocumentUploadListener;
+import net.vpc.app.vainruling.core.web.jsf.ctrl.DocumentsCtrl;
+import net.vpc.app.vainruling.core.web.jsf.ctrl.dialog.DocumentsUploadDialogCtrl;
+import net.vpc.app.vainruling.core.web.jsf.ctrl.FileUploadEventHandler;
+import net.vpc.app.vainruling.core.web.jsf.Vr;
 import net.vpc.app.vainruling.core.web.themes.VrTheme;
 import net.vpc.app.vainruling.core.web.themes.VrThemeFace;
 import net.vpc.app.vainruling.core.web.themes.VrThemeFactory;
-import net.vpc.app.vainruling.core.web.util.FileUploadEventHandler;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vr.plugins.academicprofile.service.AcademicProfilePlugin;
@@ -51,9 +48,11 @@ import java.util.logging.Logger;
         title = "Mon profil enseignant",
         menu = "/Config",
         url = "modules/academic/profile/teacher-profile-settings",
-        securityKey = "Custom.TeacherProfileSettings"
+        replacementFor = "myProfileCtrl",
+        securityKey = "Custom.TeacherProfileSettings",
+        priority = 2
 )
-public class TeacherProfileSettingsCtrl implements DocumentUploadListener, MyProfileAlternative {
+public class TeacherProfileSettingsCtrl implements DocumentUploadListener, VrActionEnabler {
 
     private static final Logger log = Logger.getLogger(TeacherProfileSettingsCtrl.class.getName());
     @Autowired
@@ -64,6 +63,11 @@ public class TeacherProfileSettingsCtrl implements DocumentUploadListener, MyPro
 
     public Model getModel() {
         return model;
+    }
+
+    @Override
+    public boolean isEnabled(VrActionInfo data) {
+        return AcademicPlugin.get().getCurrentTeacher() != null;
     }
 
     @OnPageLoad

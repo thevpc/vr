@@ -7,18 +7,11 @@ package net.vpc.app.vainruling.plugins.academic.web;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.model.AppCivility;
-import net.vpc.app.vainruling.core.service.model.AppDepartment;
-import net.vpc.app.vainruling.core.service.model.AppGender;
-import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.UPathItem;
-import net.vpc.app.vainruling.core.web.util.VrWebHelper;
+import net.vpc.app.vainruling.core.web.jsf.VrJsf;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicOfficialDiscipline;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacherSituation;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicTeacherDegree;
 import net.vpc.app.vainruling.plugins.academic.service.model.imp.AcademicTeacherImport;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.upa.UPA;
@@ -79,13 +72,13 @@ public class SubscribeTeacherCtrl {
         CorePlugin core = VrApp.getBean(CorePlugin.class);
         AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
 
-        getModel().setPeriodItems(VrWebHelper.toSelectItemList(core.findValidPeriods()));
-        getModel().setCivilityItems(VrWebHelper.toSelectItemList(core.findCivilities()));
-        getModel().setGenderItems(VrWebHelper.toSelectItemList(core.findGenders()));
-        getModel().setSituationItems(VrWebHelper.toSelectItemList(p.findTeacherSituations()));
-        getModel().setOfficialDisciplineItems(VrWebHelper.toSelectItemList(p.findOfficialDisciplines()));
-        getModel().setDegreeItems(VrWebHelper.toSelectItemList(p.findTeacherDegrees()));
-        getModel().setDepartmentItems(VrWebHelper.toSelectItemList(core.findDepartments()));
+        getModel().setPeriodItems(VrJsf.toSelectItemList(core.findValidPeriods()));
+        getModel().setCivilityItems(VrJsf.toSelectItemList(core.findCivilities()));
+        getModel().setGenderItems(VrJsf.toSelectItemList(core.findGenders()));
+        getModel().setSituationItems(VrJsf.toSelectItemList(p.findTeacherSituations()));
+        getModel().setOfficialDisciplineItems(VrJsf.toSelectItemList(p.findOfficialDisciplines()));
+        getModel().setDegreeItems(VrJsf.toSelectItemList(p.findTeacherDegrees()));
+        getModel().setDepartmentItems(VrJsf.toSelectItemList(core.findDepartments()));
 
     }
 

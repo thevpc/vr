@@ -9,6 +9,7 @@ import net.vpc.app.vainruling.core.service.obj.EntityAction;
 
 import net.vpc.app.vainruling.core.web.obj.ActionDialog;
 import net.vpc.app.vainruling.core.web.obj.ActionDialogResult;
+import net.vpc.app.vainruling.core.web.obj.ActionDialogResultPostProcess;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseAssignment;
 import net.vpc.upa.AccessMode;
@@ -44,6 +45,6 @@ public class SplitSharesAcademicCourseAssignmentAction implements ActionDialog {
             academic.splitGroupCourseAssignment(Integer.parseInt(id));
         }
         //do nothing!
-        return ActionDialogResult.RELOAD_ALL;
+        return new ActionDialogResult(ActionDialogResultPostProcess.RELOAD_ALL);
     }
 }

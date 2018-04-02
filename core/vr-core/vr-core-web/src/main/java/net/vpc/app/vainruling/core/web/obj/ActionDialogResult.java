@@ -1,10 +1,24 @@
 package net.vpc.app.vainruling.core.web.obj;
 
-/**
- * Created by vpc on 10/3/16.
- */
-public enum ActionDialogResult {
-    VOID,
-    RELOAD_CURRENT,
-    RELOAD_ALL,
+public class ActionDialogResult {
+    public static final ActionDialogResult VOID=new ActionDialogResult(ActionDialogResultPostProcess.VOID);
+    private String message;
+    private ActionDialogResultPostProcess type;
+
+    public ActionDialogResult(String message, ActionDialogResultPostProcess type) {
+        this.message = message;
+        this.type = type;
+    }
+
+    public ActionDialogResult(ActionDialogResultPostProcess type) {
+        this.type = type;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public ActionDialogResultPostProcess getType() {
+        return type;
+    }
 }

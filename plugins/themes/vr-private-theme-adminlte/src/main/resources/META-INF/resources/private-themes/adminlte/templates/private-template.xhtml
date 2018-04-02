@@ -7,7 +7,7 @@
       xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
       xmlns:c="http://java.sun.com/jstl/core" xmlns:f="http://xmlns.jcp.org/jsf/core"
       >
-    <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.Vr"-->
+<!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.jsf.Vr"-->
     <!--@elvariable id="corePlugin" type="net.vpc.app.vainruling.core.service.CorePlugin"-->
     <!--@elvariable id="vrMenuManager" type="net.vpc.app.vainruling.core.web.menu.VrMenuManager"-->
     <h:head>
@@ -17,7 +17,8 @@
         <!-- Tell the browser to be responsive to screen width -->
         <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport"/>
         <!-- Bootstrap 3.3.6 -->
-        <link rel="stylesheet" href="#{vr.privateThemeContext}/wplugins/adminlte/bootstrap/css/bootstrap.min.css"/>
+        <!--<link rel="stylesheet" href="# {vr.privateThemeContext}/wplugins/adminlte/bootstrap/css/bootstrap.min.css"/>-->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
         <!-- Font Awesome -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css"/>
         <!-- Ionicons -->
@@ -360,6 +361,11 @@
                                 <li class="header">Depatement #{corePlugin.currentUser.department.name}</li>
                             </ui:fragment>
                             <h:inputHidden value="#{vr.buildMenu()}"/>
+                            <li class="treeview">
+                                <h:outputLink value="/p/welcome">
+                                    <i class="fa fa-desktop"></i> Mon Mur
+                                </h:outputLink>
+                            </li>
                             <ui:repeat value="#{vr.menu.resolveGroups()}" var="p0">
                                 <li class="treeview">
                                     <a href="#">
@@ -547,7 +553,9 @@
 
         <!-- jQuery 2.2.3 -->
         <!-- Bootstrap 3.3.6 -->
-        <script src="#{vr.privateThemeContext}/wplugins/adminlte/bootstrap/js/bootstrap.min.js"></script>
+        <!--<script src="# {vr.privateThemeContext}/wplugins/adminlte/bootstrap/js/bootstrap.min.js"></script>-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
         <!-- FastClick -->
         <script src="#{vr.privateThemeContext}/wplugins/adminlte/plugins/fastclick/fastclick.js"></script>
         <!-- AdminLTE App -->
@@ -567,12 +575,12 @@
         <script src="#{vr.privateThemeContext}/wplugins/adminlte/dist/js/demo.js"></script>
 
         <script>
-                        $(document).ready(function () {
-                            $(".sparkline").each(function () {
-                                var $this = $(this);
-                                $this.sparkline('html', $this.data());
-                            });
-                        });
+                                    $(document).ready(function () {
+                                        $(".sparkline").each(function () {
+                                            var $this = $(this);
+                                            $this.sparkline('html', $this.data());
+                                        });
+                                    });
         </script>
 
     </h:body>

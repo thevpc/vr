@@ -5,8 +5,6 @@
  */
 package net.vpc.app.vainruling.core.web.menu;
 
-import net.vpc.app.vainruling.core.web.Vr;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.*;
@@ -14,6 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.vpc.app.vainruling.core.web.VrActionInfo;
 import net.vpc.app.vainruling.core.web.VrActionEnabler;
+import net.vpc.app.vainruling.core.web.util.VrWebHelper;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -99,8 +98,7 @@ public class VRMenuInfo implements VrActionInfo{
     }
 
     public String getPrettyURL() {
-        Vr c = Vr.get();
-        String context = c.getContext();
+        String context = VrWebHelper.getContext();
         if(context==null){
             context="";
         }

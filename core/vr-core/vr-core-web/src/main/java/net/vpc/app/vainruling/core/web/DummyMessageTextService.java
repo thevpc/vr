@@ -6,7 +6,7 @@ import net.vpc.app.vainruling.core.service.content.MessageTextService;
 import java.util.Collections;
 import java.util.List;
 
-class DummyMessageTextService implements MessageTextService {
+public class DummyMessageTextService implements MessageTextService {
     @Override
     public int getUnreadCount() {
         return 0;

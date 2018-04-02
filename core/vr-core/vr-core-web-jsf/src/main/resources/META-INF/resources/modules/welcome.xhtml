@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+>
+
+<h:head>
+</h:head>
+
+<h:body>
+
+
+    <ui:composition template="#{vr.privateTemplatePath}">
+        <ui:define name="content">
+            <h:form id="itemForm" enctype="multipart/form-data">
+                <div class="row">
+                    <!-- /.col -->
+                    <div class="col-md-9">
+
+                        <div class="row">
+                            <p:tabView id="welcomeTabView">
+                                <p:tab title="Principale" id="mainPanel">
+                                    #{vr.cmsTextService.loadContentTexts('Welcome')}
+
+                                    <p:dataGrid var="page"
+                                                id="welcomeMessagesGrid"
+                                                value="#{vr.groupListBy(8,vr.cmsTextService.getContentTextList('Welcome'))}"
+                                                columns="1"
+                                                layout="grid"
+                                                rows="100" paginator="true"
+                                                paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                                rowsPerPageTemplate="100,500,1000"
+                                                paginatorAlwaysVisible="false"
+                                                paginatorPosition="bottom"
+                                                styleClass="vr-no-border-grid"
+                                                emptyMessage=""
+                                    >
+                                        <div class="row">
+                                            <ui:repeat value="#{vr.splitListBy(1,page)}" var="col">
+                                                <div class="col-md-12">
+                                                    <ui:repeat value="#{col}" var="a">
+                                                        <div class="box #{vr.mapToken(a.articlesItem.decoration,'box-default','default','box-default','primary','box-primary','danger','box-danger','warning','box-warning','info','box-info','success','box-success')}">
+                                                            <div class="box-header with-border">
+                                                                <h3 class="box-title">#{a.subject}</h3>
+                                                                <ui:fragment rendered="#{not vr.isEmpty(a.subTitle)}">
+                                                                    <h3 class="box-sub-title">#{a.subTitle}</h3>
+                                                                </ui:fragment>
+                                                                <div class="box-tools pull-right">
+                                                                    <ui:repeat
+                                                                            value="#{vr.extractLabels(a.articlesItem.decoration)}"
+                                                                            var="lab">
+                                                                        <ui:fragment
+                                                                                rendered="#{lab.type eq 'button' and lab.value eq 'collapse'}">
+                                                                            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                                                                            </button>
+                                                                        </ui:fragment>
+                                                                        <ui:fragment
+                                                                                rendered="#{lab.type eq 'button' and lab.value eq 'remove'}">
+                                                                            <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                                                                        </ui:fragment>
+                                                                        <ui:fragment rendered="#{lab.type eq 'label'}">
+                                                                            <span class="label label-#{lab.kind}">#{lab.value}</span>
+                                                                        </ui:fragment>
+                                                                        <ui:fragment rendered="#{lab.type eq 'badge'}">
+                                                                            <span class="badge label-#{lab.kind}">#{lab.value}</span>
+                                                                        </ui:fragment>
+                                                                    </ui:repeat>
+                                                                    <ui:fragment rendered="#{vr.cmsTextService.isEnabledAction('delete',a.articlesItem.id)}">
+                                                                        <p:commandLink action="#{vr.cmsTextService.onAction('delete',a.articlesItem.id)}" update=":itemForm">
+                                                                        <button type="button" class="btn btn-box-tool">
+                                                                            <i class="fa fa-trash"></i>
+                                                                        </button>
+                                                                        </p:commandLink>
+                                                                    </ui:fragment>
+                                                                    <ui:fragment rendered="#{vr.cmsTextService.isEnabledAction('archive',a.articlesItem.id)}">
+                                                                        <p:commandLink action="#{vr.cmsTextService.onAction('archive',a.articlesItem.id)}" update=":itemForm">
+                                                                        <button type="button" class="btn btn-box-tool">
+                                                                            <i class="fa fa-archive"></i>
+                                                                        </button>
+                                                                        </p:commandLink>
+                                                                    </ui:fragment>
+                                                                    <ui:fragment rendered="#{vr.cmsTextService.isEnabledAction('edit',a.articlesItem.id)}">
+                                                                        <p:commandLink action="#{vr.cmsTextService.onAction('edit',a.articlesItem.id)}" update=":itemForm">
+                                                                        <button type="button" class="btn btn-box-tool">
+                                                                            <i class="fa fa-wrench"></i>
+                                                                        </button>
+                                                                        </p:commandLink>
+                                                                    </ui:fragment>
+                                                                    <ui:fragment rendered="#{vr.cmsTextService.isEnabledAction('important',a.articlesItem.id)}">
+                                                                        <p:commandLink action="#{vr.cmsTextService.onAction('important',a.articlesItem.id)}" update=":itemForm">
+                                                                        <button type="button" class="btn btn-box-tool">
+                                                                            <i class="fa #{a.articlesItem.important ? 'fa-bookmark':'fa-bookmark-o'}" style="#{a.articlesItem.important ? 'color: #dd4b39;':''}"></i>
+                                                                        </button>
+                                                                        </p:commandLink>
+                                                                    </ui:fragment>
+                                                                </div>
+                                                            </div>
+                                                            <!-- /.box-header -->
+                                                            <!-- form start -->
+                                                            <div class="box-body">
+                                                                <div class="form-group">
+                                                                    <h:outputText
+                                                                            value="#{vr.replaceCustomURLs(a.content)}"
+                                                                            escape="false"/>
+                                                                    <p:outputPanel
+                                                                            rendered="#{a.attachments.size() ne 0}">
+                                                                        <ui:repeat value="#{a.attachments}" var="att">
+                                                                            <h:outputLink
+                                                                                    rendered="#{!vr.isFSPath(att.path)}"
+                                                                                    target="_blank"
+                                                                                    value="#{vr.url(att.path)}"
+                                                                                    styleClass="#{(att.style eq null or att.style eq '')?'btn  btn-default':att.style}"
+                                                                                    style="margin-left: 3px;margin-right: 3px;margin-top: 5px;"
+                                                                            >
+                                                                                <h:outputText value="#{att.name}"/>
+                                                                            </h:outputLink>
+
+                                                                            <p:commandLink
+                                                                                    rendered="#{vr.isFSPath(att.path)}"
+                                                                                    target="_blank"
+                                                                                    value="#{att.name}"
+                                                                                    styleClass="#{(att.style eq null or att.style eq '')?'btn  btn-default':att.style}"
+                                                                                    style="margin-left: 3px;margin-right: 3px;margin-top: 5px;"
+                                                                                    ajax="false"
+                                                                            >
+                                                                                <p:fileDownload
+                                                                                        value="#{vr.downloadPath(att.path)}"/>
+                                                                            </p:commandLink>
+                                                                        </ui:repeat>
+                                                                    </p:outputPanel>
+                                                                </div>
+                                                            </div>
+                                                            <!-- /.box-body -->
+
+                                                            <div class="box-footer"
+                                                                 title="Destination : #{a.articlesItem.recipientProfiles}">
+                                                                écrit par #{(a.user eq null)?'//inconnu//':a.user.fullName} #{(a.publishTime eq null)?'' : (vr.str(' - (le ',vr.date(a.publishTime,'dd MMM yyyy') ,')'))}
+                                                            </div>
+                                                        </div>
+                                                    </ui:repeat>
+                                                </div>
+                                            </ui:repeat>
+                                        </div>
+                                    </p:dataGrid>
+                                </p:tab>
+                                <p:tab title="News">
+                                    #{vr.cmsTextService.loadContentTexts('News')}
+                                    <p:dataGrid var="a" value="#{vr.cmsTextService.getContentTextList('News')}"
+                                                columns="1"
+                                                layout="grid"
+                                                rows="100" paginator="true"
+                                                paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                                rowsPerPageTemplate="100,500,1000"
+                                                paginatorAlwaysVisible="false"
+                                                paginatorPosition="bottom"
+                                                styleClass="vr-no-border-grid"
+                                                emptyMessage=""
+                                    >
+                                        <p:panel header="#{a.subject}"
+                                                 footer="écrit par #{(a.user eq null)?'//inconnu//':a.user.fullName} #{(a.publishTime eq null)?'' : (vr.str(' - (le ',vr.date(a.publishTime,'dd MMM yyyy') ,')'))}"
+                                                 style="margin-bottom:10px"
+                                                 styleClass="vr-no-border-grid"
+                                        >
+                                            <h:panelGrid columns="1" cellpadding="10">
+                                                <h:outputText value="#{vr.replaceCustomURLs(a.content)}"
+                                                              escape="false"/>
+                                                <p:outputPanel rendered="#{a.attachments.size() ne 0}">
+                                                    <ui:repeat value="#{a.attachments}" var="att">
+                                                        <h:outputLink rendered="#{!vr.isFSPath(att.path)}"
+                                                                      value="#{vr.url(att.path)}"
+                                                                      styleClass="#{(att.style eq null or att.style eq '')?'btn  btn-default':att.style}"
+                                                                      style="margin-left: 3px;margin-right: 3px;"
+                                                        >
+                                                            <h:outputText value="#{att.name}"/>
+                                                        </h:outputLink>
+
+                                                        <p:commandLink rendered="#{vr.isFSPath(att.path)}"
+                                                                       value="#{att.name}"
+                                                                       styleClass="#{(att.style eq null or att.style eq '')?'btn  btn-default':att.style}"
+                                                                       style="margin-left: 3px;margin-right: 3px;"
+                                                                       ajax="false"
+                                                        >
+                                                            <p:fileDownload value="#{vr.downloadPath(att.path)}"/>
+                                                        </p:commandLink>
+                                                    </ui:repeat>
+                                                </p:outputPanel>
+                                            </h:panelGrid>
+                                        </p:panel>
+                                    </p:dataGrid>
+                                </p:tab>
+                            </p:tabView>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+
+                        <!-- Profile Image -->
+                        <div class="box box-primary">
+                            <div class="box-body box-profile">
+                                <img class="profile-user-img img-responsive img-circle"
+                                     src="#{vr.url(corePlugin.currentUserIcon)}" alt="User profile picture"/>
+
+                                <h3 class="profile-username text-center">#{corePlugin.currentUser==null?'anonymous' : corePlugin.currentUser.contact.fullName}</h3>
+
+                                <p class="text-muted text-center">#{corePlugin.currentUser==null?'anonymous' : corePlugin.currentUser.contact.positionSuffix}</p>
+
+                                <ul class="list-group list-group-unbordered">
+                                    <li class="list-group-item">
+                                        <b>Groupes</b> <a class="pull-right">#{vr.currentToken.profileNames.size()}</a>
+                                    </li>
+
+                                    <ui:fragment rendered="#{vr.currentToken.rootLogin!=null}">
+                                        <li class="list-group-item">
+                                            <b>Impersonifcation</b> <a
+                                                class="pull-right">#{vr.currentToken.rootLogin}</a>
+                                        </li>
+
+                                    </ui:fragment>
+                                    <li class="list-group-item">
+                                        <b>Connexions</b> <a
+                                            class="pull-right">#{corePlugin.currentUser==null?'N/A' : corePlugin.currentUser.connexionCount}</a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <b>Dernier Accès</b> <a
+                                            class="pull-right">#{corePlugin.currentUser==null?'anonymous' : vr.date(corePlugin.currentUser.lastConnexionDate)}</a>
+                                    </li>
+                                </ul>
+
+                                <!--<a href="#" class="btn btn-primary btn-block"><b>Follow</b></a>-->
+                            </div>
+                            <!-- /.box-body -->
+                        </div>
+                        <!-- /.box -->
+
+                        <!-- About Me Box -->
+                        <div class="box box-primary">
+                            <div class="box-header with-border">
+                                <h3 class="box-title">A propos</h3>
+                            </div>
+                            <!-- /.box-header -->
+                            <div class="box-body">
+                                <!--
+                                <strong><i class="fa fa-book margin-r-5"></i> Education</strong>
+
+                                <p class="text-muted">
+                                    T.B.D
+                                </p>
+
+                                <hr/>
+
+                                <strong><i class="fa fa-map-marker margin-r-5"></i> Localisation</strong>
+
+                                <p class="text-muted">
+                                    Indéfinie
+                                </p>
+
+                                <hr/>
+
+                                <strong><i class="fa fa-pencil margin-r-5"></i> Compétences</strong>
+                                <p>
+                                </p>
+                                -->
+                                <strong><i class="fa fa-pencil margin-r-5"></i> Groupes</strong>
+
+                                <p>
+                                    <ui:repeat value="#{vr.currentToken.profileNames.toArray()}" var="prName">
+                                        <span class="label label-#{vr.hashToArr(prName,'danger','success','info','warning','primary','default')}">#{prName}</span>
+                                    </ui:repeat>
+                                </p>
+                                <!--
+                                <hr/>
+
+                                <strong><i class="fa fa-file-text-o margin-r-5"></i> Notes</strong>
+
+                                <p></p>
+                                -->
+                            </div>
+                            <!-- /.box-body -->
+                        </div>
+                        <!-- /.box -->
+                    </div>
+                </div>
+            </h:form>
+        </ui:define>
+
+
+    </ui:composition>
+
+
+</h:body>
+
+</html>

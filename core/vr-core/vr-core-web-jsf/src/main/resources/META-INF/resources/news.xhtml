@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+>
+<h:head>
+</h:head>
+<!--@elvariable id="articlesCtrl" type="net.vpc.app.vainruling.plugins.articles.web.ArticlesCtrl"-->
+<!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.jsf.Vr"-->
+<h:body>
+    <ui:composition template="#{vr.publicThemePath}/templates/public-template.xhtml">
+        <ui:define name="row1">
+
+        </ui:define>
+        <ui:define name="row2">
+
+        </ui:define>
+        <ui:define name="row3">
+            <h:form id="newsForm">
+                <div class="text-inter">
+                    <div class="container">
+                        <div class="row">
+                            #{vr.cmsTextService.loadContentTexts('News')}
+                            <div class="col-md-9">
+                                <h:panelGrid id="curr" rendered="#{articlesCtrl.model.current ne null}"
+                                             style="width: 100%;">
+                                    #{articlesCtrl.updateVisit(articlesCtrl.model.current.id)}
+                                    <div style="text-align: justify;text-justify: inter-word;color: #929da5;">
+                                        <h3>#{articlesCtrl.model.current.subject}</h3>
+                                        <p:imageSwitch effect="zoom" slideshowAuto="true" style="float: left;
+                                               margin-right: 10px;
+                                               margin-bottom: 10px;
+                                               ">
+                                            <ui:repeat value="#{articlesCtrl.model.current.imageAttachments}" var="im">
+                                                <p:graphicImage value="#{vr.url(im.path)}" alt="#{im.name}"
+                                                                width="400"
+                                                                height="200"/>
+                                            </ui:repeat>
+                                        </p:imageSwitch>
+
+                                        <p>
+                                            <h:outputText
+                                                    value="#{vr.lightHtml(articlesCtrl.model.current)}"
+                                                    escape="false"/>
+                                        </p>
+                                        <ui:repeat value="#{articlesCtrl.model.current.attachments}" var="att">
+                                            <h:outputLink rendered="#{!vr.isFSPath(att.path)}"
+                                                          value="#{vr.url(att.path)}"
+                                                          styleClass="#{(att.style eq null or att.style eq '')?'btn  btn-default':att.style}"
+                                                          style="margin-left: 3px;margin-right: 3px;"
+                                            >
+                                                <h:outputText value="#{att.name}"/>
+                                            </h:outputLink>
+
+                                            <p:commandLink rendered="#{vr.isFSPath(att.path)}"
+                                                           value="#{att.name}"
+                                                           styleClass="#{(att.style eq null or att.style eq '')?'btn  btn-default':att.style}"
+                                                           style="margin-left: 3px;margin-right: 3px;"
+                                                           ajax="false"
+                                            >
+                                                <p:fileDownload value="#{vr.downloadPath(att.path)}"/>
+                                            </p:commandLink>
+                                        </ui:repeat>
+                                        <p:separator style="border-color: #63C6AE;margin-bottom: 0px;"/>
+                                        <div>
+                                            <h:outputText style="margin-top: 0px;float: right; margin-right: 10px;"
+                                                          value="by #{articlesCtrl.model.current.user.contact.fullName}, #{vr.date(articlesCtrl.model.current.publishTime,vr.getLocale('en'))}, #{articlesCtrl.model.current.visitCount+1} views"/>
+                                            <h:commandLink value="#{vr.fullContext}/p/news?a={#{vr.strFormat('id=%d',articlesCtrl.model.current.id)}}">
+                                                <h:graphicImage value="#{vr.strcat(vr.publicThemePath,'/images/icons/link16.png')}"/>
+                                            </h:commandLink>
+                                        </div>
+                                    </div>
+                                </h:panelGrid>
+                            </div>
+                            <div class="col-md-3">
+                                <h2 style="
+                                    padding: 15px 10px 10px 10px;
+                                    background: #EFEFEF;
+                                    border-bottom: 1px solid #CCCCCC;
+                                    text-transform: uppercase;
+                                    font-size: 100%;
+                                    font-size: small;
+                                    margin-bottom: 1px;
+                                "><span style="color: red;">Recent</span> News &amp; Updates</h2>
+                                <p:dataGrid var="i" value="#{vr.cmsTextService.getContentTextList('News')}" columns="1"
+                                            layout="grid"
+                                            rows="5" paginator="true"
+                                            paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                            rowsPerPageTemplate="5,10,20,50,1000"
+                                            paginatorAlwaysVisible="false"
+                                            paginatorPosition="bottom"
+                                >
+                                    <h3 style="font-size: small;margin-top: 0px;margin-bottom: 0px;padding-top: 0px;">
+                                        <span style="padding: 0 5px;background: #1777B1;color: #FFFFFF;">#{vr.date(i.publishTime,'dd/MM')}:</span> #{i.subject}
+                                    </h3>
+
+                                    <p style="font-size: x-small"><p:commandLink
+                                            action="#{articlesCtrl.model.setCurrent(i)}"
+                                            update=":newsForm:curr">#{vr.strcut(vr.html2txt(i.content),100)}…</p:commandLink>
+                                    </p>
+                                </p:dataGrid>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="shadow"></div>
+            </h:form>
+        </ui:define>
+        <ui:define name="row4">
+
+        </ui:define>
+        <ui:define name="row5">
+
+        </ui:define>
+        <!--            <ui:define name="row6">
+
+                    </ui:define>-->
+        <!--            <ui:define name="row7">
+
+                    </ui:define>-->
+    </ui:composition>
+</h:body>
+</html>

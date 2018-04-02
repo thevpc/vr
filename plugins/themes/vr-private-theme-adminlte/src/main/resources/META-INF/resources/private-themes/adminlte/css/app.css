@@ -637,7 +637,7 @@ button.vr-toolbox-button > span.ui-button-text {
 }
 
 .ui-splitbutton > button.ui-button {
-    width: 100px;
+    /*width: 100px;*/
     height: 40px;
 }
 

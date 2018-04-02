@@ -483,7 +483,7 @@ public class AcademicPlugin {
     }
 
     public List<KPI> resolveAssignmentKPIs() {
-        return new ArrayList<KPI>(VrApp.getContext().getBeansOfType(KPI.class).values());
+        return VrApp.getBeansForType(KPI.class);
     }
 
     public KPIResult evalAssignmentKPIs(List<AcademicCourseAssignmentInfo> assignments, KPIGroupBy<AcademicCourseAssignmentInfo>[] groupBy, KPI<AcademicCourseAssignmentInfo>... kpis) {

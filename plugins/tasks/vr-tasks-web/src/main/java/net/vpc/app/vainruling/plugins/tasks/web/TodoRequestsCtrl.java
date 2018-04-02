@@ -10,12 +10,11 @@ import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.UPathItem;
-import net.vpc.app.vainruling.core.web.ctrl.AbstractObjectCtrl;
+import net.vpc.app.vainruling.core.web.jsf.ctrl.AbstractObjectCtrl;
 
-import net.vpc.app.vainruling.core.web.util.VrWebHelper;
+import net.vpc.app.vainruling.core.web.jsf.VrJsf;
 import net.vpc.app.vainruling.plugins.tasks.service.TaskPlugin;
 import net.vpc.app.vainruling.plugins.tasks.service.model.*;
-import net.vpc.common.jsf.FacesUtils;
 import net.vpc.upa.AccessMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -181,7 +180,7 @@ public class TodoRequestsCtrl extends AbstractObjectCtrl<Todo> {
     @Override
     public void reloadPage(String cmd, boolean ustomization) {
         getModel().setTodoLists(todoService.findTodoListsByInitiator(null));
-        getModel().setTodoListItems(VrWebHelper.toSelectItemList(getModel().getTodoLists()));
+        getModel().setTodoListItems(VrJsf.toSelectItemList(getModel().getTodoLists()));
         if (getModel().getTodoLists().size() > 0) {
             getModel().setTodoList(getModel().getTodoLists().get(0));
         }
@@ -194,9 +193,9 @@ public class TodoRequestsCtrl extends AbstractObjectCtrl<Todo> {
 //        int currentListId = list.getId();
 
         getModel().setStatuses(todoService.findTodoStatuses(getModel().getTodoList().getId()));
-        getModel().setStatusItems(VrWebHelper.toSelectItemList(getModel().getStatuses()));
+        getModel().setStatusItems(VrJsf.toSelectItemList(getModel().getStatuses()));
         getModel().setCategories(todoService.findTodoCategories(getModel().getTodoList().getId()));
-        getModel().setCategoryItems(VrWebHelper.toSelectItemList(getModel().getCategories()));
+        getModel().setCategoryItems(VrJsf.toSelectItemList(getModel().getCategories()));
     }
 
     public void currentTodoListChanged() {

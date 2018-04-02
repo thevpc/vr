@@ -7,7 +7,7 @@ package net.vpc.app.vainruling.plugins.tasks.web;
 
 import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.UPathItem;
-import net.vpc.app.vainruling.core.web.ctrl.AbstractNameCtrl;
+import net.vpc.app.vainruling.core.web.jsf.ctrl.AbstractNameCtrl;
 import net.vpc.app.vainruling.plugins.tasks.service.TaskPlugin;
 import net.vpc.app.vainruling.plugins.tasks.service.model.TodoList;
 import net.vpc.app.vainruling.plugins.tasks.service.model.TodoStatus;

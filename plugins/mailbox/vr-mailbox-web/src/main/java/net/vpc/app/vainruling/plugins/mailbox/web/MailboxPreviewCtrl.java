@@ -47,7 +47,7 @@ public class MailboxPreviewCtrl implements PollAware,MessageTextService {
     }
 
     @OnPageLoad
-    @PostConstruct
+//    @PostConstruct
     public void onRefresh() {
         if(true) return; //TODO FIX ME!!!!
         MailboxPlugin p = VrApp.getBean(MailboxPlugin.class);

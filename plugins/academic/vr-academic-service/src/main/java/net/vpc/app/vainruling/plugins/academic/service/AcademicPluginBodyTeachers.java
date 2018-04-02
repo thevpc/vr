@@ -24,10 +24,12 @@ import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.UPA;
 
 import java.util.*;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class AcademicPluginBodyTeachers extends AcademicPluginBody {
+
     private static final Logger log = Logger.getLogger(AcademicPluginBodyTeachers.class.getName());
 
     private CorePlugin core;
@@ -45,7 +47,6 @@ public class AcademicPluginBodyTeachers extends AcademicPluginBody {
         teacherType.setCode("Teacher");
         teacherType.setName("Teacher");
         core.findOrCreate(teacherType);
-
 
         core.addProfileRight("Teacher", AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_TEACHER);
 
@@ -68,13 +69,12 @@ public class AcademicPluginBodyTeachers extends AcademicPluginBody {
             core.addProfileRight(teacherProfile.getId(), CorePluginSecurity.getEntityRightNavigate(navigateOnlyEntity));
         }
         for (String readOnlyEntity : new String[]{"AcademicTeacher", "AcademicClass", "AcademicCoursePlan", "AcademicCourseLevel", "AcademicCourseGroup", "AcademicCourseType", "AcademicProgram", "AcademicDiscipline", "AcademicStudent"
-                //,"AcademicCourseAssignment"
+    //,"AcademicCourseAssignment"
         }) {
             for (String right : new String[]{
-                    CorePluginSecurity.getEntityRightEditor(readOnlyEntity),
-                    CorePluginSecurity.getEntityRightLoad(readOnlyEntity),
-                    CorePluginSecurity.getEntityRightNavigate(readOnlyEntity),
-            }) {
+                CorePluginSecurity.getEntityRightEditor(readOnlyEntity),
+                CorePluginSecurity.getEntityRightLoad(readOnlyEntity),
+                CorePluginSecurity.getEntityRightNavigate(readOnlyEntity),}) {
                 core.addProfileRight(teacherProfile.getId(), right);
             }
         }
@@ -132,7 +132,6 @@ public class AcademicPluginBodyTeachers extends AcademicPluginBody {
 //        PersistenceUnit pu = UPA.getPersistenceUnit();
 //        pu.merge(t);
 //    }
-
     public List<AcademicTeacher> findTeachers(int period, TeacherPeriodFilter teacherFilter) {
         List<AcademicTeacher> teachers = findTeachers();
         if (teacherFilter == null) {
@@ -161,13 +160,13 @@ public class AcademicPluginBodyTeachers extends AcademicPluginBody {
     public List<NamedId> findEnabledTeacherNames(int periodId) {
         return UPA.getPersistenceUnit().invokePrivileged(
                 new Action<List<NamedId>>() {
-                    @Override
-                    public List<NamedId> run() {
-                        return findEnabledTeachers(periodId).stream()
-                                .map(x->new NamedId(x.getId(),x.resolveFullName()))
-                                .collect(Collectors.toList());
-                    }
-                }
+            @Override
+            public List<NamedId> run() {
+                return findEnabledTeachers(periodId).stream()
+                        .map(x -> new NamedId(x.getId(), x.resolveFullName()))
+                        .collect(Collectors.toList());
+            }
+        }
         );
     }
 
@@ -208,11 +207,10 @@ public class AcademicPluginBodyTeachers extends AcademicPluginBody {
         return objects.stream().filter(x -> filter.accept(x)).collect(Collectors.toList());
     }
 
-
-    public List<AcademicTeacher> findTeachersWithAssignmentsOrIntents(int periodId, int semesterId, boolean includeAssignments, boolean includeIntents,int teacherDepId,int assignmentDepId) {
+    public List<AcademicTeacher> findTeachersWithAssignmentsOrIntents(int periodId, int semesterId, boolean includeAssignments, boolean includeIntents, int teacherDepId, int assignmentDepId) {
         CorePluginSecurity.requireRight(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_ASSIGNMENTS);
         HashMap<Integer, AcademicTeacher> visited = new HashMap<>();
-        if(includeAssignments && includeIntents){
+        if (includeAssignments && includeIntents) {
             List<AcademicTeacher> byAssignment = UPA.getPersistenceUnit()
                     .createQuery("Select u from AcademicTeacher u where u.id in ("
                             + " Select t.id from AcademicTeacher t "
@@ -237,7 +235,7 @@ public class AcademicPluginBodyTeachers extends AcademicPluginBody {
                     visited.put(academicTeacher.getId(), academicTeacher);
                 }
             }
-        }else {
+        } else {
             if (includeAssignments) {
                 List<AcademicTeacher> byAssignment = UPA.getPersistenceUnit()
                         .createQuery("Select u from AcademicTeacher u where u.id in ("
@@ -354,12 +352,12 @@ public class AcademicPluginBodyTeachers extends AcademicPluginBody {
             @Override
             public Map<Integer, AcademicTeacherPeriod> run() {
 
-                List<AcademicTeacherPeriod> ret =
-                        UPA.getPersistenceUnit()
+                List<AcademicTeacherPeriod> ret
+                        = UPA.getPersistenceUnit()
                                 .createQueryBuilder(AcademicTeacherPeriod.class)
                                 .setEntityAlias("o")
                                 .byExpression("o.periodId=:periodId")
-//                                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 4)
+                                //                                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 4)
                                 .setParameter("periodId", periodId)
                                 .getResultList();
                 Map<Integer, AcademicTeacherPeriod> t = new HashMap<Integer, AcademicTeacherPeriod>();
@@ -385,7 +383,6 @@ public class AcademicPluginBodyTeachers extends AcademicPluginBody {
         return a;
     }
 
-
     public String getValidName(AcademicTeacher t) {
         if (t == null) {
             return "";
@@ -402,7 +399,6 @@ public class AcademicPluginBodyTeachers extends AcademicPluginBody {
         }
         return (name);
     }
-
 
     public void validateAcademicData_Teacher(int teacherId, int periodId) {
         CorePluginSecurity.requireRight(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_CONFIG_WRITE);
@@ -435,16 +431,14 @@ public class AcademicPluginBodyTeachers extends AcademicPluginBody {
             }
         }
 
-
         int ss = academic.findSemesters().size();
         for (int i = 1; i < ss + 1; i++) {
             academic.addAcademicTeacherSemestrialLoad(
-                    i, academic.getSemesterMaxWeeks()
-                    , s.getId()
-                    , periodId
+                    i, academic.getSemesterMaxWeeks(),
+                    s.getId(),
+                    periodId
             );
         }
-
 
         if (c != null) {
             HashSet<Integer> goodProfiles = new HashSet<>();
@@ -533,7 +527,6 @@ public class AcademicPluginBodyTeachers extends AcademicPluginBody {
         }
     }
 
-
     public void updateTeacherPeriod(int periodId, int teacherId, int copyFromPeriod) {
         CorePluginSecurity.requireRight(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_CONFIG_WRITE);
 //        AppPeriod p = core.getCurrentPeriod();
@@ -544,38 +537,31 @@ public class AcademicPluginBodyTeachers extends AcademicPluginBody {
                 .setParameter("periodId", periodId)
                 .setParameter("teacherId", teacherId)
                 .getResultList();
-        boolean toPersist = items.size() == 0;
+        boolean toPersist = items.isEmpty();
         while (items.size() > 1) {
             AcademicTeacherPeriod i = items.get(0);
             pu.remove(i);
-            log.severe("Duplicated AcademicTeacherPeriod " + items.size());
+            log.log(Level.SEVERE, "Duplicated AcademicTeacherPeriod {0}", items.size());
             items.remove(0);
         }
-        AcademicTeacherPeriod item;
         if (toPersist) {
-            item = new AcademicTeacherPeriod();
+            AcademicTeacherPeriod item = new AcademicTeacherPeriod();
             item.setPeriod(period);
             item.setTeacher(teacher);
-        } else {
-            item = items.get(0);
-        }
-        if (copyFromPeriod <= 0 || copyFromPeriod == periodId) {
-            item.setDegree(teacher.getDegree());
-            item.setSituation(teacher.getSituation());
-            item.setEnabled(teacher.getSituation() != null);
-            item.setDepartment(teacher.getDepartment());
-        } else {
-            AcademicTeacherPeriod other = findAcademicTeacherPeriod(copyFromPeriod, teacher);
-            item.setDegree(other.getDegree());
-            item.setSituation(other.getSituation());
-            item.setEnabled(other.isEnabled());
-            item.setDepartment(other.getDepartment());
-        }
-        if (toPersist) {
+            if (copyFromPeriod <= 0 || copyFromPeriod == periodId) {
+                item.setDegree(teacher.getDegree());
+                item.setSituation(teacher.getSituation());
+                item.setEnabled(teacher.getSituation() != null);
+                item.setDepartment(teacher.getDepartment());
+            } else {
+                AcademicTeacherPeriod other = findAcademicTeacherPeriod(copyFromPeriod, teacher);
+                item.setDegree(other.getDegree());
+                item.setSituation(other.getSituation());
+                item.setEnabled(other.isEnabled());
+                item.setDepartment(other.getDepartment());
+            }
             item.setLoadConfirmed(false);
             pu.persist(item);
-        } else {
-            pu.merge(item);
         }
     }
 

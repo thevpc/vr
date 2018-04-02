@@ -9,6 +9,7 @@ import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.obj.EntityAction;
 import net.vpc.app.vainruling.core.web.obj.ActionDialog;
 import net.vpc.app.vainruling.core.web.obj.ActionDialogResult;
+import net.vpc.app.vainruling.core.web.obj.ActionDialogResultPostProcess;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseAssignment;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCoursePlan;
@@ -82,6 +83,6 @@ public class GenerateAssignmentsAction implements ActionDialog {
                 }
             }
         }
-        return ActionDialogResult.RELOAD_CURRENT;
+        return new ActionDialogResult(ActionDialogResultPostProcess.RELOAD_CURRENT);
     }
 }

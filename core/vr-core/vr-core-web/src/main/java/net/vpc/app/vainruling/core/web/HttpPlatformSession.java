@@ -8,10 +8,10 @@ import javax.servlet.http.HttpSession;
 import java.util.Date;
 
 public class HttpPlatformSession implements PlatformSession {
-    private HttpSession session;
-    private String sessionId;
-    private String ipAddress;
-    private long connexionTime;
+    private final HttpSession session;
+    private final String sessionId;
+    private final String ipAddress;
+    private final long connexionTime;
 
     public HttpPlatformSession(HttpSession session,String ipAddress) {
         this.session = session;

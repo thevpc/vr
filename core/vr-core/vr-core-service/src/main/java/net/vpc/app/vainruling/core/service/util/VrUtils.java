@@ -1162,4 +1162,10 @@ public class VrUtils {
     public static String conditionalString(String value,boolean condition){
         return condition?value:"";
     }
+
+
+    public static String getBeanName(Object o) {
+        return getBeanName(PlatformReflector.getTargetClass(o));
+    }
+
 }

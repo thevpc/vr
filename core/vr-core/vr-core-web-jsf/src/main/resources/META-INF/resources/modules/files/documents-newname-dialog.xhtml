@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+>
+
+<h:head>
+</h:head>
+
+<h:body>
+    <!--@elvariable id="documentsCtrl" type="net.vpc.app.vainruling.core.web.jsf.ctrl.DocumentsCtrl"-->
+    <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.jsf.Vr"-->
+    <ui:composition template="#{vr.privateThemePath}/templates/dialog-template.xhtml">
+        <ui:define name="dialog-title">
+            <h:outputText value="Ajouter"/> </ui:define>
+        <ui:define name="dialog-body">
+
+
+            <h:form id="listForm">
+                <div class="box box-warning">
+                    <div class="box-header with-border">
+                        <h3 class="box-sub-title">Ajouter nouveau #{documentsCtrl.model.newFolder ? ' dossier':' ficher'} </h3>
+                        <div class="box-body">
+                            <div class="form-group">
+                                <div>
+                                    <p:outputLabel value="Nom"/>
+                                    <p:inputText value="#{documentsCtrl.model.newName}" styleClass="form-control"/>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+                <div class="btn-group vr-form-button-group">
+                    <p:commandButton styleClass="btn btn-lg btn-default" value="Fermer" style="margin-right: 10px;"
+                                     action="#{documentsCtrl.fireEventExtraDialogClosed}"
+                    />
+                    <p:commandButton styleClass="btn btn-lg btn-primary" value="Enregistrer"
+                                     action="#{documentsCtrl.onSave}"
+                    />
+                </div>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</h:body>
+
+</html>
