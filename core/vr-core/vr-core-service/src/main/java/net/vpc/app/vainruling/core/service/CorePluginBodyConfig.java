@@ -21,7 +21,8 @@ import java.util.logging.FileHandler;
 import net.vpc.common.util.Convert;
 import net.vpc.common.util.IntegerParserConfig;
 
-class CorePluginBodyConfig extends CorePluginBody{
+class CorePluginBodyConfig extends CorePluginBody {
+
     public static final java.util.logging.Logger LOG_APPLICATION_STATS = java.util.logging.Logger.getLogger(CorePlugin.class.getName() + ".Stats");
     public static final String PATH_LOG = "/Var/Log";
 
@@ -31,13 +32,13 @@ class CorePluginBodyConfig extends CorePluginBody{
         mainConfig.setId(1);
         mainConfig.setMainCompany(installDefaultCompany());
 
-        String periodName=getContext().getCorePlugin().getAppVersion().getConfig().get("period");
-        if(StringUtils.isEmpty(periodName)){
-            periodName="${year}";
+        String periodName = getContext().getCorePlugin().getAppVersion().getConfig().get("period");
+        if (StringUtils.isEmpty(periodName)) {
+            periodName = "${year}";
         }
-        periodName=periodName.replace("${year}",String.valueOf(Calendar.getInstance().get(Calendar.YEAR)));
-        periodName=periodName.replace("${next-year}",String.valueOf(Calendar.getInstance().get(Calendar.YEAR)+1));
-        periodName=periodName.replace("${previous-year}",String.valueOf(Calendar.getInstance().get(Calendar.YEAR)-1));
+        periodName = periodName.replace("${year}", String.valueOf(Calendar.getInstance().get(Calendar.YEAR)));
+        periodName = periodName.replace("${next-year}", String.valueOf(Calendar.getInstance().get(Calendar.YEAR) + 1));
+        periodName = periodName.replace("${previous-year}", String.valueOf(Calendar.getInstance().get(Calendar.YEAR) - 1));
 
         mainConfig.setMainPeriod(new AppPeriod(periodName));
         getContext().getCorePlugin().findOrCreate(mainConfig, "id");
@@ -117,6 +118,9 @@ class CorePluginBodyConfig extends CorePluginBody{
         }
         String t = p.getPropertyType();
         String v = p.getPropertyValue();
+        if(StringUtils.isEmpty(t)){
+            t="string";
+        }
         if ("null".equalsIgnoreCase(t)) {
             return null;
         }
@@ -165,7 +169,7 @@ class CorePluginBodyConfig extends CorePluginBody{
                 return propertyValue;
             }
             if (type.equals(Integer.class)) {
-                return Convert.toInt(propertyValue,IntegerParserConfig.LENIENT_F);
+                return Convert.toInt(propertyValue, IntegerParserConfig.LENIENT_F);
             }
             if (type.equals(Long.class)) {
                 return Long.parseLong(propertyValue);
@@ -308,26 +312,46 @@ class CorePluginBodyConfig extends CorePluginBody{
     }
 
     public void setAppProperty(AppProperty ap) {
-        PersistenceUnit pu = UPA.getPersistenceUnit();
-        AppProperty old = null;
+        VoidAction r = new VoidAction() {
+            @Override
+            public void run() {
+                PersistenceUnit pu = UPA.getPersistenceUnit();
+                AppProperty old = null;
+                if (ap.getUser() == null) {
+                    old = pu.createQuery("Select a from AppProperty a where a.propertyName=:propertyName and a.userId=null")
+                            .setParameter("propertyName", ap.getPropertyName())
+                            .getFirstResultOrNull();
+                } else {
+                    old = pu.createQuery("Select a from AppProperty a where a.propertyName=:propertyName and a.userId=:userId")
+                            .setParameter("propertyName", ap.getPropertyName())
+                            .setParameter("userId", ap.getUser().getId())
+                            .getFirstResultOrNull();
+                }
+                if (old == null) {
+                    if (ap.getPropertyValue() != null) {
+                        pu.persist(ap);
+                    }
+                } else {
+                    if (ap.getPropertyValue() != null) {
+                        old.setEnabled(ap.isEnabled());
+                        old.setPropertyType(ap.getPropertyType());
+                        old.setPropertyValue(ap.getPropertyValue());
+                        pu.merge(old);
+                    } else {
+                        pu.remove(old);
+                    }
+                }
+            }
+        };
+
         if (ap.getUser() == null) {
-            old = pu.createQuery("Select a from AppProperty a where a.propertyName=:propertyName and a.userId=null")
-                    .setParameter("propertyName", ap.getPropertyName())
-                    .getFirstResultOrNull();
+            CorePluginSecurity.requireAdmin();
+            r.run();
         } else {
-            old = pu.createQuery("Select a from AppProperty a where a.propertyName=:propertyName and a.userId=:userId")
-                    .setParameter("propertyName", ap.getPropertyName())
-                    .setParameter("userId", ap.getUser().getId())
-                    .getFirstResultOrNull();
+            CorePluginSecurity.requireUser(ap.getUser().getId());
+            UPA.getPersistenceUnit().invokePrivileged(r);
         }
-        if (old == null) {
-            pu.persist(ap);
-        } else {
-            old.setEnabled(ap.isEnabled());
-            old.setPropertyType(ap.getPropertyType());
-            old.setPropertyValue(ap.getPropertyValue());
-            pu.merge(old);
-        }
+
     }
 
     public String getUnknownUserPhoto() {
@@ -452,11 +476,11 @@ class CorePluginBodyConfig extends CorePluginBody{
         String login = getContext().getCorePlugin().getCurrentUserLogin();
         if (login != null) {
             UPA.getContext().invokePrivileged(new VoidAction() {
-                                                  @Override
-                                                  public void run() {
-                                                      setAppProperty("System.DefaultPublicTheme", login, theme);
-                                                  }
-                                              }
+                @Override
+                public void run() {
+                    setAppProperty("System.DefaultPublicTheme", login, theme);
+                }
+            }
             );
 
         }
@@ -466,11 +490,11 @@ class CorePluginBodyConfig extends CorePluginBody{
         String login = getContext().getCorePlugin().getCurrentUserLogin();
         if (login != null) {
             UPA.getContext().invokePrivileged(new VoidAction() {
-                                                  @Override
-                                                  public void run() {
-                                                      setAppProperty("System.DefaultPrivateTheme", login, theme);
-                                                  }
-                                              }
+                @Override
+                public void run() {
+                    setAppProperty("System.DefaultPrivateTheme", login, theme);
+                }
+            }
             );
 
         }
@@ -485,9 +509,9 @@ class CorePluginBodyConfig extends CorePluginBody{
 
     private AppCountry installDefaultCountry() {
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        String countryName=getContext().getCorePlugin().getAppVersion().getConfig().get("country");
-        if(StringUtils.isEmpty(countryName)){
-            countryName="Tunisia";
+        String countryName = getContext().getCorePlugin().getAppVersion().getConfig().get("country");
+        if (StringUtils.isEmpty(countryName)) {
+            countryName = "Tunisia";
         }
         AppCountry country = pu.findByMainField(AppCountry.class, countryName);
         if (country == null) {
@@ -500,9 +524,9 @@ class CorePluginBodyConfig extends CorePluginBody{
 
     private AppIndustry installDefaultIndustry() {
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        String industryName=getContext().getCorePlugin().getAppVersion().getConfig().get("industry");
-        if(StringUtils.isEmpty(industryName)){
-            industryName="My Industry";
+        String industryName = getContext().getCorePlugin().getAppVersion().getConfig().get("industry");
+        if (StringUtils.isEmpty(industryName)) {
+            industryName = "My Industry";
         }
 
         AppIndustry eduIndustry = pu.findByMainField(AppIndustry.class, industryName);
@@ -516,9 +540,9 @@ class CorePluginBodyConfig extends CorePluginBody{
 
     private AppCompany installDefaultCompany() {
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        String companyName=getContext().getCorePlugin().getAppVersion().getConfig().get("company");
-        if(StringUtils.isEmpty(companyName)){
-            companyName="My Company";
+        String companyName = getContext().getCorePlugin().getAppVersion().getConfig().get("company");
+        if (StringUtils.isEmpty(companyName)) {
+            companyName = "My Company";
         }
         AppCompany defaultCompany = pu.findByMainField(AppIndustry.class, companyName);
         if (defaultCompany == null) {
@@ -582,7 +606,6 @@ class CorePluginBodyConfig extends CorePluginBody{
         return currentConfig == null ? null : currentConfig.getMainPeriod();
     }
 
-
     public AppUser findUserByContact(int contactId) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return pu.createQueryBuilder(AppUser.class)
@@ -620,7 +643,7 @@ class CorePluginBodyConfig extends CorePluginBody{
     public AppCompany findCompany(int id) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return (AppCompany) pu.createQuery("Select u from AppCompany u where u.id=:id").setParameter("id", id)
-//                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 3)
+                //                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 3)
                 .getFirstResultOrNull();
 //        return (AppCompany) pu.findById(AppCompany.class, id);
     }
@@ -628,7 +651,7 @@ class CorePluginBodyConfig extends CorePluginBody{
     public AppCompany findCompany(String name) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return (AppCompany) pu.createQuery("Select u from AppCompany u where u.name=:name").setParameter("name", name)
-//                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 3)
+                //                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 3)
                 .getFirstResultOrNull();
 //
 //        return (AppCompany) UPA.getPersistenceUnit().findByMainField(AppCompany.class, name);
@@ -647,12 +670,12 @@ class CorePluginBodyConfig extends CorePluginBody{
         return all;
     }
 
-    public AppDepartment findOrCreateAppDepartment(String code,String name,String description) {
+    public AppDepartment findOrCreateAppDepartment(String code, String name, String description) {
         AppDepartment department = new AppDepartment();
         department.setCode(code);
         department.setName(name);
         department.setDescription(description);
-        return getContext().getCorePlugin().findOrCreate(department,"code");
+        return getContext().getCorePlugin().findOrCreate(department, "code");
     }
 
 }

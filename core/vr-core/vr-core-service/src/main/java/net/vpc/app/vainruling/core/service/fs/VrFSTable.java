@@ -6,6 +6,7 @@
 package net.vpc.app.vainruling.core.service.fs;
 
 
+import net.vpc.common.strings.StringBuilder2;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.vfs.VFile;
 
@@ -26,7 +27,7 @@ public class VrFSTable {
             line = line.trim();
             List<String> values = new ArrayList<String>();
             if (!line.startsWith("#")) {
-                StringBuilder w = new StringBuilder();
+                StringBuilder2 w = new StringBuilder2();
                 int i = 0;
                 final int WHITE = 0;
                 final int QUOTED_WORD = 1;
@@ -47,7 +48,7 @@ public class VrFSTable {
                                     break;
                                 }
                                 default: {
-                                    w.delete(0, w.length());
+                                    w.delete();
                                     w.append(c);
                                     status = UNQUOTED_WORD;
                                     break;
@@ -62,7 +63,7 @@ public class VrFSTable {
                                     if (w.length() > 0) {
                                         values.add(w.toString());
                                     }
-                                    w.delete(0, w.length());
+                                    w.delete();
                                     status = WHITE;
                                     break;
                                 }
@@ -97,7 +98,7 @@ public class VrFSTable {
                                     if (w.length() > 0) {
                                         values.add(w.toString());
                                     }
-                                    w.delete(0, w.length());
+                                    w.delete();
                                     status = WHITE;
                                     break;
                                 }

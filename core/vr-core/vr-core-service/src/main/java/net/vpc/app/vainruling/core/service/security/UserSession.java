@@ -7,42 +7,48 @@ package net.vpc.app.vainruling.core.service.security;
 
 import net.vpc.app.vainruling.core.service.PlatformSession;
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.model.AppProfile;
-import net.vpc.app.vainruling.core.service.model.AppUser;
-import net.vpc.app.vainruling.core.service.model.AppUserType;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
-import java.util.*;
 
 /**
  * @author taha.bensalah@gmail.com
  */
 @Service
 @Scope(value = "session")
-public class UserSession implements Serializable,Cloneable {
+public class UserSession implements Serializable, Cloneable {
 
-    private UserToken token=new DefaultUserToken();
+    private UserToken token = new DefaultUserToken();
     private transient PlatformSession platformSession;
     private String sessionId;
     private String preConnexionURL;
+    private String invalidConnexionURL;
     private String selectedSiteFilter;
 
-    public UserSession copy(){
+    public UserSession copy() {
         try {
-            UserSession s=((UserSession)clone());
+            UserSession s = ((UserSession) clone());
             return s;
         } catch (CloneNotSupportedException e) {
             throw new IllegalArgumentException("Unexpected");
         }
     }
+
     public static UserSession get() {
         try {
             return VrApp.getBean(UserSession.class);
         } catch (Exception e) {
             return null;
         }
+    }
+
+    public String getInvalidConnexionURL() {
+        return invalidConnexionURL;
+    }
+
+    public void setInvalidConnexionURL(String invalidConnexionURL) {
+        this.invalidConnexionURL = invalidConnexionURL;
     }
 
     public String getSessionId() {
@@ -52,7 +58,6 @@ public class UserSession implements Serializable,Cloneable {
     public void setSessionId(String sessionId) {
         this.sessionId = sessionId;
     }
-
 
     public void reset() {
         getToken().reset();
@@ -66,12 +71,12 @@ public class UserSession implements Serializable,Cloneable {
         this.platformSession = platformSession;
     }
 
-    public boolean isValid(){
-        return platformSession!=null && platformSession.isValid();
+    public boolean isValid() {
+        return platformSession != null && platformSession.isValid();
     }
 
-    public boolean invalidate(){
-        if(platformSession!=null){
+    public boolean invalidate() {
+        if (platformSession != null) {
             return platformSession.invalidate();
         }
         return false;

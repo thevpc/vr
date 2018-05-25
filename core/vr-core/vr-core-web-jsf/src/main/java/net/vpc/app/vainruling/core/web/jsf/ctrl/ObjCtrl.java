@@ -55,13 +55,15 @@ import org.springframework.stereotype.Controller;
  */
 @VrController(
         breadcrumb = {
-                @UPathItem(title = "Entité", css = "fa-dashboard", ctrl = "")},
-//        css = "fa-table",
-//        title = "Liste Entités",
+            @UPathItem(title = "Entité", css = "fa-dashboard", ctrl = "")},
+        //        css = "fa-table",
+        //        title = "Liste Entités",
         url = "modules/obj/objects"
 )
 @Controller
 public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerInfoResolver {
+
+    public static final String[] CSS_COLOR_ARR = {"vr-label-bg01", "vr-label-bg02", "vr-label-bg03", "vr-label-bg04", "vr-label-bg05", "vr-label-bg06", "vr-label-bg07", "vr-label-bg08", "vr-label-bg09", "vr-label-bg10", "vr-label-bg11", "vr-label-bg12", "vr-label-bg13", "vr-label-bg14", "vr-label-bg15", "vr-label-bg16", "vr-label-bg17", "vr-label-bg18", "vr-label-bg19", "vr-label-bg20"};
 
     private static final Logger log = Logger.getLogger(ObjCtrl.class.getName());
     private final List<ColumnView> columns = new ArrayList<>();
@@ -208,9 +210,8 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
                         return UPA.getPersistenceUnit().getSecurityManager().isAllowedRemove(getEntity());
                     }
                     if ("Advanced".equals(buttonId)) {
-                        return
-                                isEnabledButton("Archive")
-                                        || isEnabledButton("ReCalc");
+                        return isEnabledButton("Archive")
+                                || isEnabledButton("ReCalc");
                     }
 
                     if ("Archive".equals(buttonId)) {
@@ -571,7 +572,9 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
                     }
                 }
                 if (cfg.selectedFields != null) {
-                    getModel().setFieldSelection(new ObjFieldFieldSelection(getEntity(), cfg.selectedFields, getModel().getMode()));
+                    getModel().setFieldSelection(new ObjFieldFieldSelection(getEntity(), cfg.selectedFields, getModel().getMode(), false));
+                } else {
+                    getModel().setFieldSelection(new ObjFieldFieldSelection());
                 }
                 if (cfg.searchExpr != null) {
                     getModel().setSearch(new ObjSimpleSearch(cfg.searchExpr));
@@ -740,9 +743,13 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
                 if (!expressionManager.containsFunction("hashToStringArr")) {
                     expressionManager.addFunction("hashToStringArr", TypesFactory.STRING, hashToStringArr);
                 }
+                if (!expressionManager.containsFunction("hashCssColor")) {
+                    expressionManager.addFunction("hashCssColor", TypesFactory.STRING, hashCssColor);
+                }
                 Expression expression = expressionManager.simplifyExpression(expr, map);
                 QLEvaluator evaluator = expressionManager.createEvaluator();
                 evaluator.getRegistry().registerFunctionEvaluator("hashToStringArr", hashToStringArr);
+                evaluator.getRegistry().registerFunctionEvaluator("hashCssColor", hashCssColor);
                 evaluator.getRegistry().registerFunctionEvaluator("inthash", inthash);
                 expression = evaluator.evalObject(expression, null);
                 if (expression instanceof Literal) {
@@ -987,15 +994,18 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
                 if (getModel().getFieldSelection() == null) {
                     fields = new ArrayList<>(ot.getFields(FieldFilters.byModifiersAnyOf(FieldModifier.MAIN, FieldModifier.SUMMARY)));
                 } else {
+                    if (getModel().getFieldSelection().getEntity() == null) {
+                        getModel().getFieldSelection().prepare(getEntity(), getModel().getMode());
+                    }
                     fields = getModel().getFieldSelection().getVisibleFields();
                 }
-                VrUtils.sortPreserveIndex(fields, new Comparator<Field>() {
-                    @Override
-                    public int compare(Field o1, Field o2) {
-//                    return Integer.compare(o1.getPreferredIndex(),o2.getPreferredIndex());
-                        return 0;
-                    }
-                });
+//                VrUtils.sortPreserveIndex(fields, new Comparator<Field>() {
+//                    @Override
+//                    public int compare(Field o1, Field o2) {
+////                    return Integer.compare(o1.getPreferredIndex(),o2.getPreferredIndex());
+//                        return 0;
+//                    }
+//                });
 
                 AccessMode mode = getModel().getMode();
                 for (Field field : fields) {
@@ -1042,8 +1052,8 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
                     }
                 });
                 boolean saveAllowed = isSaveAllowed();
-                if(!saveAllowed){
-                    viewContext.getProperties().put("enabled",false);
+                if (!saveAllowed) {
+                    viewContext.getProperties().put("enabled", false);
                 }
                 for (EntityPart entityPart : entityParts) {
                     if (entityPart instanceof Section) {
@@ -1304,9 +1314,9 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
     private void updateViewForField(Field field, ViewContext viewContext, List<OrderedPropertyView> propertyViews) {
         Document currentDocument = getModel().getCurrentDocument();
         Map<String, Object> config = new HashMap<>();
-        boolean enabled0=true;
-        if(viewContext.getProperties().get("enabled")!=null && ! ((Boolean)viewContext.getProperties().get("enabled"))){
-            enabled0=false;
+        boolean enabled0 = true;
+        if (viewContext.getProperties().get("enabled") != null && !((Boolean) viewContext.getProperties().get("enabled"))) {
+            enabled0 = false;
         }
         if (getModel().getDisabledFields().contains(field.getName())) {
             config.put("enabled", false);
@@ -1444,7 +1454,6 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
         }
     }
 
-
     public void onReloadCurrent() {
         switch (getModel().getMode()) {
             case PERSIST: {
@@ -1513,13 +1522,32 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
         }
     }
 
+    public void proceedCancelActionDialog() {
+        fireEventSearchClosed();
+    }
+
     public void fireEventSearchCancelled() {
         RequestContext ctx = RequestContext.getCurrentInstance();
         ctx.closeDialog(null);
     }
 
+    public void updateColumnSelection() {
+        if (getModel().getFieldSelection() != null) {
+            getModel().getFieldSelection().save();
+        }
+        fireEventSearchClosed();
+    }
+
+    public void fireEventClearSelection() {
+        onClearFieldSelection();
+        PrimeFaces.current().dialog().closeDynamic(new DialogResult(null, null));
+    }
+
+    public void fireEventSelectionValidated() {
+        PrimeFaces.current().dialog().closeDynamic(new DialogResult(null, null));
+    }
+
     public void fireEventSearchClosed() {
-        onRefresh();
 //        RequestContext ctx = RequestContext.getCurrentInstance();
         //Object obj
 //        ctx.closeDialog(new DialogResult(null, null));
@@ -1543,7 +1571,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
         options.put("draggable", true);
         options.put("modal", true);
 //        RequestContext.getCurrentInstance().openDialog("/modules/obj/obj-simple-search-dialog", options, null);
-        PrimeFaces.current().dialog().openDynamic("/modules/obj/obj-simple-search-dialog", options,null);
+        PrimeFaces.current().dialog().openDynamic("/modules/obj/obj-simple-search-dialog", options, null);
     }
 
     public void onSimpleFieldSelection() {
@@ -1557,6 +1585,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
         options.put("resizable", false);
         options.put("draggable", true);
         options.put("modal", true);
+        options.put("height", 500);
 //        RequestContext.getCurrentInstance().openDialog("/modules/obj/obj-simple-field-sel-dialog", options, null);
         PrimeFaces.current().dialog().openDynamic("/modules/obj/obj-simple-field-sel-dialog", options, null);
     }
@@ -1571,7 +1600,9 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
     }
 
     public void onClearFieldSelection() {
-        getModel().setFieldSelection(null);
+        if (getModel().getFieldSelection() != null) {
+            getModel().getFieldSelection().reset();
+        }
         onRefresh();
     }
 
@@ -1642,32 +1673,35 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
             try {
                 currentViewToModel();
                 Object c = getModel().getCurrentDocument();
-                ActionDialogResult rr = actionDialogManager.findAction(actionKey).invoke(getEntity().getEntityType(), c, getSelectedIdStrings(), args);
-                if (rr != null) {
-                    ActionDialogResultPostProcess r = rr.getType();
-                    String message = rr.getMessage();
-                    if (message != null) {
-                        FacesUtils.addInfoMessage(message);
-                    }
-                    if (r != null) {
-                        switch (r) {
-                            case RELOAD_CURRENT: {
-                                if (getModel().getMode() == AccessMode.READ) {
-                                    reloadPage(true);
-                                } else {
-                                    onReloadCurrent();
+                ActionDialogAdapter act = actionDialogManager.findAction(actionKey);
+                if (act != null) {
+                    ActionDialogResult rr = act.invoke(getEntity().getEntityType(), c, getSelectedIdStrings(), args);
+                    if (rr != null) {
+                        ActionDialogResultPostProcess r = rr.getType();
+                        String message = rr.getMessage();
+                        if (message != null) {
+                            FacesUtils.addInfoMessage(message);
+                        }
+                        if (r != null) {
+                            switch (r) {
+                                case RELOAD_CURRENT: {
+                                    if (getModel().getMode() == AccessMode.READ) {
+                                        reloadPage(true);
+                                    } else {
+                                        onReloadCurrent();
+                                    }
+                                    break;
                                 }
-                                break;
-                            }
-                            case RELOAD_ALL: {
-                                if (getModel().getMode() == AccessMode.READ) {
-                                    reloadPage(true);
-                                } else {
-                                    loadList();
-                                    updateMode(AccessMode.READ);
-                                    getModel().setCurrent(null);
+                                case RELOAD_ALL: {
+                                    if (getModel().getMode() == AccessMode.READ) {
+                                        reloadPage(true);
+                                    } else {
+                                        loadList();
+                                        updateMode(AccessMode.READ);
+                                        getModel().setCurrent(null);
+                                    }
+                                    break;
                                 }
-                                break;
                             }
                         }
                     }
@@ -1791,14 +1825,15 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
             ActionDialogAdapter ed = VrApp.getBean(ActionDialogManager.class).findAction(actionId);
             if (ed != null) {
                 if (ed.isConfirm()) {
+
                     getModel().setActionId(actionId);
                     getModel().setConfirmMessage("Etes vous sur de vouloir continuer?");
+                    getModel().setOperationMessage(ed.getActionMessage());
                     Map<String, Object> options = new HashMap<String, Object>();
                     options.put("resizable", false);
                     options.put("draggable", true);
                     options.put("modal", true);
-
-                    RequestContext.getCurrentInstance().openDialog("/modules/obj/profile-open-action-dialog", options, null);
+                    PrimeFaces.current().dialog().openDynamic("/modules/obj/profile-open-action-dialog", options, null);
                 } else {
                     getModel().setActionId(actionId);
                     proceedOpenActionDialog();
@@ -1916,6 +1951,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
         private String confirmMessage;
         private String actionId;
         private String entityName;
+        private String operationMessage;
         private List<ObjFormAction> actions = new ArrayList<ObjFormAction>();
         private ObjConfig config;
         private Set<String> disabledFields = new HashSet<String>();
@@ -1923,6 +1959,14 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
 
         public PModel() {
             setCurrent(null);
+        }
+
+        public String getOperationMessage() {
+            return operationMessage;
+        }
+
+        public void setOperationMessage(String operationMessage) {
+            this.operationMessage = operationMessage;
         }
 
         public List<ObjFormAction> getActions() {
@@ -2025,6 +2069,22 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
 
     }
 
+    private static Function hashCssColor = new Function() {
+        @Override
+        public Object eval(FunctionEvalContext evalContext) {
+            Object[] a = evalContext.getArguments();
+            if (a.length == 0) {
+                return "";
+            }
+            if (a[0] == null) {
+                return "";
+            }
+            int h = a[0].getClass().isEnum() ? ((Enum) a[0]).ordinal() : a[0].hashCode();
+            int r = Math.abs(h) % (CSS_COLOR_ARR.length);
+            return CSS_COLOR_ARR[r];
+        }
+    };
+
     private static Function hashToStringArr = new Function() {
         @Override
         public Object eval(FunctionEvalContext evalContext) {
@@ -2035,7 +2095,9 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
             if (a.length == 1) {
                 return a[0] == null ? "" : String.valueOf(a[0]);
             }
-            int x = 1 + (Math.abs(a[0] == null ? 0 : a[0].hashCode()) % (a.length - 1));
+            Object ss = a[0] == null ? "" : (a[0]);
+            int h = ss.getClass().isEnum() ? ((Enum) ss).ordinal() : ss.hashCode();
+            int x = 1 + (Math.abs(h) % (a.length - 1));
             return a[x] == null ? "" : String.valueOf(a[x]);
         }
     };

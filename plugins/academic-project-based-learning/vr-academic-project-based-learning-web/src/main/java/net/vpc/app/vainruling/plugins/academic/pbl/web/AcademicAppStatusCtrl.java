@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.logging.Logger;
+import net.vpc.app.vainruling.plugins.academic.pbl.service.dto.ApblTeamInfo;
 import net.vpc.common.util.IntegerParserConfig;
 
 /**
@@ -42,15 +43,15 @@ import net.vpc.common.util.IntegerParserConfig;
  */
 @VrController(
         breadcrumb = {
-                @UPathItem(title = "Education", css = "fa-dashboard", ctrl = ""),
-                @UPathItem(title = "APP", css = "fa-dashboard", ctrl = ""),
-        },
+            @UPathItem(title = "Education", css = "fa-dashboard", ctrl = ""),
+            @UPathItem(title = "APP", css = "fa-dashboard", ctrl = ""),},
         url = "modules/academic/pbl/app-status",
         menu = "/Education/Projects/Apbl",
         securityKey = "Custom.Education.Apbl.AppStatus",
         declareSecurityKeys = "Custom.Education.Apbl.ApplyLoad"
 )
 public class AcademicAppStatusCtrl {
+
     public static final String RIGHT_FILESYSTEM_WRITE = "Custom.FileSystem.Write";
     public static final Logger log = Logger.getLogger(AcademicAppProjectsCtrl.class.getName());
     @Autowired
@@ -182,7 +183,6 @@ public class AcademicAppStatusCtrl {
         reloadSessions();
     }
 
-
     public void reloadSessions() {
         getModel().getSessions().clear();
         for (ApblSession session : apbl.findAvailableSessions()) {
@@ -237,18 +237,17 @@ public class AcademicAppStatusCtrl {
                 return true;
             }
         });
-        studentInfos.removeIf(a ->
-                (getModel().isFilterStudentsNoCoach() && !a.isErrNoCoach())
-                        || (getModel().isFilterStudentsNoProject() && !a.isErrNoProject())
-                        || (getModel().isFilterStudentsNoTeam() && !a.isErrNoTeam())
-                        || (getModel().isFilterStudentsMultiTeam() && !a.isErrTooManyTeams())
+        studentInfos.removeIf(a
+                -> (getModel().isFilterStudentsNoCoach() && !a.isErrNoCoach())
+                || (getModel().isFilterStudentsNoProject() && !a.isErrNoProject())
+                || (getModel().isFilterStudentsNoTeam() && !a.isErrNoTeam())
+                || (getModel().isFilterStudentsMultiTeam() && !a.isErrTooManyTeams())
         );
         getModel().setStudents(studentInfos);
 
         onSearchTeachersByText();
         onSearchStudentsByText();
     }
-
 
     public void onSearchTeachersByText() {
         StringComparator filter = StringComparators.ilikepart(getModel().getTeachersFilterText()).apply(StringTransforms.UNIFORM);
@@ -268,23 +267,23 @@ public class AcademicAppStatusCtrl {
                 VrUtils.filterList(
                         getModel().getStudents(),
                         new ObjectFilter<ApblStudentInfo>() {
-                            @Override
-                            public boolean accept(ApblStudentInfo value) {
-                                return filter.matches(
-                                        value.getStudent().resolveFullTitle()
-                                                + " "
-                                                + (value.getCoach() != null ? value.getCoach().resolveFullTitle() : "")
-                                                + " "
-                                                + (value.getTeam() != null && value.getTeam().getTeam() != null ? value.getTeam().getTeam().getName() : "")
-                                                + " "
-                                                + ((value.getProject() != null && value.getProject().getProject() != null) ? value.getProject().getProject().getName() : "")
-                                                + " "
-                                                + (value.getStudent().getLastClass1() != null ? value.getStudent().getLastClass1().getName() : "")
-                                                + " "
-                                                + (value.getInvalidObservations())
-                                );
-                            }
-                        }
+                    @Override
+                    public boolean accept(ApblStudentInfo value) {
+                        return filter.matches(
+                                value.getStudent().resolveFullTitle()
+                                + " "
+                                + (value.getCoach() != null ? value.getCoach().resolveFullTitle() : "")
+                                + " "
+                                + (value.getTeam() != null && value.getTeam().getTeam() != null ? value.getTeam().getTeam().getName() : "")
+                                + " "
+                                + ((value.getProject() != null && value.getProject().getProject() != null) ? value.getProject().getProject().getName() : "")
+                                + " "
+                                + (value.getStudent().getLastClass1() != null ? value.getStudent().getLastClass1().getName() : "")
+                                + " "
+                                + (value.getInvalidObservations())
+                        );
+                    }
+                }
                 )
         );
     }
@@ -298,7 +297,7 @@ public class AcademicAppStatusCtrl {
                     accepted.add(t.getTeacher().getId());
                 }
             }
-            apbl.applyTeacherLoad(Convert.toInt(selectedSessions[0],IntegerParserConfig.LENIENT_F), new ObjectFilter<AcademicTeacher>() {
+            apbl.applyTeacherLoad(Convert.toInt(selectedSessions[0], IntegerParserConfig.LENIENT_F), new ObjectFilter<AcademicTeacher>() {
                 @Override
                 public boolean accept(AcademicTeacher value) {
                     return accepted.contains(value.getId());
@@ -313,7 +312,7 @@ public class AcademicAppStatusCtrl {
         if (selectedSessions.length == 1) {
             AcademicTeacher t = academic.findTeacher(teacherId);
             if (t != null) {
-                apbl.applyTeacherLoad(Convert.toInt(selectedSessions[0],IntegerParserConfig.LENIENT_F), new ObjectFilter<AcademicTeacher>() {
+                apbl.applyTeacherLoad(Convert.toInt(selectedSessions[0], IntegerParserConfig.LENIENT_F), new ObjectFilter<AcademicTeacher>() {
                     @Override
                     public boolean accept(AcademicTeacher value) {
                         return value.getId() == teacherId;
@@ -334,10 +333,12 @@ public class AcademicAppStatusCtrl {
     }
 
     public class Model {
+
         private ApblSessionListInfo teachers = new ApblSessionListInfo();
         private List<ApblStudentInfo> students = new ArrayList<>();
         private List<ApblTeacherInfo> filteredTeachers = new ArrayList<>();
         private List<ApblStudentInfo> filteredStudents = new ArrayList<>();
+        private List<ApblTeamInfo> filteredTeams = new ArrayList<>();
         private List<SelectItem> sessions = new ArrayList<>();
         private List<SelectItem> departments = new ArrayList<>();
         private String[] selectedSessions = new String[0];
@@ -351,6 +352,14 @@ public class AcademicAppStatusCtrl {
         private boolean filterStudentsNoTeam = false;
         private boolean filterStudentsMultiTeam = false;
         private boolean filterStudentsNoProject = false;
+
+        public List<ApblTeamInfo> getFilteredTeams() {
+            return filteredTeams;
+        }
+
+        public void setFilteredTeams(List<ApblTeamInfo> filteredTeams) {
+            this.filteredTeams = filteredTeams;
+        }
 
         public boolean isFilterStudentsNoCoach() {
             return filterStudentsNoCoach;

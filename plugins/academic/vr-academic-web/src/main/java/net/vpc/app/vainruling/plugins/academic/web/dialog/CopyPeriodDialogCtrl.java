@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.primefaces.PrimeFaces;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -54,7 +55,7 @@ public class CopyPeriodDialogCtrl {
         options.put("draggable", true);
         options.put("modal", true);
 
-        RequestContext.getCurrentInstance().openDialog("/modules/academic/dialog/copy-period-dialog", options, null);
+        PrimeFaces.current().dialog().openDynamic("/modules/academic/dialog/copy-period-dialog", options, null);
 
     }
 

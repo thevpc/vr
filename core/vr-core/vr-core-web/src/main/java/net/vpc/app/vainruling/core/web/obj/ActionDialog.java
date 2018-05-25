@@ -14,10 +14,16 @@ import java.util.List;
  */
 public interface ActionDialog {
 
-    boolean isEnabled(String actionId, Class entityType, AccessMode mode, Object value);
+    default boolean isEnabled(String actionId, Class entityType, AccessMode mode, Object value) {
+        return true;
+    }
 
-    void openDialog(String actionId, List<String> itemIds);
+    default void openDialog(String actionId, List<String> itemIds) {
 
-    ActionDialogResult invoke(String actionId, Class entityType, Object obj, List<String> selectedIdStrings, Object[] args);
+    }
+
+    default ActionDialogResult invoke(String actionId, Class entityType, Object obj, List<String> selectedIdStrings, Object[] args) {
+        return new ActionDialogResult(ActionDialogResultPostProcess.VOID);
+    }
 
 }

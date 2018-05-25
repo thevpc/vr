@@ -39,6 +39,7 @@ import javax.faces.model.SelectItem;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.primefaces.PrimeFaces;
 import org.springframework.stereotype.Controller;
 
 /**
@@ -674,7 +675,7 @@ public class AcademicAppProjectsCtrl {
         options.put("resizable", false);
         options.put("draggable", true);
         options.put("modal", true);
-        RequestContext.getCurrentInstance().openDialog("/modules/academic/pbl/dialog/project-edit-dialog", options, null);
+        PrimeFaces.current().dialog().openDynamic("/modules/academic/pbl/dialog/project-edit-dialog", options, null);
     }
 
     public void onOpenCreateTeamDialog() {
@@ -687,7 +688,7 @@ public class AcademicAppProjectsCtrl {
         options.put("resizable", false);
         options.put("draggable", true);
         options.put("modal", true);
-        RequestContext.getCurrentInstance().openDialog("/modules/academic/pbl/dialog/team-edit-dialog", options, null);
+        PrimeFaces.current().dialog().openDynamic("/modules/academic/pbl/dialog/team-edit-dialog", options, null);
     }
 
     public void onOpenViewDialog(NodeItem node) {
@@ -701,7 +702,7 @@ public class AcademicAppProjectsCtrl {
             options.put("resizable", false);
             options.put("draggable", true);
             options.put("modal", true);
-            RequestContext.getCurrentInstance().openDialog("/modules/academic/pbl/dialog/project-edit-dialog", options, null);
+            PrimeFaces.current().dialog().openDynamic("/modules/academic/pbl/dialog/project-edit-dialog", options, null);
         } else if (node.getValue() instanceof TeamNode) {
             ApblTeam team = ((TeamNode) node.getValue()).getTeam();
             getModel().setViewOnly(!(currentAdmin || currentStudent != null && team != null && team.getOwner() != null && currentStudent.getUser() != null && team.getOwner().getId() == currentStudent.getUser().getId()));
@@ -711,7 +712,7 @@ public class AcademicAppProjectsCtrl {
             options.put("resizable", false);
             options.put("draggable", true);
             options.put("modal", true);
-            RequestContext.getCurrentInstance().openDialog("/modules/academic/pbl/dialog/team-edit-dialog", options, null);
+            PrimeFaces.current().dialog().openDynamic("/modules/academic/pbl/dialog/team-edit-dialog", options, null);
         }
     }
 
@@ -729,7 +730,7 @@ public class AcademicAppProjectsCtrl {
             options.put("resizable", false);
             options.put("draggable", true);
             options.put("modal", true);
-            RequestContext.getCurrentInstance().openDialog("/modules/academic/pbl/dialog/team-assign-dialog", options, null);
+            PrimeFaces.current().dialog().openDynamic("/modules/academic/pbl/dialog/team-assign-dialog", options, null);
         }
     }
 

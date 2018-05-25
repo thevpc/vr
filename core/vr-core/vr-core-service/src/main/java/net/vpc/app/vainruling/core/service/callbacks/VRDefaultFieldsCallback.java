@@ -41,10 +41,12 @@ public class VRDefaultFieldsCallback {
         for (Entity entity : event.getPersistenceUnit().getEntities()) {
             boolean h=false;
             for (Relationship relationship : entity.getRelationships()) {
-                HierarchyExtension hierarchyExtension = relationship.getHierarchyExtension();
-                if(hierarchyExtension!=null){
-                    h=true;
-                    break;
+                if(relationship instanceof ManyToOneRelationship) {
+                    HierarchyExtension hierarchyExtension = ((ManyToOneRelationship)relationship).getHierarchyExtension();
+                    if (hierarchyExtension != null) {
+                        h = true;
+                        break;
+                    }
                 }
             }
             if(h){

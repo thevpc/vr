@@ -23,6 +23,23 @@ public class MemSessionStore implements SessionStore {
         }
     }
 
+    @Override
+    public PlatformSession getValid(String id) {
+        synchronized (sessions) {
+            PlatformSession s = sessions.get(id);
+            if(s!=null && !s.isValid()){
+                try {
+                    s.invalidate();
+                }catch (Exception ex){
+                    //
+                }
+                sessions.remove(id);
+                s=null;
+            }
+            return s;
+        }
+    }
+
     public void put(String id, PlatformSession session) {
         synchronized (sessions) {
             sessions.put(id, session);

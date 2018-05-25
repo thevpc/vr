@@ -19,12 +19,17 @@ import net.vpc.upa.config.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.plugins.equipments.service.EquipmentPlugin;
+import net.vpc.upa.UPA;
+import net.vpc.upa.callbacks.PersistenceUnitEvent;
 
 /**
  * @author taha.bensalah@gmail.com
  */
 @Callback
 public class InventoryPluginCallback {
+
     @OnPreCreate
     public void onPreCreate(FieldEvent event) {
         if (event.getField().getAbsoluteName().equals("ArticlesItem.disposition")) {
@@ -47,6 +52,15 @@ public class InventoryPluginCallback {
                     eq.setQuantity(-eq.getQuantity());
                     event.getPersistedDocument().setDouble("quantity", eq.getQuantity());
                 }
+            }
+//            if (eq.getEquipment() != null && eq.getEquipment().isBorrowable() && eq.getType() == EquipmentStatusType.AVAILABLE) {
+//                eq.setType(EquipmentStatusType.BORROWABLE);
+//            }
+            if (eq.getType() == EquipmentStatusType.AVAILABLE) {
+                eq.setResponsible(null);
+            }
+            if (eq.getType() == EquipmentStatusType.BORROWED && eq.getResponsible()==null) {
+                throw new IllegalArgumentException("Missing Responsible");
             }
         }
     }
@@ -100,6 +114,9 @@ public class InventoryPluginCallback {
                     eq.getEquipment().setAcquisition(eq.getAcquisition());
                 }
                 eq.getEquipment().setActor(eq.getActor());
+                eq.getEquipment().setResponsible(eq.getResponsible());
+                eq.getEquipment().setLogStartDate(eq.getStartDate());
+                eq.getEquipment().setLogEndDate(eq.getEndDate());
                 pu.merge(eq.getEquipment());
             }
         }
@@ -116,8 +133,8 @@ public class InventoryPluginCallback {
                 if (type != null) {
                     if (type.getSign() == 0) {
                         updatesDocument.setDouble("quantity", 0.0);
-                    } else if (type.getSign() * updatesDocument.getDouble("quantity",0) < 0) {
-                        double quantity = -updatesDocument.getDouble("quantity",0);
+                    } else if (type.getSign() * updatesDocument.getDouble("quantity", 0) < 0) {
+                        double quantity = -updatesDocument.getDouble("quantity", 0);
                         updatesDocument.setDouble("quantity", quantity);
                     }
                 }
@@ -137,15 +154,43 @@ public class InventoryPluginCallback {
         if (entity.getName().equals("EquipmentStatusLog")) {
             List ids = event.getContext().getObject("EquipmentStatusLog.Updated");
             for (Object id : ids) {
-                List<EquipmentStatusLog> currents = pu.createQuery("Select Top 1 o from EquipmentStatusLog o where o.equipmentId=(Select x.equipmentId from EquipmentStatusLog x where x.id=:id) order by o.startDate desc, o.id asc")
-                        .setParameter("id", id)
-                        .getResultList();
-                for (EquipmentStatusLog current : currents) {
-                    current.getEquipment().setStatusType(current.getType());
-                    current.getEquipment().setActor(current.getActor());
-                    pu.merge(current.getEquipment());
+                EquipmentStatusLog llog = pu.findById(EquipmentStatusLog.class, id);
+                if (llog != null) {
+                    EquipmentStatusLog latest = llog.getEquipment() == null ? null : VrApp.getBean(EquipmentPlugin.class).findEquipmentLatestLog(llog.getEquipment().getId());
+                    if (latest != null) {
+                        final Equipment equipment = latest.getEquipment();
+                        equipment.setStatusType(latest.getType());
+                        equipment.setActor(latest.getActor());
+                        equipment.setResponsible(latest.getResponsible());
+                        equipment.setLogStartDate(latest.getStartDate());
+                        equipment.setLogEndDate(latest.getEndDate());
+                        pu.merge(equipment);
+                    }
                 }
             }
+        }
+    }
+
+    @OnPreUpdateFormula
+    public void onPreUpdateFormulas(PersistenceUnitEvent event) {
+        PersistenceUnit pu = event.getPersistenceUnit();
+        List<Equipment> equipents = pu.findAll(Equipment.class);
+        for (Equipment equipent : equipents) {
+            updateEquipmentLastLog(equipent.getId());
+        }
+    }
+
+    protected void updateEquipmentLastLog(int eid) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        EquipmentStatusLog current = VrApp.getBean(EquipmentPlugin.class).findEquipmentLatestLog(eid);
+
+        if (current != null) {
+            current.getEquipment().setStatusType(current.getType());
+            current.getEquipment().setActor(current.getActor());
+            current.getEquipment().setResponsible(current.getResponsible());
+            current.getEquipment().setLogStartDate(current.getStartDate());
+            current.getEquipment().setLogEndDate(current.getEndDate());
+            pu.merge(current.getEquipment());
         }
     }
 

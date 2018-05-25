@@ -18,6 +18,7 @@ import java.util.*;
 import java.util.logging.Logger;
 import net.vpc.common.util.Convert;
 import net.vpc.common.util.IntegerParserConfig;
+import org.primefaces.PrimeFaces;
 import org.springframework.stereotype.Controller;
 
 /**
@@ -50,7 +51,7 @@ public class UpdateProfileUsersActionCtrl {
         options.put("height", 350);
 //        options.put("contentWidth", "100%");
 //        options.put("contentHeight", "100%");
-        RequestContext.getCurrentInstance().openDialog("/modules/admin/update-profile-users-dialog", options, null);
+        PrimeFaces.current().dialog().openDynamic("/modules/admin/update-profile-users-dialog", options, null);
 
     }
 

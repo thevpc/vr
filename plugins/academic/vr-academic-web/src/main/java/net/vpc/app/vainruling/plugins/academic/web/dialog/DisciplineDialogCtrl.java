@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.primefaces.PrimeFaces;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -47,7 +48,7 @@ public class DisciplineDialogCtrl {
         options.put("draggable", true);
         options.put("modal", true);
 
-        RequestContext.getCurrentInstance().openDialog("/modules/academic/dialog/discipline-dialog", options, null);
+        PrimeFaces.current().dialog().openDynamic("/modules/academic/dialog/discipline-dialog", options, null);
 
     }
 

@@ -58,36 +58,36 @@ public class ENISoInfoPlugin {
     }
 
     private void updateVersion() {
-        PersistenceUnit pu = UPA.getPersistenceUnit();
-        AcademicPlugin academicPlugin = AcademicPlugin.get();
-        ApblPlugin apblPlugin = ApblPlugin.get();
-        for (AppPeriod periods : core.findPeriods()) {
-            ListValueMap<String, AcademicCoursePlan> map = new ListValueMap<>();
-            for (AcademicCoursePlan coursePlan : academicPlugin.findCoursePlans(periods.getId())) {
-                String cls = coursePlan.getCourseLevel().getAcademicClass().getName();
-                String sem = coursePlan.getCourseLevel().getSemester().getCode();
-                String name = coursePlan.getName();
-                String period = coursePlan.getPeriod().getName();
-                String id = cls + "-" + sem + "-" + period + "-" + name;
-                map.put(id, coursePlan);
-            }
-            for (String id : map.keySet()) {
-                List<AcademicCoursePlan> list = map.get(id);
-                for (int i = 1; i < list.size(); i++) {
-                    AcademicCoursePlan ref = list.get(0);
-                    AcademicCoursePlan curr = list.get(i);
-                    for (AcademicCourseAssignment assignment : academicPlugin.findAcademicCourseAssignmentListByCoursePlanId(curr.getId())) {
-                        assignment.setCoursePlan(ref);
-                        pu.merge(assignment);
-                    }
-                    for (ApblProgramSession session : apblPlugin.findProgramSessionsByCoursePlan(curr.getId())) {
-                        session.setCourse(ref);
-                        pu.merge(session);
-                    }
-                    pu.remove(curr);
-                }
-            }
-        }
+//        PersistenceUnit pu = UPA.getPersistenceUnit();
+//        AcademicPlugin academicPlugin = AcademicPlugin.get();
+//        ApblPlugin apblPlugin = ApblPlugin.get();
+//        for (AppPeriod periods : core.findPeriods()) {
+//            ListValueMap<String, AcademicCoursePlan> map = new ListValueMap<>();
+//            for (AcademicCoursePlan coursePlan : academicPlugin.findCoursePlans(periods.getId())) {
+//                String cls = coursePlan.getCourseLevel().getAcademicClass().getName();
+//                String sem = coursePlan.getCourseLevel().getSemester().getCode();
+//                String name = coursePlan.getName();
+//                String period = coursePlan.getPeriod().getName();
+//                String id = cls + "-" + sem + "-" + period + "-" + name;
+//                map.put(id, coursePlan);
+//            }
+//            for (String id : map.keySet()) {
+//                List<AcademicCoursePlan> list = map.get(id);
+//                for (int i = 1; i < list.size(); i++) {
+//                    AcademicCoursePlan ref = list.get(0);
+//                    AcademicCoursePlan curr = list.get(i);
+//                    for (AcademicCourseAssignment assignment : academicPlugin.findAcademicCourseAssignmentListByCoursePlanId(curr.getId())) {
+//                        assignment.setCoursePlan(ref);
+//                        pu.merge(assignment);
+//                    }
+//                    for (ApblProgramSession session : apblPlugin.findProgramSessionsByCoursePlan(curr.getId())) {
+//                        session.setCourse(ref);
+//                        pu.merge(session);
+//                    }
+//                    pu.remove(curr);
+//                }
+//            }
+//        }
 
     }
 

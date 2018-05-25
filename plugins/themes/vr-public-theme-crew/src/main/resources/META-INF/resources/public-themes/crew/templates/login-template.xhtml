@@ -5,6 +5,8 @@
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:p="http://primefaces.org/ui"
 >
+<!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.jsf.Vr"-->
+<!--@elvariable id="crewPublicThemePlugin" type="net.vpc.app.vainruling.plugins.themes.crew.CrewPublicThemePlugin"-->
 <h:head>
     <meta charset="UTF-8"/>
     <title>#{vr.getAppProperty('System.App.Title.Major.Main')} #{vr.getAppProperty('System.App.Title.Major.Secondary')}</title>
@@ -20,8 +22,7 @@
 
 
 </h:head>
-
-<h:body>
+<h:body style="background-image: url('#{vr.url(vr.nvl(crewPublicThemePlugin.loginBackgroundUrl,'public-theme-context://images/background.jpg'))}')">
 <h:form>
     <p:growl id="growl" showDetail="true" sticky="false"/>
     <div class="container">

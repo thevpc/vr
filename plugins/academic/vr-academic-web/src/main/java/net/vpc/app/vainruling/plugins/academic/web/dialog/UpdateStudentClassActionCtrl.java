@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.primefaces.PrimeFaces;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -49,7 +50,7 @@ public class UpdateStudentClassActionCtrl {
         options.put("resizable", false);
         options.put("draggable", true);
         options.put("modal", true);
-        RequestContext.getCurrentInstance().openDialog("/modules/academic/dialog/update-student-class-dialog", options, null);
+        PrimeFaces.current().dialog().openDynamic("/modules/academic/dialog/update-student-class-dialog", options, null);
 
     }
 

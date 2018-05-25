@@ -23,6 +23,7 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
+import org.primefaces.PrimeFaces;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -47,7 +48,7 @@ public class CreateInternshipsActionCtrl {
         options.put("resizable", false);
         options.put("draggable", true);
         options.put("modal", true);
-        RequestContext.getCurrentInstance().openDialog("/modules/academic/internship/create-internships-dialog", options, null);
+        PrimeFaces.current().dialog().openDynamic("/modules/academic/internship/create-internships-dialog", options, null);
 
     }
 

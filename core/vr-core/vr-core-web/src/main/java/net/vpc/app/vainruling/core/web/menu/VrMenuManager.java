@@ -18,6 +18,7 @@ import net.vpc.app.vainruling.core.web.obj.ActionDialogManager;
 import net.vpc.app.vainruling.core.web.obj.ObjConfig;
 import net.vpc.app.vainruling.core.web.util.VrWebHelper;
 import net.vpc.common.jsf.FacesUtils;
+import net.vpc.common.strings.StringBuilder2;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.ListValueMap;
 import net.vpc.upa.*;
@@ -231,17 +232,17 @@ public class VrMenuManager {
 //    }
 
     public VrControllerInfoAndObject resolveVrControllerInfoByInstance(String name, String cmd) {
-        if(name==null){
-           return null;
+        if (name == null) {
+            return null;
         }
         List<ControllerInfo> controllerInfos = controllers.get(name);
-        if(controllerInfos==null){
-            if(!name.endsWith("Ctrl")) {
-                name=name+"Ctrl";
+        if (controllerInfos == null) {
+            if (!name.endsWith("Ctrl")) {
+                name = name + "Ctrl";
                 controllerInfos = controllers.get(name);
             }
         }
-        if(controllerInfos==null) {
+        if (controllerInfos == null) {
             return null;
         }
         for (ControllerInfo controllerInfo : controllerInfos) {
@@ -250,15 +251,15 @@ public class VrMenuManager {
             if (obj instanceof VrControllerInfoResolver) {
                 VrControllerInfoResolver up = (VrControllerInfoResolver) obj;
                 VrControllerInfo vrControllerInfo = up.resolveVrControllerInfo(cmd);
-                if(vrControllerInfo!=null){
-                    return new VrControllerInfoAndObject(vrControllerInfo,obj);
+                if (vrControllerInfo != null) {
+                    return new VrControllerInfoAndObject(vrControllerInfo, obj);
                 }
             }
             VrController c2Ann = (VrController) targetClass.getAnnotation(VrController.class);
             if (c2Ann != null) {
                 VrControllerInfo vrControllerInfo = resolveVrControllerInfoByAnnotation(obj, c2Ann, name);
-                if(vrControllerInfo!=null){
-                    return new VrControllerInfoAndObject(vrControllerInfo,obj);
+                if (vrControllerInfo != null) {
+                    return new VrControllerInfoAndObject(vrControllerInfo, obj);
                 }
             }
         }
@@ -495,8 +496,14 @@ public class VrMenuManager {
 //        return "modules/todo/todo.xhtml";
 //    }
     public String path(String p) {
-        String r = VrWebHelper.getFacesContextPrefix();
-        return "/" + r + "/" + p + "?faces-redirect=true";
+        String c = StringUtils.trim(VrWebHelper.getContext());
+        String r = StringUtils.trim(VrWebHelper.getFacesContextPrefix());
+        StringBuilder2 sb = new StringBuilder2();
+//        sb.appendWithSeparator("/",c);
+        sb.appendWithSeparator("/",r);
+        sb.appendWithSeparator("/",p);
+        sb.append("?faces-redirect=true");
+        return sb.toString();
     }
 
     public Model getModel() {
@@ -565,7 +572,7 @@ public class VrMenuManager {
             Collections.sort(list, new Comparator<ControllerInfo>() {
                 @Override
                 public int compare(ControllerInfo o1, ControllerInfo o2) {
-                    return o2.priority-o1.priority;
+                    return o2.priority - o1.priority;
                 }
             });
             controllers.put(s, list);
@@ -884,11 +891,11 @@ public class VrMenuManager {
                         }
                     } else {
                         Package pp2 = UPA.getPersistenceUnit().getPackage(t.getPath(), MissingStrategy.NULL);
-                        //should chek for deep in level 3!
+                        //should check for deep in level 3!
                         if (pp2 != null) {
                             List<Entity> entities = filterEntities(pp2.getEntities(), new DefaultEntityFilter().setAcceptSystem(false));
                             for (Entity ee : entities) {
-                                if (ee.getCompositionRelation() == null || ee.getCompositionRelation().getHierarchyExtension() != null) {
+                                if (ee.getCompositionRelation() == null || (ee.getCompositionRelation() instanceof ManyToOneRelationship && ((ManyToOneRelationship) ee.getCompositionRelation()).getHierarchyExtension() != null)) {
                                     try {
                                         ee.getShield().checkNavigate();
                                         if (UPA.getPersistenceGroup().getSecurityManager().isAllowedKey(

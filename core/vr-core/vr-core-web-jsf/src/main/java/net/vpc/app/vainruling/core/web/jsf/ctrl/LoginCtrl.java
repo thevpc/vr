@@ -5,6 +5,7 @@
  */
 package net.vpc.app.vainruling.core.web.jsf.ctrl;
 
+import com.sun.istack.logging.Logger;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.PlatformSession;
 import net.vpc.app.vainruling.core.service.VrApp;
@@ -32,7 +33,7 @@ import org.springframework.stereotype.Controller;
  * @author taha.bensalah@gmail.com
  */
 @VrController(
-//        title = "Login",
+        //        title = "Login",
         url = "login"
 )
 @Controller
@@ -70,57 +71,54 @@ public class LoginCtrl {
         return null;
     }
 
-
     public String dologin() {
         VrWebHelper.prepareUserSession();
         UserToken s = CorePlugin.get().getCurrentToken();
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        String login = StringUtils.trim(getModel().getLogin());
-        String domain = null;
-        if (login.contains("@")) {
-            int i = login.indexOf('@');
-            domain = login.substring(i + 1);
-            login = login.substring(0, i);
-        }
-        if (StringUtils.isEmpty(domain)) {
-            domain = "main";
-        }
-        String finalLogin = login;
+        String[] domainAndLogin = core.resolveLogin(getModel().getLogin());
+        String domain = domainAndLogin[0];
+        String login = domainAndLogin[1];
         Action<String> welcome = new Action<String>() {
             @Override
             public String run() {
-                if (VrApp.getBean(AppGlobalCtrl.class).isShutdown() && !"admin".equals(finalLogin)) {
+                if (VrApp.getBean(AppGlobalCtrl.class).isShutdown() && !"admin".equals(login)) {
                     FacesUtils.addErrorMessage("Impossible de logger. Serveur indisponible momentannément. Redémarrage en cours.");
                     return null;
                 }
-                    UserSessionInfo u = core.authenticate(finalLogin, getModel().getPassword(),"WebSite",null);
+                UserSessionInfo u = core.authenticate(login, getModel().getPassword(), "WebSite", null);
                 if (u != null) {
                     FacesContext currentInstance = FacesContext.getCurrentInstance();
-                    if(currentInstance!=null) {
+                    if (currentInstance != null) {
                         UserSession currentSession = CorePlugin.get().getCurrentSession();
                         String sessionId = currentSession.getSessionId();
                         SessionStore sessionStore = VrApp.getBean(SessionStoreProvider.class).resolveSessionStore();
                         PlatformSession platformSession = sessionStore.get(sessionId);
-                        if(platformSession==null){
+                        if (platformSession == null) {
                             ExternalContext externalContext = currentInstance.getExternalContext();
                             HttpServletRequest httpRequest = (HttpServletRequest) externalContext.getRequest();
                             String ipAddress = httpRequest.getHeader("X-FORWARDED-FOR");
                             if (ipAddress == null) {
                                 ipAddress = httpRequest.getRemoteAddr();
                             }
-                            platformSession=new HttpPlatformSession((HttpSession) externalContext.getSession(false),ipAddress);
+                            platformSession = new HttpPlatformSession((HttpSession) externalContext.getSession(false), ipAddress);
                         }
                         currentSession.setPlatformSession(platformSession);
 //                        getSession().setPlatformSessionMap(externalContext.getSessionMap());
                         VrApp.getBean(ActiveSessionsCtrl.class).onRefresh();
-                        if(s!=null){
+                        if (s != null) {
 
                             String lvp = currentSession.getPreConnexionURL();
-                            if(lvp!=null){
+                            if (lvp != null) {
                                 currentSession.setPreConnexionURL(null);
                                 ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
                                 try {
-                                    context.redirect(context.getRequestContextPath() + lvp);
+                                    if (lvp.startsWith("http://") || lvp.startsWith("https://")) {
+                                        java.util.logging.Logger.getLogger(LoginCtrl.class.getName()).info("### [Success Link] Redirect to " + lvp);
+                                        context.redirect(lvp);
+                                    } else {
+                                        java.util.logging.Logger.getLogger(LoginCtrl.class.getName()).info("### [Success Link] Redirect to " + context.getRequestContextPath() + lvp);
+                                        context.redirect(context.getRequestContextPath() + lvp);
+                                    }
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 }
@@ -130,6 +128,24 @@ public class LoginCtrl {
                         return Vr.get().gotoPage("welcome", "");
                     }
 //            return VRApp.getBean(VrMenu.class).gotoPage("todo", "sys-labo-action");
+                } else {
+                    UserSession currentSession = CorePlugin.get().getCurrentSession();
+                    if (currentSession == null) {
+                        //ignore...
+                    } else {
+                        String lvp = currentSession.getInvalidConnexionURL();
+                        if (lvp != null && (lvp.startsWith("http://") || lvp.startsWith("https://"))) {
+                            ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
+                            try {
+                                java.util.logging.Logger.getLogger(LoginCtrl.class.getName()).info("### [Failed Link] Redirect to " + lvp);
+                                context.redirect(lvp);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            return null;
+                        }
+                    }
+
                 }
                 FacesUtils.addErrorMessage("Login ou mot de passe incorrect");
                 getModel().setPassword(null);
@@ -151,7 +167,7 @@ public class LoginCtrl {
     }
 
     public String dologout() {
-        boolean impersonating = CorePlugin.get().getCurrentToken().getRootLogin()!=null;
+        boolean impersonating = CorePlugin.get().getCurrentToken().getRootLogin() != null;
         core.logout();
         if (impersonating) {
             return Vr.get().gotoPage("welcome", "");

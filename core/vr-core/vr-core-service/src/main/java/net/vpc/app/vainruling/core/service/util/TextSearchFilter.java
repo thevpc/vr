@@ -5,6 +5,7 @@
  */
 package net.vpc.app.vainruling.core.service.util;
 
+import net.vpc.common.strings.StringBuilder2;
 import net.vpc.common.strings.StringUtils;
 
 import java.util.*;
@@ -28,7 +29,7 @@ public class TextSearchFilter {
         ArrayList<String> all = new ArrayList<>();
         if(!StringUtils.isEmpty(expr)) {
             int i = 0;
-            StringBuilder ss = new StringBuilder();
+            StringBuilder2 ss = new StringBuilder2();
             while (i < expr.length()) {
                 char c = expr.charAt(i);
                 if (c == '\"' && ss.length() == 0) {
@@ -58,7 +59,7 @@ public class TextSearchFilter {
                 } else if (Character.isWhitespace(c)) {
                     if (ss.length() > 0) {
                         all.add(normalize(ss.toString()));
-                        ss.delete(0, ss.length());
+                        ss.delete();
                     }
                 } else {
                     ss.append(c);

@@ -10,7 +10,6 @@ import net.vpc.upa.VoidAction;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
@@ -19,12 +18,12 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
+import org.springframework.core.ParameterNameDiscoverer;
 
 class CorePluginBodyPluginManager extends CorePluginBody {
 
+    protected ParameterNameDiscoverer  discoverer= createParameterNameDiscoverer();
     private static final java.util.logging.Logger log = java.util.logging.Logger.getLogger(CorePluginBodyPluginManager.class.getName());
     private List<Plugin> plugins;
     private AppVersion appVersion;
@@ -290,7 +289,7 @@ class CorePluginBodyPluginManager extends CorePluginBody {
 
     public Map<String, List<String>> getPluginsAPI() {
         Map<String, List<String>> api = new HashMap<>();
-        for (Map.Entry<String,Object> beanEntry : VrApp.getBeansMapForAnnotations(VrPlugin.class).entrySet()) {
+        for (Map.Entry<String, Object> beanEntry : VrApp.getBeansMapForAnnotations(VrPlugin.class).entrySet()) {
 
             Object bean = beanEntry.getValue();
             ArrayList<String> a = new ArrayList<>();
@@ -329,13 +328,21 @@ class CorePluginBodyPluginManager extends CorePluginBody {
                 sb.append(mname);
                 sb.append("(");
                 boolean first = true;
-                for (Type t : method.getGenericParameterTypes()) {
+                Type[] genericParameterTypes = method.getGenericParameterTypes();
+                String[] parameterNames=discoverer.getParameterNames(method);
+                for (int i=0;i<genericParameterTypes.length;i++) {
+                    Type t =genericParameterTypes[i];
+                    String name=parameterNames==null?null:parameterNames[i];
                     if (first) {
                         first = false;
                     } else {
                         sb.append(", ");
                     }
                     sb.append(typeToString(t));
+                    if(name!=null){
+                        sb.append(" ");
+                        sb.append(name);
+                    }
                 }
                 sb.append(")");
                 a.add(sb.toString());
@@ -455,6 +462,13 @@ class CorePluginBodyPluginManager extends CorePluginBody {
             return ptype.toString();
         }
         return type.toString();
+    }
+
+    protected static ParameterNameDiscoverer createParameterNameDiscoverer() {
+        // We need to discover them, or if that fails, guess,
+        // and if we can't guess with 100% accuracy, fail.
+        ParameterNameDiscoverer parmeteNameDiscoverer = new LocalVariableTableParameterNameDiscoverer();
+        return parmeteNameDiscoverer;
     }
 
 }

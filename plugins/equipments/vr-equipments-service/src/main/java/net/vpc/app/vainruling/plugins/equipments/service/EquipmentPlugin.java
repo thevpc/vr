@@ -21,7 +21,9 @@ import org.springframework.context.annotation.DependsOn;
 
 import java.sql.Timestamp;
 import java.util.*;
+import javax.net.ssl.SSLEngineResult;
 import net.vpc.app.vainruling.core.service.plugins.VrPlugin;
+import net.vpc.upa.NamedId;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -34,7 +36,7 @@ public class EquipmentPlugin {
     CorePlugin core;
 
     @Start
-    private void start(){
+    private void start() {
         //EquipmentPluginHelper
         for (AppDepartment d : core.findDepartments()) {
             EquipmentPluginHelper.ensureCreatedEquipmentDepartmentUpdateRight(d);
@@ -52,7 +54,7 @@ public class EquipmentPlugin {
                 .getResultList();
 
     }
-    
+
     public List<Equipment> findEquipmentsByType(int typeId) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return pu.createQuery("Select a from Equipment a where a.typeId=:typeId order by a.name")
@@ -71,10 +73,9 @@ public class EquipmentPlugin {
 //                .getResultList();
 //
 //    }
-
-    public Equipment copyEquipment(Equipment eq){
+    public Equipment copyEquipment(Equipment eq) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        Equipment eq2=new Equipment();
+        Equipment eq2 = new Equipment();
         eq2.setName(eq.getName());
         eq2.setQuantity(eq.getQuantity());
         eq2.setAcquisition(eq.getAcquisition());
@@ -108,20 +109,20 @@ public class EquipmentPlugin {
         return eq2;
     }
 
-    public int splitEquipmentQuantities(int equipmentId){
+    public int splitEquipmentQuantities(int equipmentId) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity entity = pu.getEntity(Equipment.class);
         Equipment eq = entity.findById(equipmentId);
-        if(Utils.isInteger(eq.getQuantity())){
-            int qte=(int) eq.getQuantity();
-            if(qte>1) {
-                for (int i = 2; i < qte+1; i++) {
-                    Equipment eq2=copyEquipment(eq);
-                    eq2.setName(eq.getName()+" "+i);
-                    if(!StringUtils.isEmpty(eq.getSerial())) {
+        if (Utils.isInteger(eq.getQuantity())) {
+            int qte = (int) eq.getQuantity();
+            if (qte > 1) {
+                for (int i = 2; i < qte + 1; i++) {
+                    Equipment eq2 = copyEquipment(eq);
+                    eq2.setName(eq.getName() + " " + i);
+                    if (!StringUtils.isEmpty(eq.getSerial())) {
                         eq2.setSerial(eq.getSerial() + "_" + i);
                     }
-                    if(!StringUtils.isEmpty(eq.getStockSerial())) {
+                    if (!StringUtils.isEmpty(eq.getStockSerial())) {
                         eq2.setStockSerial(eq.getStockSerial());
                     }
                     eq2.setQuantity(1);
@@ -157,10 +158,10 @@ public class EquipmentPlugin {
 //        core.profileAddRight(headOfDepartment.getId(),AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_MY_COURSE_LOAD);
         for (net.vpc.upa.Entity ee : UPA.getPersistenceUnit().getPackage("Equipment").getEntities(true)) {
             for (String right : CorePluginSecurity.getEntityRights(ee, true, true, true, false, false)) {
-                core.addProfileRight(headOfDepartment.getId(),right);
+                core.addProfileRight(headOfDepartment.getId(), right);
             }
             for (String right : CorePluginSecurity.getEntityRights(ee, true, true, false, false, false)) {
-                core.addProfileRight(technicianProfile.getId(),right);
+                core.addProfileRight(technicianProfile.getId(), right);
             }
         }
 
@@ -179,7 +180,6 @@ public class EquipmentPlugin {
 //        techContact = core.findOrCreateContact(techContact);
 //        tech1.setContact(techContact);
 //        tech1 = core.findOrCreate(tech1);
-
 //        techContact = new AppContact();
 //        AppUser tech2 = new AppUser();
 //        tech2.setEnabled(true);
@@ -239,14 +239,14 @@ public class EquipmentPlugin {
         Map<String, Object> cached = new HashMap<String, Object>();
 
         for (String n : new String[]{
-                "Materiel Info/PC Desktop/HP/Pavillon/Pavillon 123",
-                "Materiel Info/PC Portable/HP/Pavillon/Pavillon 456",
-                "Materiel Info/PC Desktop/TOSHIBA/Satellite/Sat 222",
-                "Materiel Info/PC Portable/TOSHIBA/Satellite/Expatria",
-                "Materiel Info/Imprimante/CANON/LBP/LBP2900",
-                "Materiel Info/Imprimante/CANON/LBP/LBP2900B",
-                "Materiel Info/Scanner/CANON/ScanLite/ScanLite200",
-                "Materiel Info/PC Portable/IBM/Thinkpad/T200",}) {
+            "Materiel Info/PC Desktop/HP/Pavillon/Pavillon 123",
+            "Materiel Info/PC Portable/HP/Pavillon/Pavillon 456",
+            "Materiel Info/PC Desktop/TOSHIBA/Satellite/Sat 222",
+            "Materiel Info/PC Portable/TOSHIBA/Satellite/Expatria",
+            "Materiel Info/Imprimante/CANON/LBP/LBP2900",
+            "Materiel Info/Imprimante/CANON/LBP/LBP2900B",
+            "Materiel Info/Scanner/CANON/ScanLite/ScanLite200",
+            "Materiel Info/PC Portable/IBM/Thinkpad/T200",}) {
             String[] nn = n.split("/");
             String eqTypeGroupName = nn[0];
             String eqTypeName = nn[1];
@@ -307,6 +307,47 @@ public class EquipmentPlugin {
                 }
             }
         }
+    }
+
+    public EquipmentStatusLog findEquipmentLatestLog(int id) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        return pu.createQuery("Select Top 1 o from EquipmentStatusLog o where o.equipmentId=:id order by o.startDate desc, o.id asc")
+                .setParameter("id", id)
+                .getFirstResultOrNull();
+
+    }
+
+    public boolean isBorrowed(int id) {
+        EquipmentStatusLog elog = findEquipmentLatestLog(id);
+        if (elog != null && elog.getType() == EquipmentStatusType.BORROWED) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean borrowBackEquipment(int id, Integer actor) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+//        Equipment eq = findEquipment(id);
+        EquipmentStatusLog elog = findEquipmentLatestLog(id);
+        if (elog != null && elog.getType() == EquipmentStatusType.BORROWED) {
+            EquipmentStatusLog elog2 = new EquipmentStatusLog();
+            elog2.setEquipment(elog.getEquipment());
+            AppUser actorInstance = null;
+            if (actor == null) {
+                actorInstance = CorePlugin.get().getCurrentUser();
+            } else {
+                actorInstance = CorePlugin.get().findUser(actor);
+            }
+            elog2.setEquipment(elog.getEquipment());
+            elog2.setActor(actorInstance);
+            elog2.setStartDate(new Timestamp(System.currentTimeMillis()));
+            elog2.setType(EquipmentStatusType.AVAILABLE);
+            elog2.setQuantity(Math.abs(elog.getQuantity()));
+            elog2.setResponsible(null);
+            pu.persist(elog2);
+            return true;
+        }
+        return false;
     }
 
     private static class InitData {

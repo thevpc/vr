@@ -80,7 +80,10 @@ class CorePluginBodyDAOManager extends CorePluginBody {
         } else if (t instanceof ManyToOneType) {
             ManyToOneType m = (ManyToOneType) t;
             final Entity me = m.getRelationship().getTargetEntity();
-            if (m.getRelationship().getFilter() == null) {
+            if (
+                    (m.getRelationship() instanceof ManyToOneRelationship && ((ManyToOneRelationship)m.getRelationship()).getFilter() == null)
+                    || (m.getRelationship() instanceof OneToOneRelationship)
+                    ) {
                 List<NamedId> cacheItem = findAllNamedIdsByRelationship(m.getRelationship().getName(), constraints, currentInstance);
                 List<NamedId> cacheItem2 = new ArrayList<>(cacheItem.size());
                 for (NamedId namedId : cacheItem) {
@@ -268,6 +271,7 @@ class CorePluginBodyDAOManager extends CorePluginBody {
     public Object find(Class type, Object id) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity entity = pu.getEntity(type);
+        checkFindOne(entity.getName());
         id = VrUtils.convertDataObject(id, entity.getIdType());
         return pu.findById(type, id);
     }
@@ -276,6 +280,7 @@ class CorePluginBodyDAOManager extends CorePluginBody {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity entity = pu.getEntity(entityName);
         id = VrUtils.convertDataObject(id, entity.getIdType());
+        checkFindOne(entity.getName());
         return pu.findById(entityName, id);
     }
 
@@ -283,6 +288,7 @@ class CorePluginBodyDAOManager extends CorePluginBody {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity entity = pu.getEntity(entityName);
         id = VrUtils.convertDataObject(id, entity.getIdType());
+        checkFindOne(entity.getName());
         return pu.findDocumentById(entityName, id);
     }
 
@@ -293,6 +299,7 @@ class CorePluginBodyDAOManager extends CorePluginBody {
     }
 
     public List<Object> findAll(String entityName, Map<String, Object> criteria) {
+        checkFindMany(entityName);
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity entity = pu.getEntity(entityName);
         QueryBuilder cc = pu.createQueryBuilder(entityName)
@@ -324,6 +331,7 @@ class CorePluginBodyDAOManager extends CorePluginBody {
     }
 
     public List<NamedId> findAllNamedIds(String entityName, Map<String, Object> criteria, Expression condition) {
+        checkNavigate(entityName);
         final String aliasName = "o";
         Entity entity = UPA.getPersistenceUnit().getEntity(entityName);
 
@@ -364,6 +372,7 @@ class CorePluginBodyDAOManager extends CorePluginBody {
     }
 
     public List<NamedId> findAllNamedIds(String entityName, Map<String, Object> criteria, Object currentInstance) {
+        checkNavigate(entityName);
         final String aliasName = "o";
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity entity = pu.getEntity(entityName);
@@ -402,6 +411,7 @@ class CorePluginBodyDAOManager extends CorePluginBody {
     }
 
     public long findCountByFilter(String entityName, String criteria, ObjSearch objSearch, Map<String, Object> parameters) {
+        checkNavigate(entityName);
         PersistenceUnit pu = UPA.getPersistenceUnit();
         String qq = "Select count(1) from " + entityName + " o ";
         Expression filterExpression = null;
@@ -432,6 +442,7 @@ class CorePluginBodyDAOManager extends CorePluginBody {
     }
 
     public List<Object> findByFilter(String entityName, String criteria, ObjSearch objSearch, Map<String, Object> parameters) {
+        checkFindMany(entityName);
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity entity = pu.getEntity(entityName);
         QueryBuilder q = pu
@@ -468,6 +479,7 @@ class CorePluginBodyDAOManager extends CorePluginBody {
     }
 
     public List<Document> findDocumentsByFilter(String entityName, String criteria, ObjSearch objSearch, String textSearch, Map<String, Object> parameters) {
+        checkFindMany(entityName);
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity entity = pu.getEntity(entityName);
         QueryBuilder q = pu
@@ -536,14 +548,16 @@ class CorePluginBodyDAOManager extends CorePluginBody {
         }
     }
 
-    public List<Object> findAll(String type) {
+    public List<Object> findAll(String entityName) {
+        checkFindMany(entityName);
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        return pu.findAll(type);
+        return pu.findAll(entityName);
     }
 
     public List<Object> findByField(Class type, String field, Object value) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity entity = pu.getEntity(type);
+        checkFindMany(entity.getName());
         DataType dt = entity.getField(field).getDataType();
         return pu.createQueryBuilder(type).setEntityAlias("o")
                 .byExpression(new And(new Var(new Var("o"), field), new Literal(value, dt)))
@@ -562,6 +576,37 @@ class CorePluginBodyDAOManager extends CorePluginBody {
         } catch (RuntimeException ex) {
             TraceService.get().trace("updateFormulas", "failed updateFormulas : " + ex.toString(), entityName, entity.getParent().getPath(), Level.WARNING);
             throw ex;
+        }
+    }
+    
+    private void checkNavigate(String entityName){
+        if (!CorePlugin.get().isCurrentSessionAdmin()) {
+            return;
+        }
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        Entity e = pu.getEntity(entityName);
+        if(!pu.getSecurityManager().isAllowedNavigate(e)){
+            throw new SecurityException("Not Allowed");
+        }
+    }
+    private void checkFindMany(String entityName){
+        if (!CorePlugin.get().isCurrentSessionAdmin()) {
+            return;
+        }
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        Entity e = pu.getEntity(entityName);
+        if(!pu.getSecurityManager().isAllowedLoad(e) || !pu.getSecurityManager().isAllowedNavigate(e)){
+            throw new SecurityException("Not Allowed");
+        }
+    }
+    private void checkFindOne(String entityName){
+        if (!CorePlugin.get().isCurrentSessionAdmin()) {
+            return;
+        }
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        Entity e = pu.getEntity(entityName);
+        if(!pu.getSecurityManager().isAllowedLoad(e)){
+            throw new SecurityException("Not Allowed");
         }
     }
 }

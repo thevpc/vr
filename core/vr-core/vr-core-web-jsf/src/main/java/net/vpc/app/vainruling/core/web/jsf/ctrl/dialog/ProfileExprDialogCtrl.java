@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.primefaces.PrimeFaces;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -47,7 +48,7 @@ public class ProfileExprDialogCtrl {
         options.put("draggable", true);
         options.put("modal", true);
 
-        RequestContext.getCurrentInstance().openDialog("/modules/obj/profile-expr-dialog", options, null);
+        PrimeFaces.current().dialog().openDynamic("/modules/obj/profile-expr-dialog", options, null);
 
     }
 

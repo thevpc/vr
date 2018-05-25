@@ -60,6 +60,10 @@ and open the template in the editor.
                                      title="Fermer" icon="fa fa-arrow-left"
                                      styleClass="ui-ribbon-bigbutton  vr-toolbox-button btn-default" ajax="true"
                                      actionListener="#{documentsCtrl.onCancel}" update=":listForm"/>
+                    <p:commandButton rendered="#{documentsCtrl.isEnabledButton('Search')}"
+                                     title="Fermer" icon="fa fa-search"
+                                     styleClass="ui-ribbon-bigbutton  vr-toolbox-button btn-default" ajax="true"
+                                     actionListener="#{documentsCtrl.onShowSearchDialog}" update=":listForm"/>
                     <p:commandButton rendered="#{documentsCtrl.isEnabledButton('Security')}"
                                      title="Sécurité" icon="fa fa-users"
                                      styleClass="ui-ribbon-bigbutton  vr-toolbox-button btn-default" ajax="true"
@@ -91,7 +95,7 @@ and open the template in the editor.
                             <!--<h:outputText value="# {i.name}" rendered="# {! i.file.directory}"/>-->
                             <p:commandLink rendered="#{!i.file.directory}"
                                            disabled="#{!documentsCtrl.isEnabledButton('Download',i)}"
-                                           value="#{i.name}"
+                                           value="#{i.longName}"
                                            ajax="false"
                                            update="filesTable"
                                            style="#{i.labelCss}"

@@ -1,4 +1,4 @@
-    /*
+/*
  * To change this license header, choose License Headers in Project Properties.
  *
  * and open the template in the editor.
@@ -20,19 +20,23 @@ import java.util.List;
  * @author taha.bensalah@gmail.com
  */
 @EntityAction(entityType = Equipment.class,
-        actionLabel = "div", actionStyle = "fa-calculator",
-        dialog = false
+        actionLabel = "bck", actionStyle = "fa-calculator",
+        dialog = false, confirm = true
 )
-public class SplitEquipmentQtyAction implements ActionDialog {
-
-    @Override
-    public void openDialog(String actionId, List<String> itemIds) {
-        throw new IllegalArgumentException("Unsupported");
-    }
+public class ReturnBorrowedEquipmentAction implements ActionDialog {
 
     @Override
     public boolean isEnabled(String actionId, Class entityType, AccessMode mode, Object value) {
-        return value != null;//value != null;
+        if (value == null) {
+            return false;
+        }
+        EquipmentPlugin equipmentPlugin = VrApp.getBean(EquipmentPlugin.class);
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        Entity entity = pu.getEntity(entityType);
+        EntityBuilder builder = entity.getBuilder();
+        Equipment eq = (Equipment) builder.getObject(value);
+
+        return eq != null && equipmentPlugin.isBorrowed(eq.getId());
     }
 
     @Override
@@ -42,11 +46,10 @@ public class SplitEquipmentQtyAction implements ActionDialog {
         Entity entity = pu.getEntity(entityType);
         EntityBuilder builder = entity.getBuilder();
         Equipment eq = (Equipment) builder.getObject(obj);
-
-        String message=null;
-        if (equipmentPlugin.splitEquipmentQuantities(eq.getId()) > 0) {
-            message = "Separation réussie";
+        String message = null;
+        if (equipmentPlugin.borrowBackEquipment(eq.getId(), null)) {
+            message = "Retour réussi";
         }
-        return new ActionDialogResult(message, ActionDialogResultPostProcess.RELOAD_ALL);
+        return new ActionDialogResult(message, ActionDialogResultPostProcess.RELOAD_CURRENT);
     }
 }

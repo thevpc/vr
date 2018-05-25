@@ -46,8 +46,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import net.vpc.app.vainruling.core.web.VrControllerInfoResolver;
 import net.vpc.app.vainruling.core.web.VRMenuProvider;
+import org.primefaces.PrimeFaces;
 import org.springframework.stereotype.Controller;
 
 /**
@@ -181,7 +183,7 @@ public class DocumentsCtrl implements VRMenuProvider, VrControllerInfoResolver, 
         onRefresh();
     }
 
-//    protected VirtualFileSystem createFS() {
+    //    protected VirtualFileSystem createFS() {
 //        CorePlugin fsp = VrApp.getBean(CorePlugin.class);
 //        VirtualFileSystem rootfs = fsp.getRootFileSystem();
 //        VirtualFileSystem userfs = rootfs.filter(null);
@@ -241,7 +243,7 @@ public class DocumentsCtrl implements VRMenuProvider, VrControllerInfoResolver, 
         options.put("resizable", false);
         options.put("draggable", true);
         options.put("modal", true);
-        RequestContext.getCurrentInstance().openDialog("/modules/files/documents-newname-dialog", options, null);
+        PrimeFaces.current().dialog().openDynamic("/modules/files/documents-newname-dialog", options, null);
     }
 
     public void onRemove() {
@@ -265,7 +267,7 @@ public class DocumentsCtrl implements VRMenuProvider, VrControllerInfoResolver, 
         options.put("resizable", false);
         options.put("draggable", true);
         options.put("modal", true);
-        RequestContext.getCurrentInstance().openDialog("/modules/files/documents-newname-dialog", options, null);
+        PrimeFaces.current().dialog().openDynamic("/modules/files/documents-newname-dialog", options, null);
     }
 
     public void onUpload() {
@@ -327,7 +329,8 @@ public class DocumentsCtrl implements VRMenuProvider, VrControllerInfoResolver, 
     }
 
     public void onRefresh() {
-        getModel().setFiles(DocumentsUtils.loadFiles(getModel().getCurrent().getFile()));
+        getModel().setFiles(DocumentsUtils.searchFiles(getModel().getCurrent().getFile(), getModel().getSearchString()));
+        FacesContext.getCurrentInstance().getPartialViewContext().getRenderIds().add("listForm");
     }
 
     public Model getModel() {
@@ -441,7 +444,7 @@ public class DocumentsCtrl implements VRMenuProvider, VrControllerInfoResolver, 
         //check is advanced
         getModel().getCurrent().setAdvanced(getModel().getCurrent().isAcceptAdvanced());
         getModel().getCurrent().readACL();
-        RequestContext.getCurrentInstance().openDialog("/modules/files/documents-security-dialog", options, null);
+        PrimeFaces.current().dialog().openDynamic("/modules/files/documents-security-dialog", options, null);
         onRefresh();
 
     }
@@ -454,6 +457,25 @@ public class DocumentsCtrl implements VRMenuProvider, VrControllerInfoResolver, 
     public void fireEventExtraDialogClosed() {
         //Object obj
         RequestContext.getCurrentInstance().closeDialog(new DialogResult(null, null));
+    }
+
+    public void onSearch() {
+        RequestContext.getCurrentInstance().closeDialog(new DialogResult(null, null));
+        onRefresh();
+    }
+
+    public void onCancelSearch() {
+        getModel().setSearchString("");
+        RequestContext.getCurrentInstance().closeDialog(new DialogResult(null, null));
+        onRefresh();
+    }
+
+    public void onShowSearchDialog() {
+        Map<String, Object> options = new HashMap<String, Object>();
+        options.put("resizable", false);
+        options.put("draggable", true);
+        options.put("modal", true);
+        PrimeFaces.current().dialog().openDynamic("/modules/files/documents-search-dialog", options, null);
     }
 
     public static class Config {
@@ -494,8 +516,17 @@ public class DocumentsCtrl implements VRMenuProvider, VrControllerInfoResolver, 
         Config config;
         private List<net.vpc.app.vainruling.core.service.fs.VFileInfo> files = new ArrayList<>();
         private String newName;
+        private String searchString;
         private boolean newFolder;
         private boolean newFile;
+
+        public String getSearchString() {
+            return searchString;
+        }
+
+        public void setSearchString(String searchString) {
+            this.searchString = searchString;
+        }
 
         public boolean isNewFile() {
             return newFile;

@@ -47,6 +47,7 @@ import java.util.List;
  * @author taha.bensalah@gmail.com
  */
 public class VrUtils {
+    public static SimpleDateFormat UNIVERSAL_DATE_FORMAT=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     public static String STRING_SEP=", ;";
 
     public static final Gson GSON = new Gson();
@@ -916,6 +917,12 @@ public class VrUtils {
         return GSON.fromJson(GSON.toJson(t), toType);
     }
 
+    /**
+     * Convert
+     * @param t
+     * @param toType
+     * @return 
+     */
     public static Object convertDataObjectOrDocument(Object t, Class toType) {
         if (t == null) {
             return null;

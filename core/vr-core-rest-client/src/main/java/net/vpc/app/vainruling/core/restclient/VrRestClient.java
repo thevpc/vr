@@ -19,17 +19,22 @@ import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by vpc on 2/26/17.
  */
 public class VrRestClient {
+
     private CloseableHttpClient httpClient;
     private CookieStore cookieStore = new BasicCookieStore();
     private HttpContext httpContext = new BasicHttpContext();
@@ -42,42 +47,64 @@ public class VrRestClient {
         System.out.println(s.login("toto", "toto1243"));
         try {
 
-            JsonObject ret = s.wscriptJson("" +
-                    "Return(bean('core').findFullArticlesByCategory('Featured'))" +
-                    "");
+            JsonObject ret = s.wscriptJson(""
+                    + "Return(bean('core').getPluginsAPI());"
+                    + "");
 
-            System.out.println(ret);
-        }finally {
-            System.out.println( s.logout());
+            try {
+                PrintStream ps = new PrintStream("/home/vpc/a.json");
+                ps.println(ret.getAsJsonObject("$1"));
+                ps.close();
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(VrRestClient.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } finally {
+            System.out.println(s.logout());
         }
 
     }
+//    public static void main(String[] args) {
+//        VrRestClient s = new VrRestClient();
+//
+//        System.out.println(s.login("toto", "toto1243"));
+//        try {
+//
+//            JsonObject ret = s.wscriptJson("" +
+//                    "Return(bean('core').findFullArticlesByCategory('Featured'))" +
+//                    "");
+//
+//            System.out.println(ret);
+//        }finally {
+//            System.out.println( s.logout());
+//        }
+//
+//    }
 
     public String logout() {
         return (invokePostJson1("/core/logout")).toString();
     }
 
     public JsonObject login(String login, String password) {
-        return (JsonObject) invokePostJson1("/core/login"
-                , "login", login
-                , "password", password
+        return (JsonObject) invokePostJson1("/core/login",
+                 "login", login,
+                 "password", password
         );
     }
 
     public Map wscriptMap(String script) {
-        String s=invokePost("/core/wscript"
-                , "script", script
+        String s = invokePost("/core/wscript",
+                 "script", script
         );
-        Gson g=new Gson();
-        return g.fromJson(s,LinkedHashMap.class);
+        Gson g = new Gson();
+        return g.fromJson(s, LinkedHashMap.class);
     }
 
     public JsonObject wscriptJson(String script) {
-        String s=invokePost("/core/wscript"
-                , "script", script
+        String s = invokePost("/core/wscript",
+                 "script", script
         );
-        Gson g=new Gson();
-        return g.fromJson(s,JsonObject.class);
+        Gson g = new Gson();
+        return g.fromJson(s, JsonObject.class);
     }
 
     private void check() {
@@ -138,7 +165,6 @@ public class VrRestClient {
 //        }
 //        throw new IllegalArgumentException("Unhandled");
 //    }
-
 //    public String exec(String path, Object... args) {
 //        check();
 //        StringBuilder ret = new StringBuilder();
@@ -182,7 +208,6 @@ public class VrRestClient {
 //        }
 //        return ret.toString();
 //    }
-
     public JsonElement invokePostJson1(String path, Object... args) {
         JsonObject jsonObject = invokePostJson(path, args);
         return (JsonElement) jsonObject.get("$1");
@@ -190,9 +215,9 @@ public class VrRestClient {
 
     public JsonObject invokePostJson(String path, Object... args) {
         String s = invokePost(path, args);
-        Gson g=new Gson();
+        Gson g = new Gson();
         JsonObject jsonObject = g.fromJson(s, JsonObject.class);
-        if(jsonObject.get("$error")!=null){
+        if (jsonObject.get("$error") != null) {
             throw new RuntimeException(jsonObject.get("$error").toString());
         }
         return jsonObject;
@@ -202,13 +227,13 @@ public class VrRestClient {
         check();
         StringBuilder ret = new StringBuilder();
         try {
-            URIBuilder builder = new URIBuilder(url+"/"+wsContext+"/" + path);
+            URIBuilder builder = new URIBuilder(url + "/" + wsContext + "/" + path);
 
             HttpPost httpPost = new HttpPost(builder.build());
 
             ArrayList postParameters = new ArrayList<NameValuePair>();
             for (int i = 0; i < args.length; i += 2) {
-                postParameters.add(new BasicNameValuePair(String.valueOf(args[i]), String.valueOf(args[i+1])));
+                postParameters.add(new BasicNameValuePair(String.valueOf(args[i]), String.valueOf(args[i + 1])));
             }
 
             httpPost.setEntity(new UrlEncodedFormEntity(postParameters, "UTF-8"));

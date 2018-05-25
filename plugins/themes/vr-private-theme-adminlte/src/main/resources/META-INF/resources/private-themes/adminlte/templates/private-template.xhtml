@@ -17,7 +17,6 @@
         <!-- Tell the browser to be responsive to screen width -->
         <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport"/>
         <!-- Bootstrap 3.3.6 -->
-        <!--<link rel="stylesheet" href="# {vr.privateThemeContext}/wplugins/adminlte/bootstrap/css/bootstrap.min.css"/>-->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
         <!-- Font Awesome -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css"/>
@@ -45,7 +44,6 @@
         <link rel="shortcut icon" href="#{vr.context}/images/app-icon.png" type="image/png"/>
 
         <script src="#{vr.context}/fs/Site/js/analytics.js"></script>
-
         <link rel="stylesheet" href="#{vr.privateThemeContext}/css/app.css" type="text/css"/>
 
         <h:outputScript library="primefaces" name="jquery/jquery.js" target="head" />
@@ -362,7 +360,7 @@
                             </ui:fragment>
                             <h:inputHidden value="#{vr.buildMenu()}"/>
                             <li class="treeview">
-                                <h:outputLink value="/p/welcome">
+                                <h:outputLink value="#{vr.context}/p/welcome">
                                     <i class="fa fa-desktop"></i> Mon Mur
                                 </h:outputLink>
                             </li>

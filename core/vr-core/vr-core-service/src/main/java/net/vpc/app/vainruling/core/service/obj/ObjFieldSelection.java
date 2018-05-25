@@ -44,4 +44,15 @@ public class ObjFieldSelection {
         return getEntity().getFields(FieldFilters.byModifiersAnyOf(FieldModifier.MAIN, FieldModifier.SUMMARY));
     }
 
+    public void load() {
+
+    }
+
+    public void save() {
+
+    }
+
+    public void reset() {
+    }
+
 }

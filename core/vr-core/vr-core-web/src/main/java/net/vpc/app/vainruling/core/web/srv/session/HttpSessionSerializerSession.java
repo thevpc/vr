@@ -17,7 +17,11 @@ public class HttpSessionSerializerSession implements HttpSessionSerializer {
 
     @Override
     public HttpSessionId read(HttpServletRequest request) {
-        String s = request.getRequestedSessionId();
+        String s = request.getParameter("jsessionid");
+        if (s != null) {
+            return new HttpSessionId_JSESSIONID(s);
+        }
+        s = request.getRequestedSessionId();
         if (s != null) {
             return new HttpSessionId_JSESSIONID(s);
         }

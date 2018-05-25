@@ -252,7 +252,11 @@ and open the template in the editor.
             $(".fancybox").fancybox();
 
         });
+        var COUNTDOWN_DATE='#{vr.escapeJsQuotedString(crewPublicThemePlugin.countDownDate)}';
+        var COUNTDOWN_TEXT='#{vr.escapeJsQuotedString(crewPublicThemePlugin.countDownText)}';
     </script>
+    <script type="text/javascript"
+            src="#{vr.publicThemeContext}/js/countdown/vr-countdown.js"></script>
 </h:head>
 <h:body>
     <h:form>
@@ -299,6 +303,7 @@ and open the template in the editor.
                         </ul>
                     </div>
                 </nav>
+                <div id="countdown" style="text-align: center;vertical-align: middle;color: #efff00;    text-shadow: 1px 1px #ff0052;    font-family: monospace;    background: #4b5a5f8c;"></div>
                 <!-- </div> -->
             </div>
         </header>

@@ -22,19 +22,21 @@ import java.sql.Timestamp;
 @Path("Equipment")
 @Properties(
         {
-                @Property(name = UIConstants.Grid.ROW_STYLE,
-                        value = "(i.object.deleted or i.object.archived) ?'vr-row-deleted':(i.object.location eq null) ?'vr-row-invalid': ''"),
-                @Property(name = UIConstants.ENTITY_ID_HIERARCHY, value = "brandLine"),
-                @Property(name = "ui.auto-filter.department", value = "{expr='this.department',order=1}"),
-                @Property(name = "ui.auto-filter.acquisition", value = "{expr='this.acquisition',order=2}"),
-                @Property(name = "ui.auto-filter.brandLine", value = "{expr='this.brandLine',order=3}"),
-                @Property(name = "ui.auto-filter.location", value = "{expr='this.location',order=4}"),
-                @Property(name = "ui.auto-filter.type", value = "{expr='this.type',order=5}"),
-                @Property(name = "ui.auto-filter.statusType", value = "{expr='this.statusType',order=6}"),
-                @Property(name = "ui.main-photo-property", value = "photo"),
-                @Property(name = "ui.main-photo-property.default", value = "private-theme-context://images/equipment.png"),
-        })
+            @Property(name = UIConstants.Grid.ROW_STYLE,
+                    value = "(i.object.deleted or i.object.archived) ?'vr-row-deleted':(i.object.location eq null) ?'vr-row-invalid': ''"),
+            @Property(name = UIConstants.ENTITY_ID_HIERARCHY, value = "brandLine"),
+            @Property(name = "ui.auto-filter.department", value = "{expr='this.department',order=1}"),
+            @Property(name = "ui.auto-filter.acquisition", value = "{expr='this.acquisition',order=2}"),
+            @Property(name = "ui.auto-filter.brandLine", value = "{expr='this.brandLine',order=3}"),
+            @Property(name = "ui.auto-filter.location", value = "{expr='this.location',order=4}"),
+            @Property(name = "ui.auto-filter.type", value = "{expr='this.type',order=5}"),
+            @Property(name = "ui.auto-filter.statusType", value = "{expr='this.statusType',order=6}"),
+            @Property(name = "ui.auto-filter.responsible", value = "{expr='this.responsible',order=7}"),
+            @Property(name = "ui.auto-filter.borrowable", value = "{expr='this.borrowable',order=8}"),
+            @Property(name = "ui.main-photo-property", value = "photo"),
+            @Property(name = "ui.main-photo-property.default", value = "private-theme-context://images/equipment.png"),})
 public class Equipment {
+    
 
     @Path("Main")
     @Id
@@ -44,22 +46,34 @@ public class Equipment {
     private String stockSerial;
     private String name;
     @Main
-    @Formula(value = "concat(this.name,'-',this.serial)",formulaOrder = 1)
+    @Formula(value = "concat(this.name,'-',this.serial)", formulaOrder = 1)
     private String fullName;
     @Summary
-    @Formula(value = "this.quantity+Coalesce((Select sum(a.quantity) from EquipmentStatusLog a where a.equipmentId=this.id),0)",formulaOrder = 1)
+    @Formula(value = "this.quantity+Coalesce((Select sum(a.quantity) from EquipmentStatusLog a where a.equipmentId=this.id),0)", formulaOrder = 1)
     private double actualQuantity;
     private double quantity;
+    @Summary
+    @ToString
+    @Property(name = UIConstants.Grid.COLUMN_STYLE_CLASS, value = "#{hashCssColor(this.statusType)}")
+    private EquipmentStatusType statusType = EquipmentStatusType.AVAILABLE;
+    @Summary
+    private AppUser responsible;
+    @Summary
+    private Timestamp logStartDate;
+
+    @Summary
+    private Timestamp logEndDate;
+
     @Properties(
             @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA))
     @Field(max = "400")
     private String description;
     @Properties(
             {
-                    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.FILE),
-                    @Property(name = UIConstants.Form.CONTROL_FILE_TYPE, value = "root"),
-                    @Property(name = UIConstants.Form.CONTROL_FILE_PATH, value = "/Data/Equipment"),
-                    @Property(name = UIConstants.Form.SPAN, value = "MAX_VALUE")
+                @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.FILE),
+                @Property(name = UIConstants.Form.CONTROL_FILE_TYPE, value = "root"),
+                @Property(name = UIConstants.Form.CONTROL_FILE_PATH, value = "/Data/Equipment"),
+                @Property(name = UIConstants.Form.SPAN, value = "MAX_VALUE")
             })
     private String photo;
 
@@ -72,10 +86,6 @@ public class Equipment {
 //    )
     private EquipmentType type;
     private AppDepartment department;
-
-    @Summary
-    @ToString
-    private EquipmentStatusType statusType=EquipmentStatusType.AVAILABLE;
 
     @Summary
     private AppArea location;
@@ -92,8 +102,11 @@ public class Equipment {
             @Property(name = UIConstants.Form.NEWLINE, value = "before,after"))
     private Equipment relativeTo;
 
+    @Summary
     private AppUser actor;
 
+    @Field(defaultValue = "true")
+    private boolean borrowable = true;
 
     @Path("Trace")
 //    @Properties(
@@ -251,7 +264,6 @@ public class Equipment {
 //    public void setBrand(EquipmentBrand brand) {
 //        this.brand = brand;
 //    }
-
     public AppDepartment getDepartment() {
         return department;
     }
@@ -296,4 +308,37 @@ public class Equipment {
     public void setActor(AppUser actor) {
         this.actor = actor;
     }
+
+    public AppUser getResponsible() {
+        return responsible;
+    }
+
+    public void setResponsible(AppUser responsible) {
+        this.responsible = responsible;
+    }
+
+    public Timestamp getLogStartDate() {
+        return logStartDate;
+    }
+
+    public void setLogStartDate(Timestamp logStartDate) {
+        this.logStartDate = logStartDate;
+    }
+
+    public Timestamp getLogEndDate() {
+        return logEndDate;
+    }
+
+    public void setLogEndDate(Timestamp logEndDate) {
+        this.logEndDate = logEndDate;
+    }
+
+    public boolean isBorrowable() {
+        return borrowable;
+    }
+
+    public void setBorrowable(boolean borrowable) {
+        this.borrowable = borrowable;
+    }
+
 }

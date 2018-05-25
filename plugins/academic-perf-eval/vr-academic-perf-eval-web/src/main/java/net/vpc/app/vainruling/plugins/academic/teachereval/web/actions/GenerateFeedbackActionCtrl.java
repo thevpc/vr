@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+import org.primefaces.PrimeFaces;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -72,7 +73,7 @@ public class GenerateFeedbackActionCtrl {
         options.put("draggable", true);
         options.put("modal", true);
 
-        RequestContext.getCurrentInstance().openDialog("/modules/academic/perfeval/generate-feedback-dialog", options, null);
+        PrimeFaces.current().dialog().openDynamic("/modules/academic/perfeval/generate-feedback-dialog", options, null);
 
     }
 

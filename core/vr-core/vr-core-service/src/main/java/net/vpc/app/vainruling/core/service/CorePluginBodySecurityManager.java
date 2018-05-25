@@ -3,6 +3,7 @@ package net.vpc.app.vainruling.core.service;
 import net.vpc.app.vainruling.core.service.cache.EntityCache;
 import net.vpc.app.vainruling.core.service.model.*;
 import net.vpc.app.vainruling.core.service.util.*;
+import net.vpc.common.strings.StringBuilder2;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.MapList;
 import net.vpc.upa.*;
@@ -1040,7 +1041,7 @@ class CorePluginBodySecurityManager extends CorePluginBody {
     public List<AppUser> filterUsersBysContacts(List<AppContact> users) {
         Set<Integer> visited = new HashSet<>();
         List<AppUser> ret = new ArrayList<>();
-        StringBuilder q = new StringBuilder("-1");
+        StringBuilder2 q = new StringBuilder2("-1");
         PersistenceUnit pu = UPA.getPersistenceUnit();
         for (int i = 0; i < users.size(); i++) {
             AppContact contact = users.get(i);
@@ -1053,7 +1054,7 @@ class CorePluginBodySecurityManager extends CorePluginBody {
                         ret.add(o);
                     }
                 }
-                q.delete(0, q.length());
+                q.delete();
                 q.append("-1");
             }
         }
@@ -1300,6 +1301,7 @@ class CorePluginBodySecurityManager extends CorePluginBody {
     }
 
     public List<AppTrace> findTraceByUser(int userId, int maxRows) {
+        CorePluginSecurity.requireAdmin();
         List<AppTrace> found = new ArrayList<>();
         for (AppTrace t : UPA.getPersistenceUnit()
                 .createQuery("Select Top " + maxRows + " u from AppTrace u where u.userId=:userId order by u.time desc")

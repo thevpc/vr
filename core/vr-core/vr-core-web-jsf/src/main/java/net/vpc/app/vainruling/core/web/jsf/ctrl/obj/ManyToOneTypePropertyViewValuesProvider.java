@@ -48,7 +48,7 @@ public class ManyToOneTypePropertyViewValuesProvider implements PropertyViewValu
         }
         final Entity me = ev.getTargetEntity();
         final ManyToOneType mtype = (ManyToOneType) datatype;
-        if (mtype.getRelationship().getFilter() == null) {
+        if (!(mtype.getRelationship() instanceof ManyToOneRelationship && ((ManyToOneRelationship)mtype.getRelationship()).getFilter() != null)) {
             List<NamedId> cacheItem = viewContext.getCacheItem("EntityPropertyViewValuesProvider." + me.getName() + ":" + constraints, new Action<List<NamedId>>() {
                 @Override
                 public List<NamedId> run() {

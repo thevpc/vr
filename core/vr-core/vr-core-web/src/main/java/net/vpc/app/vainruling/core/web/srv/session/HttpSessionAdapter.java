@@ -10,10 +10,17 @@ import java.util.Enumeration;
 public class HttpSessionAdapter implements HttpSession {
     private final SessionStore store;
     private final HttpSession base;
+    private final String id;
+    private final String id0;
 
-    public HttpSessionAdapter(HttpSession base, SessionStore store) {
+    public HttpSessionAdapter(String id,HttpSession base, SessionStore store) {
         this.base = base;
         this.store = store;
+        this.id = id;
+        this.id0 = base.getId();
+        if(!id.equals(id0)){
+            System.out.println("Why");
+        }
     }
 
     public HttpSession getBase() {
@@ -32,7 +39,7 @@ public class HttpSessionAdapter implements HttpSession {
 
     @Override
     public String getId() {
-        return base.getId();
+        return id;
     }
 
     @Override

@@ -216,6 +216,5 @@ textarea:focus, input:focus, button:focus {
 }
 
 body {
-    background-image: url("../../images/background.jpg");
     background-size: cover;
 }

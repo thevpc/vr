@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.primefaces.PrimeFaces;
 import org.springframework.stereotype.Controller;
 
 /**
@@ -60,7 +61,7 @@ public class DocumentsDialogCtrl {
         options.put("draggable", true);
         options.put("modal", true);
 
-        RequestContext.getCurrentInstance().openDialog("/modules/files/documents-dialog", options, null);
+        PrimeFaces.current().dialog().openDynamic("/modules/files/documents-dialog", options, null);
 
     }
 

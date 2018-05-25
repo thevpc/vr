@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.primefaces.PrimeFaces;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -68,7 +69,7 @@ public class SendExternalMailActionCtrl {
         options.put("draggable", true);
         options.put("modal", true);
 
-        RequestContext.getCurrentInstance().openDialog("/modules/mailbox/send-external-mail-dialog", options, null);
+        PrimeFaces.current().dialog().openDynamic("/modules/mailbox/send-external-mail-dialog", options, null);
 
     }
 

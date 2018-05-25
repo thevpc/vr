@@ -13,6 +13,7 @@ import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.UPA;
 
 import java.util.List;
+import net.vpc.app.vainruling.core.service.util.I18n;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -24,6 +25,8 @@ public class ActionDialogAdapter {
     boolean dialog;
     boolean confirm;
     String actionName;
+    String actionMessage;
+    String actionTitle;
     String label;
     String style;
 
@@ -35,12 +38,25 @@ public class ActionDialogAdapter {
         confirm = a.confirm();
         actionName = a.actionName();
         style = a.actionLabel();
-        actionName = StringUtils.isEmpty(actionName) ? (
-                entityType.getSimpleName()+".Action."+
-                PlatformReflector.getTargetClass(instance).getSimpleName()
-        ) : actionName;
+        I18n i18n = I18n.get();
+        String simpleName = PlatformReflector.getTargetClass(instance).getSimpleName();
+        actionName = actionName.isEmpty() ? PlatformReflector.getTargetClass(instance).getSimpleName() : actionName;
+        actionTitle = i18n.get(simpleName + ".Message");
+        actionMessage = i18n.get(simpleName + ".Message");
         label = a.actionLabel();
         label = StringUtils.isEmpty(label) ? actionName : label;
+    }
+
+    public String getActionTitle() {
+        return actionTitle;
+    }
+
+    public String getActionMessage() {
+        return actionMessage;
+    }
+
+    public String getActionName() {
+        return actionName;
     }
 
     public boolean acceptEntity(String entityName) {

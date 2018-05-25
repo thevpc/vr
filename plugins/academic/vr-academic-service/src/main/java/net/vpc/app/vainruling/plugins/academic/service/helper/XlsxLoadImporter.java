@@ -451,7 +451,7 @@ public class XlsxLoadImporter {
                 throw new NoSuchElementException("Gender Not Found " + a.getGenderId());
             }
         } else {
-            gender = ctx.gendersByName.get(a.getGenderName().toUpperCase());
+            gender = a.getGenderName()==null?null:ctx.gendersByName.get(a.getGenderName().toUpperCase());
             if (gender == null) {
                 throw new NoSuchElementException("Gender Not Found " + a.getGenderName());
             }

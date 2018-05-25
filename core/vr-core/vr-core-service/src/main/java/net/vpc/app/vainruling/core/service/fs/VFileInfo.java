@@ -20,6 +20,7 @@ public class VFileInfo implements Comparable<VFileInfo> {
     private VFile file;
     private VFileKind kind;
     private String name;
+    private String longName;
     private String iconCss;
     private String labelCss;
     private String desc;
@@ -52,6 +53,7 @@ public class VFileInfo implements Comparable<VFileInfo> {
         this.labelCss = labelCss;
         this.downloads = downloads;
         this.desc = desc;
+        this.longName = name;
         switch(kind){
             case BACK:{
                 selectable=false;
@@ -62,6 +64,14 @@ public class VFileInfo implements Comparable<VFileInfo> {
             }
         }
         readACL();
+    }
+
+    public String getLongName() {
+        return longName;
+    }
+
+    public void setLongName(String longName) {
+        this.longName = longName;
     }
 
     public final void readACL() {

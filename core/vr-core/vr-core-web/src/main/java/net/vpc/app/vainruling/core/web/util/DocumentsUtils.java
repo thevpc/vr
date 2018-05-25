@@ -12,18 +12,20 @@ import net.vpc.app.vainruling.core.service.fs.VFileInfo;
 import net.vpc.app.vainruling.core.service.fs.VFileKind;
 import net.vpc.common.io.PathInfo;
 import net.vpc.common.vfs.VFile;
+import net.vpc.common.vfs.VFileFilter;
 import net.vpc.common.vfs.VirtualFileACL;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Stack;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 public class DocumentsUtils {
 
     private static final Logger log = Logger.getLogger(DocumentsUtils.class.getName());
-
 
 
     public static String evalVFileDesc(VFile file) {
@@ -70,6 +72,82 @@ public class DocumentsUtils {
 //    }
 
 
+    public static List<VFileInfo> searchFiles(VFile curr, String searchString) {
+        if (StringUtils.isEmpty(searchString)) {
+            return loadFiles(curr);
+        }
+        VFileFilter fileFilter = new VFileFilter() {
+            Pattern p = Pattern.compile(wildcardToRegex(searchString));
+
+            @Override
+            public boolean accept(VFile pathname) {
+                return p.matcher(pathname.getName()).matches();
+            }
+        };
+        List<VFileInfo> result = new ArrayList<>();
+        Stack<VFile> all = new Stack<>();
+        all.push(curr);
+        while (!all.isEmpty()) {
+            VFile x = all.pop();
+            if (fileFilter.accept(x)) {
+                VFileInfo fileInfo = DocumentsUtils.createFileInfo(x);
+                String path = x.getPath();
+                if (path.startsWith(curr.getPath())) {
+                    path = path.substring(curr.getPath().length());
+                }
+                fileInfo.setLongName(path);
+                result.add(fileInfo);
+            } else if (x.isDirectory()) {
+                for (VFile y : x.listFiles()) {
+                    all.push(y);
+                }
+            }
+        }
+        return result;
+    }
+
+    public static String wildcardToRegex(String pattern) {
+        if (pattern == null) {
+            pattern = "*";
+        }
+        int i = 0;
+        char[] cc = pattern.toCharArray();
+        StringBuilder sb = new StringBuilder("^");
+        while (i < cc.length) {
+            char c = cc[i];
+            switch (c) {
+                case '.':
+                case '$':
+                case '{':
+                case '}':
+                case '+':
+                case '(':
+                case ')':
+                case '[':
+                case ']':
+                case '\\':
+                case '/': {
+                    sb.append('\\').append(c);
+                    break;
+                }
+                case '?': {
+                    sb.append("[a-zA-Z_0-9$.]");
+                    break;
+                }
+                case '*': {
+                    sb.append(".*");
+                    break;
+                }
+                default: {
+                    sb.append(c);
+                }
+            }
+            i++;
+        }
+        sb.append('$');
+        return sb.toString();
+    }
+
 
     public static List<VFileInfo> loadFiles(VFile curr) {
         VFile[] all = curr.getFileSystem().listFiles(curr.getPath());
@@ -86,7 +164,7 @@ public class DocumentsUtils {
 
 
     public static VFileInfo createFileInfo(VFile file) {
-        return createFileInfo(file.getName(),VFileKind.ORDINARY, file);
+        return createFileInfo(file.getName(), VFileKind.ORDINARY, file);
     }
 
     public static VFileInfo createFileInfo(String name, VFileKind kind, VFile file) {
@@ -117,7 +195,7 @@ public class DocumentsUtils {
         }
         String desc = backFolder ? "" : evalVFileDesc(file);
         labelCss = homeFolder ? "color:#349dc9;font-weight: bold;" : backFolder ? "color:#9e9e9e;" : "";
-        if(!backFolder) {
+        if (!backFolder) {
             VirtualFileACL acl = file.getACL();
             if (acl != null) {
                 //should never be null
@@ -131,18 +209,19 @@ public class DocumentsUtils {
                     }
                     if (format != null) {
                         if (StringUtils.isEmpty(format.getIconCss())) {
-                            iconCss=format.getIconCss();
+                            iconCss = format.getIconCss();
                         }
                         if (StringUtils.isEmpty(format.getIconCss())) {
-                            iconCss=format.getIconCss();
+                            iconCss = format.getIconCss();
                         }
                     }
                 }
             }
         }
-        return new VFileInfo(name,kind, file, labelCss, iconCss, downloads, desc);
+        return new VFileInfo(name, kind, file, labelCss, iconCss, downloads, desc);
     }
-    public static class ViewFormat{
+
+    public static class ViewFormat {
         private String labelCss;
         private String iconCss;
 

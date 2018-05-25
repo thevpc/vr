@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.primefaces.PrimeFaces;
 
 @VrController(
         breadcrumb = {
@@ -239,7 +240,7 @@ public class TeacherProfileSettingsCtrl implements DocumentUploadListener, VrAct
         options.put("resizable", false);
         options.put("draggable", true);
         options.put("modal", true);
-        RequestContext.getCurrentInstance().openDialog("/modules/academic/profile/add-teacher-experience-dialog", options, null);
+        PrimeFaces.current().dialog().openDynamic("/modules/academic/profile/add-teacher-experience-dialog", options, null);
     }
 
     public void onNewEducation() {
@@ -248,7 +249,7 @@ public class TeacherProfileSettingsCtrl implements DocumentUploadListener, VrAct
         options.put("resizable", false);
         options.put("draggable", true);
         options.put("modal", true);
-        RequestContext.getCurrentInstance().openDialog("/modules/academic/profile/add-teacher-education-dialog", options, null);
+        PrimeFaces.current().dialog().openDynamic("/modules/academic/profile/add-teacher-education-dialog", options, null);
     }
 
     public void onNewProject() {
@@ -257,7 +258,7 @@ public class TeacherProfileSettingsCtrl implements DocumentUploadListener, VrAct
         options.put("resizable", false);
         options.put("draggable", true);
         options.put("modal", true);
-        RequestContext.getCurrentInstance().openDialog("/modules/academic/profile/add-teacher-project-dialog", options, null);
+        PrimeFaces.current().dialog().openDynamic("/modules/academic/profile/add-teacher-project-dialog", options, null);
     }
 
     public void onNewCourse() {
@@ -266,7 +267,7 @@ public class TeacherProfileSettingsCtrl implements DocumentUploadListener, VrAct
         options.put("resizable", false);
         options.put("draggable", true);
         options.put("modal", true);
-        RequestContext.getCurrentInstance().openDialog("/modules/academic/profile/add-teacher-course-dialog", options, null);
+        PrimeFaces.current().dialog().openDynamic("/modules/academic/profile/add-teacher-course-dialog", options, null);
     }
 
     public void onNewResearch() {
@@ -275,7 +276,7 @@ public class TeacherProfileSettingsCtrl implements DocumentUploadListener, VrAct
         options.put("resizable", false);
         options.put("draggable", true);
         options.put("modal", true);
-        RequestContext.getCurrentInstance().openDialog("/modules/academic/profile/add-teacher-research-dialog", options, null);
+        PrimeFaces.current().dialog().openDynamic("/modules/academic/profile/add-teacher-research-dialog", options, null);
     }
 
     public void onRequestUploadPhoto() {

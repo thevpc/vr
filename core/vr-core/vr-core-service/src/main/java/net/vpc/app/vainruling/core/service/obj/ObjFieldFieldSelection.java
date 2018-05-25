@@ -12,66 +12,116 @@ import net.vpc.upa.*;
 import net.vpc.upa.filters.FieldFilters;
 
 import java.util.*;
+import net.vpc.common.strings.StringUtils;
 
 /**
  * @author taha.bensalah@gmail.com
  */
 public class ObjFieldFieldSelection extends ObjFieldSelection {
 
+    private AccessMode mode = null;
     private List<SelField> fields = new ArrayList<>();
 
     public ObjFieldFieldSelection() {
         super("list");
     }
 
-    public ObjFieldFieldSelection(Entity entity, String[] fields,AccessMode mode) {
+    public ObjFieldFieldSelection(Entity entity, String[] fields, AccessMode mode, boolean requireSave) {
         super("list");
-        updateFields(mode,entity, new HashSet<String>(Arrays.asList(fields)));
+
+        updateFields(mode, entity, new HashSet<String>(Arrays.asList(fields)), requireSave);
     }
 
     @Override
-    public void prepare(Entity entity, AccessMode mode) {
+    public void load() {
         Entity old = getEntity();
-        setEntity(entity);
-        Set<String> oldSelection = new HashSet<>();
-        if (old == null || !old.getName().equals(entity.getName())) {
-            //do nothing!
-            oldSelection=new HashSet<>();
-            for (Field field : getEntity().getFields(FieldFilters.byModifiersAnyOf(FieldModifier.MAIN, FieldModifier.SUMMARY))) {
-                oldSelection.add(field.getName());
-            }
-        } else {
+        if (old != null) {
+            prepare(old, AccessMode.READ);
+        }
+    }
+
+    @Override
+    public void save() {
+        Entity old = getEntity();
+        if (old != null) {
+            Set<String> oldSelection = new HashSet<>();
             for (SelField field : fields) {
                 if (field.isSelected()) {
                     oldSelection.add(field.getField().getName());
                 }
             }
+            saveVisibleFields(oldSelection);
         }
-        updateFields(mode,entity, oldSelection);
     }
 
-    private void updateFields(AccessMode mode,Entity entity, Set<String> selectedFieldNames) {
+    @Override
+    public void reset() {
+        Entity old = getEntity();
+        if (old != null) {
+            Set<String> oldSelection = new HashSet<>();
+            saveVisibleFields(oldSelection);
+            prepare(old, mode);
+        }
+    }
+
+    @Override
+    public void prepare(Entity entity, AccessMode mode) {
+        this.mode = mode;
+        Entity old = getEntity();
+        setEntity(entity);
+        Set<String> oldSelection = null;
+//        if (old == null || !old.getName().equals(entity.getName())) {
+        oldSelection = loadVisibleFields();
+        boolean requireSave = false;
+        if (oldSelection == null || oldSelection.isEmpty()) {
+            requireSave = true;
+            //do nothing!
+            oldSelection = new HashSet<>();
+            for (Field field : getEntity().getFields(FieldFilters.byModifiersAnyOf(FieldModifier.MAIN, FieldModifier.SUMMARY))) {
+                oldSelection.add(field.getName());
+            }
+        }
+        updateFields(mode, entity, oldSelection, requireSave);
+
+//        } else {
+//            oldSelection = new HashSet<>();
+//            for (SelField field : fields) {
+//                if (field.isSelected()) {
+//                    oldSelection.add(field.getField().getName());
+//                }
+//            }
+//            if(oldSelection.isEmpty()){
+//                for (Field field : getEntity().getFields(FieldFilters.byModifiersAnyOf(FieldModifier.MAIN, FieldModifier.SUMMARY))) {
+//                    oldSelection.add(field.getName());
+//                }
+//            }
+//            updateFields(mode, entity, oldSelection);
+//        }
+    }
+
+    private void updateFields(AccessMode mode, Entity entity, Set<String> selectedFieldNames, boolean requireSave) {
         fields.clear();
         int pos = 0;
         CorePlugin core = VrApp.getBean(CorePlugin.class);
         boolean admin = core.isCurrentSessionAdmin();
         I18n i18n = VrApp.getBean(I18n.class);
+        Set<String> selectedFields = new HashSet<>();
         for (Field field : entity.getFields()) {
             //should test on field visibility
             AccessLevel r = field.getReadAccessLevel();
             AccessLevel u = field.getUpdateAccessLevel();
             boolean show = false;
-            switch (mode){
-                case READ:{
-                    show=field.getEffectiveReadAccessLevel()!=AccessLevel.INACCESSIBLE;
+            switch (mode) {
+                case READ: {
+                    show = field.getEffectiveReadAccessLevel() != AccessLevel.INACCESSIBLE;
                     break;
                 }
-                case UPDATE:{
-                    show=field.getEffectiveUpdateAccessLevel()!=AccessLevel.INACCESSIBLE;
+                case UPDATE: {
+                    show = field.getEffectiveUpdateAccessLevel() != AccessLevel.INACCESSIBLE;
                     break;
                 }
-                case PERSIST:{
-                    show=field.getEffectivePersistAccessLevel()!=AccessLevel.INACCESSIBLE;
+                case PERSIST: {
+                    show = field.getEffectivePersistAccessLevel() != AccessLevel.INACCESSIBLE;
                     break;
                 }
             }
@@ -99,8 +149,44 @@ public class ObjFieldFieldSelection extends ObjFieldSelection {
                 sf.setPos(pos++);
                 sf.setSelected(selectedFieldNames.contains(field.getName()));
                 fields.add(sf);
+                if (selectedFieldNames.contains(field.getName())) {
+                    selectedFields.add(field.getName());
+                }
             }
         }
+        if (requireSave /*|| selectedFields.equals(selectedFieldNames)*/) {
+            saveVisibleFields(selectedFields);
+        }
+//        if (!StringUtils.isEmpty(core.getCurrentUserLogin())) {
+//            core.setAppProperty("System.View." + entity.getName() + ".VisibleFields", core.getCurrentUserLogin(), core);
+//        }
+    }
+
+    public void saveVisibleFields(Set<String> fields) {
+        CorePlugin core = VrApp.getBean(CorePlugin.class);
+        if (!StringUtils.isEmpty(core.getCurrentUserLogin())) {
+            if (fields == null || fields.isEmpty()) {
+                core.setAppProperty("System.View." + getEntity().getName() + ".VisibleFields", core.getCurrentUserLogin(), null);
+            } else {
+                core.setAppProperty("System.View." + getEntity().getName() + ".VisibleFields", core.getCurrentUserLogin(), net.vpc.common.strings.StringUtils.listToString(fields, ";"));
+            }
+        }
+    }
+
+    public void resetVisibleFields(Set<String> fields) {
+        CorePlugin core = VrApp.getBean(CorePlugin.class);
+        if (!StringUtils.isEmpty(core.getCurrentUserLogin())) {
+            core.setAppProperty("System.View." + getEntity().getName() + ".VisibleFields", core.getCurrentUserLogin(), net.vpc.common.strings.StringUtils.listToString(fields, ","));
+        }
+    }
+
+    private Set<String> loadVisibleFields() {
+        CorePlugin core = VrApp.getBean(CorePlugin.class);
+        String s = (String) core.getAppPropertyValue("System.View." + getEntity().getName() + ".VisibleFields", core.getCurrentUserLogin());
+        if (s != null) {
+            return new HashSet<String>(Arrays.asList(StringUtils.split(s, ",;", true, true)));
+        }
+        return null;
     }
 
     public List<SelField> getFields() {

@@ -20,6 +20,7 @@ import net.vpc.app.vainruling.core.service.security.UserSessionInfo;
 import net.vpc.app.vainruling.core.service.security.UserToken;
 import net.vpc.app.vainruling.core.service.util.AppVersion;
 import net.vpc.app.vainruling.core.service.util.*;
+import net.vpc.common.strings.StringUtils;
 import net.vpc.common.vfs.VFile;
 import net.vpc.common.vfs.VirtualFileSystem;
 import net.vpc.upa.*;
@@ -32,6 +33,7 @@ import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Level;
+
 import net.vpc.app.vainruling.core.service.model.content.ArticlesDisposition;
 import net.vpc.app.vainruling.core.service.model.content.ArticlesDispositionGroup;
 import net.vpc.app.vainruling.core.service.model.content.ArticlesDispositionGroupType;
@@ -81,7 +83,7 @@ public class CorePlugin {
         return VrApp.getBean(CorePlugin.class);
     }
 
-//    private void init(){
+    //    private void init(){
 //    }
 //    public UserSession getUserSession() {
 //        return VrApp.getContext().getBean(UserSession.class);
@@ -101,15 +103,21 @@ public class CorePlugin {
 //            ex.printStackTrace();
 //        }
         bodyContext = new CorePluginBodyContext(this, cacheService, trace);
-
-        for (CorePluginBody body : bodies) {
-            body.setContext(bodyContext);
-        }
-        for (CorePluginBody body : bodies) {
-            body.install();
-        }
-        for (CorePluginBody body : bodies) {
-            body.start();
+        for (PersistenceUnit persistenceUnit : UPA.getPersistenceGroup().getPersistenceUnits()) {
+            persistenceUnit.invokePrivileged(new VoidAction() {
+                @Override
+                public void run() {
+                    for (CorePluginBody body : bodies) {
+                        body.setContext(bodyContext);
+                    }
+                    for (CorePluginBody body : bodies) {
+                        body.install();
+                    }
+                    for (CorePluginBody body : bodies) {
+                        body.start();
+                    }
+                }
+            });
         }
     }
 
@@ -1000,5 +1008,17 @@ public class CorePlugin {
         return getCurrentToken().getProfileNames().contains(key);
     }
 
-
+    public String[] resolveLogin(String login0) {
+        String login = StringUtils.trim(login0);
+        String domain = null;
+        if (login.contains("@")) {
+            int i = login.indexOf('@');
+            domain = i==login.length()-1?"":login.substring(i + 1);
+            login = login.substring(0, i);
+        }
+        if (StringUtils.isEmpty(domain)) {
+            domain = "main";
+        }
+        return new String[]{domain, login};
+    }
 }

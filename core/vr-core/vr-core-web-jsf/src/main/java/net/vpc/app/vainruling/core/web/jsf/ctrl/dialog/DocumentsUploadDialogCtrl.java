@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.primefaces.PrimeFaces;
 import org.springframework.stereotype.Controller;
 
 /**
@@ -52,7 +53,7 @@ public class DocumentsUploadDialogCtrl {
         options.put("draggable", true);
         options.put("modal", true);
 
-        RequestContext.getCurrentInstance().openDialog("/modules/files/documents-upload-dialog", options, null);
+        PrimeFaces.current().dialog().openDynamic("/modules/files/documents-upload-dialog", options, null);
     }
 
     public void openDialog(Config config) {

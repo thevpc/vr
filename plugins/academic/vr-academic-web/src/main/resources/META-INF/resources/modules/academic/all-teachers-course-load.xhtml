@@ -654,6 +654,40 @@ and open the template in the editor.
                                             value="#{i.population.size != 0 ? i.population.size : ''}"/>
                                 </p:column>
 
+                                <f:facet name="footer">
+                                    <p:outputLabel value="Total #{objCtrl.model.list.size()}"/>
+
+                                    <div style="float: right;">
+                                        <h:commandLink>
+                                            <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-xls16.png"
+                                                            width="16"/>
+                                            <p:dataExporter type="xls" target="tbl"
+                                                            fileName="#{corePlugin.getPreferredFileName(vr.strcat('all-teachers-load','-',tab.title))}"
+                                                            postProcessor="#{vr.postProcessDataExporterXLS}"/>
+                                        </h:commandLink>
+
+                                        <h:commandLink>
+                                            <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-pdf16.png"
+                                                            width="16"/>
+                                            <p:dataExporter type="pdf" target="tbl"
+                                                            fileName="#{corePlugin.getPreferredFileName(vr.strcat('all-teachers-load','-',tab.title))}"/>
+                                        </h:commandLink>
+
+                                        <h:commandLink>
+                                            <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-csv16.png"
+                                                            width="16"/>
+                                            <p:dataExporter type="csv" target="tbl"
+                                                            fileName="#{corePlugin.getPreferredFileName(vr.strcat('all-teachers-load','-',tab.title))}"/>
+                                        </h:commandLink>
+
+                                        <h:commandLink>
+                                            <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-xml16.png"
+                                                            width="16"/>
+                                            <p:dataExporter type="xml" target="tbl"
+                                                            fileName="#{corePlugin.getPreferredFileName(vr.strcat('all-teachers-load','-',tab.title))}"/>
+                                        </h:commandLink>
+                                    </div>
+                                </f:facet>
                             </p:dataTable>
                         </div>
 

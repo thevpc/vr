@@ -41,13 +41,21 @@ import java.util.regex.Pattern;
  * Created by vpc on 1/7/17.
  */
 public class JavascriptEvaluator {
-
     public Set<String> blacklistClassNames = new HashSet<>(
             Arrays.asList(
                     "java.io.File",
                     "java.lang.Process",
                     "java.lang.System",
-                    "java.lang.Thread"
+                    "java.lang.Thread",
+                    "java.lang.Runtime",
+                    "java.nio.file.Files",
+                    "java.nio.file.Paths",
+                    "java.nio.file.FileSystem",
+                    "java.io.FileSystem",
+                    "java.lang.ProcessBuilder",
+                    "java.lang.Class",
+                    "java.lang.ClassLoader",
+                    "net.vpc.upa.UPA"
             )
     );
     public List<Pattern> blacklistClassNamePatterns = new ArrayList<>();
@@ -105,10 +113,17 @@ public class JavascriptEvaluator {
 //        if(true){
 //            return;
 //        }
-        JavascriptEvaluator e = new JavascriptEvaluator("vr.same(x.get('type'),'ACQUISITION')");
+//        
+//        JavascriptEvaluator e = new JavascriptEvaluator("vr.same(x.get('type'),'ACQUISITION')");
+//        Map<String, Object> m = new LinkedHashMap<>();
+//        m.put("type", "ACQUISITION");
+//        System.out.println(e.eval(m));
+//        System.out.println(java.lang.Runtime.getRuntime().availableProcessors());
+        JavascriptEvaluator e = new JavascriptEvaluator("java.lang.Runtime.getRuntime().availableProcessors()");
         Map<String, Object> m = new LinkedHashMap<>();
         m.put("type", "ACQUISITION");
         System.out.println(e.eval(m));
+        
     }
 
     private ScriptEngine createScriptEngine() {

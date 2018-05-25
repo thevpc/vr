@@ -16,6 +16,8 @@ public interface SessionStore {
 
     PlatformSession get(String id);
 
+    PlatformSession getValid(String id);
+
     Collection<PlatformSession> getAll();
 
     void put(String id, PlatformSession session);

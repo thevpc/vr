@@ -7,7 +7,6 @@ package net.vpc.app.vainruling.plugins.equipments.service.model;
 
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
-import net.vpc.upa.AccessLevel;
 import net.vpc.upa.ProtectionLevel;
 import net.vpc.upa.config.*;
 
@@ -48,6 +47,7 @@ public class EquipmentStatusLog {
     @Summary
     @ToString
     //@Properties({@Property(name = UIConstants.Form.SUBMIT_ON_CHANGE, value = "true")})
+    @Property(name = UIConstants.Grid.COLUMN_STYLE_CLASS, value = "#{hashCssColor(this.type)}")
     private EquipmentStatusType type=EquipmentStatusType.AVAILABLE;
 
     @Field(defaultValue = "1")

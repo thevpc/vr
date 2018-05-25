@@ -53,7 +53,6 @@ public class AcademicPersistenceUnitCallback {
     public void onPreUpdateFormulas(PersistenceUnitEvent event) {
         CorePlugin c = VrApp.getBean(CorePlugin.class);
         AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
-
         p.validateAcademicData(c.getCurrentPeriod().getId());
     }
 

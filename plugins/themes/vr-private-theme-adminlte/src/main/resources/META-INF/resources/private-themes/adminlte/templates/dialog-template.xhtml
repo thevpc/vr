@@ -9,7 +9,6 @@
 <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.jsf.Vr"-->
 <!--@elvariable id="corePlugin" type="net.vpc.app.vainruling.core.service.CorePlugin"-->
 <h:head>
-
     <meta charset="utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <!-- Tell the browser to be responsive to screen width -->
@@ -43,6 +42,8 @@
     <script src="#{vr.context}/fs/Site/js/analytics.js"></script>
     <link rel="stylesheet" href="#{vr.privateThemeContext}/css/app.css" type="text/css"/>
 
+    <h:outputScript library="primefaces" name="jquery/jquery.js" target="head" />
+    <h:outputScript library="primefaces" name="jquery/jquery-plugins.js" target="head" />
     <title>
         <ui:insert name="dialog-title">
             <h:outputText value="No title"/>
@@ -56,21 +57,6 @@
         <ui:insert name="dialog-body">
         </ui:insert>
     </div>
-    <!-- jQuery -->
-    <script src="#{vr.privateThemeContext}/wplugins/sb-admin2/bower_components/jquery/js/jquery.min.js"
-            type="javascript"></script>
-
-    <!-- Bootstrap Core JavaScript -->
-    <script src="#{vr.privateThemeContext}/wplugins/sb-admin2/bower_components/bootstrap/js/bootstrap.min.js"
-            type="javascript"></script>
-
-    <!-- Metis Menu Plugin JavaScript -->
-    <script src="#{vr.privateThemeContext}/wplugins/sb-admin2/bower_components/metisMenu/js/metisMenu.min.js"
-            type="javascript"></script>
-
-    <!-- Custom Theme JavaScript -->
-    <script src="#{vr.privateThemeContext}/wplugins/sb-admin2/js/sb-admin-2.js"
-            type="javascript"></script>
 
 </h:body>
 

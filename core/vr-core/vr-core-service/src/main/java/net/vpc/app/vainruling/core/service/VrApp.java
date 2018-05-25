@@ -194,7 +194,7 @@ public class VrApp implements ApplicationContextAware, ApplicationListener<Conte
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
-        UPA.getPersistenceGroup().invokePrivileged(new VoidAction() {
+        UPA.getPersistenceGroup().getPersistenceUnit("main").invokePrivileged(new VoidAction() {
             @Override
             public void run() {
                 VrApp.getBean(CorePlugin.class).start();

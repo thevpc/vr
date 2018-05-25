@@ -26,6 +26,7 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.vpc.app.vainruling.plugins.academic.pbl.service.ApblUtils;
+import org.primefaces.PrimeFaces;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -88,7 +89,7 @@ public class AcademicAppMyTeamsCtrl {
         options.put("resizable", false);
         options.put("draggable", true);
         options.put("modal", true);
-        RequestContext.getCurrentInstance().openDialog("/modules/academic/pbl/dialog/progression-dialog", options, null);
+        PrimeFaces.current().dialog().openDynamic("/modules/academic/pbl/dialog/progression-dialog", options, null);
     }
 
     public void onOpenCoachingLogDialog() {
@@ -107,7 +108,7 @@ public class AcademicAppMyTeamsCtrl {
             options.put("resizable", false);
             options.put("draggable", true);
             options.put("modal", true);
-            RequestContext.getCurrentInstance().openDialog("/modules/academic/pbl/dialog/coaching-dialog", options, null);
+            PrimeFaces.current().dialog().openDynamic("/modules/academic/pbl/dialog/coaching-dialog", options, null);
         }
     }
 

@@ -771,6 +771,34 @@ public class Vr {
         return u;
     }
 
+    public String escapeJsQuotedString(String value) {
+        StringBuilder sb=new StringBuilder();
+        if(value!=null){
+            for (char c: value.toCharArray()) {
+                switch (c){
+                    case '\'':
+                    case '\\':{
+                        sb.append('\\').append(c);
+                        break;
+                    }
+                    case '\n':{
+                        sb.append("\\n");
+                        break;
+                    }
+                    case '\t':{
+                        sb.append("\\t");
+                        break;
+                    }
+                    default :{
+                        sb.append(c);
+                        break;
+                    }
+                }
+            }
+        }
+        return sb.toString();
+    }
+
     public String getPublicThemeContext() {
         return VrWebHelper.getPublicThemeContext();
     }
@@ -915,6 +943,17 @@ public class Vr {
             r2.put(s, r.get(s));
         }
         return r2;
+    }
+
+    public String getAppPropertyOrDefault(String name,String defaultValue) {
+        AppProperty property = core.getAppProperty(name, null);
+        if (property != null) {
+            String propertyValue = property.getPropertyValue();
+            if(!StringUtils.isEmpty(propertyValue)) {
+                return propertyValue;
+            }
+        }
+        return defaultValue;
     }
 
     public String getAppProperty(String name) {

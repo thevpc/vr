@@ -53,9 +53,7 @@ public class ArticlesItem {
             {
                 @Property(name = UIConstants.Form.SPAN, value = "MAX_VALUE")
                 ,
-                    @Property(name = UIConstants.Grid.COLUMN_STYLE_CLASS, value = "#{"
-                        + " hashToStringArr(this.disposition.name,'vr-label-bg01','vr-label-bg02','vr-label-bg03','vr-label-bg04','vr-label-bg05','vr-label-bg06','vr-label-bg07','vr-label-bg08','vr-label-bg09','vr-label-bg10','vr-label-bg11','vr-label-bg12','vr-label-bg13','vr-label-bg14','vr-label-bg15','vr-label-bg16','vr-label-bg17','vr-label-bg18','vr-label-bg19','vr-label-bg20')"
-                        + "}")
+                    @Property(name = UIConstants.Grid.COLUMN_STYLE_CLASS, value = "#{hashCssColor(this.disposition.name)}")
             }
     )
     private ArticlesDisposition disposition;

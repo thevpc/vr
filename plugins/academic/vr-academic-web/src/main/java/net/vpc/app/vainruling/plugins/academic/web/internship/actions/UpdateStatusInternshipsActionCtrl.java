@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.faces.model.SelectItem;
 import java.util.*;
 import java.util.logging.Logger;
+import org.primefaces.PrimeFaces;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -50,7 +51,7 @@ public class UpdateStatusInternshipsActionCtrl {
         options.put("resizable", false);
         options.put("draggable", true);
         options.put("modal", true);
-        RequestContext.getCurrentInstance().openDialog("/modules/academic/internship/update-status-interships-dialog", options, null);
+        PrimeFaces.current().dialog().openDynamic("/modules/academic/internship/update-status-interships-dialog", options, null);
 
     }
 

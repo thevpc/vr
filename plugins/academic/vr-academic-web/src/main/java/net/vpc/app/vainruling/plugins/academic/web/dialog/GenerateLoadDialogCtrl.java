@@ -35,6 +35,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.vpc.common.util.Convert;
 import net.vpc.common.util.IntegerParserConfig;
+import org.primefaces.PrimeFaces;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -61,7 +62,7 @@ public class GenerateLoadDialogCtrl {
         options.put("draggable", true);
         options.put("modal", true);
 
-        RequestContext.getCurrentInstance().openDialog("/modules/academic/dialog/generate-load-dialog", options, null);
+        PrimeFaces.current().dialog().openDynamic("/modules/academic/dialog/generate-load-dialog", options, null);
 
     }
 

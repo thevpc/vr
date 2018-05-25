@@ -23,8 +23,8 @@ and open the template in the editor.
         <ui:define name="dialog-body">
 
 
-            <h:form id="listForm">
-                <p:tabView>
+            <h:form id="secuForm">
+                <p:tabView id="secutab">
                     <p:tab title="Propriétés">
                         <div class="box box-info" style="min-height: 400px">
                             <div class="box-header with-border">
@@ -43,7 +43,7 @@ and open the template in the editor.
 
                         </div>
                     </p:tab>
-                    <p:tab title="Autorisations">
+                    <p:tab title="Autorisations" >
                         <div class="box box-warning" style="min-height: 300px">
                             <div class="box-header with-border">
                                 <div class="box-body">
@@ -54,7 +54,7 @@ and open the template in the editor.
                                             <p:selectBooleanCheckbox value="#{documentsCtrl.model.current.advanced}"
                                                                      styleClass="form-control">
                                                 <p:ajax listener="#{documentsCtrl.onChangeAdvancedACL}"
-                                                        update=":listForm:auth"/>
+                                                        update=":secuForm:secutab:auth"/>
                                             </p:selectBooleanCheckbox>
                                         </div>
                                         <p:scrollPanel id="auth" style="width:480px;height:300px">
