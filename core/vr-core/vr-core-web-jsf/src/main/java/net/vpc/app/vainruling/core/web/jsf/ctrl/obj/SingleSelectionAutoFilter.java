@@ -1,8 +1,10 @@
 package net.vpc.app.vainruling.core.web.jsf.ctrl.obj;
 
-import net.vpc.app.vainruling.core.service.obj.AutoFilterData;
 import net.vpc.app.vainruling.core.service.obj.AutoFilter;
+import net.vpc.app.vainruling.core.service.obj.AutoFilterData;
 import net.vpc.common.strings.StringUtils;
+import net.vpc.common.util.Convert;
+import net.vpc.common.util.IntegerParserConfig;
 import net.vpc.upa.Entity;
 import net.vpc.upa.KeyType;
 import net.vpc.upa.types.DataType;
@@ -13,8 +15,6 @@ import javax.faces.model.SelectItem;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import net.vpc.common.util.Convert;
-import net.vpc.common.util.IntegerParserConfig;
 
 public class SingleSelectionAutoFilter extends AutoFilter {
     private List<SelectItem> values=new ArrayList<>();

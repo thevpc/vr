@@ -12,6 +12,7 @@ import net.vpc.app.vainruling.core.service.fs.VFileInfo;
 import net.vpc.app.vainruling.core.service.fs.VFileKind;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.web.VrController;
+import net.vpc.app.vainruling.core.web.jsf.DialogBuilder;
 import net.vpc.app.vainruling.core.web.jsf.ctrl.DocumentsCtrl;
 import net.vpc.app.vainruling.core.web.jsf.ctrl.FileUploadEventHandler;
 import net.vpc.app.vainruling.core.web.obj.DialogResult;
@@ -26,16 +27,13 @@ import net.vpc.upa.UPA;
 import net.vpc.upa.VoidAction;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
+import org.springframework.stereotype.Controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.primefaces.PrimeFaces;
-import org.springframework.stereotype.Controller;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -56,13 +54,12 @@ public class DocumentsDialogCtrl {
     public void openDialog(Config config) {
         initContent(config);
 
-        Map<String, Object> options = new HashMap<String, Object>();
-        options.put("resizable", false);
-        options.put("draggable", true);
-        options.put("modal", true);
 
-        PrimeFaces.current().dialog().openDynamic("/modules/files/documents-dialog", options, null);
-
+        new DialogBuilder("/modules/files/documents-dialog")
+                .setResizable(true)
+                .setDraggable(true)
+                .setModal(true)
+                .open();
     }
 
     public void onSave() {
@@ -71,7 +68,7 @@ public class DocumentsDialogCtrl {
         try {
             if (!f2.mkdirs()) {
                 FacesUtils.addErrorMessage("Directory " + f2.getPath() + " could not be created.");
-            }else{
+            } else {
                 getModel().setEditMode("");
                 onRefresh();
             }
@@ -164,8 +161,8 @@ public class DocumentsDialogCtrl {
         getModel().setTitle(title);
 
         String fspath = cmd.getFspath();
-        if(StringUtils.isEmpty(fspath)){
-            fspath="";
+        if (StringUtils.isEmpty(fspath)) {
+            fspath = "";
         }
         VirtualFileSystem rootfs = UPA.getContext().invokePrivileged(new Action<VirtualFileSystem>() {
             @Override
@@ -192,11 +189,11 @@ public class DocumentsDialogCtrl {
         } else {
             fs = core.getUserFileSystem(login);
         }
-        if(fspath.isEmpty()||fspath.equals("/")){
+        if (fspath.isEmpty() || fspath.equals("/")) {
             //okkay
-        }else{
+        } else {
             fs.get(fspath).mkdirs();
-            fs=fs.subfs(fspath);
+            fs = fs.subfs(fspath);
         }
 
         getModel().setFileSystem(fs);
@@ -282,7 +279,7 @@ public class DocumentsDialogCtrl {
                         FacesUtils.addInfoMessage(event.getFile().getFileName() + " successfully uploaded.");
                     } catch (Exception ex) {
                         Logger.getLogger(DocumentsCtrl.class.getName()).log(Level.SEVERE, null, ex);
-                        FacesUtils.addErrorMessage(ex,event.getFile().getFileName() + " uploading failed.");
+                        FacesUtils.addErrorMessage(ex, event.getFile().getFileName() + " uploading failed.");
                     }
                 } finally {
                     getModel().setEditMode("");
@@ -371,7 +368,7 @@ public class DocumentsDialogCtrl {
 
         private boolean uploadAllowed;
         private boolean createFolderAllowed;
-        private String editMode="";
+        private String editMode = "";
         private String newFolderName;
         private String title;
         private VFileInfo current;

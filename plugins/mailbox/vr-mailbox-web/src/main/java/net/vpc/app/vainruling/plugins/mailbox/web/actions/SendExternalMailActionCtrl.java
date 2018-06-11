@@ -7,17 +7,18 @@ package net.vpc.app.vainruling.plugins.mailbox.web.actions;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.service.model.content.ArticlesItem;
 import net.vpc.app.vainruling.core.service.notification.VrNotificationEvent;
 import net.vpc.app.vainruling.core.service.notification.VrNotificationSession;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.web.VrController;
+import net.vpc.app.vainruling.core.web.jsf.DialogBuilder;
 import net.vpc.app.vainruling.core.web.jsf.ctrl.ObjCtrl;
 import net.vpc.app.vainruling.core.web.jsf.ctrl.obj.PropertyView;
 import net.vpc.app.vainruling.core.web.jsf.ctrl.obj.PropertyViewManager;
 import net.vpc.app.vainruling.core.web.obj.ViewContext;
 import net.vpc.app.vainruling.plugins.inbox.service.MailboxPlugin;
 import net.vpc.app.vainruling.plugins.inbox.service.SendExternalMailConfig;
-import net.vpc.app.vainruling.core.service.model.content.ArticlesItem;
 import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxMessageFormat;
 import net.vpc.common.gomail.RecipientType;
 import net.vpc.common.jsf.FacesUtils;
@@ -27,10 +28,12 @@ import net.vpc.upa.UPA;
 import org.primefaces.context.RequestContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.primefaces.PrimeFaces;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -64,13 +67,11 @@ public class SendExternalMailActionCtrl {
 
         getModel().setTitle(StringUtils.isEmpty(t) ? "Envoi de Mail" : t);
 
-        Map<String, Object> options = new HashMap<String, Object>();
-        options.put("resizable", false);
-        options.put("draggable", true);
-        options.put("modal", true);
-
-        PrimeFaces.current().dialog().openDynamic("/modules/mailbox/send-external-mail-dialog", options, null);
-
+        new DialogBuilder("/modules/mailbox/send-external-mail-dialog")
+                .setResizable(true)
+                .setDraggable(true)
+                .setModal(true)
+                .open();
     }
 
     public void onUpdate() {

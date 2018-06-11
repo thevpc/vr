@@ -9,16 +9,19 @@ import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.model.AppRightName;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.web.VrController;
+import net.vpc.app.vainruling.core.web.jsf.DialogBuilder;
 import net.vpc.common.strings.StringUtils;
+import net.vpc.common.util.Convert;
+import net.vpc.common.util.IntegerParserConfig;
 import org.primefaces.context.RequestContext;
 import org.primefaces.model.DualListModel;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.logging.Logger;
-import net.vpc.common.util.Convert;
-import net.vpc.common.util.IntegerParserConfig;
-import org.primefaces.PrimeFaces;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -60,11 +63,11 @@ public class UpdateProfileRightsActionCtrl {
             getModel().setValues(v);
             getModel().setProfileId(-1);
         }
-        Map<String, Object> options = new HashMap<String, Object>();
-        options.put("resizable", false);
-        options.put("draggable", true);
-        options.put("modal", true);
-        PrimeFaces.current().dialog().openDynamic("/modules/admin/update-profile-rights-dialog", options, null);
+        new DialogBuilder("/modules/admin/update-profile-rights-dialog")
+                .setResizable(true)
+                .setDraggable(true)
+                .setModal(true)
+                .open();
 
     }
 

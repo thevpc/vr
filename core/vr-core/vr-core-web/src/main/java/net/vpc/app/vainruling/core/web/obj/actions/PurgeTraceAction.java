@@ -9,9 +9,9 @@ import net.vpc.app.vainruling.core.service.TraceService;
 import net.vpc.app.vainruling.core.service.model.AppConfig;
 import net.vpc.app.vainruling.core.service.obj.EntityAction;
 
-import net.vpc.app.vainruling.core.web.obj.ActionDialog;
 import net.vpc.app.vainruling.core.web.obj.ActionDialogResult;
 import net.vpc.app.vainruling.core.web.obj.ActionDialogResultPostProcess;
+import net.vpc.app.vainruling.core.web.obj.EntityViewActionInvoke;
 import net.vpc.upa.AccessMode;
 
 import java.util.List;
@@ -20,15 +20,9 @@ import java.util.List;
  * @author taha.bensalah@gmail.com
  */
 @EntityAction(entityType = AppConfig.class,
-        actionLabel = "zlog", actionStyle = "fa-calculator",
-        dialog = false
+        actionLabel = "zlog", actionStyle = "fa-calculator"
 )
-public class PurgeTraceAction implements ActionDialog {
-
-    @Override
-    public void openDialog(String actionId, List<String> itemIds) {
-        throw new IllegalArgumentException("Unsupported");
-    }
+public class PurgeTraceAction implements EntityViewActionInvoke {
 
     @Override
     public boolean isEnabled(String actionId, Class entityType, AccessMode mode, Object value) {

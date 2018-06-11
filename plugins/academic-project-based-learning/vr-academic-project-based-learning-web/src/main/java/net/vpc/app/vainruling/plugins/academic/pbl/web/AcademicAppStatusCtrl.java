@@ -74,7 +74,7 @@ public class AcademicAppStatusCtrl {
             return getModel().getSelectedSessions();
         }
         String currentSessionId = getModel().getCurrentSessionId();
-        return net.vpc.common.strings.StringUtils.isEmpty(currentSessionId) ? new String[0] : new String[]{currentSessionId};
+        return StringUtils.isEmpty(currentSessionId) ? new String[0] : new String[]{currentSessionId};
     }
 
     public String getPreferredFileName() {

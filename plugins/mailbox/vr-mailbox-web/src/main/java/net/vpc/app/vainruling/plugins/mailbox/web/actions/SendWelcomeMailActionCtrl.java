@@ -13,6 +13,7 @@ import net.vpc.app.vainruling.core.service.notification.VrNotificationEvent;
 import net.vpc.app.vainruling.core.service.notification.VrNotificationSession;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.web.VrController;
+import net.vpc.app.vainruling.core.web.jsf.DialogBuilder;
 import net.vpc.app.vainruling.core.web.jsf.ctrl.ObjCtrl;
 import net.vpc.app.vainruling.plugins.inbox.service.MailboxPlugin;
 import net.vpc.common.jsf.FacesUtils;
@@ -23,7 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.primefaces.PrimeFaces;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -49,13 +49,11 @@ public class SendWelcomeMailActionCtrl {
 
         getModel().setTitle(StringUtils.isEmpty(t) ? "Envoi de Mail" : t);
 
-        Map<String, Object> options = new HashMap<String, Object>();
-        options.put("resizable", false);
-        options.put("draggable", true);
-        options.put("modal", true);
-
-        PrimeFaces.current().dialog().openDynamic("/modules/mailbox/send-welcome-mail-dialog", options, null);
-
+        new DialogBuilder("/modules/mailbox/send-welcome-mail-dialog")
+                .setResizable(true)
+                .setDraggable(true)
+                .setModal(true)
+                .open();
     }
 
     public void onUpdate() {

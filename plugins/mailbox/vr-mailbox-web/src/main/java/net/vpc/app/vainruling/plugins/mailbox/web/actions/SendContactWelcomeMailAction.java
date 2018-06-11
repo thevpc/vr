@@ -12,8 +12,9 @@ import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.obj.EntityAction;
 
 import net.vpc.app.vainruling.core.web.jsf.ctrl.ObjCtrl;
-import net.vpc.app.vainruling.core.web.obj.ActionDialog;
+import net.vpc.app.vainruling.core.web.obj.EntityViewAction;
 import net.vpc.app.vainruling.core.web.obj.ActionDialogResult;
+import net.vpc.app.vainruling.core.web.obj.EntityViewActionDialog;
 import net.vpc.app.vainruling.plugins.inbox.service.MailboxPlugin;
 import net.vpc.upa.AccessMode;
 
@@ -25,10 +26,9 @@ import java.util.List;
  */
 @EntityAction(entityType = AppContact.class,
         actionName = "sendContactWelcomeMail",
-        actionLabel = "w-mail", actionStyle = "fa-envelope-o",
-        dialog = true
+        actionLabel = "w-mail", actionStyle = "fa-envelope-o"
 )
-public class SendContactWelcomeMailAction implements ActionDialog {
+public class SendContactWelcomeMailAction implements EntityViewActionDialog {
 
     @Override
     public void openDialog(String actionId, List<String> itemIds) {
@@ -41,21 +41,21 @@ public class SendContactWelcomeMailAction implements ActionDialog {
         return true;//value != null;
     }
 
-    @Override
-    public ActionDialogResult invoke(String actionId, Class entityType, Object obj, List<String> selectedIdStrings, Object[] args) {
-        MailboxPlugin mailboxPlugin = VrApp.getBean(MailboxPlugin.class);
-        CorePlugin core = VrApp.getBean(CorePlugin.class);
-        ObjCtrl objCtrl = VrApp.getBean(ObjCtrl.class);
-        List<AppContact> selectedEntityObjects = objCtrl.getSelectedEntityObjects();
-        List<AppUser> users=new ArrayList<>();
-        for (AppContact selectedEntityObject : selectedEntityObjects) {
-            AppUser u = core.findUserByContact(selectedEntityObject.getId());
-            if(u!=null) {
-                users.add(u);
-            }
-        }
-        mailboxPlugin.sendWelcomeEmail(users, true);
-        return ActionDialogResult.VOID;
-    }
+//    @Override
+//    public ActionDialogResult invoke(String actionId, Class entityType, Object obj, List<String> selectedIdStrings, Object[] args) {
+//        MailboxPlugin mailboxPlugin = VrApp.getBean(MailboxPlugin.class);
+//        CorePlugin core = VrApp.getBean(CorePlugin.class);
+//        ObjCtrl objCtrl = VrApp.getBean(ObjCtrl.class);
+//        List<AppContact> selectedEntityObjects = objCtrl.getSelectedEntityObjects();
+//        List<AppUser> users=new ArrayList<>();
+//        for (AppContact selectedEntityObject : selectedEntityObjects) {
+//            AppUser u = core.findUserByContact(selectedEntityObject.getId());
+//            if(u!=null) {
+//                users.add(u);
+//            }
+//        }
+//        mailboxPlugin.sendWelcomeEmail(users, true);
+//        return ActionDialogResult.VOID;
+//    }
 
 }

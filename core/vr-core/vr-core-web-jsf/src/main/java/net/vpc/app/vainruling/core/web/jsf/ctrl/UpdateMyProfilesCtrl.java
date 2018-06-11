@@ -5,19 +5,20 @@
  */
 package net.vpc.app.vainruling.core.web.jsf.ctrl;
 
-import java.util.ArrayList;
-import java.util.List;
-import net.vpc.app.vainruling.core.web.VrController;
-import java.util.logging.Logger;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppProfile;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.UPathItem;
+import net.vpc.app.vainruling.core.web.VrActionEnabler;
+import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.jsf.ctrl.actions.UpdateProfileUsersActionCtrl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import net.vpc.app.vainruling.core.web.VrActionEnabler;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * @author taha.bensalah@gmail.com

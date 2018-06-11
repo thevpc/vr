@@ -8,6 +8,7 @@ package net.vpc.app.vainruling.plugins.academic.web.dialog;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.web.VrController;
+import net.vpc.app.vainruling.core.web.jsf.DialogBuilder;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicFormerStudent;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
@@ -22,12 +23,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.faces.model.SelectItem;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.primefaces.PrimeFaces;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -46,11 +44,11 @@ public class UpdateStudentClassActionCtrl {
         resetModel();
         getModel().setSelectionIdList(itemIds == null ? new ArrayList<String>() : itemIds);
         getModel().setUserSelectedOnly(!getModel().getSelectionIdList().isEmpty());
-        Map<String, Object> options = new HashMap<String, Object>();
-        options.put("resizable", false);
-        options.put("draggable", true);
-        options.put("modal", true);
-        PrimeFaces.current().dialog().openDynamic("/modules/academic/dialog/update-student-class-dialog", options, null);
+        new DialogBuilder("/modules/academic/dialog/update-student-class-dialog")
+                .setResizable(true)
+                .setDraggable(true)
+                .setModal(true)
+                .open();
 
     }
 

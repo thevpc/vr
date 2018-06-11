@@ -2,23 +2,14 @@ package net.vpc.app.vainruling.core.web.jsf;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.service.fs.VFileInfo;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.util.VrPlatformUtils;
-import net.vpc.app.vainruling.core.service.fs.VFileInfo;
 import net.vpc.app.vainruling.core.web.util.DocumentsUtils;
 import net.vpc.common.io.FileUtils;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.vfs.VFile;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import net.vpc.common.vfs.VirtualFileSystem;
 import net.vpc.upa.*;
 import org.primefaces.event.FileUploadEvent;
@@ -26,6 +17,13 @@ import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 
 import javax.faces.model.SelectItem;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class VrJsf {
     public static StreamedContent getContent(VFileInfo i) {
@@ -131,5 +129,6 @@ public class VrJsf {
         }
         return list;
     }
+
 
 }

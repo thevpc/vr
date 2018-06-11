@@ -7,8 +7,9 @@ package net.vpc.app.vainruling.plugins.academic.teachereval.web.actions;
 
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.obj.EntityAction;
-import net.vpc.app.vainruling.core.web.obj.ActionDialog;
+import net.vpc.app.vainruling.core.web.obj.EntityViewAction;
 import net.vpc.app.vainruling.core.web.obj.ActionDialogResult;
+import net.vpc.app.vainruling.core.web.obj.EntityViewActionDialog;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.AcademicPerfEvalPlugin;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.AcademicFeedbackModel;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.AcademicFeedbackSession;
@@ -23,10 +24,9 @@ import java.util.List;
  */
 @EntityAction(entityType = AcademicFeedbackSession.class,
         actionName = "GenerateFeedback",
-        actionLabel = "Gen.", actionStyle = "fa-envelope-o",
-        dialog = true
+        actionLabel = "Gen.", actionStyle = "fa-envelope-o"
 )
-public class GenerateFeedbackAction implements ActionDialog {
+public class GenerateFeedbackAction implements EntityViewActionDialog {
 
     @Override
     public void openDialog(String actionId, List<String> itemIds) {
@@ -40,14 +40,14 @@ public class GenerateFeedbackAction implements ActionDialog {
         return value != null;
     }
 
-    @Override
-    public ActionDialogResult invoke(String actionId, Class entityType, Object obj, List<String> selectedIdStrings, Object[] args) {
-
-        VrApp.getBean(AcademicPerfEvalPlugin.class).generateStudentsFeedbackForm(
-                ((AcademicFeedbackModel) obj).getId(),
-                Convert.toInt(args[1], IntegerParserConfig.LENIENT_F),
-                (String) args[0]);
-        return ActionDialogResult.VOID;
-    }
+//    @Override
+//    public ActionDialogResult invoke(String actionId, Class entityType, Object obj, List<String> selectedIdStrings, Object[] args) {
+//
+//        VrApp.getBean(AcademicPerfEvalPlugin.class).generateStudentsFeedbackForm(
+//                ((AcademicFeedbackModel) obj).getId(),
+//                Convert.toInt(args[1], IntegerParserConfig.LENIENT_F),
+//                (String) args[0]);
+//        return ActionDialogResult.VOID;
+//    }
 
 }

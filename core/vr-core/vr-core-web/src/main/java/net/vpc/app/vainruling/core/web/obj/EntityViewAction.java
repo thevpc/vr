@@ -12,18 +12,12 @@ import java.util.List;
 /**
  * @author taha.bensalah@gmail.com
  */
-public interface ActionDialog {
+public interface EntityViewAction {
 
     default boolean isEnabled(String actionId, Class entityType, AccessMode mode, Object value) {
         return true;
     }
 
-    default void openDialog(String actionId, List<String> itemIds) {
 
-    }
-
-    default ActionDialogResult invoke(String actionId, Class entityType, Object obj, List<String> selectedIdStrings, Object[] args) {
-        return new ActionDialogResult(ActionDialogResultPostProcess.VOID);
-    }
 
 }

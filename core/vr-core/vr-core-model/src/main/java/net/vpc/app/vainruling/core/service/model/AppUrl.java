@@ -5,10 +5,8 @@
  */
 package net.vpc.app.vainruling.core.service.model;
 
-import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.upa.config.*;
 
-import java.sql.Timestamp;
 
 /**
  * @author taha.bensalah@gmail.com

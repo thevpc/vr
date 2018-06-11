@@ -10,14 +10,17 @@ import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppConfig;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
+import net.vpc.app.vainruling.core.web.jsf.DialogBuilder;
 import net.vpc.app.vainruling.core.web.obj.DialogResult;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.util.CourseAssignmentFilter;
 import net.vpc.app.vainruling.plugins.academic.web.admin.AcademicAdminToolsCtrl;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
-import net.vpc.common.util.mon.AbstractProgressMonitor;
+import net.vpc.common.util.Convert;
+import net.vpc.common.util.IntegerParserConfig;
 import net.vpc.common.util.mon.ProgressMessage;
+import net.vpc.common.util.mon.ProgressMonitorTracker;
 import net.vpc.upa.Action;
 import net.vpc.upa.UPA;
 import net.vpc.upa.VoidAction;
@@ -28,14 +31,9 @@ import org.springframework.stereotype.Component;
 
 import javax.faces.model.SelectItem;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.vpc.common.util.Convert;
-import net.vpc.common.util.IntegerParserConfig;
-import org.primefaces.PrimeFaces;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -57,12 +55,11 @@ public class GenerateLoadDialogCtrl {
         getModel().setConfig(config);
         initContent();
 
-        Map<String, Object> options = new HashMap<String, Object>();
-        options.put("resizable", false);
-        options.put("draggable", true);
-        options.put("modal", true);
-
-        PrimeFaces.current().dialog().openDynamic("/modules/academic/dialog/generate-load-dialog", options, null);
+        new DialogBuilder("/modules/academic/dialog/generate-load-dialog")
+                .setResizable(true)
+                .setDraggable(true)
+                .setModal(true)
+                .open();
 
     }
 
@@ -146,11 +143,12 @@ public class GenerateLoadDialogCtrl {
                     }
                     setVersion(periodId, version);
                     getModel().setGenerationProgress(0);
-                    p.generateTeachingLoad(periodId, CourseAssignmentFilter.NO_INTENTS, version, getModel().getOldVersion(), new AbstractProgressMonitor() {
+                    p.generateTeachingLoad(periodId, CourseAssignmentFilter.NO_INTENTS, version, getModel().getOldVersion(), new ProgressMonitorTracker() {
                         @Override
                         protected void onProgress(double progress, ProgressMessage message) {
                             getModel().setGenerationProgress(progress*100);
                         }
+
                     });
                     FacesUtils.addInfoMessage("Successful Operation");
                 } catch (Exception ex) {

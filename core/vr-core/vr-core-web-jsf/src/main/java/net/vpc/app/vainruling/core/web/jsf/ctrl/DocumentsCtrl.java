@@ -15,19 +15,21 @@ import net.vpc.app.vainruling.core.service.fs.VrFSEntry;
 import net.vpc.app.vainruling.core.service.fs.VrFSTable;
 import net.vpc.app.vainruling.core.service.util.I18n;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
-import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.core.web.VrControllerInfo;
-import net.vpc.app.vainruling.core.web.VrController;
+import net.vpc.app.vainruling.core.web.*;
+import net.vpc.app.vainruling.core.web.jsf.DialogBuilder;
+import net.vpc.app.vainruling.core.web.jsf.VrJsf;
 import net.vpc.app.vainruling.core.web.jsf.ctrl.dialog.DocumentsUploadDialogCtrl;
 import net.vpc.app.vainruling.core.web.menu.BreadcrumbItem;
 import net.vpc.app.vainruling.core.web.menu.VRMenuInfo;
 import net.vpc.app.vainruling.core.web.menu.VRMenuLabel;
 import net.vpc.app.vainruling.core.web.obj.DialogResult;
 import net.vpc.app.vainruling.core.web.util.DocumentsUtils;
-import net.vpc.app.vainruling.core.web.jsf.VrJsf;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
-import net.vpc.common.vfs.*;
+import net.vpc.common.vfs.VFS;
+import net.vpc.common.vfs.VFile;
+import net.vpc.common.vfs.VFileType;
+import net.vpc.common.vfs.VirtualFileSystem;
 import net.vpc.upa.Action;
 import net.vpc.upa.UPA;
 import net.vpc.upa.VoidAction;
@@ -36,21 +38,14 @@ import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 
-import javax.faces.context.FacesContext;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import net.vpc.app.vainruling.core.web.VrControllerInfoResolver;
-import net.vpc.app.vainruling.core.web.VRMenuProvider;
-import org.primefaces.PrimeFaces;
-import org.springframework.stereotype.Controller;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -238,12 +233,6 @@ public class DocumentsCtrl implements VRMenuProvider, VrControllerInfoResolver, 
             x++;
         }
         getModel().setNewName(file0.getName());
-
-        Map<String, Object> options = new HashMap<String, Object>();
-        options.put("resizable", false);
-        options.put("draggable", true);
-        options.put("modal", true);
-        PrimeFaces.current().dialog().openDynamic("/modules/files/documents-newname-dialog", options, null);
     }
 
     public void onRemove() {
@@ -263,11 +252,11 @@ public class DocumentsCtrl implements VRMenuProvider, VrControllerInfoResolver, 
         getModel().setNewFile(false);
         getModel().setNewFolder(true);
         getModel().setNewName("Nouveau Fichier.txt");
-        Map<String, Object> options = new HashMap<String, Object>();
-        options.put("resizable", false);
-        options.put("draggable", true);
-        options.put("modal", true);
-        PrimeFaces.current().dialog().openDynamic("/modules/files/documents-newname-dialog", options, null);
+        new DialogBuilder("/modules/files/documents-newname-dialog")
+                .setResizable(true)
+                .setDraggable(true)
+                .setModal(true)
+                .open();
     }
 
     public void onUpload() {
@@ -322,15 +311,18 @@ public class DocumentsCtrl implements VRMenuProvider, VrControllerInfoResolver, 
                 FacesUtils.addErrorMessage(f2.getPath() + " could not be created.");
             }
         }
+        getModel().setNewName("NoName");
         onRefresh();
-        fireEventExtraDialogClosed();
-        FacesContext.getCurrentInstance().getPartialViewContext().getRenderIds().add(":listForm");
+//        fireEventExtraDialogClosed();
+//        FacesContext.getCurrentInstance().getPartialViewContext().getRenderIds().add(":listForm");
 //        FacesContext.getCurrentInstance().getPartialViewContext().setRenderAll(true);//.add("listForm");
     }
 
     public void onRefresh() {
         getModel().setFiles(DocumentsUtils.searchFiles(getModel().getCurrent().getFile(), getModel().getSearchString()));
-        FacesContext.getCurrentInstance().getPartialViewContext().getRenderIds().add("listForm");
+//        if(FacesContext.getCurrentInstance()!=null) {
+//            FacesContext.getCurrentInstance().getPartialViewContext().getRenderIds().add("listForm");
+//        }
     }
 
     public Model getModel() {
@@ -422,10 +414,6 @@ public class DocumentsCtrl implements VRMenuProvider, VrControllerInfoResolver, 
     }
 
     public void onShowSecurityDialog() {
-        Map<String, Object> options = new HashMap<String, Object>();
-        options.put("resizable", false);
-        options.put("draggable", true);
-        options.put("modal", true);
         VFile file = getModel().getCurrent().getFile();
         getModel().getCurrent().setSharable(file.isDirectory());
         if (getModel().getCurrent().isSharable()) {
@@ -444,7 +432,13 @@ public class DocumentsCtrl implements VRMenuProvider, VrControllerInfoResolver, 
         //check is advanced
         getModel().getCurrent().setAdvanced(getModel().getCurrent().isAcceptAdvanced());
         getModel().getCurrent().readACL();
-        PrimeFaces.current().dialog().openDynamic("/modules/files/documents-security-dialog", options, null);
+        new DialogBuilder("/modules/files/documents-security-dialog")
+                .setResizable(true)
+                .setDraggable(true)
+                .setModal(true)
+                .setHeight(600)
+                .setContentHeight("100%")
+                .open();
         onRefresh();
 
     }
@@ -460,22 +454,17 @@ public class DocumentsCtrl implements VRMenuProvider, VrControllerInfoResolver, 
     }
 
     public void onSearch() {
-        RequestContext.getCurrentInstance().closeDialog(new DialogResult(null, null));
+//        RequestContext.getCurrentInstance().closeDialog(new DialogResult(null, null));
         onRefresh();
     }
 
     public void onCancelSearch() {
         getModel().setSearchString("");
-        RequestContext.getCurrentInstance().closeDialog(new DialogResult(null, null));
+//        RequestContext.getCurrentInstance().closeDialog(new DialogResult(null, null));
         onRefresh();
     }
 
     public void onShowSearchDialog() {
-        Map<String, Object> options = new HashMap<String, Object>();
-        options.put("resizable", false);
-        options.put("draggable", true);
-        options.put("modal", true);
-        PrimeFaces.current().dialog().openDynamic("/modules/files/documents-search-dialog", options, null);
     }
 
     public static class Config {

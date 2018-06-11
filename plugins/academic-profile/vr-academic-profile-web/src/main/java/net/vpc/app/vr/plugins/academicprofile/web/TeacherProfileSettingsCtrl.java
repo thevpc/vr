@@ -10,11 +10,12 @@ import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppCompany;
 import net.vpc.app.vainruling.core.service.model.AppContact;
 import net.vpc.app.vainruling.core.web.*;
+import net.vpc.app.vainruling.core.web.jsf.DialogBuilder;
+import net.vpc.app.vainruling.core.web.jsf.Vr;
 import net.vpc.app.vainruling.core.web.jsf.ctrl.DocumentUploadListener;
 import net.vpc.app.vainruling.core.web.jsf.ctrl.DocumentsCtrl;
-import net.vpc.app.vainruling.core.web.jsf.ctrl.dialog.DocumentsUploadDialogCtrl;
 import net.vpc.app.vainruling.core.web.jsf.ctrl.FileUploadEventHandler;
-import net.vpc.app.vainruling.core.web.jsf.Vr;
+import net.vpc.app.vainruling.core.web.jsf.ctrl.dialog.DocumentsUploadDialogCtrl;
 import net.vpc.app.vainruling.core.web.themes.VrTheme;
 import net.vpc.app.vainruling.core.web.themes.VrThemeFace;
 import net.vpc.app.vainruling.core.web.themes.VrThemeFactory;
@@ -41,11 +42,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.primefaces.PrimeFaces;
 
 @VrController(
         breadcrumb = {
-                @UPathItem(title = "Paramètres", css = "fa-dashboard", ctrl = "")},
+            @UPathItem(title = "Paramètres", css = "fa-dashboard", ctrl = "")},
         title = "Mon profil enseignant",
         menu = "/Config",
         url = "modules/academic/profile/teacher-profile-settings",
@@ -237,64 +237,65 @@ public class TeacherProfileSettingsCtrl implements DocumentUploadListener, VrAct
     public void onNewExperience() {
         getModel().setItem(new AcademicTeacherCVItem());
         Map<String, Object> options = new HashMap<String, Object>();
-        options.put("resizable", false);
-        options.put("draggable", true);
-        options.put("modal", true);
-        PrimeFaces.current().dialog().openDynamic("/modules/academic/profile/add-teacher-experience-dialog", options, null);
+        new DialogBuilder("/modules/academic/profile/add-teacher-experience-dialog")
+                .setResizable(true)
+                .setDraggable(true)
+                .setModal(true)
+                .open();
     }
 
     public void onNewEducation() {
         getModel().setItem(new AcademicTeacherCVItem());
-        Map<String, Object> options = new HashMap<String, Object>();
-        options.put("resizable", false);
-        options.put("draggable", true);
-        options.put("modal", true);
-        PrimeFaces.current().dialog().openDynamic("/modules/academic/profile/add-teacher-education-dialog", options, null);
+        new DialogBuilder("/modules/academic/profile/add-teacher-education-dialog")
+                .setResizable(true)
+                .setDraggable(true)
+                .setModal(true)
+                .open();
     }
 
     public void onNewProject() {
         getModel().setItem(new AcademicTeacherCVItem());
-        Map<String, Object> options = new HashMap<String, Object>();
-        options.put("resizable", false);
-        options.put("draggable", true);
-        options.put("modal", true);
-        PrimeFaces.current().dialog().openDynamic("/modules/academic/profile/add-teacher-project-dialog", options, null);
+        new DialogBuilder("/modules/academic/profile/add-teacher-project-dialog")
+                .setResizable(true)
+                .setDraggable(true)
+                .setModal(true)
+                .open();
     }
 
     public void onNewCourse() {
         getModel().setItem(new AcademicTeacherCVItem());
-        Map<String, Object> options = new HashMap<String, Object>();
-        options.put("resizable", false);
-        options.put("draggable", true);
-        options.put("modal", true);
-        PrimeFaces.current().dialog().openDynamic("/modules/academic/profile/add-teacher-course-dialog", options, null);
+        new DialogBuilder("/modules/academic/profile/add-teacher-course-dialog")
+                .setResizable(true)
+                .setDraggable(true)
+                .setModal(true)
+                .open();
     }
 
     public void onNewResearch() {
         getModel().setItem(new AcademicTeacherCVItem());
-        Map<String, Object> options = new HashMap<String, Object>();
-        options.put("resizable", false);
-        options.put("draggable", true);
-        options.put("modal", true);
-        PrimeFaces.current().dialog().openDynamic("/modules/academic/profile/add-teacher-research-dialog", options, null);
+        new DialogBuilder("/modules/academic/profile/add-teacher-research-dialog")
+                .setResizable(true)
+                .setDraggable(true)
+                .setModal(true)
+                .open();
     }
 
     public void onRequestUploadPhoto() {
         getModel().setUploadingPhoto(true);
         getModel().setUploadingCV(false);
         Vr.get().openUploadDialog(new DocumentsUploadDialogCtrl.Config()
-                        .setExtensions("jpg,png,jpeg")
-                        .setSizeLimit(1024 * 1024)
-                , this);
+                .setExtensions("jpg,png,jpeg")
+                .setSizeLimit(1024 * 1024),
+                this);
     }
 
     public void onRequestUploadCV() {
         getModel().setUploadingPhoto(false);
         getModel().setUploadingCV(true);
         Vr.get().openUploadDialog(new DocumentsUploadDialogCtrl.Config()
-                        .setExtensions("pdf")
-                        .setSizeLimit(10 * 1024 * 1024)
-                , this);
+                .setExtensions("pdf")
+                .setSizeLimit(10 * 1024 * 1024),
+                this);
     }
 
     public void onUpload(FileUploadEvent event) {
@@ -310,15 +311,7 @@ public class TeacherProfileSettingsCtrl implements DocumentUploadListener, VrAct
                             VFile filePath = CorePlugin.get().getUserFolder(c.getUser().getLogin()).get("/Config/" + cvFile);
                             if (filePath != null) {
                                 filePath.getParentFile().mkdirs();
-                                VFile[] old = filePath.getParentFile().listFiles(new VFileFilter() {
-                                    @Override
-                                    public boolean accept(VFile pathname) {
-                                        if (pathname.getName().equalsIgnoreCase(cvFile)) {
-                                            return true;
-                                        }
-                                        return false;
-                                    }
-                                });
+                                VFile[] old = filePath.getParentFile().listFiles(new VFileFilterByNameIgnoreCase(cvFile));
                                 for (VFile f : old) {
                                     f.delete();
                                 }
@@ -338,17 +331,7 @@ public class TeacherProfileSettingsCtrl implements DocumentUploadListener, VrAct
                             VFile filePath = CorePlugin.get().getUserFolder(c.getUser().getLogin()).get("/Config/photo." + e);
                             if (filePath != null) {
                                 filePath.getParentFile().mkdirs();
-                                VFile[] old = filePath.getParentFile().listFiles(new VFileFilter() {
-                                    @Override
-                                    public boolean accept(VFile pathname) {
-                                        if (pathname.getName().equalsIgnoreCase("photo.png")
-                                                || pathname.getName().equalsIgnoreCase("photo.jpg")
-                                                || pathname.getName().equalsIgnoreCase("photo.jpeg")) {
-                                            return true;
-                                        }
-                                        return false;
-                                    }
-                                });
+                                VFile[] old = filePath.getParentFile().listFiles(new VFileFilterPhoto());
                                 for (VFile f : old) {
                                     f.delete();
                                 }
@@ -367,8 +350,42 @@ public class TeacherProfileSettingsCtrl implements DocumentUploadListener, VrAct
 
                 FacesUtils.addErrorMessage(event.getFile().getFileName() + " uploading failed.");
             }
+
         });
 
+    }
+
+    private static class VFileFilterByNameIgnoreCase implements VFileFilter {
+
+        private final String cvFile;
+
+        public VFileFilterByNameIgnoreCase(String cvFile) {
+            this.cvFile = cvFile;
+        }
+
+        @Override
+        public boolean accept(VFile pathname) {
+            if (pathname.getName().equalsIgnoreCase(cvFile)) {
+                return true;
+            }
+            return false;
+        }
+    }
+
+    private static class VFileFilterPhoto implements VFileFilter {
+
+        public VFileFilterPhoto() {
+        }
+
+        @Override
+        public boolean accept(VFile pathname) {
+            if (pathname.getName().equalsIgnoreCase("photo.png")
+                    || pathname.getName().equalsIgnoreCase("photo.jpg")
+                    || pathname.getName().equalsIgnoreCase("photo.jpeg")) {
+                return true;
+            }
+            return false;
+        }
     }
 
     public static class Model {

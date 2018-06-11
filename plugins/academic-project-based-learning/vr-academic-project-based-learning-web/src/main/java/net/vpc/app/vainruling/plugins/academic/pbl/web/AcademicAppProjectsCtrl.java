@@ -10,11 +10,12 @@ import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.UPathItem;
-import net.vpc.app.vainruling.core.web.jsf.Vr;
 import net.vpc.app.vainruling.core.web.VrController;
+import net.vpc.app.vainruling.core.web.jsf.DialogBuilder;
+import net.vpc.app.vainruling.core.web.jsf.Vr;
+import net.vpc.app.vainruling.core.web.jsf.VrJsf;
 import net.vpc.app.vainruling.core.web.jsf.ctrl.dialog.DocumentsDialogCtrl;
 import net.vpc.app.vainruling.core.web.obj.DialogResult;
-import net.vpc.app.vainruling.core.web.jsf.VrJsf;
 import net.vpc.app.vainruling.plugins.academic.pbl.service.ApblPlugin;
 import net.vpc.app.vainruling.plugins.academic.pbl.service.dto.*;
 import net.vpc.app.vainruling.plugins.academic.pbl.service.model.*;
@@ -34,13 +35,12 @@ import org.primefaces.event.SelectEvent;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 
 import javax.faces.model.SelectItem;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.primefaces.PrimeFaces;
-import org.springframework.stereotype.Controller;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -671,11 +671,11 @@ public class AcademicAppProjectsCtrl {
         getModel().setViewOnly(false);
         getModel().getSelectedProject().setOwner(currentUser);
         getModel().getSelectedProject().setSession(getModel().getSession());
-        Map<String, Object> options = new HashMap<String, Object>();
-        options.put("resizable", false);
-        options.put("draggable", true);
-        options.put("modal", true);
-        PrimeFaces.current().dialog().openDynamic("/modules/academic/pbl/dialog/project-edit-dialog", options, null);
+        new DialogBuilder("/modules/academic/pbl/dialog/project-edit-dialog")
+                .setResizable(true)
+                .setDraggable(true)
+                .setModal(true)
+                .open();
     }
 
     public void onOpenCreateTeamDialog() {
@@ -684,11 +684,11 @@ public class AcademicAppProjectsCtrl {
         getModel().setEditMode(false);
         getModel().getSelectedTeam().setOwner(core.getCurrentUser());
         getModel().getSelectedTeam().setSession(getModel().getSession());
-        Map<String, Object> options = new HashMap<String, Object>();
-        options.put("resizable", false);
-        options.put("draggable", true);
-        options.put("modal", true);
-        PrimeFaces.current().dialog().openDynamic("/modules/academic/pbl/dialog/team-edit-dialog", options, null);
+        new DialogBuilder("/modules/academic/pbl/dialog/team-edit-dialog")
+                .setResizable(true)
+                .setDraggable(true)
+                .setModal(true)
+                .open();
     }
 
     public void onOpenViewDialog(NodeItem node) {
@@ -698,21 +698,21 @@ public class AcademicAppProjectsCtrl {
             getModel().setEditMode(true);
             AppUser currentUser = core.getCurrentUser();
             getModel().setViewOnly(!(currentAdmin || currentUser != null && project != null && project.getOwner() != null && project.getOwner().getId() == currentUser.getId()));
-            Map<String, Object> options = new HashMap<String, Object>();
-            options.put("resizable", false);
-            options.put("draggable", true);
-            options.put("modal", true);
-            PrimeFaces.current().dialog().openDynamic("/modules/academic/pbl/dialog/project-edit-dialog", options, null);
+            new DialogBuilder("/modules/academic/pbl/dialog/project-edit-dialog")
+                    .setResizable(true)
+                    .setDraggable(true)
+                    .setModal(true)
+                    .open();
         } else if (node.getValue() instanceof TeamNode) {
             ApblTeam team = ((TeamNode) node.getValue()).getTeam();
             getModel().setViewOnly(!(currentAdmin || currentStudent != null && team != null && team.getOwner() != null && currentStudent.getUser() != null && team.getOwner().getId() == currentStudent.getUser().getId()));
             getModel().setSelectedTeam(team);
             getModel().setEditMode(true);
-            Map<String, Object> options = new HashMap<String, Object>();
-            options.put("resizable", false);
-            options.put("draggable", true);
-            options.put("modal", true);
-            PrimeFaces.current().dialog().openDynamic("/modules/academic/pbl/dialog/team-edit-dialog", options, null);
+            new DialogBuilder("/modules/academic/pbl/dialog/team-edit-dialog")
+                    .setResizable(true)
+                    .setDraggable(true)
+                    .setModal(true)
+                    .open();
         }
     }
 
@@ -726,11 +726,11 @@ public class AcademicAppProjectsCtrl {
             getModel().setSelectedTeam(team);
             getModel().setSelectedTeamNode(teamNode);
             getModel().setEditMode(true);
-            Map<String, Object> options = new HashMap<String, Object>();
-            options.put("resizable", false);
-            options.put("draggable", true);
-            options.put("modal", true);
-            PrimeFaces.current().dialog().openDynamic("/modules/academic/pbl/dialog/team-assign-dialog", options, null);
+            new DialogBuilder("/modules/academic/pbl/dialog/team-assign-dialog")
+                    .setResizable(true)
+                    .setDraggable(true)
+                    .setModal(true)
+                    .open();
         }
     }
 
@@ -1120,7 +1120,7 @@ public class AcademicAppProjectsCtrl {
         public void setProjects(List<ProjectNode> projects) {
             this.projects = projects;
             root = new DefaultTreeNode(new NodeItem("Root", projects.size(), "root", "", null), null);
-            boolean defaultExpand = true;// !net.vpc.common.strings.StringUtils.isEmpty(getFilterText());
+            boolean defaultExpand = true;// !StringUtils.isEmpty(getFilterText());
             for (ProjectNode i : projects) {
                 NodeItem project
                         = i.getProject() == null

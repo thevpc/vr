@@ -7,11 +7,12 @@ package net.vpc.app.vainruling.plugins.academic.pbl.web;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.model.AppUser;
-import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.UPathItem;
+import net.vpc.app.vainruling.core.web.VrController;
+import net.vpc.app.vainruling.core.web.jsf.DialogBuilder;
 import net.vpc.app.vainruling.plugins.academic.pbl.service.ApblPlugin;
+import net.vpc.app.vainruling.plugins.academic.pbl.service.ApblUtils;
 import net.vpc.app.vainruling.plugins.academic.pbl.service.model.*;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
@@ -25,8 +26,6 @@ import javax.faces.model.SelectItem;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.vpc.app.vainruling.plugins.academic.pbl.service.ApblUtils;
-import org.primefaces.PrimeFaces;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -85,11 +84,12 @@ public class AcademicAppMyTeamsCtrl {
             getModel().getSelectedProgressionLog().setProgressionPercent(old.getProgressionPercent());
             break;
         }
-        Map<String, Object> options = new HashMap<String, Object>();
-        options.put("resizable", false);
-        options.put("draggable", true);
-        options.put("modal", true);
-        PrimeFaces.current().dialog().openDynamic("/modules/academic/pbl/dialog/progression-dialog", options, null);
+
+        new DialogBuilder("/modules/academic/pbl/dialog/progression-dialog")
+                .setResizable(true)
+                .setDraggable(true)
+                .setModal(true)
+                .open();
     }
 
     public void onOpenCoachingLogDialog() {
@@ -104,11 +104,11 @@ public class AcademicAppMyTeamsCtrl {
             for (ApblCoachingLog old : getModel().getCoachingLogs()) {
                 getModel().getSelectedCoachingLog().setDurationMinutes(old.getDurationMinutes());
             }
-            Map<String, Object> options = new HashMap<String, Object>();
-            options.put("resizable", false);
-            options.put("draggable", true);
-            options.put("modal", true);
-            PrimeFaces.current().dialog().openDynamic("/modules/academic/pbl/dialog/coaching-dialog", options, null);
+            new DialogBuilder("/modules/academic/pbl/dialog/coaching-dialog")
+                    .setResizable(true)
+                    .setDraggable(true)
+                    .setModal(true)
+                    .open();
         }
     }
 

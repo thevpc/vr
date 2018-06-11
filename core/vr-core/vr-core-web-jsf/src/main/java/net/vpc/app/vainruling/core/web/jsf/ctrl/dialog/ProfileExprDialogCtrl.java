@@ -10,6 +10,7 @@ import net.vpc.app.vainruling.core.service.model.AppProfile;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.web.VrController;
+import net.vpc.app.vainruling.core.web.jsf.DialogBuilder;
 import net.vpc.app.vainruling.core.web.obj.DialogResult;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
@@ -22,7 +23,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.primefaces.PrimeFaces;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -43,13 +43,11 @@ public class ProfileExprDialogCtrl {
         getModel().setConfig(config);
         initContent();
 
-        Map<String, Object> options = new HashMap<String, Object>();
-        options.put("resizable", false);
-        options.put("draggable", true);
-        options.put("modal", true);
-
-        PrimeFaces.current().dialog().openDynamic("/modules/obj/profile-expr-dialog", options, null);
-
+        new DialogBuilder("/modules/obj/profile-expr-dialog")
+                .setResizable(true)
+                .setDraggable(true)
+                .setModal(true)
+                .open();
     }
 
     private void initContent() {

@@ -5,10 +5,6 @@
  */
 package net.vpc.app.vainruling.core.web.jsf;
 
-import net.vpc.app.vainruling.core.service.content.ContentText;
-import net.vpc.app.vainruling.core.web.DummyMessageTextService;
-import net.vpc.app.vainruling.core.web.DummyTaskTextService;
-import net.vpc.app.vainruling.core.web.util.StrLabel;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.content.*;
@@ -19,24 +15,23 @@ import net.vpc.app.vainruling.core.service.security.UserToken;
 import net.vpc.app.vainruling.core.service.util.VrUPAUtils;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.service.util.wiki.VrWikiParser;
+import net.vpc.app.vainruling.core.web.DummyMessageTextService;
+import net.vpc.app.vainruling.core.web.DummyTaskTextService;
 import net.vpc.app.vainruling.core.web.jsf.converters.EntityConverter;
-import net.vpc.app.vainruling.core.web.jsf.ctrl.ActiveSessionsCtrl;
-import net.vpc.app.vainruling.core.web.jsf.ctrl.AppGlobalCtrl;
-import net.vpc.app.vainruling.core.web.jsf.ctrl.LoginCtrl;
-import net.vpc.app.vainruling.core.web.jsf.ctrl.DocumentUploadListener;
-import net.vpc.app.vainruling.core.web.jsf.ctrl.DocumentsCtrl;
+import net.vpc.app.vainruling.core.web.jsf.ctrl.*;
 import net.vpc.app.vainruling.core.web.jsf.ctrl.dialog.DocumentsUploadDialogCtrl;
 import net.vpc.app.vainruling.core.web.menu.BreadcrumbItem;
 import net.vpc.app.vainruling.core.web.menu.VRMenuInfo;
 import net.vpc.app.vainruling.core.web.menu.VrMenuManager;
 import net.vpc.app.vainruling.core.web.themes.VrTheme;
+import net.vpc.app.vainruling.core.web.util.StrLabel;
 import net.vpc.app.vainruling.core.web.util.VrWebHelper;
 import net.vpc.common.io.IOUtils;
 import net.vpc.common.io.PathInfo;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
+import net.vpc.common.util.BytesSizeFormat;
 import net.vpc.common.util.CollectionUtils;
-import net.vpc.common.util.BytesSizeFormatter;
 import net.vpc.common.util.Utils;
 import net.vpc.common.vfs.VFile;
 import net.vpc.common.vfs.VFileFilter;
@@ -52,6 +47,7 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.primefaces.model.StreamedContent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
 
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
@@ -68,7 +64,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.springframework.stereotype.Controller;
+import org.primefaces.context.RequestContext;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -1465,7 +1461,7 @@ public class Vr {
     }
 
     public String formatBytesSize(long size) {
-        BytesSizeFormatter m = new BytesSizeFormatter();
+        BytesSizeFormat m = new BytesSizeFormat();
         return m.format(size);
     }
 
@@ -1507,5 +1503,9 @@ public class Vr {
                 ? this.randomize("#38569f", "#352f44", "#2f4432", "#44362f", "#442f39", "#38969f")
                 : ""
         );
+    }
+    
+    public void closeDialog() {
+        RequestContext.getCurrentInstance().closeDialog(null);
     }
 }

@@ -9,10 +9,7 @@ import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.obj.EntityAction;
 
-import net.vpc.app.vainruling.core.web.jsf.ctrl.ObjCtrl;
-import net.vpc.app.vainruling.core.web.obj.ActionDialog;
-import net.vpc.app.vainruling.core.web.obj.ActionDialogResult;
-import net.vpc.app.vainruling.plugins.inbox.service.MailboxPlugin;
+import net.vpc.app.vainruling.core.web.obj.EntityViewActionDialog;
 import net.vpc.upa.AccessMode;
 
 import java.util.List;
@@ -22,10 +19,9 @@ import java.util.List;
  */
 @EntityAction(entityType = AppUser.class,
         actionName = "sendWelcomeMail",
-        actionLabel = "w-mail", actionStyle = "fa-envelope-o",
-        dialog = true
+        actionLabel = "w-mail", actionStyle = "fa-envelope-o"
 )
-public class SendUserWelcomeMailAction implements ActionDialog {
+public class SendUserWelcomeMailAction implements EntityViewActionDialog {
 
     @Override
     public void openDialog(String actionId, List<String> itemIds) {
@@ -38,12 +34,12 @@ public class SendUserWelcomeMailAction implements ActionDialog {
         return true;//value != null;
     }
 
-    @Override
-    public ActionDialogResult invoke(String actionId, Class entityType, Object obj, List<String> selectedIdStrings, Object[] args) {
-        MailboxPlugin mailboxPlugin = VrApp.getBean(MailboxPlugin.class);
-        ObjCtrl objCtrl = VrApp.getBean(ObjCtrl.class);
-        mailboxPlugin.sendWelcomeEmail(objCtrl.getSelectedEntityObjects(), true);
-        return ActionDialogResult.VOID;
-    }
+//    @Override
+//    public ActionDialogResult invoke(String actionId, Class entityType, Object obj, List<String> selectedIdStrings, Object[] args) {
+//        MailboxPlugin mailboxPlugin = VrApp.getBean(MailboxPlugin.class);
+//        ObjCtrl objCtrl = VrApp.getBean(ObjCtrl.class);
+//        mailboxPlugin.sendWelcomeEmail(objCtrl.getSelectedEntityObjects(), true);
+//        return ActionDialogResult.VOID;
+//    }
 
 }

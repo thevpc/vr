@@ -9,9 +9,9 @@ import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.web.VrController;
+import net.vpc.app.vainruling.core.web.jsf.DialogBuilder;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.AcademicPerfEvalPlugin;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.AcademicFeedbackModel;
-import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.AcademicFeedbackSession;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
@@ -23,11 +23,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.faces.model.SelectItem;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
-import org.primefaces.PrimeFaces;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -64,17 +61,15 @@ public class GenerateFeedbackActionCtrl {
         for (AcademicFeedbackModel item : models) {
             getModel().getModels().add(FacesUtils.createSelectItem(String.valueOf(item.getId()), item.getName(), null));
         }
-        if(models.size()>0){
+        if (models.size() > 0) {
             getModel().setSelectedModel(String.valueOf(models.get(0).getId()));
         }
 
-        Map<String, Object> options = new HashMap<String, Object>();
-        options.put("resizable", false);
-        options.put("draggable", true);
-        options.put("modal", true);
-
-        PrimeFaces.current().dialog().openDynamic("/modules/academic/perfeval/generate-feedback-dialog", options, null);
-
+        new DialogBuilder("/modules/academic/perfeval/generate-feedback-dialog")
+                .setResizable(true)
+                .setDraggable(true)
+                .setModal(true)
+                .open();
     }
 
     public void onUpdate() {
@@ -127,7 +122,7 @@ public class GenerateFeedbackActionCtrl {
             this.title = title;
         }
 
-          public int getSessionId() {
+        public int getSessionId() {
             return sessionId;
         }
 
@@ -185,7 +180,7 @@ public class GenerateFeedbackActionCtrl {
             this.selectedSession = selectedSemester;
         }
 
-         public String getSelectedModel() {
+        public String getSelectedModel() {
             return selectedModel;
         }
 

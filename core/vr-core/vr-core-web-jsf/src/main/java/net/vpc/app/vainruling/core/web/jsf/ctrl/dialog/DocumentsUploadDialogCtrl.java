@@ -9,6 +9,7 @@ import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.web.VrController;
+import net.vpc.app.vainruling.core.web.jsf.DialogBuilder;
 import net.vpc.app.vainruling.core.web.jsf.ctrl.DocumentUploadListener;
 import net.vpc.app.vainruling.core.web.jsf.ctrl.DocumentsCtrl;
 import net.vpc.app.vainruling.core.web.jsf.ctrl.FileUploadEventHandler;
@@ -20,13 +21,10 @@ import net.vpc.upa.UPA;
 import net.vpc.upa.VoidAction;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
+import org.springframework.stereotype.Controller;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.primefaces.PrimeFaces;
-import org.springframework.stereotype.Controller;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -48,12 +46,11 @@ public class DocumentsUploadDialogCtrl {
         getModel().setListener(listener);
         initContent(config);
 
-        Map<String, Object> options = new HashMap<String, Object>();
-        options.put("resizable", false);
-        options.put("draggable", true);
-        options.put("modal", true);
-
-        PrimeFaces.current().dialog().openDynamic("/modules/files/documents-upload-dialog", options, null);
+        new DialogBuilder("/modules/files/documents-upload-dialog")
+                .setResizable(true)
+                .setDraggable(true)
+                .setModal(true)
+                .open();
     }
 
     public void openDialog(Config config) {

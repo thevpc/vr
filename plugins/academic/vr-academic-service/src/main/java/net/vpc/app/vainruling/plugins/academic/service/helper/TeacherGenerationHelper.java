@@ -26,7 +26,6 @@ import net.vpc.common.strings.MapStringConverter;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.Chronometer;
 import net.vpc.common.util.MapList;
-import net.vpc.common.util.mon.EnhancedProgressMonitor;
 import net.vpc.common.util.mon.ProgressMonitor;
 import net.vpc.common.util.mon.ProgressMonitorFactory;
 import net.vpc.common.util.mon.VoidMonitoredAction;
@@ -75,7 +74,7 @@ public class TeacherGenerationHelper {
             Chronometer ch = new Chronometer();
             TeacherGenerationOptions options = (_options == null) ? new TeacherGenerationOptions() : _options;
 
-            EnhancedProgressMonitor[] mon = ProgressMonitorFactory.split(options.getProgressMonitor(), new double[]{
+            ProgressMonitor[] mon = options.getProgressMonitor().split(new double[]{
                     2,
                     2,
                     5,
@@ -133,7 +132,7 @@ public class TeacherGenerationHelper {
                     "TeacherListAssignmentsSummary ",
                     new VoidMonitoredAction() {
                         @Override
-                        public void invoke(EnhancedProgressMonitor monitor, String messagePrefix) throws Exception {
+                        public void invoke(ProgressMonitor monitor, String messagePrefix) throws Exception {
                             if (requestedContents.contains(GeneratedContent.TeacherListAssignmentsSummary) || requestedContents.contains(GeneratedContent.TeacherAssignments) || requestedContents.contains(GeneratedContent.GroupedTeacherAssignments)) {
                                 data.stats = academicPlugin.evalTeacherStatList(periodId, teacherIdsFilter, new CourseAssignmentFilterAnd().and(options.getCourseAssignmentFilter()).and(new DefaultCourseAssignmentFilter().addAcceptedSemester(semesterId)), options.getDeviationConfig(), monitor);
                             }
@@ -144,11 +143,11 @@ public class TeacherGenerationHelper {
                     "TeacherListAssignmentsSummary ",
                     new VoidMonitoredAction() {
                         @Override
-                        public void invoke(EnhancedProgressMonitor monitor, String messagePrefix) throws Exception {
+                        public void invoke(ProgressMonitor monitor, String messagePrefix) throws Exception {
                             if (requestedContents.contains(GeneratedContent.TeacherListAssignmentsSummary)) {
                                 TeacherPeriodStat[] statsArray = data.stats.toArray(new TeacherPeriodStat[data.stats.size()]);
                                 String teacherListAssignmentsSummaryFile_template = templateFolder + "/teacher-list-assignments-summary-template.xls";
-                                EnhancedProgressMonitor[] mons2 = monitor.split(new double[]{2, 1});
+                                ProgressMonitor[] mons2 = monitor.split(new double[]{2, 1});
                                 generateTeacherListAssignmentsSummaryFile(periodId, statsArray,
                                         fs.get(teacherListAssignmentsSummaryFile_template), fs.get(outputFolder + File.separator
                                                 + outputNamePattern.replace("*", "teacher-list-assignments-summary") + ".xls"), writeVars, mons2[0]);
@@ -169,7 +168,7 @@ public class TeacherGenerationHelper {
                     "TeacherListAssignmentsSummary ",
                     new VoidMonitoredAction() {
                         @Override
-                        public void invoke(EnhancedProgressMonitor monitor, String messagePrefix) throws Exception {
+                        public void invoke(ProgressMonitor monitor, String messagePrefix) throws Exception {
                             if (requestedContents.contains(GeneratedContent.TeacherAssignments)) {
                                 TeacherPeriodStat[] statsArray = data.stats.toArray(new TeacherPeriodStat[data.stats.size()]);
                                 generateTeacherAssignmentsFolder(periodId, statsArray, fs.get(teacherAssignments_template), fs.get(uu.getDirName()
@@ -182,7 +181,7 @@ public class TeacherGenerationHelper {
                     "TeacherListAssignmentsSummary ",
                     new VoidMonitoredAction() {
                         @Override
-                        public void invoke(EnhancedProgressMonitor monitor, String messagePrefix) throws Exception {
+                        public void invoke(ProgressMonitor monitor, String messagePrefix) throws Exception {
                             if (requestedContents.contains(GeneratedContent.GroupedTeacherAssignments)) {
                                 TeacherPeriodStat[] statsArray = data.stats.toArray(new TeacherPeriodStat[data.stats.size()]);
                                 generateTeacherAssignmentsFile(periodId, statsArray, fs.get(teacherAssignments_template), fs.get(teacherAssignments_filename), monitor);
@@ -194,11 +193,11 @@ public class TeacherGenerationHelper {
                     "TeacherListAssignmentsSummary ",
                     new VoidMonitoredAction() {
                         @Override
-                        public void invoke(EnhancedProgressMonitor monitor, String messagePrefix) throws Exception {
+                        public void invoke(ProgressMonitor monitor, String messagePrefix) throws Exception {
                             if (requestedContents.contains(GeneratedContent.CourseListLoads)) {
                                 String courseListLoads_template = templateFolder + "/course-list-loads-template.xls";
                                 VFile t = fs.get(courseListLoads_template);
-                                EnhancedProgressMonitor[] mons2 = monitor.split(new double[]{1, 1});
+                                ProgressMonitor[] mons2 = monitor.split(new double[]{1, 1});
                                 generateCourseListLoadsFile(periodId, t, fs.get(outputFolder + File.separator + outputNamePattern.replace("*", "course-list-loads") + ".xls"), mons2[0]);
 
                                 courseListLoads_template = templateFolder + "/course-assignments-template.xls";
@@ -212,7 +211,7 @@ public class TeacherGenerationHelper {
                     "TeacherListAssignmentsSummary ",
                     new VoidMonitoredAction() {
                         @Override
-                        public void invoke(EnhancedProgressMonitor monitor, String messagePrefix) throws Exception {
+                        public void invoke(ProgressMonitor monitor, String messagePrefix) throws Exception {
                             generateGlobalVars(periodId, fs.get(outputFolder + File.separator + "vars" + File.separator + "vars.config"), options.getVersion());
                         }
                     });
@@ -221,7 +220,7 @@ public class TeacherGenerationHelper {
                     "TeacherListAssignmentsSummary ",
                     new VoidMonitoredAction() {
                         @Override
-                        public void invoke(EnhancedProgressMonitor monitor, String messagePrefix) throws Exception {
+                        public void invoke(ProgressMonitor monitor, String messagePrefix) throws Exception {
                             if (requestedContents.contains(GeneratedContent.Bundle)) {
                                 Chronometer c2 = new Chronometer();
                                 String zipFile = outputFolder + File.separator + outputNamePattern.replace("*", "bundle") + ".zip";
@@ -249,7 +248,7 @@ public class TeacherGenerationHelper {
     }
 
     private void generateTeacherAssignmentsFile(int periodId, TeacherPeriodStat[] stats, VFile template, VFile output,ProgressMonitor mon) throws IOException {
-        EnhancedProgressMonitor monitor=ProgressMonitorFactory.enhance(mon);
+        ProgressMonitor monitor=ProgressMonitorFactory.nonnull(mon);
         if (stats.length == 0) {
             throw new IllegalArgumentException("No valid Teacher found");
         }
@@ -310,7 +309,7 @@ public class TeacherGenerationHelper {
     }
 
     private void generateTeacherAssignmentsCsvFile(int periodId, TeacherPeriodStat[] stats, VFile output,ProgressMonitor mon) throws IOException {
-        EnhancedProgressMonitor monitor=ProgressMonitorFactory.enhance(mon);
+        ProgressMonitor monitor=ProgressMonitorFactory.nonnull(mon);
         if (stats.length == 0) {
             throw new IllegalArgumentException("No valid Teacher found");
         }
@@ -418,7 +417,7 @@ public class TeacherGenerationHelper {
     }
 
     public void generateTeacherListAssignmentsSummaryFile(int periodId, TeacherPeriodStat[] stats, VFile template, VFile output, boolean writeVarFiles,ProgressMonitor mon) throws IOException {
-        EnhancedProgressMonitor monitor=ProgressMonitorFactory.enhance(mon);
+        ProgressMonitor monitor=ProgressMonitorFactory.nonnull(mon);
         Chronometer ch = new Chronometer();
         Map<String, Object> p = new HashMap<String, Object>();
         for (int i = 0; i < stats.length; i++) {
@@ -435,7 +434,7 @@ public class TeacherGenerationHelper {
     }
 
     public void generateCourseListLoadsFile(int periodId, VFile template, VFile output,ProgressMonitor mon) throws IOException {
-        EnhancedProgressMonitor monitor=ProgressMonitorFactory.enhance(mon);
+        ProgressMonitor monitor=ProgressMonitorFactory.nonnull(mon);
         Chronometer ch = new Chronometer();
         Map<String, Object> p = new HashMap<String, Object>();
         NamedDoubles inc = new NamedDoubles();
@@ -594,7 +593,7 @@ public class TeacherGenerationHelper {
 //        if (!output.endsWith(File.separator) && !output.endsWith("/")) {
 //            output = output + File.separator;
 //        }
-        EnhancedProgressMonitor monitor=ProgressMonitorFactory.enhance(mon);
+        ProgressMonitor monitor=ProgressMonitorFactory.nonnull(mon);
         CorePlugin core = VrApp.getBean(CorePlugin.class);
         String soutput = output.getPath();
         if (!soutput.contains("*")) {
@@ -701,14 +700,14 @@ public class TeacherGenerationHelper {
     }
 
     public void generateCourseListAssignmentsFile(int periodId, VFile template, VFile output, String version,ProgressMonitor mon) throws IOException {
-        EnhancedProgressMonitor monitor=ProgressMonitorFactory.enhance(mon);
+        ProgressMonitor monitor=ProgressMonitorFactory.nonnull(mon);
         Chronometer ch = new Chronometer();
         Map<String, Object> p = new HashMap<String, Object>();
         NamedDoubles inc = new NamedDoubles();
         AcademicPlugin academicPlugin = VrApp.getBean(AcademicPlugin.class);
         CorePlugin core = VrApp.getBean(CorePlugin.class);
         MapList<Integer, AcademicCourseAssignment> courseAssignments = academicPlugin.findCourseAssignments(periodId);
-        EnhancedProgressMonitor incmon = monitor.createIncrementalMonitor(courseAssignments.size());
+        ProgressMonitor incmon = monitor.createIncrementalMonitor(courseAssignments.size());
         for (AcademicCourseAssignment c : courseAssignments) {
             incmon.inc();
             String prefix;

@@ -7,8 +7,8 @@ package net.vpc.app.vainruling.plugins.academic.web.load;
 
 import net.vpc.app.vainruling.core.service.obj.EntityAction;
 
-import net.vpc.app.vainruling.core.web.obj.ActionDialog;
 import net.vpc.app.vainruling.core.web.obj.ActionDialogResult;
+import net.vpc.app.vainruling.core.web.obj.EntityViewActionInvoke;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseAssignment;
 import net.vpc.upa.AccessMode;
@@ -21,17 +21,12 @@ import java.util.List;
  */
 @EntityAction(entityType = AcademicCourseAssignment.class,
         actionLabel = "x2", actionStyle = "fa-envelope-o",
-        dialog = false,
         confirm = true
 )
-public class DupAcademicCourseAssignmentAction implements ActionDialog {
+public class DupAcademicCourseAssignmentAction implements EntityViewActionInvoke {
 
     @Autowired
     AcademicPlugin academic;
-    @Override
-    public void openDialog(String actionId, List<String> itemIds) {
-
-    }
 
     @Override
     public boolean isEnabled(String actionId, Class entityType, AccessMode mode, Object value) {

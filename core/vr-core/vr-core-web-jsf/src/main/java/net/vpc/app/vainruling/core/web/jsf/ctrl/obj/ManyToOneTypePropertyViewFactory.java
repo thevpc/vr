@@ -6,7 +6,7 @@
 package net.vpc.app.vainruling.core.web.jsf.ctrl.obj;
 
 import net.vpc.app.vainruling.core.service.util.UIConstants;
-import net.vpc.app.vainruling.core.web.obj.*;
+import net.vpc.app.vainruling.core.web.obj.ViewContext;
 import net.vpc.upa.Entity;
 import net.vpc.upa.Field;
 import net.vpc.upa.KeyType;

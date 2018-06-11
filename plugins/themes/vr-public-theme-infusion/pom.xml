@@ -5,7 +5,7 @@
     <groupId>net.vpc.app.vain-ruling.plugins.themes</groupId>
     <artifactId>vr-public-theme-infusion</artifactId>
     <name>net.vpc.app.vain-ruling.plugins.themes.vr-public-theme-infusion</name>
-    <version>1.13.4</version>
+    <version>1.13.5</version>
     <packaging>jar</packaging>
     <url>https://github.com/thevpc/vr/wiki</url>
 
@@ -20,7 +20,7 @@
         <vr-plugin.component-type>web</vr-plugin.component-type>
         <vr-plugin.name>Infusion Public Theme</vr-plugin.name>
         <vr-plugin.description>Infusion Theme Plugin (2015)</vr-plugin.description>
-        <version.vr-core-web-jsf>1.13.4</version.vr-core-web-jsf>
+        <version.vr-core-web-jsf>1.13.5</version.vr-core-web-jsf>
     </properties>
 
     <dependencies>

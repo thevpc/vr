@@ -18,27 +18,90 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 import java.util.logging.Level;
+import net.vpc.upa.Action;
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 import org.springframework.core.ParameterNameDiscoverer;
 
 class CorePluginBodyPluginManager extends CorePluginBody {
 
-    protected ParameterNameDiscoverer  discoverer= createParameterNameDiscoverer();
+    boolean alwaysInstall = false;
+    boolean alwaysNonCoherent = false;
+    protected ParameterNameDiscoverer discoverer = createParameterNameDiscoverer();
     private static final java.util.logging.Logger log = java.util.logging.Logger.getLogger(CorePluginBodyPluginManager.class.getName());
     private List<Plugin> plugins;
     private AppVersion appVersion;
     private Map<String, PluginComponent> components;
     private Map<String, PluginBundle> bundles;
 
+    public static class PluginData {
+
+        ArrayList<Plugin> toInstall = new ArrayList<>();
+        ArrayList<Plugin> toStart = new ArrayList<>();
+        HashSet<String> nonCoherent = new HashSet<>();
+    }
+
+    protected PluginData resolvePluginData() {
+        return getContext().getCacheService().getDomainCache().getProperty("PluginData", new Action<PluginData>() {
+            @Override
+            public PluginData run() {
+                return evaluatePluginData();
+            }
+        });
+    }
+
+    @Override
+    public void onInstall() {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        PluginData d = resolvePluginData();
+        Collections.sort(d.toInstall);
+        for (Plugin plugin : d.toInstall) {
+            if (alwaysInstall || !d.nonCoherent.contains(plugin.getId())) {
+                try {
+                    plugin.install();
+                } catch (Exception e) {
+                    d.nonCoherent.add(plugin.getId());
+                    log.log(Level.SEVERE, "Error Installing " + plugin.getId(), e);
+                    net.vpc.app.vainruling.core.service.model.AppVersion v = pu.findById(net.vpc.app.vainruling.core.service.model.AppVersion.class, plugin.getId());
+                    v.setCoherent(false);
+                    pu.merge(v);
+
+                }
+            }
+        }
+        for (Plugin plugin : d.toInstall) {
+            if (alwaysNonCoherent || !d.nonCoherent.contains(plugin.getId())) {
+                try {
+                    plugin.installDemo();
+                } catch (Exception e) {
+                    d.nonCoherent.add(plugin.getId());
+                    log.log(Level.SEVERE, "Error Installing Demo " + plugin.getId(), e);
+                    net.vpc.app.vainruling.core.service.model.AppVersion v = pu.findById(net.vpc.app.vainruling.core.service.model.AppVersion.class, plugin.getId());
+                    v.setCoherent(false);
+                    pu.merge(v);
+                }
+            }
+        }
+    }
+
     @Override
     public void onStart() {
-        for (PersistenceUnit pu : getPersistenceUnits()) {
-            pu.invokePrivileged(new VoidAction() {
-                @Override
-                public void run() {
-                    tryInstall();
-                }
-            });
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        PluginData d = resolvePluginData();
+        Collections.sort(d.toStart);
+        for (Plugin plugin : d.toStart) {
+//            i18n.register("i18n." + plugin.getId() + ".dictionary");
+//            i18n.register("i18n." + plugin.getId() + ".presentation");
+//            i18n.register("i18n." + plugin.getId() + ".service");
+            try {
+                plugin.start();
+            } catch (Exception e) {
+                d.nonCoherent.add(plugin.getId());
+                log.log(Level.SEVERE, "Error Starting " + plugin.getId(), e);
+                net.vpc.app.vainruling.core.service.model.AppVersion v = pu.findById(net.vpc.app.vainruling.core.service.model.AppVersion.class, plugin.getId());
+                v.setCoherent(false);
+                pu.merge(v);
+
+            }
         }
     }
 
@@ -46,12 +109,9 @@ class CorePluginBodyPluginManager extends CorePluginBody {
         return new ArrayList<>(UPA.getPersistenceGroup("").getPersistenceUnits());
     }
 
-    private void tryInstall() {
-        boolean alwaysInstall = false;
-        boolean alwaysNonCoherent = false;
+    private PluginData evaluatePluginData() {
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        ArrayList<Plugin> toInstall = new ArrayList<>();
-        ArrayList<Plugin> toStart = new ArrayList<>();
+        PluginData d = new PluginData();
         for (Plugin pp : getPlugins()) {
             String sver = pp.getInfo().getVersion();
             String pluginId = pp.getId();
@@ -66,7 +126,7 @@ class CorePluginBodyPluginManager extends CorePluginBody {
                     //ignore
                     ignore = true;
                     if (alwaysInstall) {
-                        toInstall.add(pp);
+                        d.toInstall.add(pp);
                     }
                 } else {
                     if (v == null) {
@@ -88,64 +148,22 @@ class CorePluginBodyPluginManager extends CorePluginBody {
                         v.setCoherent(true);
                         pu.merge(v);
                     }
-                    toInstall.add(pp);
+                    d.toInstall.add(pp);
                 }
             } else {
                 if (alwaysInstall) {
-                    toInstall.add(pp);
+                    d.toInstall.add(pp);
                 }
                 log.log(Level.INFO, "Plugin {0} is uptodate ({1})", new Object[]{pluginId, pp.getInfo().getVersion()});
             }
             if (!ignore) {
-                toStart.add(pp);
-            }
-        }
-        HashSet<String> nonCoherent = new HashSet<>();
-        Collections.sort(toInstall);
-        for (Plugin plugin : toInstall) {
-            if (alwaysInstall || !nonCoherent.contains(plugin.getId())) {
-                try {
-                    plugin.install();
-                } catch (Exception e) {
-                    nonCoherent.add(plugin.getId());
-                    log.log(Level.SEVERE, "Error Starting " + plugin.getId(), e);
-                    net.vpc.app.vainruling.core.service.model.AppVersion v = pu.findById(net.vpc.app.vainruling.core.service.model.AppVersion.class, plugin.getId());
-                    v.setCoherent(false);
-                    pu.merge(v);
-
-                }
-            }
-        }
-        for (Plugin plugin : toInstall) {
-            if (alwaysNonCoherent || !nonCoherent.contains(plugin.getId())) {
-                try {
-                    plugin.installDemo();
-                } catch (Exception e) {
-                    nonCoherent.add(plugin.getId());
-                    log.log(Level.SEVERE, "Error Starting " + plugin.getId(), e);
-                    net.vpc.app.vainruling.core.service.model.AppVersion v = pu.findById(net.vpc.app.vainruling.core.service.model.AppVersion.class, plugin.getId());
-                    v.setCoherent(false);
-                    pu.merge(v);
-                }
+                d.toStart.add(pp);
             }
         }
 
-        Collections.sort(toStart);
-        for (Plugin plugin : toStart) {
-//            i18n.register("i18n." + plugin.getId() + ".dictionary");
-//            i18n.register("i18n." + plugin.getId() + ".presentation");
-//            i18n.register("i18n." + plugin.getId() + ".service");
-            try {
-                plugin.start();
-            } catch (Exception e) {
-                nonCoherent.add(plugin.getId());
-                log.log(Level.SEVERE, "Error Starting " + plugin.getId(), e);
-                net.vpc.app.vainruling.core.service.model.AppVersion v = pu.findById(net.vpc.app.vainruling.core.service.model.AppVersion.class, plugin.getId());
-                v.setCoherent(false);
-                pu.merge(v);
-
-            }
-        }
+        Collections.sort(d.toInstall);
+        Collections.sort(d.toStart);
+        return d;
     }
 
     public PluginInfo getPluginInfo(String bundleId) {
@@ -200,7 +218,9 @@ class CorePluginBodyPluginManager extends CorePluginBody {
 
                 //reevaluate dependencies
                 //reevaluate versions
+                Map<String, PluginBundle> bundlesMap = new HashMap<>();
                 for (PluginBundle bundle : bundles.values()) {
+                    bundlesMap.put(bundle.getId(), bundle);
                     for (String depIdAndVer : bundle.getDependencies()) {
                         String depId = depIdAndVer;
                         if (depIdAndVer.contains(":")) {
@@ -216,12 +236,36 @@ class CorePluginBodyPluginManager extends CorePluginBody {
                         }
                     }
                 }
+
+                Map<String, Set<String>> cache = new HashMap<>();
+                for (PluginBundle bundle : bundles.values()) {
+                    Set<String> allDeps = resolveAllDependencies(bundle.getId(), bundlesMap, cache);
+                    bundle.setBundleDependencies(allDeps);
+                }
+
                 this.bundles = bundles;
                 this.components = components;
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    private Set<String> resolveAllDependencies(String id, Map<String, PluginBundle> bundlesMap, Map<String, Set<String>> cache) {
+        PluginBundle bundle = bundlesMap.get(id);
+        if (bundle == null) {
+            return Collections.EMPTY_SET;
+        }
+        Set<String> u = cache.get(bundle.getId());
+        if (u != null) {
+            return u;
+        }
+        HashSet<String> n = new HashSet<>(bundle.getBundleDependencies());
+        for (String id2 : bundle.getBundleDependencies()) {
+            n.addAll(resolveAllDependencies(id2, bundlesMap, cache));
+        }
+        cache.put(id, n);
+        return n;
     }
 
     public PluginComponent getPluginComponent(Class type) {
@@ -329,17 +373,17 @@ class CorePluginBodyPluginManager extends CorePluginBody {
                 sb.append("(");
                 boolean first = true;
                 Type[] genericParameterTypes = method.getGenericParameterTypes();
-                String[] parameterNames=discoverer.getParameterNames(method);
-                for (int i=0;i<genericParameterTypes.length;i++) {
-                    Type t =genericParameterTypes[i];
-                    String name=parameterNames==null?null:parameterNames[i];
+                String[] parameterNames = discoverer.getParameterNames(method);
+                for (int i = 0; i < genericParameterTypes.length; i++) {
+                    Type t = genericParameterTypes[i];
+                    String name = parameterNames == null ? null : parameterNames[i];
                     if (first) {
                         first = false;
                     } else {
                         sb.append(", ");
                     }
                     sb.append(typeToString(t));
-                    if(name!=null){
+                    if (name != null) {
                         sb.append(" ");
                         sb.append(name);
                     }

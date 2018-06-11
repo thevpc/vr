@@ -17,7 +17,7 @@ import java.sql.Timestamp;
  * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "this.name")
-@Path("Contact")
+@Path("/Repository/General")
 @Properties(
         {
                 @Property(name = "ui.auto-filter.country", value = "{expr='this.country',order=1}"),

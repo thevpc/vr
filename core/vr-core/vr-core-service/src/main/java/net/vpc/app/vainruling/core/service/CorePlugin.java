@@ -76,7 +76,7 @@ public class CorePlugin {
     private final CorePluginBodyDAOManager bodyDaoManager = new CorePluginBodyDAOManager();
     private final CorePluginBodyContentManager bodyContentManager = new CorePluginBodyContentManager();
     private final CorePluginBodyConfig bodyConfig = new CorePluginBodyConfig();
-    private final CorePluginBody[] bodies = new CorePluginBody[]{bodyFileSystem, bodyConfig, bodySecurityAuth, bodySecurityManager, bodyDaoManager, bodyContentManager, bodyPluginManager};
+    private final CorePluginBody[] bodies = new CorePluginBody[]{bodyFileSystem, bodyConfig, bodySecurityAuth, bodySecurityManager, bodyDaoManager, bodyContentManager};
     private CorePluginBodyContext bodyContext;
 
     public static CorePlugin get() {
@@ -103,21 +103,37 @@ public class CorePlugin {
 //            ex.printStackTrace();
 //        }
         bodyContext = new CorePluginBodyContext(this, cacheService, trace);
-        for (PersistenceUnit persistenceUnit : UPA.getPersistenceGroup().getPersistenceUnits()) {
+        List<PersistenceUnit> persistenceUnits = UPA.getPersistenceGroup().getPersistenceUnits();
+        bodyPluginManager.setContext(bodyContext);
+        for (CorePluginBody body : bodies) {
+            body.setContext(bodyContext);
+        }
+        for (PersistenceUnit persistenceUnit : persistenceUnits) {
             persistenceUnit.invokePrivileged(new VoidAction() {
                 @Override
                 public void run() {
-                    for (CorePluginBody body : bodies) {
-                        body.setContext(bodyContext);
-                    }
-                    for (CorePluginBody body : bodies) {
-                        body.install();
-                    }
-                    for (CorePluginBody body : bodies) {
-                        body.start();
-                    }
+                    bodyPluginManager.install();
+
+//                    for (CorePluginBody body : bodies) {
+//                        body.install();
+//                    }
+                    bodyPluginManager.onStart();
                 }
             });
+        }
+    }
+
+    @Install
+    private void onInstall() {
+        for (CorePluginBody body : bodies) {
+            body.install();
+        }
+    }
+
+    @Start
+    private void onStart() {
+        for (CorePluginBody body : bodies) {
+            body.start();
         }
     }
 
@@ -1013,7 +1029,7 @@ public class CorePlugin {
         String domain = null;
         if (login.contains("@")) {
             int i = login.indexOf('@');
-            domain = i==login.length()-1?"":login.substring(i + 1);
+            domain = i == login.length() - 1 ? "" : login.substring(i + 1);
             login = login.substring(0, i);
         }
         if (StringUtils.isEmpty(domain)) {

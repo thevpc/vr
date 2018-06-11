@@ -1,6 +1,5 @@
 package net.vpc.app.vainruling.core.service.cache;
 
-import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.common.util.MapList;
 import net.vpc.upa.Action;

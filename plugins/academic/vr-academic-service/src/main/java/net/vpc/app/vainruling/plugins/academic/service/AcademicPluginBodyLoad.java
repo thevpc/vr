@@ -12,7 +12,6 @@ import net.vpc.app.vainruling.plugins.academic.service.model.current.*;
 import net.vpc.app.vainruling.plugins.academic.service.model.history.AcademicHistTeacherDegree;
 import net.vpc.app.vainruling.plugins.academic.service.stat.*;
 import net.vpc.common.util.*;
-import net.vpc.common.util.mon.EnhancedProgressMonitor;
 import net.vpc.common.util.mon.ProgressMonitor;
 import net.vpc.common.util.mon.ProgressMonitorFactory;
 import net.vpc.upa.PersistenceUnit;
@@ -537,7 +536,7 @@ public class AcademicPluginBodyLoad extends AcademicPluginBody {
 //                includeIntents,
 //                deviationConfig,
 //                cache);
-        EnhancedProgressMonitor monitor = ProgressMonitorFactory.enhance(mon);
+        ProgressMonitor monitor = ProgressMonitorFactory.nonnull(mon);
 
         MapList<Integer, TeacherPeriodStat> all = evalTeacherStatList(periodId, null, courseAssignmentFilter, deviationConfig, monitor);
         TeacherPeriodStat teacherPeriodStat = all.getByKey(teacherId);
@@ -750,9 +749,9 @@ public class AcademicPluginBodyLoad extends AcademicPluginBody {
 
     public GlobalStat evalGlobalStat(int periodId, TeacherPeriodFilter teacherFilter, CourseAssignmentFilter filter, DeviationConfig deviationConfig, ProgressMonitor mon) {
         AcademicPluginSecurity.requireTeacherOrManager(-1);
-        EnhancedProgressMonitor monitor = ProgressMonitorFactory.enhance(mon);
+        ProgressMonitor monitor = ProgressMonitorFactory.nonnull(mon);
         GlobalStat s = new GlobalStat();
-        EnhancedProgressMonitor[] mons = monitor.split(new double[]{3, 1, 1});
+        ProgressMonitor[] mons = monitor.split(new double[]{3, 1, 1});
         MapList<Integer, TeacherPeriodStat> ts = evalTeacherStatList(periodId, teacherFilter, filter, deviationConfig, mons[0]);
         int i = 0;
         int max = ts.size();
@@ -1092,7 +1091,7 @@ public class AcademicPluginBodyLoad extends AcademicPluginBody {
 
     public MapList<Integer, TeacherPeriodStat> evalTeacherStatList(final int periodId, TeacherPeriodFilter teacherFilter, CourseAssignmentFilter courseAssignmentFilter, DeviationConfig deviationConfig, ProgressMonitor mon) {
         AcademicPluginSecurity.requireTeacherOrManager(-1);
-        EnhancedProgressMonitor monitor = ProgressMonitorFactory.enhance(mon);
+        ProgressMonitor monitor = ProgressMonitorFactory.nonnull(mon);
         Chronometer ch = new Chronometer();
 
         TeacherIdByTeacherPeriodComparator teacherIdByTeacherPeriodComparator = new TeacherIdByTeacherPeriodComparator(getContext().getPlugin(), periodId);
@@ -1116,7 +1115,7 @@ public class AcademicPluginBodyLoad extends AcademicPluginBody {
         if (groups.size() == 0) {
             groups = DEFAULT_DEVIATION_GROUPS;
         }
-        EnhancedProgressMonitor[] mons = monitor.split(3);
+        ProgressMonitor[] mons = monitor.split(3);
 
         TeacherValuePopulation emptyPopulation = new TeacherValuePopulation(null, null, null);
         Map<String, TeacherValuePopulation> lists = new HashMap<String, TeacherValuePopulation>();
@@ -1183,7 +1182,7 @@ public class AcademicPluginBodyLoad extends AcademicPluginBody {
     }
 
     private void evalTeacherSemesterStatListDeviation(List<TeacherSemesterStat> list, DeviationConfig deviationConfig, ProgressMonitor mon) {
-        EnhancedProgressMonitor monitor = ProgressMonitorFactory.enhance(mon);
+        ProgressMonitor monitor = ProgressMonitorFactory.nonnull(mon);
         Map<String, TeacherValuePopulation> lists = new HashMap<String, TeacherValuePopulation>();
         Set<DeviationGroup> groups = deviationConfig.getGroups();
         if (groups.size() == 0) {
@@ -1237,8 +1236,8 @@ public class AcademicPluginBodyLoad extends AcademicPluginBody {
     public List<TeacherSemesterStat> evalTeacherSemesterStatList(int periodId, Integer semesterId, TeacherPeriodFilter teacherFilter, CourseAssignmentFilter filter, DeviationConfig deviationConfig, ProgressMonitor mon) {
         AcademicPluginSecurity.requireTeacherOrManager(-1);
         List<TeacherSemesterStat> all = new ArrayList<>();
-        EnhancedProgressMonitor monitor = ProgressMonitorFactory.enhance(mon);
-        EnhancedProgressMonitor[] mons = monitor.split(new double[]{4, 1, 2});
+        ProgressMonitor monitor = ProgressMonitorFactory.nonnull(mon);
+        ProgressMonitor[] mons = monitor.split(new double[]{4, 1, 2});
         MapList<Integer, TeacherPeriodStat> teacherPeriodStats = evalTeacherStatList(periodId, teacherFilter,
                 new CourseAssignmentFilterAnd().and(filter).and(new DefaultCourseAssignmentFilter().addAcceptedSemester(semesterId)),
                 deviationConfig, mons[0]);

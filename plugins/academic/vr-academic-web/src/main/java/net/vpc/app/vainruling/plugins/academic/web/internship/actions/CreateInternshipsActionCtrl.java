@@ -7,8 +7,9 @@ package net.vpc.app.vainruling.plugins.academic.web.internship.actions;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.web.jsf.ctrl.obj.PropertyViewManager;
+import net.vpc.app.vainruling.core.web.jsf.DialogBuilder;
 import net.vpc.app.vainruling.core.web.jsf.ctrl.obj.FieldPropertyView;
+import net.vpc.app.vainruling.core.web.jsf.ctrl.obj.PropertyViewManager;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.internship.config.AcademicInternshipStatus;
 import net.vpc.app.vainruling.plugins.academic.service.model.internship.config.AcademicInternshipVariant;
@@ -20,10 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Logger;
-import org.primefaces.PrimeFaces;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -44,12 +42,11 @@ public class CreateInternshipsActionCtrl {
 
         initModel();
 
-        Map<String, Object> options = new HashMap<String, Object>();
-        options.put("resizable", false);
-        options.put("draggable", true);
-        options.put("modal", true);
-        PrimeFaces.current().dialog().openDynamic("/modules/academic/internship/create-internships-dialog", options, null);
-
+        new DialogBuilder("/modules/academic/internship/create-internships-dialog")
+                .setResizable(true)
+                .setDraggable(true)
+                .setModal(true)
+                .open();
     }
 
     private void initModel(){

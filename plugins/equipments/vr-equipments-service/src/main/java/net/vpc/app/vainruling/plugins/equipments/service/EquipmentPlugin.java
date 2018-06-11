@@ -325,7 +325,7 @@ public class EquipmentPlugin {
         return false;
     }
 
-    public boolean borrowBackEquipment(int id, Integer actor) {
+    public boolean borrowBackEquipment(int id, Integer actor,double qty) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
 //        Equipment eq = findEquipment(id);
         EquipmentStatusLog elog = findEquipmentLatestLog(id);
@@ -342,7 +342,7 @@ public class EquipmentPlugin {
             elog2.setActor(actorInstance);
             elog2.setStartDate(new Timestamp(System.currentTimeMillis()));
             elog2.setType(EquipmentStatusType.AVAILABLE);
-            elog2.setQuantity(Math.abs(elog.getQuantity()));
+            elog2.setQuantity(Math.abs(Math.max(elog.getQuantity(),Math.abs(qty))));
             elog2.setResponsible(null);
             pu.persist(elog2);
             return true;

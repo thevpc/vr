@@ -7,9 +7,9 @@ package net.vpc.app.vainruling.plugins.equipments.web;
 
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.obj.EntityAction;
-import net.vpc.app.vainruling.core.web.obj.ActionDialog;
 import net.vpc.app.vainruling.core.web.obj.ActionDialogResult;
 import net.vpc.app.vainruling.core.web.obj.ActionDialogResultPostProcess;
+import net.vpc.app.vainruling.core.web.obj.EntityViewActionInvoke;
 import net.vpc.app.vainruling.plugins.equipments.service.EquipmentPlugin;
 import net.vpc.app.vainruling.plugins.equipments.service.model.Equipment;
 import net.vpc.upa.*;
@@ -20,15 +20,9 @@ import java.util.List;
  * @author taha.bensalah@gmail.com
  */
 @EntityAction(entityType = Equipment.class,
-        actionLabel = "div", actionStyle = "fa-calculator",
-        dialog = false
+        actionLabel = "div", actionStyle = "fa-calculator"
 )
-public class SplitEquipmentQtyAction implements ActionDialog {
-
-    @Override
-    public void openDialog(String actionId, List<String> itemIds) {
-        throw new IllegalArgumentException("Unsupported");
-    }
+public class SplitEquipmentQtyAction implements EntityViewActionInvoke {
 
     @Override
     public boolean isEnabled(String actionId, Class entityType, AccessMode mode, Object value) {

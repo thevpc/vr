@@ -5,7 +5,6 @@
  */
 package net.vpc.app.vainruling.core.web.jsf.ctrl;
 
-import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.CorePluginSecurity;
 import net.vpc.app.vainruling.core.service.VrApp;
@@ -15,14 +14,17 @@ import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.obj.*;
 import net.vpc.app.vainruling.core.service.util.*;
 import net.vpc.app.vainruling.core.web.*;
-import net.vpc.app.vainruling.core.web.jsf.ctrl.obj.*;
+import net.vpc.app.vainruling.core.web.jsf.DialogBuilder;
 import net.vpc.app.vainruling.core.web.jsf.Vr;
+import net.vpc.app.vainruling.core.web.jsf.ctrl.obj.*;
 import net.vpc.app.vainruling.core.web.menu.BreadcrumbItem;
 import net.vpc.app.vainruling.core.web.menu.VrMenuManager;
 import net.vpc.app.vainruling.core.web.obj.*;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.Convert;
+import net.vpc.common.util.DoubleParserConfig;
+import net.vpc.common.util.IntegerParserConfig;
 import net.vpc.common.util.PlatformTypes;
 import net.vpc.upa.*;
 import net.vpc.upa.Package;
@@ -30,7 +32,6 @@ import net.vpc.upa.expressions.Expression;
 import net.vpc.upa.expressions.Literal;
 import net.vpc.upa.filters.FieldFilters;
 import net.vpc.upa.types.*;
-import org.primefaces.PrimeFaces;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.extensions.model.dynaform.DynaFormControl;
@@ -38,6 +39,7 @@ import org.primefaces.extensions.model.dynaform.DynaFormLabel;
 import org.primefaces.extensions.model.dynaform.DynaFormModel;
 import org.primefaces.extensions.model.dynaform.DynaFormRow;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 
 import javax.el.ELContext;
 import javax.el.ValueExpression;
@@ -47,8 +49,6 @@ import javax.faces.context.FacesContext;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.springframework.stereotype.Controller;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -549,6 +549,9 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
         getModel().setFieldSelection(null);
         try {
             ObjConfig cfg = VrUtils.parseJSONObject(cmd, ObjConfig.class);
+            if (cfg == null) {
+                cfg = new ObjConfig();
+            }
             getModel().setConfig(cfg);
             getModel().setCmd(cmd);
             setEntityName(cfg.entity);
@@ -904,10 +907,32 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
         }
     }
 
+    public List<ObjFormAction> getActionsByType(String... types) {
+        HashSet<String> acceptable = new HashSet<>(Arrays.asList(types));
+        List<ObjFormAction> ok = new ArrayList<>();
+        for (ObjFormAction action : getModel().getActions()) {
+            if (acceptable.contains(action.getType())) {
+                ok.add(action);
+            }
+        }
+        return ok;
+    }
+
     public void currentModelToView() {
         List<ObjFormAction> act = new ArrayList<>();
         for (ActionDialogAdapter a : actionDialogManager.findActionsByEntity(getModel().getEntityName())) {
-            act.add(new ObjFormAction(a.getLabel(), a.getStyle(), a.getId()));
+            if (a.isEnabled(getEntity().getEntityType(), getModel().getMode(), getModel().getCurrentDocument())) {
+                act.add(new ObjFormAction(
+                        a.isDialog() ? "dialog"
+                        : a.isInvoke() ? "invoke"
+                        : a.isGoto() ? "goto"
+                        : "unknown",
+                        a.getLabel(),
+                        a.getStyle(),
+                        a.getId(),
+                        a.getCommand(getSelectedIdStrings())
+                ));
+            }
         }
 //        for (ActionInfo a : objService.getEntityActionList(getModel().getEntityName(), getModel().getCurrentObj())) {
 //            act.add(new ObjFormAction(a.getLabel(), a.getStyle(), a.getId()));
@@ -1540,18 +1565,18 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
 
     public void fireEventClearSelection() {
         onClearFieldSelection();
-        PrimeFaces.current().dialog().closeDynamic(new DialogResult(null, null));
+        DialogBuilder.closeCurrent();
     }
 
     public void fireEventSelectionValidated() {
-        PrimeFaces.current().dialog().closeDynamic(new DialogResult(null, null));
+        DialogBuilder.closeCurrent();
     }
 
     public void fireEventSearchClosed() {
 //        RequestContext ctx = RequestContext.getCurrentInstance();
         //Object obj
 //        ctx.closeDialog(new DialogResult(null, null));
-        PrimeFaces.current().dialog().closeDynamic(new DialogResult(null, null));
+        DialogBuilder.closeCurrent();
 //        String[] ids=new String[]{"listForm:listTable"};
 //        ctx.update(Arrays.asList(ids));
 //        ctx.execute("vpcdoit();");
@@ -1566,12 +1591,11 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
             newSearch = new ObjSimpleSearch();
         }
         getModel().setSearch(newSearch);
-        Map<String, Object> options = new HashMap<String, Object>();
-        options.put("resizable", false);
-        options.put("draggable", true);
-        options.put("modal", true);
-//        RequestContext.getCurrentInstance().openDialog("/modules/obj/obj-simple-search-dialog", options, null);
-        PrimeFaces.current().dialog().openDynamic("/modules/obj/obj-simple-search-dialog", options, null);
+        new DialogBuilder("/modules/obj/obj-simple-search-dialog")
+                .setResizable(true)
+                .setDraggable(true)
+                .setModal(true)
+                .open();
     }
 
     public void onSimpleFieldSelection() {
@@ -1581,13 +1605,12 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
         }
         getModel().setFieldSelection(oldSearch);
         oldSearch.prepare(getEntity(), getModel().getMode());
-        Map<String, Object> options = new HashMap<String, Object>();
-        options.put("resizable", false);
-        options.put("draggable", true);
-        options.put("modal", true);
-        options.put("height", 500);
-//        RequestContext.getCurrentInstance().openDialog("/modules/obj/obj-simple-field-sel-dialog", options, null);
-        PrimeFaces.current().dialog().openDynamic("/modules/obj/obj-simple-field-sel-dialog", options, null);
+        new DialogBuilder("/modules/obj/obj-simple-field-sel-dialog")
+                .setResizable(true)
+                .setDraggable(true)
+                .setModal(true)
+                .setHeight(500)
+                .open();
     }
 
     public void onDoNothing() {
@@ -1771,11 +1794,32 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
                     currentViewToModel();
                     ed.openDialog(getSelectedIdStrings());
                     return;
-                } else {
+                } else if (ed.isInvoke()) {
                     try {
+                        PActionParam[] params = getModel().getParams();
+                        Object[] args = new Object[params.length];
+                        for (int i = 0; i < params.length; i++) {
+                            switch (params[i].getType()) {
+                                case STRING: {
+                                    args[i] = params[i].getSvalue();
+                                    break;
+                                }
+                                case INT: {
+                                    args[i] = Convert.toInt(params[i].getSvalue(), IntegerParserConfig.STRICT);
+                                    break;
+                                }
+                                case DOUBLE: {
+                                    args[i] = Convert.toDouble(params[i].getSvalue(), DoubleParserConfig.STRICT);
+                                    break;
+                                }
+                                default: {
+                                    throw new IllegalArgumentException("Unsupported");
+                                }
+                            }
+                        }
                         currentViewToModel();
                         Object c = getModel().getCurrentDocument();
-                        ActionDialogResult rr = ed.invoke(getEntity().getEntityType(), c, getSelectedIdStrings(), null);
+                        ActionDialogResult rr = ed.invoke(getEntity().getEntityType(), c, getSelectedIdStrings(), args);
                         if (rr != null) {
                             ActionDialogResultPostProcess r = rr.getType();
                             String message = rr.getMessage();
@@ -1820,6 +1864,22 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
         fireEventSearchClosed();
     }
 
+    public List<ObjFormAction> getActionsGoto() {
+        return getActionsByType("goto");
+    }
+
+    public List<ObjFormAction> getActionsDialogOrInvoke() {
+        return getActionsByType("dialog", "invoke");
+    }
+
+    public boolean isActionDialog(String actionId) {
+        if (actionId != null) {
+            ActionDialogAdapter ed = VrApp.getBean(ActionDialogManager.class).findAction(actionId);
+            return ed.isDialog() || ed.isInvoke();
+        }
+        return false;
+    }
+
     public void openActionDialog(String actionId) {
         if (actionId != null) {
             ActionDialogAdapter ed = VrApp.getBean(ActionDialogManager.class).findAction(actionId);
@@ -1829,11 +1889,15 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
                     getModel().setActionId(actionId);
                     getModel().setConfirmMessage("Etes vous sur de vouloir continuer?");
                     getModel().setOperationMessage(ed.getActionMessage());
-                    Map<String, Object> options = new HashMap<String, Object>();
-                    options.put("resizable", false);
-                    options.put("draggable", true);
-                    options.put("modal", true);
-                    PrimeFaces.current().dialog().openDynamic("/modules/obj/profile-open-action-dialog", options, null);
+                    getModel().setParams(ed.getParams());
+
+                    new DialogBuilder("/modules/obj/obj-confirm-dialog")
+                            .setResizable(true)
+                            .setDraggable(true)
+                            .setModal(true)
+                            .setHeight(120 + Math.min(5, getModel().getParams().length) * 40)
+                            .setContentHeight("100%")
+                            .open();
                 } else {
                     getModel().setActionId(actionId);
                     proceedOpenActionDialog();
@@ -1946,6 +2010,40 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
         }
     }
 
+    public class PActionParam {
+
+        private ActionParam param;
+        private String svalue;
+        private int index;
+
+        public PActionParam(int index, ActionParam param) {
+            this.param = param;
+            this.index = index;
+            Object v = this.param.getInitialValue();
+            svalue = v == null ? "" : v.toString();
+        }
+
+        public String getName() {
+            return param.getName();
+        }
+
+        public ParamType getType() {
+            return param.getType();
+        }
+
+        public String getSvalue() {
+            return svalue;
+        }
+
+        public void setSvalue(String svalues) {
+            this.svalue = svalues;
+        }
+
+        public int getIndex() {
+            return index;
+        }
+    }
+
     public class PModel extends Model<ObjRow> {
 
         private String confirmMessage;
@@ -1956,9 +2054,24 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
         private ObjConfig config;
         private Set<String> disabledFields = new HashSet<String>();
         private String searchText;
+        private PActionParam[] params = new PActionParam[0];
 
         public PModel() {
             setCurrent(null);
+        }
+
+        public void setParams(ActionParam[] p) {
+            if (p == null) {
+                p = new ActionParam[0];
+            }
+            params = new PActionParam[p.length];
+            for (int i = 0; i < params.length; i++) {
+                params[i] = new PActionParam(i, p[i]);
+            }
+        }
+
+        public PActionParam[] getParams() {
+            return params;
         }
 
         public String getOperationMessage() {

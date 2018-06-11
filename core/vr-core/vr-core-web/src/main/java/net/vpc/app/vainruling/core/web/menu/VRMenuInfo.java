@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 import net.vpc.app.vainruling.core.web.VrActionInfo;
 import net.vpc.app.vainruling.core.web.VrActionEnabler;
 import net.vpc.app.vainruling.core.web.util.VrWebHelper;
+import net.vpc.common.strings.StringUtils;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -106,7 +107,7 @@ public class VRMenuInfo implements VrActionInfo{
             context = context + "/";
         }
         String p = context + "/p/" + type;
-        if (!net.vpc.common.strings.StringUtils.isEmpty(command)) {
+        if (!StringUtils.isEmpty(command)) {
             try {
                 p += "?a=" + URLEncoder.encode(command, "UTF-8");
             } catch (UnsupportedEncodingException ex) {

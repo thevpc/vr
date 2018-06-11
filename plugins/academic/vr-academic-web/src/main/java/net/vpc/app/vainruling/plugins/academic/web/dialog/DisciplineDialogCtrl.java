@@ -6,6 +6,7 @@
 package net.vpc.app.vainruling.plugins.academic.web.dialog;
 
 import net.vpc.app.vainruling.core.service.util.VrUtils;
+import net.vpc.app.vainruling.core.web.jsf.DialogBuilder;
 import net.vpc.app.vainruling.core.web.obj.DialogResult;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicDiscipline;
@@ -21,7 +22,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.primefaces.PrimeFaces;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -43,13 +43,11 @@ public class DisciplineDialogCtrl {
         getModel().setConfig(config);
         initContent();
 
-        Map<String, Object> options = new HashMap<String, Object>();
-        options.put("resizable", false);
-        options.put("draggable", true);
-        options.put("modal", true);
-
-        PrimeFaces.current().dialog().openDynamic("/modules/academic/dialog/discipline-dialog", options, null);
-
+        new DialogBuilder("/modules/academic/dialog/discipline-dialog")
+                .setResizable(true)
+                .setDraggable(true)
+                .setModal(true)
+                .open();
     }
 
     private void initContent() {

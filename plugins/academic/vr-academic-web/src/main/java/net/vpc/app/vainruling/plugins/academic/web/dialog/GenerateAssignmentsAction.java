@@ -7,9 +7,7 @@ package net.vpc.app.vainruling.plugins.academic.web.dialog;
 
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.obj.EntityAction;
-import net.vpc.app.vainruling.core.web.obj.ActionDialog;
-import net.vpc.app.vainruling.core.web.obj.ActionDialogResult;
-import net.vpc.app.vainruling.core.web.obj.ActionDialogResultPostProcess;
+import net.vpc.app.vainruling.core.web.obj.*;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseAssignment;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCoursePlan;
@@ -26,15 +24,9 @@ import java.util.List;
  */
 @EntityAction(entityType = AcademicCoursePlan.class,
         actionLabel = "chrg", actionStyle = "fa-envelope-o",
-        dialog = false,
         confirm = true
 )
-public class GenerateAssignmentsAction implements ActionDialog {
-
-    @Override
-    public void openDialog(String actionId, List<String> itemIds) {
-        VrApp.getBean(UpdateStudentClassActionCtrl.class).openDialog(itemIds);
-    }
+public class GenerateAssignmentsAction implements EntityViewActionInvoke {
 
     @Override
     public boolean isEnabled(String actionId, Class entityType, AccessMode mode, Object value) {

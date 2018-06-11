@@ -76,14 +76,20 @@ public class DocumentsUtils {
         if (StringUtils.isEmpty(searchString)) {
             return loadFiles(curr);
         }
-        VFileFilter fileFilter = new VFileFilter() {
-            Pattern p = Pattern.compile(wildcardToRegex(searchString));
-
-            @Override
-            public boolean accept(VFile pathname) {
-                return p.matcher(pathname.getName()).matches();
-            }
-        };
+        VFileFilter fileFilter=null;
+        if(searchString.startsWith("\"")
+                && searchString.endsWith("\"")
+                && searchString.length()>1
+                && !searchString.substring(1,searchString.length()-1).contains("\"")
+                ){
+            searchString="*"+searchString+"*";
+            fileFilter = new ExactFileFilter(searchString.substring(1,searchString.length()-1));
+        }else if(!searchString.contains("*")){
+            searchString="*"+searchString+"*";
+            fileFilter = new WildcardFileFilter(searchString);
+        }else{
+            fileFilter = new WildcardFileFilter(searchString);
+        }
         List<VFileInfo> result = new ArrayList<>();
         Stack<VFile> all = new Stack<>();
         all.push(curr);
@@ -131,7 +137,7 @@ public class DocumentsUtils {
                     break;
                 }
                 case '?': {
-                    sb.append("[a-zA-Z_0-9$.]");
+                    sb.append("[.]");
                     break;
                 }
                 case '*': {
@@ -243,4 +249,28 @@ public class DocumentsUtils {
     }
 
 
+    private static class WildcardFileFilter implements VFileFilter {
+        private Pattern p;
+
+        public WildcardFileFilter(String str) {
+            p = Pattern.compile(wildcardToRegex(net.vpc.common.strings.StringUtils.normalize(str)));
+        }
+
+        @Override
+        public boolean accept(VFile pathname) {
+            return p.matcher(net.vpc.common.strings.StringUtils.normalize(pathname.getName())).matches();
+        }
+    }
+    private static class ExactFileFilter implements VFileFilter {
+        private String name;
+
+        public ExactFileFilter(String str) {
+            this.name=str;
+        }
+
+        @Override
+        public boolean accept(VFile pathname) {
+            return name.equals(pathname.getName());
+        }
+    }
 }

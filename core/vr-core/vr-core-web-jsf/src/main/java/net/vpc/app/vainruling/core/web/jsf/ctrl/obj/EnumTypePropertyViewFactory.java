@@ -7,9 +7,9 @@ package net.vpc.app.vainruling.core.web.jsf.ctrl.obj;
 
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
-import net.vpc.app.vainruling.core.web.jsf.ctrl.ObjCtrl;
-import net.vpc.app.vainruling.core.web.obj.*;
 import net.vpc.app.vainruling.core.web.jsf.VrJsf;
+import net.vpc.app.vainruling.core.web.jsf.ctrl.ObjCtrl;
+import net.vpc.app.vainruling.core.web.obj.ViewContext;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.upa.Field;
 import net.vpc.upa.types.DataType;

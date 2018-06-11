@@ -5,7 +5,6 @@
  */
 package net.vpc.app.vainruling.core.web.jsf.ctrl;
 
-import com.sun.istack.logging.Logger;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.PlatformSession;
 import net.vpc.app.vainruling.core.service.VrApp;
@@ -13,21 +12,20 @@ import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.security.*;
 import net.vpc.app.vainruling.core.web.HttpPlatformSession;
 import net.vpc.app.vainruling.core.web.VrController;
+import net.vpc.app.vainruling.core.web.jsf.Vr;
 import net.vpc.app.vainruling.core.web.util.VrWebHelper;
 import net.vpc.common.jsf.FacesUtils;
-import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.Action;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.UPA;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import net.vpc.app.vainruling.core.web.jsf.Vr;
-import org.springframework.stereotype.Controller;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -172,7 +170,11 @@ public class LoginCtrl {
         if (impersonating) {
             return Vr.get().gotoPage("welcome", "");
         }
-        FacesUtils.invalidateSession();
+        try {
+            FacesUtils.invalidateSession();
+        }catch (Exception ex){
+            //ignore...
+        }
         return "/index.xhtml?faces-redirect=true";
 
     }

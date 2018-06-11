@@ -7,9 +7,9 @@ package net.vpc.app.vainruling.core.web.jsf.ctrl.dialog;
 
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
+import net.vpc.app.vainruling.core.web.jsf.ctrl.obj.FieldPropertyView;
 import net.vpc.app.vainruling.core.web.jsf.ctrl.obj.PropertyView;
 import net.vpc.app.vainruling.core.web.jsf.ctrl.obj.PropertyViewDialog;
-import net.vpc.app.vainruling.core.web.jsf.ctrl.obj.FieldPropertyView;
 import org.springframework.stereotype.Component;
 
 /**

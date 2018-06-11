@@ -13,6 +13,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * Marks a class that implements a derivative of EntityViewAction 
+ * EntityViewActionDialog
+ * EntityViewActionInvoke
  * @author taha.bensalah@gmail.com
  */
 @Target({ElementType.TYPE})
@@ -23,8 +26,6 @@ public @interface EntityAction {
     Class entityType() default Void.class;
 
     String actionName() default "";
-
-    boolean dialog();
 
     boolean confirm() default false;
 

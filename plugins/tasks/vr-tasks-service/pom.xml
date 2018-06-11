@@ -5,7 +5,7 @@
     <groupId>net.vpc.app.vain-ruling.plugins.tasks</groupId>
     <artifactId>vr-tasks-service</artifactId>
     <name>net.vpc.app.vain-ruling.plugins.tasks.vr-tasks-service</name>
-    <version>1.13.4</version>
+    <version>1.13.5</version>
     <packaging>jar</packaging>
     <url>https://github.com/thevpc/vr/wiki</url>
 
@@ -20,7 +20,7 @@
         <vr-plugin.component-type>service</vr-plugin.component-type>
         <vr-plugin.name>Tasks</vr-plugin.name>
         <vr-plugin.description>Tasks Tracking plugin</vr-plugin.description>
-        <version.vr-core-service>1.13.4</version.vr-core-service>
+        <version.vr-core-service>1.13.5</version.vr-core-service>
     </properties>
 
     <dependencies>

@@ -11,7 +11,7 @@ import net.vpc.upa.config.*;
  * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "this.name")
-@Path("Admin/Config")
+@Path("/Repository/General")
 public class AppCivility {
 
     @Path("Main")

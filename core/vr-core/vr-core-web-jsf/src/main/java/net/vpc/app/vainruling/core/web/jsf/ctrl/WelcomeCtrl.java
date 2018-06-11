@@ -8,8 +8,6 @@ package net.vpc.app.vainruling.core.web.jsf.ctrl;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.VrController;
-import net.vpc.app.vainruling.core.web.VrControllerInfo;
-import net.vpc.app.vainruling.core.web.VrControllerInfoResolver;
 import net.vpc.app.vainruling.core.web.menu.VrMenuManager;
 import org.springframework.stereotype.Controller;
 

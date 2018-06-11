@@ -8,7 +8,6 @@ package net.vpc.app.vainruling.core.web.obj;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.obj.EntityAction;
 import net.vpc.app.vainruling.core.service.util.PlatformReflector;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -49,15 +48,15 @@ public class ActionDialogManager {
         if (byActionName == null) {
             byActionName = new HashMap<>();
             for (Object o : VrApp.getBeansMapForAnnotations(EntityAction.class).values()) {
-                if (o instanceof ActionDialog) {
-                    ActionDialog a = (ActionDialog) o;
+                if (o instanceof EntityViewAction) {
+                    EntityViewAction a = (EntityViewAction) o;
                     ActionDialogAdapter aa = new ActionDialogAdapter(a);
                     if (byActionName.containsKey(aa.getId())) {
                         throw new IllegalArgumentException("Ambiguous name " + aa.getId());
                     }
                     byActionName.put(aa.getId(), aa);
                 } else {
-                    throw new IllegalArgumentException(PlatformReflector.getTargetClass(o) + " must implement " + ActionDialog.class);
+                    throw new IllegalArgumentException(PlatformReflector.getTargetClass(o) + " must implement " + EntityViewAction.class);
                 }
             }
         }

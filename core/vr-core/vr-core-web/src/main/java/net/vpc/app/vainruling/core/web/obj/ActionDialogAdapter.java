@@ -13,6 +13,7 @@ import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.UPA;
 
 import java.util.List;
+
 import net.vpc.app.vainruling.core.service.util.I18n;
 
 /**
@@ -20,21 +21,25 @@ import net.vpc.app.vainruling.core.service.util.I18n;
  */
 public class ActionDialogAdapter {
 
-    private final ActionDialog instance;
-    Class entityType;
-    boolean dialog;
-    boolean confirm;
-    String actionName;
-    String actionMessage;
-    String actionTitle;
-    String label;
-    String style;
+    private final EntityViewAction instance;
+    private Class entityType;
+    private boolean confirm;
+    private String actionName;
+    private String actionMessage;
+    private String actionTitle;
+    private String label;
+    private String style;
 
-    public ActionDialogAdapter(ActionDialog instance) {
+    public ActionDialogAdapter(EntityViewAction instance) {
         this.instance = instance;
         EntityAction a = (EntityAction) PlatformReflector.getTargetClass(instance).getAnnotation(EntityAction.class);
         entityType = a.entityType();
-        dialog = a.dialog();
+        if (!(instance instanceof EntityViewActionDialog) 
+                && !(instance instanceof EntityViewActionInvoke)
+                && !(instance instanceof EntityViewActionGoto)
+                ) {
+            throw new IllegalArgumentException("Unexpected");
+        }
         confirm = a.confirm();
         actionName = a.actionName();
         style = a.actionLabel();
@@ -45,6 +50,18 @@ public class ActionDialogAdapter {
         actionMessage = i18n.get(simpleName + ".Message");
         label = a.actionLabel();
         label = StringUtils.isEmpty(label) ? actionName : label;
+    }
+
+    public boolean isDialog() {
+        return instance instanceof EntityViewActionDialog;
+    }
+
+    public boolean isInvoke() {
+        return instance instanceof EntityViewActionInvoke;
+    }
+    
+    public boolean isGoto() {
+        return instance instanceof EntityViewActionGoto;
     }
 
     public String getActionTitle() {
@@ -74,10 +91,6 @@ public class ActionDialogAdapter {
         this.confirm = confirm;
     }
 
-    public boolean isDialog() {
-        return dialog;
-    }
-
     public String getLabel() {
         return label;
     }
@@ -101,11 +114,22 @@ public class ActionDialogAdapter {
     }
 
     public void openDialog(List<String> itemIds) {
-        instance.openDialog(getId(), itemIds);
+        ((EntityViewActionDialog) instance).openDialog(getId(), itemIds);
+    }
+
+    public ActionParam[] getParams() {
+        return ((EntityViewActionInvoke) instance).getParams();
     }
 
     public ActionDialogResult invoke(Class entityType, Object obj, List<String> selectedIdStrings, Object[] args) {
-        return instance.invoke(getId(), entityType, obj, selectedIdStrings, args);
+        return ((EntityViewActionInvoke) instance).invoke(getId(), entityType, obj, selectedIdStrings, args);
+    }
+
+    public String[] getCommand(List<String> itemIds) {
+        if(instance instanceof EntityViewActionGoto){
+            return ((EntityViewActionGoto)instance).getCommand(getId(), itemIds);
+        }
+        return new String[0];
     }
 
 }

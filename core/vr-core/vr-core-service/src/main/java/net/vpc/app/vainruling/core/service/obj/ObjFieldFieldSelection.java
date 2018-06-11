@@ -168,7 +168,7 @@ public class ObjFieldFieldSelection extends ObjFieldSelection {
             if (fields == null || fields.isEmpty()) {
                 core.setAppProperty("System.View." + getEntity().getName() + ".VisibleFields", core.getCurrentUserLogin(), null);
             } else {
-                core.setAppProperty("System.View." + getEntity().getName() + ".VisibleFields", core.getCurrentUserLogin(), net.vpc.common.strings.StringUtils.listToString(fields, ";"));
+                core.setAppProperty("System.View." + getEntity().getName() + ".VisibleFields", core.getCurrentUserLogin(), StringUtils.listToString(fields, ";"));
             }
         }
     }
@@ -176,7 +176,7 @@ public class ObjFieldFieldSelection extends ObjFieldSelection {
     public void resetVisibleFields(Set<String> fields) {
         CorePlugin core = VrApp.getBean(CorePlugin.class);
         if (!StringUtils.isEmpty(core.getCurrentUserLogin())) {
-            core.setAppProperty("System.View." + getEntity().getName() + ".VisibleFields", core.getCurrentUserLogin(), net.vpc.common.strings.StringUtils.listToString(fields, ","));
+            core.setAppProperty("System.View." + getEntity().getName() + ".VisibleFields", core.getCurrentUserLogin(), StringUtils.listToString(fields, ","));
         }
     }
 
