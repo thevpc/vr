@@ -17,7 +17,7 @@ import java.util.List;
  * @author taha.bensalah@gmail.com
  */
 @EntityAction(entityType = AppProfile.class,
-        actionLabel = "auth", actionStyle = "fa-envelope-o"
+        actionStyle = "fa-envelope-o"
 )
 public class UpdateProfileRightsAction implements EntityViewActionDialog {
 

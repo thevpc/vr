@@ -12,8 +12,8 @@ import net.vpc.upa.Field;
  */
 public class CustomTarget {
 
-    private Object value;
-    private CustomTargetType type;
+    private final Object value;
+    private final CustomTargetType type;
 
     public CustomTarget(Object value, CustomTargetType type) {
         this.value = value;

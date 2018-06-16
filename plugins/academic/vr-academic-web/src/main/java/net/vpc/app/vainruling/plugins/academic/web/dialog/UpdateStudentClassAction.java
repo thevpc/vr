@@ -7,8 +7,6 @@ package net.vpc.app.vainruling.plugins.academic.web.dialog;
 
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.obj.EntityAction;
-import net.vpc.app.vainruling.core.web.obj.EntityViewAction;
-import net.vpc.app.vainruling.core.web.obj.ActionDialogResult;
 import net.vpc.app.vainruling.core.web.obj.EntityViewActionDialog;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
 import net.vpc.upa.AccessMode;
@@ -19,7 +17,7 @@ import java.util.List;
  * @author taha.bensalah@gmail.com
  */
 @EntityAction(entityType = AcademicStudent.class,
-        actionLabel = "cls", actionStyle = "fa-envelope-o"
+        actionStyle = "fa-envelope-o"
 )
 public class UpdateStudentClassAction implements EntityViewActionDialog {
 

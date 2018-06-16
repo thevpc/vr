@@ -18,7 +18,7 @@ import java.util.List;
  * @author taha.bensalah@gmail.com
  */
 @EntityAction(entityType = Equipment.class,
-        actionLabel = "bck", actionStyle = "fa-calculator",
+        actionStyle = "fa-calculator",
         confirm = true
 )
 public class ReturnBorrowedEquipmentAction implements EntityViewActionInvoke {

@@ -40,7 +40,6 @@ import org.springframework.stereotype.Controller;
 
 //import net.vpc.app.vainruling.tasks.TaskPlugin;
 //import net.vpc.app.vainruling.tasks.model.TodoList;
-
 /**
  * @author taha.bensalah@gmail.com
  */
@@ -60,6 +59,7 @@ public class VrMenuManager {
     private LinkedList<PageInfo> pageHistory = new LinkedList<>();
 
     class ControllerInfo {
+
         String name;
         Object value;
         int priority;
@@ -74,7 +74,6 @@ public class VrMenuManager {
     Map<String, List<ControllerInfo>> controllers = new HashMap<>();
     //private Map<String, Object> controllers = new HashMap<>();
 
-
 //    SetValueMap<String,ControllerInfo> validBeans=new SetValueMap<>();
 //
 //        for (Map.Entry<String,Object> beanEntry : VrApp.getBeansMapForAnnotations(VrController.class).entrySet()) {
@@ -82,7 +81,6 @@ public class VrMenuManager {
 //        VrController c = (VrController) PlatformReflector.getTargetClass(b).getAnnotation(VrController.class);
 //
 //    }
-
 //    public Object getPageCtrl(String type) {
 //        if (!type.endsWith("Ctrl")) {
 //            type = type + "Ctrl";
@@ -90,7 +88,6 @@ public class VrMenuManager {
 //        List<ControllerInfo> data = controllers.get(type);
 //        return VrApp.getBean(type);
 //    }
-
     public boolean isCurrentPageId(String name) {
         if (StringUtils.isEmpty(name)) {
             return StringUtils.isEmpty(getModel().getCurrentPageId());
@@ -215,7 +212,6 @@ public class VrMenuManager {
 //        }
 //        return o;
 //    }
-
 //    public VrControllerInfo resolveBestVrControllerInfo(Class type, String cmd) {
 //        VrControllerInfo o = null;
 //        for (Object profileAlternative : VrApp.getBeansForType(type)) {
@@ -230,7 +226,6 @@ public class VrMenuManager {
 //        }
 //        return o;
 //    }
-
     public VrControllerInfoAndObject resolveVrControllerInfoByInstance(String name, String cmd) {
         if (name == null) {
             return null;
@@ -346,13 +341,11 @@ public class VrMenuManager {
 //    public VrControllerInfo resolveVrControllerInfo(String ctrl0, String cmd) {
 //        return resolveVrControllerInfoByInstance(getPageCtrl(ctrl0), null, cmd);
 //    }
-
 //    private String resolveGoodBeanName(Object o) {
 //        StringBuilder ctrl0 = new StringBuilder(PlatformReflector.getTargetClass(o).getSimpleName());
 //        ctrl0.setCharAt(0, Character.toLowerCase(ctrl0.charAt(0)));
 //        return ctrl0.toString();
 //    }
-
     //    public String gotoPage(Class type, String cmd) {
 //        Object o = VrApp.getBean(type);
 //        return gotoPageByBean(o, cmd);
@@ -416,16 +409,17 @@ public class VrMenuManager {
             if (m.getParameterTypes().length == 0) {
                 m.invoke();
             } else if (m.getParameterTypes().length == 1) {
-                m.invoke(VrUtils.parseJSONObject(arguments, m.getParameterTypes()[0]));
+                m.invoke(JsonUtils.parse(arguments, m.getParameterTypes()[0]));
             }
         }
-        if (d != null) {
-            bc.add(new BreadcrumbItem(d.getInfo().getTitle(), d.getInfo().getSubTitle(), d.getInfo().getCss(), "", ""));
-        } else {
-            bc.add(new BreadcrumbItem("", "", "", "", ""));
-        }
+//        if (d != null) {
+//            bc.add(new BreadcrumbItem(d.getInfo().getTitle(), d.getInfo().getSubTitle(), d.getInfo().getCss(), "", ""));
+//        } else {
+//            bc.add(new BreadcrumbItem("", "", "", "", ""));
+//        }
         getModel().setBreadcrumb(bc);
-        UserSession s = CorePlugin.get().getCurrentSession();
+        getModel().setTitleCrumb((d != null) ? new BreadcrumbItem(d.getInfo().getTitle(), d.getInfo().getSubTitle(), d.getInfo().getCss(), "", "") : new BreadcrumbItem("", "", "", "", ""));
+//        UserSession s = CorePlugin.get().getCurrentSession();
         StringBuilder lvp = new StringBuilder();
         for (BreadcrumbItem breadcrumbItem : bc) {
             if (!StringUtils.isEmpty(breadcrumbItem.getTitle())) {
@@ -434,6 +428,18 @@ public class VrMenuManager {
                 }
                 lvp.append(breadcrumbItem.getTitle());
             }
+        }
+        if (!StringUtils.isEmpty(getModel().getTitleCrumb().getTitle())) {
+            if (lvp.length() > 0) {
+                lvp.append(", ");
+            }
+            lvp.append(getModel().getTitleCrumb().getTitle());
+        }
+        if (!StringUtils.isEmpty(getModel().getTitleCrumb().getSubTitle())) {
+            if (lvp.length() > 0) {
+                lvp.append(", ");
+            }
+            lvp.append(getModel().getTitleCrumb().getSubTitle());
         }
         String data = command;
         if (!StringUtils.isEmpty(arguments)) {
@@ -500,8 +506,8 @@ public class VrMenuManager {
         String r = StringUtils.trim(VrWebHelper.getFacesContextPrefix());
         StringBuilder2 sb = new StringBuilder2();
 //        sb.appendWithSeparator("/",c);
-        sb.appendWithSeparator("/",r);
-        sb.appendWithSeparator("/",p);
+        sb.appendWithSeparator("/", r);
+        sb.appendWithSeparator("/", p);
         sb.append("?faces-redirect=true");
         return sb.toString();
     }
@@ -594,7 +600,6 @@ public class VrMenuManager {
             }
         }
     }
-
 
     private List<VRMenuInfo> resolveVRMenuInfos(String beanName, Object b) {
         List<VRMenuInfo> menuCtrl = new ArrayList<>();
@@ -720,12 +725,16 @@ public class VrMenuManager {
             for (int i = 0; i < breadcrumb.size(); i++) {
                 breadcrumb.get(i).setActive(i == breadcrumb.size() - 1);
             }
-            if (this.breadcrumb.isEmpty()) {
-                titleCrumb = new BreadcrumbItem("", "", "", "", "");
-                titleCrumb.setActive(false);
-            } else {
-                titleCrumb = breadcrumb.get(breadcrumb.size() - 1);
-            }
+//            if (this.breadcrumb.isEmpty()) {
+//                titleCrumb = new BreadcrumbItem("", "", "", "", "");
+//                titleCrumb.setActive(false);
+//            } else {
+//                titleCrumb = breadcrumb.get(breadcrumb.size() - 1);
+//            }
+        }
+
+        public void setTitleCrumb(BreadcrumbItem titleCrumb) {
+            this.titleCrumb = titleCrumb;
         }
 
         public void setBreadcrumb(BreadcrumbItem... breadcrumb) {

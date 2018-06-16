@@ -7,8 +7,6 @@ package net.vpc.app.vainruling.plugins.academic.web.internship.actions;
 
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.obj.EntityAction;
-import net.vpc.app.vainruling.core.web.obj.EntityViewAction;
-import net.vpc.app.vainruling.core.web.obj.ActionDialogResult;
 import net.vpc.app.vainruling.core.web.obj.EntityViewActionDialog;
 import net.vpc.app.vainruling.plugins.academic.service.model.internship.current.AcademicInternship;
 import net.vpc.upa.AccessMode;
@@ -19,7 +17,7 @@ import java.util.List;
  * @author taha.bensalah@gmail.com
  */
 @EntityAction(entityType = AcademicInternship.class,
-        actionLabel = "generer", actionStyle = "fa-envelope-o"
+        actionStyle = "fa-envelope-o"
 )
 public class CreateInternshipsAction implements EntityViewActionDialog {
 

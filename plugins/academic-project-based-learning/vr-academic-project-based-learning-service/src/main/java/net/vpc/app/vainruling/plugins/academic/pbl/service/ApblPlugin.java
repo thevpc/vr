@@ -380,7 +380,7 @@ public class ApblPlugin {
 
     public ApblSessionListInfo findTeacherInfos(int[] sessionIds, boolean includeMissingTeachers, ObjectFilter<AcademicTeacher> teacherFilter) {
         ApblSessionListInfo apblSessionListInfo = new ApblSessionListInfo();
-        for (Integer sessionId : new HashSet<Integer>(Arrays.asList(Utils.toIntArray(sessionIds)))) {
+        for (Integer sessionId : new HashSet<Integer>(Arrays.asList(PlatformTypeUtils.toIntArray(sessionIds)))) {
             Map<Integer, ApblTeacherInfo> rows = new HashMap<>();
             ApblSession currentSession = findSession(sessionId);
             if(currentSession==null){
@@ -554,7 +554,7 @@ public class ApblPlugin {
 
     public List<ApblStudentInfo> findStudentInfos(int[] sessionIds, boolean includeMissingStudents, ObjectFilter<AcademicStudent> studentFilter) {
         Map<Integer, ApblStudentInfo> rows = new HashMap<>();
-        for (Integer sessionId : new HashSet<Integer>(Arrays.asList(Utils.toIntArray(sessionIds)))) {
+        for (Integer sessionId : new HashSet<Integer>(Arrays.asList(PlatformTypeUtils.toIntArray(sessionIds)))) {
             for (ProjectNode projectNode : findProjectNodes(sessionId)) {
                 for (TeamNode teamNode : projectNode.getTeams()) {
                     for (MemberNode coachNode : teamNode.getMembers()) {
@@ -601,7 +601,7 @@ public class ApblPlugin {
             apblStudentInfo.setInterDepartments(departments.size() > 1);
         }
         if (includeMissingStudents) {
-            for (Integer sessionId : new HashSet<Integer>(Arrays.asList(Utils.toIntArray(sessionIds)))) {
+            for (Integer sessionId : new HashSet<Integer>(Arrays.asList(PlatformTypeUtils.toIntArray(sessionIds)))) {
                 ApblSession s = findSession(sessionId);
                 if (s != null) {
                     for (AcademicStudent ss : academic.findStudents(s.getMemberProfiles(), AcademicStudentStage.ATTENDING, null)) {
@@ -1190,7 +1190,7 @@ public class ApblPlugin {
         } else {
             sessions = findOpenVisibleSessions();
         }
-        sessions = (List<ApblSession>) Utils.retainAll(new ArrayList<>(sessions), new Filter<ApblSession>() {
+        sessions = (List<ApblSession>) CollectionUtils.retainAll(new ArrayList<>(sessions), new Filter<ApblSession>() {
             @Override
             public boolean accept(ApblSession value) {
                 if (currentTeacher != null && currentTeacher.getUser() != null) {

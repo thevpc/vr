@@ -1,7 +1,6 @@
 package net.vpc.app.vainruling.core.web.obj;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
-import net.vpc.app.vainruling.core.service.util.VrPlatformUtils;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.vfs.VFile;

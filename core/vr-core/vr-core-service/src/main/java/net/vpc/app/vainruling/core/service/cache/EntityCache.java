@@ -2,7 +2,6 @@ package net.vpc.app.vainruling.core.service.cache;
 
 import net.vpc.app.vainruling.core.service.util.EntityMapList;
 import net.vpc.common.util.MapList;
-import net.vpc.common.util.Utils;
 import net.vpc.upa.Action;
 import net.vpc.upa.Entity;
 import net.vpc.upa.UPA;
@@ -10,6 +9,7 @@ import net.vpc.upa.UPA;
 import java.lang.ref.SoftReference;
 import java.util.HashMap;
 import java.util.Map;
+import net.vpc.common.util.CollectionUtils;
 
 /**
  * Created by vpc on 6/1/16.
@@ -42,7 +42,7 @@ public class EntityCache {
     public <K, V> MapList<K, V> getValues() {
         MapList ret = null;
         if (list == null || list.get() == null) {
-            ret = Utils.unmodifiableMapList(new EntityMapList(
+            ret = CollectionUtils.unmodifiableMapList(new EntityMapList(
                     UPA.getPersistenceUnit()
                             .createQueryBuilder(entity.getName())
                             .orderBy(entity.getListOrder())

@@ -42,12 +42,14 @@ import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
+import net.vpc.common.util.PlatformTypeUtils;
 
 /**
  * @author taha.bensalah@gmail.com
  */
 public class VrUtils {
     public static SimpleDateFormat UNIVERSAL_DATE_FORMAT=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    public static NullAsEmptyStringComparator NULL_AS_EMPTY_STRING_COMPARATOR=new NullAsEmptyStringComparator();
     public static String STRING_SEP=", ;";
 
     public static final Gson GSON = new Gson();
@@ -899,7 +901,7 @@ public class VrUtils {
         if (t == null) {
             return null;
         }
-        if (!Utils.toRefType(toType).isInstance(t)) {
+        if (!PlatformTypeUtils.toBoxingType(toType).isInstance(t)) {
             if (t instanceof JSObject) {
                 t = convertThroughJson(t, toType);
             } else if (t instanceof String) {
@@ -927,7 +929,7 @@ public class VrUtils {
         if (t == null) {
             return null;
         }
-        if (!Utils.toRefType(toType).isInstance(t)) {
+        if (!PlatformTypeUtils.toBoxingType(toType).isInstance(t)) {
             if (t instanceof net.vpc.upa.Document) {
                 return t;
             } else if (t instanceof JSObject) {
@@ -1173,6 +1175,23 @@ public class VrUtils {
 
     public static String getBeanName(Object o) {
         return getBeanName(PlatformReflector.getTargetClass(o));
+    }
+    
+    private static class NullAsEmptyStringComparator implements Comparator<String> {
+
+        public NullAsEmptyStringComparator() {
+        }
+
+        @Override
+        public int compare(String o1, String o2) {
+            if (o1 == null) {
+                o1 = "";
+            }
+            if (o2 == null) {
+                o2 = "";
+            }
+            return o1.compareTo(o2);
+        }
     }
 
 }

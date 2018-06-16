@@ -9,8 +9,8 @@ import java.util.Map;
  * Created by vpc on 6/3/16.
  */
 public class ViewContext {
-    private Map<String, Object> cache = new HashMap<>();
-    private Map<String, Object> properties = new HashMap<>();
+    private final Map<String, Object> cache = new HashMap<>();
+    private final Map<String, Object> properties = new HashMap<>();
 
     public Map<String, Object> getProperties() {
         return properties;

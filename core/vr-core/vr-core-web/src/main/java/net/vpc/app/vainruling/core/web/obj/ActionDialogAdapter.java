@@ -28,6 +28,7 @@ public class ActionDialogAdapter {
     private String actionMessage;
     private String actionTitle;
     private String label;
+    private String description;
     private String style;
 
     public ActionDialogAdapter(EntityViewAction instance) {
@@ -42,15 +43,26 @@ public class ActionDialogAdapter {
         }
         confirm = a.confirm();
         actionName = a.actionName();
-        style = a.actionLabel();
+        style = a.actionStyle();
         I18n i18n = I18n.get();
         String simpleName = PlatformReflector.getTargetClass(instance).getSimpleName();
         actionName = actionName.isEmpty() ? PlatformReflector.getTargetClass(instance).getSimpleName() : actionName;
-        actionTitle = i18n.get(simpleName + ".Message");
-        actionMessage = i18n.get(simpleName + ".Message");
-        label = a.actionLabel();
+        actionTitle = i18n.get(simpleName + ".title");
+        actionMessage = i18n.get(simpleName + ".message");
+        description = i18n.get(simpleName + ".description");
+        label = i18n.get(simpleName + ".label");
         label = StringUtils.isEmpty(label) ? actionName : label;
+        
     }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+    
 
     public boolean isDialog() {
         return instance instanceof EntityViewActionDialog;

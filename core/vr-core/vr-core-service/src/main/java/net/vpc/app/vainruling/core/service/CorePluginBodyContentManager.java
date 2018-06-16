@@ -35,8 +35,10 @@ import net.vpc.app.vainruling.core.service.model.content.ArticlesItem;
 import net.vpc.app.vainruling.core.service.model.content.ArticlesItemStrict;
 import net.vpc.app.vainruling.core.service.model.content.ArticlesProperty;
 import net.vpc.app.vainruling.core.service.model.content.FullArticle;
+import net.vpc.common.util.MutableDate;
 
-class CorePluginBodyContentManager extends CorePluginBody{
+class CorePluginBodyContentManager extends CorePluginBody {
+
     @Override
     public void onInstall() {
         CorePlugin core = getContext().getCorePlugin();
@@ -55,80 +57,78 @@ class CorePluginBodyContentManager extends CorePluginBody{
         core.getOrCreateAppPropertyValue("System.App.GotoWelcomeText", null, "My Space");
         core.getOrCreateAppPropertyValue("System.App.GotoLoginText", null, "My Space");
 
-        findOrCreateDisposition("Welcome","Home","Home");
-        findOrCreateDisposition("Testimonials","Testimonials","Testimonials");
-        findOrCreateDisposition("Testimonials.Header","Testimonials",null);
-        findOrCreateDisposition("Services","Services","Services");
-        findOrCreateDisposition("Services.Header","Services",null);
-        findOrCreateDisposition("Featured","Featured","Featured");
-        findOrCreateDisposition("Featured.Header","Featured",null);
-        findOrCreateDisposition("About","About","About");
-        findOrCreateDisposition("About.Header","About",null);
-        findOrCreateDisposition("News","News","Press");
-        findOrCreateDisposition("News.Header","Press",null);
-        findOrCreateDisposition("Activities","Activities","Activities");
-        findOrCreateDisposition("Activities.Header","Activities",null);
-        if(core.findFullArticlesByDisposition(null,"About.Header").isEmpty()){
-            core.save("ArticlesItem", new ArticlesItem("About",null,findArticleDisposition("About.Header")));
+        findOrCreateDisposition("Welcome", "Home", "Home");
+        findOrCreateDisposition("Testimonials", "Testimonials", "Testimonials");
+        findOrCreateDisposition("Testimonials.Header", "Testimonials", null);
+        findOrCreateDisposition("Services", "Services", "Services");
+        findOrCreateDisposition("Services.Header", "Services", null);
+        findOrCreateDisposition("Featured", "Featured", "Featured");
+        findOrCreateDisposition("Featured.Header", "Featured", null);
+        findOrCreateDisposition("About", "About", "About");
+        findOrCreateDisposition("About.Header", "About", null);
+        findOrCreateDisposition("News", "News", "Press");
+        findOrCreateDisposition("News.Header", "Press", null);
+        findOrCreateDisposition("Activities", "Activities", "Activities");
+        findOrCreateDisposition("Activities.Header", "Activities", null);
+        if (core.findFullArticlesByDisposition(null, "About.Header").isEmpty()) {
+            core.save("ArticlesItem", new ArticlesItem("About", null, findArticleDisposition("About.Header")));
         }
-        if(core.findFullArticlesByDisposition(null,"About").isEmpty()){
-            core.save("ArticlesItem", new ArticlesItem("Nos Valeurs",null,findArticleDisposition("About.Header")));
+        if (core.findFullArticlesByDisposition(null, "About").isEmpty()) {
+            core.save("ArticlesItem", new ArticlesItem("Nos Valeurs", null, findArticleDisposition("About.Header")));
         }
-        if(core.findFullArticlesByDisposition(null,"About").isEmpty()){
-            core.save("ArticlesItem", new ArticlesItem("Reinvention",null,findArticleDisposition("About.Header")));
+        if (core.findFullArticlesByDisposition(null, "About").isEmpty()) {
+            core.save("ArticlesItem", new ArticlesItem("Reinvention", null, findArticleDisposition("About.Header")));
         }
-        if(core.findFullArticlesByDisposition(null,"About").isEmpty()){
-            core.save("ArticlesItem", new ArticlesItem("Actualite",null,findArticleDisposition("About.Header")));
+        if (core.findFullArticlesByDisposition(null, "About").isEmpty()) {
+            core.save("ArticlesItem", new ArticlesItem("Actualite", null, findArticleDisposition("About.Header")));
         }
-        if(core.findFullArticlesByDisposition(null,"About").isEmpty()){
-            core.save("ArticlesItem", new ArticlesItem("APropos",null,findArticleDisposition("About.Header")));
+        if (core.findFullArticlesByDisposition(null, "About").isEmpty()) {
+            core.save("ArticlesItem", new ArticlesItem("APropos", null, findArticleDisposition("About.Header")));
         }
-        if(core.findFullArticlesByDisposition(null,"News.Header").isEmpty()){
+        if (core.findFullArticlesByDisposition(null, "News.Header").isEmpty()) {
             ArticlesItem a = new ArticlesItem();
             a.setSubject("Press");
             a.setDisposition(findArticleDisposition("News.Header"));
             core.save("ArticlesItem", a);
         }
-        if(core.findFullArticlesByDisposition(null,"Activities.Header").isEmpty()){
+        if (core.findFullArticlesByDisposition(null, "Activities.Header").isEmpty()) {
             ArticlesItem a = new ArticlesItem();
             a.setSubject("Activities");
             a.setDisposition(findArticleDisposition("Activities.Header"));
             core.save("ArticlesItem", a);
         }
-        if(core.findFullArticlesByDisposition(null,"Featured.Header").isEmpty()){
+        if (core.findFullArticlesByDisposition(null, "Featured.Header").isEmpty()) {
             ArticlesItem a = new ArticlesItem();
             a.setSubject("Featured");
             a.setDisposition(findArticleDisposition("Featured.Header"));
             core.save("ArticlesItem", a);
         }
-        if(core.findFullArticlesByDisposition(null,"Activities.Header").isEmpty()){
+        if (core.findFullArticlesByDisposition(null, "Activities.Header").isEmpty()) {
             ArticlesItem a = new ArticlesItem();
             a.setSubject("Activities");
             a.setDisposition(findArticleDisposition("Activities.Header"));
             core.save("ArticlesItem", a);
         }
-        if(core.findFullArticlesByDisposition(null,"Testimonials.Header").isEmpty()){
+        if (core.findFullArticlesByDisposition(null, "Testimonials.Header").isEmpty()) {
             ArticlesItem a = new ArticlesItem();
             a.setSubject("Testimonials");
             a.setDisposition(findArticleDisposition("Testimonials.Header"));
             core.save("ArticlesItem", a);
         }
-        if(core.findFullArticlesByDisposition(null,"Services.Header").isEmpty()){
+        if (core.findFullArticlesByDisposition(null, "Services.Header").isEmpty()) {
             ArticlesItem a = new ArticlesItem();
             a.setSubject("Services");
             a.setDisposition(findArticleDisposition("Services.Header"));
             core.save("ArticlesItem", a);
         }
         AppProfile publisher = core.findOrCreateProfile("Publisher");
-        for (String right : CorePluginSecurity.getEntityRights(pu.getEntity("ArticlesItem"),true,true, true, false,false)) {
+        for (String right : CorePluginSecurity.getEntityRights(pu.getEntity("ArticlesItem"), true, true, true, false, false)) {
             core.addProfileRight(publisher.getId(), right);
         }
-        for (String right : CorePluginSecurity.getEntityRights(pu.getEntity("ArticlesFile"),true,true, true, false,false)) {
+        for (String right : CorePluginSecurity.getEntityRights(pu.getEntity("ArticlesFile"), true, true, true, false, false)) {
             core.addProfileRight(publisher.getId(), right);
         }
     }
-
-
 
     public ArticlesItem findArticle(int articleId) {
         return UPA.getPersistenceUnit().findById(ArticlesItem.class, articleId);
@@ -310,19 +310,19 @@ class CorePluginBodyContentManager extends CorePluginBody{
 //        TraceService.runSilenced(new Runnable() {
 //            @Override
 //            public void run() {
-                UPA.getPersistenceUnit().invokePrivileged(new VoidAction() {
-                    @Override
-                    public void run() {
-                        PersistenceUnit pu = UPA.getPersistenceUnit();
-                        Entity entity = pu.getEntity(ArticlesItem.class);
-                        Document document = entity.createDocument();
-                        document.setObject("visitCount", new UserExpression("visitCount+1"));
-                        entity.createUpdateQuery()
-                                .setValues(document)
-                                .byId(articleId)
-                                .execute();
-                    }
-                });
+        UPA.getPersistenceUnit().invokePrivileged(new VoidAction() {
+            @Override
+            public void run() {
+                PersistenceUnit pu = UPA.getPersistenceUnit();
+                Entity entity = pu.getEntity(ArticlesItem.class);
+                Document document = entity.createDocument();
+                document.setObject("visitCount", new UserExpression("visitCount+1"));
+                entity.createUpdateQuery()
+                        .setValues(document)
+                        .byId(articleId)
+                        .execute();
+            }
+        });
 //            }
 //        });
     }
@@ -388,8 +388,8 @@ class CorePluginBodyContentManager extends CorePluginBody{
                         }
                         if (periodCalendarType > 0) {
                             DateTime dd = a.getSendTime();
-                            Date d2 = net.vpc.common.util.DateUtils.add(new Date(), periodCalendarType, -d.getMaxPeriod());
-                            if (dd.compareTo(d2) < 0) {
+                            MutableDate d2 = new MutableDate().addField(periodCalendarType, -d.getMaxPeriod());
+                            if (dd.compareTo(d2.getDateTime()) < 0) {
                                 continue;
                             }
                         }
@@ -542,7 +542,7 @@ class CorePluginBodyContentManager extends CorePluginBody{
             UPA.getContext().invokePrivileged(new VoidAction() {
                 @Override
                 public void run() {
-                    feed.setLink((String)getContext().getCorePlugin().getOrCreateAppPropertyValue("System.PublicWebSite",null,"https://github.com/thevpc/vr"));
+                    feed.setLink((String) getContext().getCorePlugin().getOrCreateAppPropertyValue("System.PublicWebSite", null, "https://github.com/thevpc/vr"));
                 }
             });
             feed.setDescription(t == null ? null : t.getDescription());
@@ -578,7 +578,6 @@ class CorePluginBodyContentManager extends CorePluginBody{
 //    public String[] findArticleActions(){
 //        return new String[]{"SendEmail"};
 //    }
-
     public String getArticlesProperty(String value) {
         return getArticlesProperties().get(value);
     }
@@ -620,8 +619,7 @@ class CorePluginBodyContentManager extends CorePluginBody{
         return m;
     }
 
-
-    public ArticlesDisposition findOrCreateDisposition(String name,String description,String actionName) {
+    public ArticlesDisposition findOrCreateDisposition(String name, String description, String actionName) {
         ArticlesDisposition disposition = new ArticlesDisposition();
         disposition.setEnabled(true);
         disposition.setName(name);
@@ -629,6 +627,5 @@ class CorePluginBodyContentManager extends CorePluginBody{
         disposition.setActionName(actionName);
         return getContext().getCorePlugin().findOrCreate(disposition);
     }
-
 
 }

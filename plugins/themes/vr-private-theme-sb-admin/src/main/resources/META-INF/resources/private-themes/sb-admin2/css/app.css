@@ -935,3 +935,10 @@ span.ui-column-title {
 .vr-form-sub-row {
 
 }
+
+.vr-form-dropdown-button{
+    padding-top: 8px; 
+    margin-bottom: 3px; 
+    margin-left: 1px; 
+    padding-bottom: 8px;
+}

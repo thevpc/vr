@@ -60,14 +60,14 @@ and open the template in the editor.
                                            styleClass=" vr-toolbox-split-button "
                                            value="Enregistrer"
                                            >
-                                <p:menuitem value="Enregister et Fermer" onclick="processOnSaveCurrentAndClose()"
-                                            ajax="true" update=":buttonsForm :listForm :itemForm :pageTitleForm"
-                                            icon="ui-icon-arrowrefresh-1-w"/>
-                                <p:menuitem value="Enregister une copie" onclick="processOnCloneCurrent()"
-                                            ajax="true" update=":buttonsForm :listForm :itemForm :pageTitleForm"
-                                            icon="ui-icon-arrowrefresh-1-w"/>
-                                <p:menuitem value="Enregistrer" onclick="processOnSaveCurrent()" ajax="true"
+                                <p:menuitem value="Enregistrer" title ="Enregister"  onclick="processOnSaveCurrent()" ajax="true"
                                             update=":buttonsForm :listForm :itemForm :pageTitleForm" icon="ui-icon-close"/>
+                                <p:menuitem value="Fermer" title ="Enregister et Fermer"  onclick="processOnSaveCurrentAndClose()"
+                                            ajax="true" update=":buttonsForm :listForm :itemForm :pageTitleForm"
+                                            icon="ui-icon-arrowrefresh-1-w"/>
+                                <p:menuitem value="Copier" title ="Enregister une Copie"  onclick="processOnCloneCurrent()"
+                                            ajax="true" update=":buttonsForm :listForm :itemForm :pageTitleForm"
+                                            icon="ui-icon-arrowrefresh-1-w"/>
                             </p:splitButton>
 
                             <p:commandButton title="Nouveau" rendered="#{objCtrl.isEnabledButton('New')}" icon="fa fa-plus"
@@ -93,16 +93,16 @@ and open the template in the editor.
                                            styleClass=" vr-toolbox-split-button"
                                            value="Chercher"
                                            >
-                                <p:menuitem value="Recherche Simple" icon=""
+                                <p:menuitem value="Simple Rech." title="Simple Rechercher par mots clés"  icon=""
                                             onclick="document.getElementById('listForm:processOnSimpleSearchLink').click();"
                                             ajax="true" update=":buttonsForm :listForm :itemForm :pageTitleForm"/>
-                                <p:menuitem value="Annuler Recherche" icon="ui-icon-close" onclick="processOnClearSearch()"
+                                <p:menuitem value="Annuler Rech." title="Annuler Recherche"  icon="ui-icon-close" onclick="processOnClearSearch()"
                                             ajax="true" update=":buttonsForm :listForm :itemForm :pageTitleForm"/>
                                 <p:separator/>
-                                <p:menuitem value="Sél. Propriétés" icon=""
+                                <p:menuitem value="Propriétés" title="Sélectionner les propriétés à afficher" icon=""
                                             onclick="document.getElementById('listForm:processOnSimpleFieldSelectionLink').click();"
                                             ajax="true" update=":buttonsForm :listForm :itemForm :pageTitleForm"/>
-                                <p:menuitem value="Reini. Propriétés" icon="ui-icon-close"
+                                <p:menuitem value="Reini. Prop." title="Reinitialiser les Propriétés à afficher"  icon="ui-icon-close"
                                             onclick="processOnClearFieldSelection()" ajax="true"
                                             update=":buttonsForm :listForm :itemForm :pageTitleForm"/>
                             </p:splitButton>
@@ -115,7 +115,7 @@ and open the template in the editor.
                                 <p:menuitem rendered="#{objCtrl.isEnabledButton('Archive')}" value="Archiver"
                                             icon="fa fa-archive" onclick="PF('confirmationArchive').show();" ajax="true"/>
                                 <p:separator/>
-                                <p:menuitem rendered="#{objCtrl.isEnabledButton('ReCalc')}" value="ReCalc"
+                                <p:menuitem rendered="#{objCtrl.isEnabledButton('ReCalc')}" value="Calc." title="Reclaculer les formules"
                                             icon="fa fa-calculator" ajax="true"
                                             actionListener="#{objCtrl.onReCalc}"
                                             />
@@ -181,7 +181,7 @@ and open the template in the editor.
                                              icon="fa fa-backward"
                                              styleClass="ui-ribbon-bigbutton  vr-toolbox-button" type="button"
                                              update=":buttonsForm :listForm :itemForm :itemForm :pageTitleForm"/>
-                            <p:commandButton title="Liste" rendered="#{objCtrl.isEnabledButton('List')}"
+                            <p:commandButton value="Liste" title="Afficher la Liste" rendered="#{objCtrl.isEnabledButton('List')}"
                                              icon="fa fa-list-ol"
                                              styleClass="ui-ribbon-bigbutton  vr-toolbox-button" ajax="true"
                                              actionListener="#{objCtrl.onList}"
@@ -201,9 +201,9 @@ and open the template in the editor.
                                              update=":buttonsForm :listForm :itemForm :pageTitleForm"
                                              />
 
-                            <p:commandButton title="Retour" icon="fa fa-backward"
-                                             action="#{vr.goBack}"
-                                             ajax="false" styleClass="ui-ribbon-bigbutton  vr-toolbox-button"/>
+<!--                            <p:commandButton title="Retour" icon="fa fa-backward"
+                                             action="# {vr.goBack}"
+                                             ajax="false" styleClass="ui-ribbon-bigbutton  vr-toolbox-button"/>-->
 
 
                             <!--                            <p:commandButton
@@ -253,12 +253,13 @@ and open the template in the editor.
                             <ui:repeat value="#{objCtrl.model.actions}" var="aac">
                                 <p:commandButton value="#{aac.value}" rendered="#{(aac.type eq 'invoke') or (aac.type eq 'dialog')}"
                                                  icon="#{aac.icon}"
-                                                 styleClass="ui-ribbon-bigbutton"
+                                                 styleClass="ui-ribbon-bigbutton  vr-toolbox-button"
                                                  action="#{objCtrl.openActionDialog(aac.key)}"
                                                  update=":buttonsForm :listForm :itemForm :itemForm :pageTitleForm"/>
                                 <p:commandButton value="#{aac.value}" rendered="#{(aac.type eq 'goto')}"
+                                                 title="#{aac.description}"
                                                  icon="#{aac.icon}"
-                                                 styleClass="ui-ribbon-bigbutton"
+                                                 styleClass="ui-ribbon-bigbutton  vr-toolbox-button"
                                                  action="#{vr.gotoPage(aac.command[0],aac.command[1])}"
                                                  />
                             </ui:repeat><!-- -->
@@ -294,7 +295,7 @@ and open the template in the editor.
                 <h:form id="listForm">
                     <div style="margin-bottom: 10px;">
                         <p:inputText
-                            rendered="#{objCtrl.isListMode()}"
+                            rendered="#{objCtrl.isListMode()}" title="#{objCtrl.model.searchTextHelper}"
                             value="#{objCtrl.model.searchText}" placeholder="Chercher ..." styleClass="form-control"
                             style="width: 100%"
                             onkeypress="if (event.keyCode == 13) {
@@ -562,7 +563,7 @@ and open the template in the editor.
                                                 <f:selectItems value="#{data.items}"/>
                                             </p:selectOneMenu>
                                             <p:commandButton
-                                                style="padding-top: 8px; margin-bottom: 3px; margin-left: 1px; padding-bottom: 8px;"
+                                                styleClass="vr-form-dropdown-button"
                                                 ajax="false" value=""
                                                 icon="fa fa-eye vr-form-button-icon-only"
                                                 disabled="#{data.disabledNavigation}"
@@ -582,7 +583,7 @@ and open the template in the editor.
                                                 <f:selectItems value="#{data.items}"/>
                                             </p:selectOneMenu>
                                             <p:commandButton
-                                                style="padding-top: 8px; margin-bottom: 3px; margin-left: 1px; padding-bottom: 8px;"
+                                                styleClass="vr-form-dropdown-button"
                                                 ajax="false" value=""
                                                 icon="fa fa-eye vr-form-button-icon-only"
                                                 disabled="#{data.disabledNavigation}"

@@ -21,7 +21,7 @@ import java.util.List;
  * @author taha.bensalah@gmail.com
  */
 @EntityAction(entityType = AcademicCourseAssignment.class,
-        actionLabel = "s/2", actionStyle = "fa-envelope-o",
+        actionStyle = "fa-envelope-o",
         confirm = true
 )
 public class SplitSharesAcademicCourseAssignmentAction implements EntityViewActionInvoke {
@@ -37,7 +37,7 @@ public class SplitSharesAcademicCourseAssignmentAction implements EntityViewActi
     @Override
     public ActionDialogResult invoke(String actionId, Class entityType, Object obj, List<String> selectedIdStrings, Object[] args) {
         for (String id : selectedIdStrings) {
-            academic.splitGroupCourseAssignment(Integer.parseInt(id));
+            academic.splitShareCourseAssignment(Integer.parseInt(id));
         }
         //do nothing!
         return new ActionDialogResult(ActionDialogResultPostProcess.RELOAD_ALL);

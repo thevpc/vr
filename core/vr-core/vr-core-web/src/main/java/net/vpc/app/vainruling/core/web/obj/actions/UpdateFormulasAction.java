@@ -20,7 +20,7 @@ import java.util.List;
  * @author taha.bensalah@gmail.com
  */
 @EntityAction(entityType = AppConfig.class,
-        actionLabel = "u.forml", actionStyle = "fa-calculator"
+        actionStyle = "fa-calculator"
 )
 public class UpdateFormulasAction implements EntityViewActionInvoke {
 

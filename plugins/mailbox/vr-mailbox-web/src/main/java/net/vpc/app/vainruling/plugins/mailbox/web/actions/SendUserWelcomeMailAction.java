@@ -18,8 +18,7 @@ import java.util.List;
  * @author taha.bensalah@gmail.com
  */
 @EntityAction(entityType = AppUser.class,
-        actionName = "sendWelcomeMail",
-        actionLabel = "w-mail", actionStyle = "fa-envelope-o"
+        actionStyle = "fa-envelope-o"
 )
 public class SendUserWelcomeMailAction implements EntityViewActionDialog {
 

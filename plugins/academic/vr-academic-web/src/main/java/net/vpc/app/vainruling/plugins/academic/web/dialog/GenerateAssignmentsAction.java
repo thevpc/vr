@@ -23,7 +23,7 @@ import java.util.List;
  * @author taha.bensalah@gmail.com
  */
 @EntityAction(entityType = AcademicCoursePlan.class,
-        actionLabel = "chrg", actionStyle = "fa-envelope-o",
+        actionStyle = "fa-envelope-o",
         confirm = true
 )
 public class GenerateAssignmentsAction implements EntityViewActionInvoke {

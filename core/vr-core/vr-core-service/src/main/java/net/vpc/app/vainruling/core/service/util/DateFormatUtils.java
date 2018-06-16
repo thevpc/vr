@@ -12,6 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import net.vpc.common.util.MutableDate;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -23,9 +24,16 @@ public class DateFormatUtils {
     private DateFormatUtils() {
     }
 
+    public static MutableDate parseMutableDate(String value, String format, Date defaultValue) {
+        Date d = parse(value, format, defaultValue);
+        if (d == null) {
+            return null;
+        }
+        return new MutableDate(d);
+    }
 
-    public static Date parse(String value,String format,Date defaultValue) {
-        if(StringUtils.isEmpty(value)){
+    public static Date parse(String value, String format, Date defaultValue) {
+        if (StringUtils.isEmpty(value)) {
             return defaultValue;
         }
         try {

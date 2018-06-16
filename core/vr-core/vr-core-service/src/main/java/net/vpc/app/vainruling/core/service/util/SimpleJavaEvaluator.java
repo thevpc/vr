@@ -1,29 +1,68 @@
 package net.vpc.app.vainruling.core.service.util;
 
-import net.vpc.common.strings.*;
-
-import java.util.HashSet;
 import java.util.Set;
+import net.vpc.common.jeep.DefaultExpressionEvaluator;
+import net.vpc.common.jeep.ExpressionEvaluatorDefinition;
+import net.vpc.common.jeep.ExpressionEvaluatorFactory;
+import net.vpc.common.jeep.ExpressionEvaluatorResolver;
+import net.vpc.common.jeep.ExpressionVariable;
+import net.vpc.common.jeep.PlatformHelper;
+import net.vpc.common.jeep.UtilClassExpressionEvaluatorResolver;
 
 /**
  * Created by vpc on 4/16/17.
  */
 public class SimpleJavaEvaluator implements InSetEvaluator {
 
-    private final ExpressionParser evaluator;
+    public static class ExtraHelper {
+
+        public static boolean add(boolean a, boolean b) {
+            return a && b;
+        }
+
+        public static boolean minus(boolean a, boolean b) {
+            return a && !b;
+        }
+    }
+
+    private static final ExpressionEvaluatorDefinition definition = new ExpressionEvaluatorDefinition();
+
+    {
+        definition.declareBinaryOperators("+", "-", "&", "|", "&&", "||");
+        definition.declareOperatorAlias("et", "&&", new Class[]{Boolean.TYPE, Boolean.TYPE});
+        definition.declareOperatorAlias("and", "&&", new Class[]{Boolean.TYPE, Boolean.TYPE});
+        definition.declareOperatorAlias("sauf", "-", new Class[]{Boolean.TYPE, Boolean.TYPE});
+        definition.declareOperatorAlias("but", "-", new Class[]{Boolean.TYPE, Boolean.TYPE});
+        definition.declareConst("true", Boolean.TRUE);
+        definition.declareConst("all", Boolean.TRUE);
+        definition.declareConst("tous", Boolean.TRUE);
+        definition.declareConst("false",  Boolean.FALSE);
+        definition.declareConst("aucun",  Boolean.FALSE);
+        definition.declareConst("none",  Boolean.FALSE);
+        definition.addResolver(new UtilClassExpressionEvaluatorResolver(PlatformHelper.class, ExtraHelper.class));
+        definition.addResolver(new ExpressionEvaluatorResolver() {
+            @Override
+            public ExpressionVariable resolveVar(String name, ExpressionEvaluatorDefinition definition) {
+                return ExpressionEvaluatorFactory.createConstVar(name, items.contains(name.toLowerCase()));
+            }
+
+        });
+    }
+
+    private final DefaultExpressionEvaluator evaluator = new DefaultExpressionEvaluator();
 
     private Set<String> items;
 
     public SimpleJavaEvaluator(Set<String> set) {
-        evaluator = new ExpressionParser();
-        evaluator.setCaseSensitive(false);
-        evaluator.declareBinaryOperator("-", 3, "sauf", "but");
-        evaluator.declareBinaryOperator("+", 3, "&", "et", "and");
-
-        evaluator.declareBinaryOperator(",", 1, "|", ";","ou", "or", " ");
-        evaluator.declareConst("true", true, "all", "tous");
-        evaluator.declareConst("false", false, "none", "aucun");
-        evaluator.setParseFunctions(true);
+//        evaluator = new ExpressionParser();
+//        evaluator.setCaseSensitive(false);
+//        evaluator.declareBinaryOperator("-", 3, "sauf", "but");
+//        evaluator.declareBinaryOperator("+", 3, "&", "et", "and");
+//
+//        evaluator.declareBinaryOperator(",", 1, "|", ";", "ou", "or", " ");
+//        evaluator.declareConst("true", true, "all", "tous");
+//        evaluator.declareConst("false", false, "none", "aucun");
+//        evaluator.setParseFunctions(true);
         this.items = set;
     }
 
@@ -36,81 +75,12 @@ public class SimpleJavaEvaluator implements InSetEvaluator {
 ////        Object o = s.evaluateExpression("IA,MC+Student");
 //        System.out.println(o);
 //    }
-
     @Override
     public <T> T evaluateExpression(String expression) {
-        SimpleExpressionEvaluator evaluator = new SimpleExpressionEvaluator();
-        return (T) (Object) evaluator.asBool(this.evaluator.evaluate(expression, evaluator));
-    }
-
-
-    private class SimpleExpressionEvaluator extends AbstractExpressionEvaluator {
-
-        public boolean evalVarAsBool(String name) {
-            return items.contains(name.toLowerCase());
+        Object b = evaluator.evaluate(expression);
+        if (b instanceof Boolean) {
+            return (T) b;
         }
-
-        @Override
-        public Object evalVar(ExprContext context, ExprVar var) {
-            return evalVarAsBool(var.getName());
-        }
-
-        @Override
-        public Object evalStr(ExprContext context, ExprStr strVal) {
-            return strVal.getValue();
-//                return super.evalStr(context, strVal);
-        }
-
-        @Override
-        public Object evalConst(ExprContext context, ExprConst constVal) {
-            return super.evalConst(context, constVal);
-        }
-
-        @Override
-        public Object evalVal(ExprContext context, ExprVal val) {
-            return super.evalVal(context, val);
-        }
-
-        private boolean asBool(Object o) {
-            if(o instanceof Boolean){
-                return (boolean) o;
-            }
-            return evalVarAsBool(String.valueOf(o));
-        }
-
-        @Override
-        public Object evalFunction(ExprContext context, ExprFunction fct) {
-            return false;
-        }
-
-        @Override
-        public Object evalOperator(ExprContext context, ExprOperator op) {
-            switch (op.getName()) {
-                case "+": {
-                    boolean o1 = asBool(op.getOperand(0).eval(context, this));
-                    if (!o1) {
-                        return false;
-                    }
-                    return asBool(op.getOperand(1).eval(context, this));
-                }
-                case "-": {
-                    boolean o1 = asBool(op.getOperand(0).eval(context, this));
-                    if (!o1) {
-                        return false;
-                    }
-                    boolean o2 = asBool(op.getOperand(1).eval(context, this));
-                    return (!o2);
-                }
-                case ",": {
-                    boolean o1 = asBool(op.getOperand(0).eval(context, this));
-                    if (o1) {
-                        return true;
-                    }
-                    return asBool(op.getOperand(1).eval(context, this));
-                }
-            }
-            return false;
-        }
-
+        return (T) (Object) (b != null);
     }
 }

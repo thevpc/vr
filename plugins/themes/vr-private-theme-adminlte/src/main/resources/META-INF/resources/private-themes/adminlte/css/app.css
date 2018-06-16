@@ -777,7 +777,7 @@ div.ui-panel.vr-no-border-grid > div.ui-panel-footer.ui-widget-content {
 
 button.vr-tiny-button > span {
     padding: 2px 2px 2px 2px;
-!important
+    !important
 }
 
 button.vr-tiny-button.ui-button-text-only .ui-button-text {
@@ -929,7 +929,11 @@ div.vr-progress-container > div.invalid3 {
     height: 12px
 }
 
-
+.vr-form-field {
+    vertical-align: bottom;
+    margin-bottom: 10px;
+    margin-left: 10px;
+}
 
 legend.ui-fieldset-legend {
     font-size: 13px;
@@ -947,16 +951,53 @@ span.ui-column-title {
     font-weight: 700;
 }
 
+.vr-form-selected-many-selected {
+    color: #3c8dbc !important;
+}
 
+.vr-form-fixed-width-medium {
+    width: 150px;
+}
+
+.vr-form-fixed-width-short {
+    width: 90px;
+}
+
+
+.vr-form-indented-child {
+    margin-bottom: 0px;
+}
+
+.vr-form-sub-rows {
+    margin-left: 100px;
+}
+
+.vr-form-sub-row {
+
+}
+
+.vr-form-dropdown-button{
+    padding-top: 8px; 
+    margin-bottom: 0px; 
+    margin-left: 1px; 
+    padding-bottom: 11px;
+}
+
+h1{
+    font-family: 'Righteous', 'courier new';
+}
+.vr-toolbox-button-fixed-height {
+    font-weight: normal;
+    margin-right: 5px;
+    height: 40px;
+}
 
 .ui-widget, .ui-widget .ui-widget {
     font-family: 'Source Sans Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
-
 .ui-widget-content {
     background: #ecf0f5;
 }
-
 .deplist ul li a {
     display: block;
     text-decoration: none;
@@ -1117,30 +1158,8 @@ td.vr-mailbox-name label {
 
 /** Form styles **/
 
-.vr-form-field {
-    vertical-align: bottom;
-    margin-bottom: 10px;
-    margin-left: 10px;
-}
-.vr-form-fixed-width-medium {
-    width: 150px;
-}
 
-.vr-form-fixed-width-short {
-    width: 90px;
-}
 
-.vr-form-indented-child {
-    margin-bottom: 0px;
-}
-
-.vr-form-sub-rows {
-    margin-left: 100px;
-}
-
-.vr-form-sub-row {
-
-}
 
 .vr-form-control{
  max-width: 800px;
@@ -1203,9 +1222,7 @@ span.ui-autocomplete.vr-form-control-with-button60{
     width: 25px;
 }
 
-.vr-form-selected-many-selected {
-    color: #3c8dbc !important;
-}
+
 .vr-form-inline-component {
     margin-left: 10px;
 }
@@ -1289,3 +1306,29 @@ span.ui-autocomplete.vr-form-control:focus{
     margin-left: 5px;
     margin-right: 5px;
 }
+.ui-datatable tr.ui-datatable-even {
+    background: white;
+}
+
+.ui-datatable tr.ui-datatable-odd {
+    background: #f4f4f4;
+}
+
+.vr-row-deleted {
+    background-color: var(--vr-color-main04) !important;
+    background-image: none !important;
+    color: var(--vr-color-main99) !important;
+}
+
+.vr-row-important {
+    background-color: var(--vr-color-valid) !important;
+    background-image: none !important;
+    color: var(--vr-color-main99) !important;
+}
+
+.vr-row-invalid {
+    background-color: var(--vr-color-invalid) !important;
+    background-image: none !important;
+    color: var(--vr-color-main99) !important;
+}
+

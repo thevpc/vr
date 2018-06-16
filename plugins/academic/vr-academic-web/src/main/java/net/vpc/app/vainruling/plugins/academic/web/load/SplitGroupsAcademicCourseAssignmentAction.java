@@ -21,7 +21,7 @@ import java.util.List;
  * @author taha.bensalah@gmail.com
  */
 @EntityAction(entityType = AcademicCourseAssignment.class,
-        actionLabel = "g/2", actionStyle = "fa-envelope-o",
+        actionStyle = "fa-envelope-o",
         confirm = true
 )
 public class SplitGroupsAcademicCourseAssignmentAction implements EntityViewActionInvoke {

@@ -108,23 +108,23 @@ public class JavascriptEvaluator {
 
     }
 
-    public static void main(String[] args) {
-//        System.out.println(new ScriptUtil().same(new boolean[]{true,false},"[true, false]"));
-//        if(true){
-//            return;
-//        }
-//        
-//        JavascriptEvaluator e = new JavascriptEvaluator("vr.same(x.get('type'),'ACQUISITION')");
+//    public static void main(String[] args) {
+////        System.out.println(new ScriptUtil().same(new boolean[]{true,false},"[true, false]"));
+////        if(true){
+////            return;
+////        }
+////        
+////        JavascriptEvaluator e = new JavascriptEvaluator("vr.same(x.get('type'),'ACQUISITION')");
+////        Map<String, Object> m = new LinkedHashMap<>();
+////        m.put("type", "ACQUISITION");
+////        System.out.println(e.eval(m));
+////        System.out.println(java.lang.Runtime.getRuntime().availableProcessors());
+//        JavascriptEvaluator e = new JavascriptEvaluator("java.lang.Runtime.getRuntime().availableProcessors()");
 //        Map<String, Object> m = new LinkedHashMap<>();
 //        m.put("type", "ACQUISITION");
 //        System.out.println(e.eval(m));
-//        System.out.println(java.lang.Runtime.getRuntime().availableProcessors());
-        JavascriptEvaluator e = new JavascriptEvaluator("java.lang.Runtime.getRuntime().availableProcessors()");
-        Map<String, Object> m = new LinkedHashMap<>();
-        m.put("type", "ACQUISITION");
-        System.out.println(e.eval(m));
-        
-    }
+//        
+//    }
 
     private ScriptEngine createScriptEngine() {
         jdk.nashorn.api.scripting.NashornScriptEngineFactory f = new jdk.nashorn.api.scripting.NashornScriptEngineFactory();

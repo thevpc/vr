@@ -64,7 +64,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.primefaces.context.RequestContext;
+import net.vpc.common.util.PlatformTypeUtils;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -1358,14 +1358,14 @@ public class Vr {
                     if (strVal.startsWith("'")) {
                         strVal = strVal.substring(1);
                     }
-                    if (Utils.isDouble(strVal)) {
+                    if (PlatformTypeUtils.isDouble(strVal)) {
                         cell.setCellType(HSSFCell.CELL_TYPE_BLANK);
                         cell.setCellType(HSSFCell.CELL_TYPE_NUMERIC);
-                        if (Utils.isInteger(strVal)) {
+                        if (PlatformTypeUtils.isInteger(strVal)) {
                             int intVal = Integer.valueOf(strVal.trim());
                             cell.setCellStyle(intStyle);
                             cell.setCellValue(intVal);
-                        } else if (Utils.isDouble(strVal)) {
+                        } else if (PlatformTypeUtils.isDouble(strVal)) {
                             double dblVal = Double.valueOf(strVal.trim());
                             cell.setCellStyle(decStyle);
                             cell.setCellValue(dblVal);
@@ -1373,7 +1373,7 @@ public class Vr {
                     } else {
                         boolean isDate = false;
                         for (String dteFormat : new String[]{"yyyy-MM-dd HH:mm:ss.SSS", "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm", "yyyy-MM-dd", "HH:mm"}) {
-                            if (Utils.isDate(strVal, dteFormat)) {
+                            if (PlatformTypeUtils.isDate(strVal, dteFormat)) {
                                 HSSFCellStyle dateStyle = datFormats.get(dteFormat.trim());
                                 if (dateStyle == null) {
                                     dateStyle = book.createCellStyle();
@@ -1506,6 +1506,7 @@ public class Vr {
     }
     
     public void closeDialog() {
-        RequestContext.getCurrentInstance().closeDialog(null);
+        DialogBuilder.closeCurrent();
+        //RequestContext.getCurrentInstance().closeDialog(null);
     }
 }

@@ -785,6 +785,10 @@ public class CorePlugin {
         return bodyDaoManager.findDocumentsByFilter(entityName, criteria, objSearch, textSearch, parameters);
     }
 
+    public String createSearchHelperString(String name, String entityName) {
+        return bodyDaoManager.createSearchHelperString(name, entityName);
+    }
+
     public List<Object> findAll(String entityName) {
         return bodyDaoManager.findAll(entityName);
     }

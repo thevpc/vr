@@ -55,9 +55,10 @@
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.ant:ant-launcher:1.9.6" level="project" />
     <orderEntry type="library" name="Maven: net.sourceforge.jexcelapi:jxl:2.6.10" level="project" />
     <orderEntry type="module" module-name="vpc-common-strings" />
-    <orderEntry type="library" name="Maven: net.vpc.common:vpc-common-utils:1.15" level="project" />
+    <orderEntry type="module" module-name="vpc-common-utils" />
     <orderEntry type="module" module-name="vpc-common-io" />
     <orderEntry type="module" module-name="vfs" />
+    <orderEntry type="module" module-name="vpc-common-jeep" />
     <orderEntry type="library" name="Maven: com.rometools:rome:1.5.0" level="project" />
     <orderEntry type="library" name="Maven: com.rometools:rome-utils:1.5.0" level="project" />
     <orderEntry type="library" name="Maven: org.jdom:jdom:2.0.2" level="project" />

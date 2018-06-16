@@ -3,14 +3,24 @@ package net.vpc.app.vainruling.core.service.obj;
 /**
  * Created by vpc on 8/20/16.
  */
-public class AutoFilterData implements Comparable<AutoFilterData>{
+public class AutoFilterData implements Comparable<AutoFilterData> {
+
     private String filterType;
     private String baseEntityName;
     private String name;
     private String label;
     private String expr;
     private String type;
+    private String initial;
     private int order;
+
+    public String getInitial() {
+        return initial;
+    }
+
+    public void setInitial(String initial) {
+        this.initial = initial;
+    }
 
     public String getFilterType() {
         return filterType;
@@ -70,12 +80,12 @@ public class AutoFilterData implements Comparable<AutoFilterData>{
 
     @Override
     public int compareTo(AutoFilterData o) {
-        int x=Integer.compare(order,o.order);
-        if(x!=0){
+        int x = Integer.compare(order, o.order);
+        if (x != 0) {
             return x;
         }
-        x=name.compareTo(o.name);
-        if(x!=0){
+        x = name.compareTo(o.name);
+        if (x != 0) {
             return x;
         }
         return 0;
@@ -83,18 +93,33 @@ public class AutoFilterData implements Comparable<AutoFilterData>{
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         AutoFilterData that = (AutoFilterData) o;
 
-        if (order != that.order) return false;
-        if (filterType != null ? !filterType.equals(that.filterType) : that.filterType != null) return false;
-        if (baseEntityName != null ? !baseEntityName.equals(that.baseEntityName) : that.baseEntityName != null)
+        if (order != that.order) {
             return false;
-        if (name != null ? !name.equals(that.name) : that.name != null) return false;
-        if (label != null ? !label.equals(that.label) : that.label != null) return false;
-        if (expr != null ? !expr.equals(that.expr) : that.expr != null) return false;
+        }
+        if (filterType != null ? !filterType.equals(that.filterType) : that.filterType != null) {
+            return false;
+        }
+        if (baseEntityName != null ? !baseEntityName.equals(that.baseEntityName) : that.baseEntityName != null) {
+            return false;
+        }
+        if (name != null ? !name.equals(that.name) : that.name != null) {
+            return false;
+        }
+        if (label != null ? !label.equals(that.label) : that.label != null) {
+            return false;
+        }
+        if (expr != null ? !expr.equals(that.expr) : that.expr != null) {
+            return false;
+        }
         return type != null ? type.equals(that.type) : that.type == null;
 
     }

@@ -29,7 +29,5 @@ public @interface EntityAction {
 
     boolean confirm() default false;
 
-    String actionLabel() default "";
-
     String actionStyle() default "";
 }

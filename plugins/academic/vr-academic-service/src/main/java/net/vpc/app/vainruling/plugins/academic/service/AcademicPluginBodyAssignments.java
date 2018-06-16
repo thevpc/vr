@@ -603,7 +603,7 @@ public class AcademicPluginBodyAssignments extends AcademicPluginBody {
 //                                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 5)
                                 .getResultList();
 
-                        return Utils.unmodifiableMapList(new DefaultMapList<Integer, AcademicCourseAssignment>(
+                        return CollectionUtils.unmodifiableMapList(new DefaultMapList<Integer, AcademicCourseAssignment>(
 
                                 assignments,
                                 academicCourseAssignmentIdConverter

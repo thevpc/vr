@@ -7,8 +7,6 @@ package net.vpc.app.vainruling.core.web.obj;
 
 import net.vpc.upa.AccessMode;
 
-import java.util.List;
-
 /**
  * @author taha.bensalah@gmail.com
  */

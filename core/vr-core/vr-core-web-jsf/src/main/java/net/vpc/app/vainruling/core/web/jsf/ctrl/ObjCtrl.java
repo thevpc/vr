@@ -25,14 +25,13 @@ import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.Convert;
 import net.vpc.common.util.DoubleParserConfig;
 import net.vpc.common.util.IntegerParserConfig;
-import net.vpc.common.util.PlatformTypes;
+import net.vpc.common.util.PlatformTypeUtils;
 import net.vpc.upa.*;
 import net.vpc.upa.Package;
 import net.vpc.upa.expressions.Expression;
 import net.vpc.upa.expressions.Literal;
 import net.vpc.upa.filters.FieldFilters;
 import net.vpc.upa.types.*;
-import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.extensions.model.dynaform.DynaFormControl;
 import org.primefaces.extensions.model.dynaform.DynaFormLabel;
@@ -328,6 +327,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
         try {
             UPA.getPersistenceUnit().getEntity(entityName);
             getModel().setEntityName(entityName);
+            getModel().setSearchTextHelper(core.createSearchHelperString(null, entityName));
             getModel().setList(new ArrayList<ObjRow>());
             getModel().setCurrent(delegated_newInstance());
             mainPhotoProvider = null;
@@ -586,7 +586,37 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
             if (cfg.id == null || cfg.id.trim().length() == 0) {
                 updateMode(AccessMode.READ);
                 loadList();
-                getModel().setCurrent(null);
+                //if a single row, will autoswitch to edit mode
+                if (getModel().getList().size() == 1) {
+                    Entity entity = getEntity();
+                    UPASecurityManager sm = entity.getPersistenceUnit().getSecurityManager();
+                    EntityBuilder b = entity.getBuilder();
+                    Object eid = resolveEntityId(cfg.id);
+                    Document curr = getModel().getList().get(0).getDocument();
+                    if (curr == null) {
+                        //should not happen though!
+                        updateMode(AccessMode.READ);
+                        getModel().setCurrent(null);
+                        return;
+                    }
+                    ObjRow r = new ObjRow(idToString(eid), curr, b.documentToObject(curr));
+                    r.setRead(sm.isAllowedLoad(entity, eid, curr));
+                    r.setWrite(sm.isAllowedUpdate(entity, eid, curr));
+                    r.setRowPos(-1);
+                    //now should try finding row pos
+                    for (ObjRow filteredObject : getModel().getList()) {
+                        Object id1 = getEntity().getBuilder().documentToId(filteredObject.getDocument());
+                        if (id1.equals(eid)) {
+                            r.setRowPos(filteredObject.getRowPos());
+                            break;
+                        }
+                    }
+                    getModel().setCurrent(r);
+                    updateMode(AccessMode.UPDATE);
+                    currentModelToView();
+                } else {
+                    getModel().setCurrent(null);
+                }
             } else if (enableCustomization && getModel().getMode() == AccessMode.READ) {
                 //do nothing
                 updateMode(AccessMode.READ);
@@ -928,6 +958,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
                         : a.isGoto() ? "goto"
                         : "unknown",
                         a.getLabel(),
+                        a.getDescription(),
                         a.getStyle(),
                         a.getId(),
                         a.getCommand(getSelectedIdStrings())
@@ -1042,7 +1073,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
                         readonly = true;
                     }
                     String type = UIConstants.Control.TEXT;
-                    if (PlatformTypes.isBooleanType(field.getDataType().getPlatformType())) {
+                    if (PlatformTypeUtils.isBooleanType(field.getDataType().getPlatformType())) {
                         type = UIConstants.Control.CHECKBOX;
                     }
                     String property = field.getName();
@@ -1058,24 +1089,25 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
 
                 ViewContext viewContext = new ViewContext();
                 List<OrderedPropertyView> propertyViews = new ArrayList<OrderedPropertyView>();
-                List<EntityPart> entityParts = VrUtils.sortPreserveIndex(ot.getParts(), new Comparator<EntityPart>() {
-                    @Override
-                    public int compare(EntityPart o1, EntityPart o2) {
-//                    if (o1 instanceof Section && o2 instanceof Section) {
+                List<EntityPart> entityParts = ot.getParts();
+//                List<EntityPart> entityParts = VrUtils.sortPreserveIndex(ot.getParts(), new Comparator<EntityPart>() {
+//                    @Override
+//                    public int compare(EntityPart o1, EntityPart o2) {
+////                    if (o1 instanceof Section && o2 instanceof Section) {
+////                        return 0;
+////                    }
+////                    if (o1 instanceof Section && o2 instanceof Field) {
+////                        return 1;
+////                    }
+////                    if (o1 instanceof Field && o2 instanceof Section) {
+////                        return -1;
+////                    }
+////                    if (o1 instanceof Field && o2 instanceof Field) {
+////                        return Integer.compare(((Field) o1).getPreferredIndex(), ((Field) o2).getPreferredIndex());
+////                    }
 //                        return 0;
 //                    }
-//                    if (o1 instanceof Section && o2 instanceof Field) {
-//                        return 1;
-//                    }
-//                    if (o1 instanceof Field && o2 instanceof Section) {
-//                        return -1;
-//                    }
-//                    if (o1 instanceof Field && o2 instanceof Field) {
-//                        return Integer.compare(((Field) o1).getPreferredIndex(), ((Field) o2).getPreferredIndex());
-//                    }
-                        return 0;
-                    }
-                });
+//                });
                 boolean saveAllowed = isSaveAllowed();
                 if (!saveAllowed) {
                     viewContext.getProperties().put("enabled", false);
@@ -1146,7 +1178,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
                                 details.setDisabled(!UPA.getPersistenceUnit().getSecurityManager().isAllowedNavigate(relation.getSourceEntity()));
                                 counter++;
                                 if (firstDetailRelation) {
-                                    details.setSeparatorText("Details");
+                                    details.setSeparatorText("Références");
                                     firstDetailRelation = false;
                                 }
                                 propertyViews.add(new OrderedPropertyView(propertyViews.size(), details));
@@ -1166,7 +1198,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
                                 details.setColspan(1);
                                 counter++;
                                 if (firstAssoRelation) {
-                                    details.setSeparatorText("Références");
+                                    details.setSeparatorText("Autres Références");
                                     firstAssoRelation = false;
                                 }
                                 propertyViews.add(new OrderedPropertyView(propertyViews.size(), details));
@@ -1290,18 +1322,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
                             } else if (curr instanceof StringType) {
                                 List<String> values = UPA.getPersistenceUnit().createQuery("Select distinct " + autoFilterData.getExpr() + " from " + getEntityName())
                                         .getResultList();
-                                Collections.sort(values, new Comparator<String>() {
-                                    @Override
-                                    public int compare(String o1, String o2) {
-                                        if (o1 == null) {
-                                            o1 = "";
-                                        }
-                                        if (o2 == null) {
-                                            o2 = "";
-                                        }
-                                        return o1.compareTo(o2);
-                                    }
-                                });
+                                Collections.sort(values, VrUtils.NULL_AS_EMPTY_STRING_COMPARATOR);
                                 for (String value : values) {
                                     if (value != null) {
                                         f.getValues().add(FacesUtils.createSelectItem(value, value, ""));
@@ -1412,6 +1433,13 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
     }
 
     public Object getDefaultFilterSelectedObject(AutoFilterData autoFilterData, DataType filterType) {
+        String initial = autoFilterData.getInitial();
+        if (initial != null) {
+            if ("".equals(initial)) {
+                return null;
+            }
+            throw new IllegalArgumentException("Not Supported yet intial value " + initial + " for auto-filter : " + autoFilterData.getBaseEntityName() + "." + autoFilterData.getName());
+        }
         ObjConfig config = getModel().getConfig();
         if (config != null && config.ignoreAutoFilter) {
             return null;
@@ -1548,12 +1576,11 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
     }
 
     public void proceedCancelActionDialog() {
-        fireEventSearchClosed();
+        DialogBuilder.closeCurrent();
     }
 
     public void fireEventSearchCancelled() {
-        RequestContext ctx = RequestContext.getCurrentInstance();
-        ctx.closeDialog(null);
+        DialogBuilder.closeCurrent();
     }
 
     public void updateColumnSelection() {
@@ -1849,8 +1876,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
                                 }
                             }
                         }
-                        RequestContext ctx = RequestContext.getCurrentInstance();
-                        ctx.closeDialog(null);
+                        DialogBuilder.closeCurrent();
                     } catch (RuntimeException ex) {
                         FacesUtils.addInfoMessage("Error : " + ex.getMessage());
                         log.log(Level.SEVERE, "Error", ex);
@@ -2049,6 +2075,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
         private String confirmMessage;
         private String actionId;
         private String entityName;
+        private String searchTextHelper = "Tapez ici les mots clés de recherche.";
         private String operationMessage;
         private List<ObjFormAction> actions = new ArrayList<ObjFormAction>();
         private ObjConfig config;
@@ -2058,6 +2085,14 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
 
         public PModel() {
             setCurrent(null);
+        }
+
+        public String getSearchTextHelper() {
+            return searchTextHelper;
+        }
+
+        public void setSearchTextHelper(String searchTextHelper) {
+            this.searchTextHelper = searchTextHelper;
         }
 
         public void setParams(ActionParam[] p) {

@@ -7,11 +7,7 @@ package net.vpc.app.vainruling.plugins.academic.teachereval.web.actions;
 
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.obj.EntityAction;
-import net.vpc.app.vainruling.core.web.obj.EntityViewAction;
-import net.vpc.app.vainruling.core.web.obj.ActionDialogResult;
 import net.vpc.app.vainruling.core.web.obj.EntityViewActionDialog;
-import net.vpc.app.vainruling.plugins.academic.perfeval.service.AcademicPerfEvalPlugin;
-import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.AcademicFeedbackModel;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.AcademicFeedbackSession;
 import net.vpc.common.util.Convert;
 import net.vpc.common.util.IntegerParserConfig;
@@ -23,8 +19,7 @@ import java.util.List;
  * @author taha.bensalah@gmail.com
  */
 @EntityAction(entityType = AcademicFeedbackSession.class,
-        actionName = "GenerateFeedback",
-        actionLabel = "Gen.", actionStyle = "fa-envelope-o"
+        actionStyle = "fa-envelope-o"
 )
 public class GenerateFeedbackAction implements EntityViewActionDialog {
 

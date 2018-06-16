@@ -20,7 +20,7 @@ import java.util.List;
  * @author taha.bensalah@gmail.com
  */
 @EntityAction(entityType = Equipment.class,
-        actionLabel = "div", actionStyle = "fa-calculator"
+        actionStyle = "fa-calculator"
 )
 public class SplitEquipmentQtyAction implements EntityViewActionInvoke {
 

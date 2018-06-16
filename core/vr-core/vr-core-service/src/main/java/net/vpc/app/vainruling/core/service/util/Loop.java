@@ -1,7 +1,6 @@
 package net.vpc.app.vainruling.core.service.util;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -11,14 +10,6 @@ public class Loop {
     private List<LoopDef> sub = new ArrayList<>();
     private int[] val;
     private boolean needReset = true;
-
-    public static void main(String[] args) {
-        Loop loop = new Loop().over(0, 3).over(0, 2);
-        int[] r = null;
-        while ((r = loop.next()) != null) {
-            System.out.println(Arrays.toString(r));
-        }
-    }
 
     public Loop over(int min, int max) {
         sub.add(new LoopDef(min, max));

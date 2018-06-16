@@ -20,7 +20,7 @@ import java.util.List;
  * @author taha.bensalah@gmail.com
  */
 @EntityAction(entityType = AcademicCourseAssignment.class,
-        actionLabel = "x2", actionStyle = "fa-envelope-o",
+        actionStyle = "fa-envelope-o",
         confirm = true
 )
 public class DupAcademicCourseAssignmentAction implements EntityViewActionInvoke {

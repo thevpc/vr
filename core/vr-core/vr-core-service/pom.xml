@@ -88,7 +88,7 @@
         <dependency>
             <groupId>net.vpc.common</groupId>
             <artifactId>vpc-common-utils</artifactId>
-            <version>1.15</version>
+            <version>1.17</version>
         </dependency>
         <dependency>
             <groupId>net.vpc.common</groupId>
@@ -104,6 +104,11 @@
             <groupId>net.vpc.common</groupId>
             <artifactId>vfs</artifactId>
             <version>1.9</version>
+        </dependency>
+        <dependency>
+            <groupId>net.vpc.common</groupId>
+            <artifactId>vpc-common-jeep</artifactId>
+            <version>1.1.0</version>
         </dependency>
         <dependency>
             <groupId>com.rometools</groupId>

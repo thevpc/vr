@@ -2,21 +2,14 @@ package net.vpc.app.vainruling.core.service.util;
 
 import com.google.gson.*;
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.common.util.Convert;
 import net.vpc.upa.*;
-import net.vpc.upa.callbacks.UpdateEvent;
-import net.vpc.upa.expressions.Expression;
-import net.vpc.upa.expressions.IdEnumerationExpression;
-import net.vpc.upa.expressions.Var;
 import net.vpc.upa.types.*;
-import org.aspectj.weaver.TypeFactory;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Created by vpc on 9/5/16.
@@ -124,7 +117,7 @@ public class VrUPAUtils {
             }
             return null;
         }
-        JsonElement jsonElement = VrUtils.GSON.fromJson(value, JsonElement.class);
+        JsonElement jsonElement = JsonUtils.parse(value, JsonElement.class);
         return jsonToObj(jsonElement, type);
     }
 

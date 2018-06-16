@@ -7,7 +7,7 @@
       xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
       xmlns:c="http://java.sun.com/jstl/core" xmlns:f="http://xmlns.jcp.org/jsf/core"
       >
-<!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.jsf.Vr"-->
+    <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.jsf.Vr"-->
     <!--@elvariable id="corePlugin" type="net.vpc.app.vainruling.core.service.CorePlugin"-->
     <!--@elvariable id="vrMenuManager" type="net.vpc.app.vainruling.core.web.menu.VrMenuManager"-->
     <h:head>
@@ -48,7 +48,7 @@
 
         <h:outputScript library="primefaces" name="jquery/jquery.js" target="head" />
         <h:outputScript library="primefaces" name="jquery/jquery-plugins.js" target="head" />
-        <ui:insert name="links">
+        <ui:insert name="headerLinks">
 
         </ui:insert>
 
@@ -496,6 +496,11 @@
                                         <h:outputText rendered="#{(m.active) or (m.ctrl eq '')}" value="#{m.title}"/>
                                     </li>
                                 </ui:repeat>
+                                <li >
+                                    <p:commandLink action="#{vr.goBack}" style="margin-left: 30px">
+                                        <i class="fa fa-chevron-circle-left"></i><span style="margin-left: 5px">Retour</span>
+                                    </p:commandLink>
+                                </li>
                             </ol>
                         </ui:insert>
 

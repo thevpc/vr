@@ -11,13 +11,13 @@ import net.vpc.app.vainruling.plugins.academic.service.model.config.*;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.*;
 import net.vpc.app.vainruling.plugins.academic.service.model.internship.current.AcademicInternshipGroup;
 import net.vpc.common.strings.StringUtils;
-import net.vpc.common.util.DateUtils;
 import net.vpc.upa.Action;
 import net.vpc.upa.Document;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.UPA;
 
 import java.util.*;
+import net.vpc.common.util.MutableDate;
 
 public class AcademicPluginBodyConfig extends AcademicPluginBody {
     public static final int DEFAULT_SEMESTER_MAX_WEEKS = 14;
@@ -810,14 +810,13 @@ public class AcademicPluginBodyConfig extends AcademicPluginBody {
 
     public AcademicSemester getCurrentSemester() {
         List<AcademicSemester> semesters = findSemesters();
-        Date date = DateUtils.setDateOnly(new Date());
-        date = DateUtils.set(date, Calendar.YEAR, 2000);
+        MutableDate date = new MutableDate().clearTime().setYear(2000);
         for (AcademicSemester semester : semesters) {
-            Date fromDate = DateFormatUtils.parse(semester.getFromDate(), "dd/MM", null);
-            Date toDate = DateFormatUtils.parse(semester.getToDate(), "dd/MM", null);
+            MutableDate fromDate = DateFormatUtils.parseMutableDate(semester.getFromDate(), "dd/MM", null);
+            MutableDate toDate = DateFormatUtils.parseMutableDate(semester.getToDate(), "dd/MM", null);
             if (fromDate != null && toDate != null) {
-                fromDate = DateUtils.set(fromDate, Calendar.YEAR, 2000);
-                toDate = DateUtils.set(toDate, Calendar.YEAR, 2000);
+                fromDate.setYear(2000);
+                toDate.setYear(2000);
                 if (fromDate.before(toDate)) {
                     if(date.compareTo(fromDate)>=0 && date.compareTo(toDate)<=0){
                         return semester;

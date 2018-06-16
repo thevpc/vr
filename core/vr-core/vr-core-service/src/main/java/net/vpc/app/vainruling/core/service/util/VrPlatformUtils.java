@@ -17,6 +17,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
+import net.vpc.common.util.PlatformTypeUtils;
 
 public class VrPlatformUtils {
     public static final String SLASH = System.getProperty("file.separator");
@@ -403,7 +404,7 @@ public class VrPlatformUtils {
                 }
             }
         }
-        return Utils.toPrimitiveIntArray(all);
+        return PlatformTypeUtils.toPrimitiveIntArray(all);
     }
 
     public static long[] getLongArrayConstantsValues(Class cls,String wpattern){
@@ -419,6 +420,6 @@ public class VrPlatformUtils {
                 }
             }
         }
-        return Utils.toPrimitiveLongArray(all);
+        return PlatformTypeUtils.toPrimitiveLongArray(all);
     }
 }

@@ -23,6 +23,7 @@ import java.sql.Timestamp;
 import java.util.*;
 import javax.net.ssl.SSLEngineResult;
 import net.vpc.app.vainruling.core.service.plugins.VrPlugin;
+import net.vpc.common.util.PlatformTypeUtils;
 import net.vpc.upa.NamedId;
 
 /**
@@ -113,7 +114,7 @@ public class EquipmentPlugin {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity entity = pu.getEntity(Equipment.class);
         Equipment eq = entity.findById(equipmentId);
-        if (Utils.isInteger(eq.getQuantity())) {
+        if (PlatformTypeUtils.isInteger(eq.getQuantity())) {
             int qte = (int) eq.getQuantity();
             if (qte > 1) {
                 for (int i = 2; i < qte + 1; i++) {

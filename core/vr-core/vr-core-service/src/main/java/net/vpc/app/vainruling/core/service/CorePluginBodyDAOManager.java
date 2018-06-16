@@ -45,8 +45,22 @@ class CorePluginBodyDAOManager extends CorePluginBody {
 
     public List<AutoFilterData> getEntityFilters(String entityName) {
         Entity entity = UPA.getPersistenceUnit().getEntity(entityName);
+        List<AutoFilterData> autoFilterDatasAll = new ArrayList<>();
         List<AutoFilterData> autoFilterDatas = new ArrayList<>();
-        //autoFilters.clear();
+        String all = StringUtils.trim(entity.getProperties().getString("ui.auto-filters"));
+        if(!all.isEmpty()){
+            //this is a single value
+            if(all.startsWith("{")){
+                //VrUtils.parseJSONObject(all, AutoFilterData[].class)
+                autoFilterDatasAll.add(VrUtils.parseJSONObject(all, AutoFilterData.class));
+            }else{
+                autoFilterDatasAll.addAll(Arrays.asList(VrUtils.parseJSONObject(all, AutoFilterData[].class)));
+            }
+        }
+        for (int i = 0; i < autoFilterDatasAll.size(); i++) {
+            autoFilterDatasAll.get(i).setBaseEntityName(entityName);
+        }
+        //
         for (Map.Entry<String, Object> entry : entity.getProperties().toMap().entrySet()) {
             if (entry.getKey().startsWith("ui.auto-filter.")) {
                 String name = entry.getKey().substring("ui.auto-filter.".length());
@@ -57,7 +71,9 @@ class CorePluginBodyDAOManager extends CorePluginBody {
             }
         }
         Collections.sort(autoFilterDatas);
-        return autoFilterDatas;
+        
+        autoFilterDatasAll.addAll(autoFilterDatas);
+        return autoFilterDatasAll;
     }
 
     public List<NamedId> getFieldValues(String entityName, String fieldName, Map<String, Object> constraints, Object currentInstance) {
@@ -80,10 +96,8 @@ class CorePluginBodyDAOManager extends CorePluginBody {
         } else if (t instanceof ManyToOneType) {
             ManyToOneType m = (ManyToOneType) t;
             final Entity me = m.getRelationship().getTargetEntity();
-            if (
-                    (m.getRelationship() instanceof ManyToOneRelationship && ((ManyToOneRelationship)m.getRelationship()).getFilter() == null)
-                    || (m.getRelationship() instanceof OneToOneRelationship)
-                    ) {
+            if ((m.getRelationship() instanceof ManyToOneRelationship && ((ManyToOneRelationship) m.getRelationship()).getFilter() == null)
+                    || (m.getRelationship() instanceof OneToOneRelationship)) {
                 List<NamedId> cacheItem = findAllNamedIdsByRelationship(m.getRelationship().getName(), constraints, currentInstance);
                 List<NamedId> cacheItem2 = new ArrayList<>(cacheItem.size());
                 for (NamedId namedId : cacheItem) {
@@ -110,8 +124,8 @@ class CorePluginBodyDAOManager extends CorePluginBody {
 
     public Object save(String entityName, Object t) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        if(entityName==null){
-            entityName=pu.getEntity(t.getClass()).getName();
+        if (entityName == null) {
+            entityName = pu.getEntity(t.getClass()).getName();
         }
         Entity entity = pu.getEntity(entityName);
         t = VrUtils.convertDataObjectOrDocument(t, entity.getEntityType());
@@ -140,7 +154,6 @@ class CorePluginBodyDAOManager extends CorePluginBody {
                 a.setSnapshotName(null);
             }
 
-
             pu.persist(entityName, t);
 //            trace.inserted(t, getClass(), Level.FINE);
         } else {
@@ -167,8 +180,8 @@ class CorePluginBodyDAOManager extends CorePluginBody {
     }
 
     public RemoveTrace remove(String entityName, Object id) {
-        if(entityName==null){
-            entityName=UPA.getPersistenceUnit().getEntity(id.getClass()).getName();
+        if (entityName == null) {
+            entityName = UPA.getPersistenceUnit().getEntity(id.getClass()).getName();
         }
         if (!isSoftRemovable(entityName)) {
             return erase(entityName, id);
@@ -525,6 +538,30 @@ class CorePluginBodyDAOManager extends CorePluginBody {
         return list;
     }
 
+    public String createSearchHelperString(String name, String entityName) {
+        String d="Tapez ici les mots clés de recherche.";
+        if(StringUtils.isEmpty(entityName)){
+            return d;
+        }
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        Entity entity = pu.getEntity(entityName);
+        String f = entity.getProperties().getString(UIConstants.ENTITY_TEXT_SEARCH_FACTORY);
+        if (StringUtils.isEmpty(f)) {
+            return d;
+        }
+        EntityObjSearchFactory g = null;
+        try {
+            g = (EntityObjSearchFactory) Class.forName(f).newInstance();
+            String s=g.createHelperString(name, entity);
+            if(StringUtils.isEmpty(s)){
+                s=d;
+            }
+            return s;
+        } catch (Exception e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
+    
     public ObjSearch createSearch(String name, String entityName, String expression) {
         if (StringUtils.isEmpty(expression)) {
             return new ObjSimpleSearch(null);
@@ -578,34 +615,36 @@ class CorePluginBodyDAOManager extends CorePluginBody {
             throw ex;
         }
     }
-    
-    private void checkNavigate(String entityName){
+
+    private void checkNavigate(String entityName) {
         if (!CorePlugin.get().isCurrentSessionAdmin()) {
             return;
         }
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity e = pu.getEntity(entityName);
-        if(!pu.getSecurityManager().isAllowedNavigate(e)){
+        if (!pu.getSecurityManager().isAllowedNavigate(e)) {
             throw new SecurityException("Not Allowed");
         }
     }
-    private void checkFindMany(String entityName){
+
+    private void checkFindMany(String entityName) {
         if (!CorePlugin.get().isCurrentSessionAdmin()) {
             return;
         }
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity e = pu.getEntity(entityName);
-        if(!pu.getSecurityManager().isAllowedLoad(e) || !pu.getSecurityManager().isAllowedNavigate(e)){
+        if (!pu.getSecurityManager().isAllowedLoad(e) || !pu.getSecurityManager().isAllowedNavigate(e)) {
             throw new SecurityException("Not Allowed");
         }
     }
-    private void checkFindOne(String entityName){
+
+    private void checkFindOne(String entityName) {
         if (!CorePlugin.get().isCurrentSessionAdmin()) {
             return;
         }
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity e = pu.getEntity(entityName);
-        if(!pu.getSecurityManager().isAllowedLoad(e)){
+        if (!pu.getSecurityManager().isAllowedLoad(e)) {
             throw new SecurityException("Not Allowed");
         }
     }
