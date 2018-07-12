@@ -29,7 +29,7 @@ public class SpaceTimeMarshaller extends BaseMarshaller {
         int selected = (int) allele;
         PlanningSpaceTime value = activityTable.getSpaceTimes().get(selected);
 
-        PlanningActivity activity = activityTable.getTable().getActivities().get(getActivity());
+        PlanningActivity activity = activityTable.getTable().getActivity(getActivity());
         if (!activity.isFixedSpace() && !activity.isFixedTime()) {
             activity.setSpaceTime(value);
         } else if (activity.isFixedSpace()) {

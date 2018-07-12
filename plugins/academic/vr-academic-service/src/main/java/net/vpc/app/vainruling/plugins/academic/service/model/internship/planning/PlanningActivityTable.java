@@ -18,8 +18,27 @@ public class PlanningActivityTable {
     private List<String> examiners = new ArrayList<>();
     private List<String> chairs = new ArrayList<>();
 
+    public PlanningActivityTable() {
+    }
+
+    public PlanningActivityTable(PlanningActivityTable other) {
+        rooms.addAll(other.rooms);
+        times.addAll(other.times);
+        examiners.addAll(other.examiners);
+        chairs.addAll(other.chairs);
+        for (PlanningActivity activity : other.getActivities()) {
+            addActivity(activity);
+        }
+    }
+
+    public PlanningActivity getActivity(int index) {
+        return activities.get(index);
+    }
+
     public List<PlanningActivity> getActivities() {
-        return activities;
+        List<PlanningActivity> all=new ArrayList<>(activities);
+        Collections.sort(all);
+        return all;
     }
 
     public PlanningActivityTable setActivities(List<PlanningActivity> activities) {
@@ -81,14 +100,15 @@ public class PlanningActivityTable {
         if (time != null || location != null) {
             activity.setSpaceTime(new PlanningSpaceTime(location, time));
         }
-        getActivities().add(activity);
+        activities.add(activity);
     }
 
-    public void addActivity(PlanningActivity internship) {
-        getActivities().add(internship);
+    public void addActivity(PlanningActivity activity) {
+        activities.add(new PlanningActivity(activity));
     }
+
     public void addActivity(PlanningInternship internship) {
-        getActivities().add(new PlanningActivity(internship));
+        activities.add(new PlanningActivity(internship));
     }
 
     public PlanningRoom getRoom(String name) {
@@ -114,7 +134,7 @@ public class PlanningActivityTable {
     }
 
     public PlanningActivityTable setRooms(List<PlanningRoom> rooms) {
-        this.rooms = rooms;
+        this.rooms = new ArrayList<>(rooms);
         return this;
     }
 
@@ -231,7 +251,7 @@ public class PlanningActivityTable {
     public PlanningActivityTable copy() {
         PlanningActivityTable copy = new PlanningActivityTable();
         for (PlanningActivity a1 : this.getActivities()) {
-            copy.getActivities().add(a1.copy());
+            copy.addActivity(a1.copy());
         }
         copy.setChairs(new ArrayList<String>(this.getChairs()));
         copy.setRooms(new ArrayList<PlanningRoom>(this.getRooms()));

@@ -7,6 +7,15 @@ public class PlanningRoom implements Comparable<PlanningRoom> {
     private String name;
     private int index;
 
+    public PlanningRoom(String name) {
+        this(name,0);
+    }
+
+    public PlanningRoom(PlanningRoom other) {
+        this.name=other.name;
+        this.index=other.index;
+    }
+
     public PlanningRoom(String name, int index) {
         this.name = name;
         this.index = index;

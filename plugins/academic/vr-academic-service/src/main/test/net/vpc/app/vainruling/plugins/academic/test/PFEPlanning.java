@@ -3,34 +3,214 @@ package net.vpc.app.vainruling.plugins.academic.test;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.internship.current.AcademicInternship;
-import net.vpc.app.vainruling.plugins.academic.service.model.internship.planning.PlanningActivityTable;
-import net.vpc.app.vainruling.plugins.academic.service.model.internship.planning.PlanningResult;
-import net.vpc.app.vainruling.plugins.academic.service.model.internship.planning.PlanningService;
+import net.vpc.app.vainruling.plugins.academic.service.model.internship.planning.*;
 import net.vpc.common.io.FileUtils;
+import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.Chronometer;
+import net.vpc.upa.UPA;
+import net.vpc.upa.bulk.DataReader;
+import net.vpc.upa.bulk.DataRow;
+import net.vpc.upa.bulk.ImportExportManager;
+import net.vpc.upa.bulk.SheetParser;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.text.ParseException;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * this is not a unit test
  */
 public class PFEPlanning {
-    public static void main(String[] args) {
-        File file = new File(System.getProperty("user.home") + "/myplanning.xlsx");
 
+//    public static void main(String[] args) {
+//        File file = new File(System.getProperty("user.home") + "/myplanning.xlsx");
+//
+//        try {
+//            generate(100, 5, file);
+//            run(new PlanningService(), file);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        VrApp.stopStandalone();
+//    }
+
+    public static void main(String[] args) {
+//        VrApp.runStandaloneNoLog();
+        PFEPlanning p = new PFEPlanning();
         try {
-            generate(100, 5, file);
-            run(new PlanningService(), file);
-        } catch (Exception e) {
+            File file = new File("/data/vpc/Data/eniso/pfe-stages-projets/2017-2018/PFE-2017-2018-Session01-input.xlsx");
+            PlanningActivityTable t = p.loadPlanningXlsFile(file);
+            System.out.println("Loaded "+t.getActivities().size()+" Activities");
+            ResourceAllocationList resourceAllocationList = p.generateResourceAllocationList(t);
+            ResourceAllocationListWriter w=new ResourceAllocationListWriter(resourceAllocationList);
+            w.writeTeacherHtml(new File(file.getPath() + ".teachers.html"));
+            w.writeStudentsHtml(new File(file.getPath() + ".students.html"));
+        } catch (IOException e) {
             e.printStackTrace();
         }
-        VrApp.stopStandalone();
     }
+
+    public ResourceAllocationList generateResourceAllocationList(PlanningActivityTable table) {
+        ResourceAllocationList resourceAllocationsTable = new ResourceAllocationList(table);
+        for (PlanningActivity planningActivity : table.getActivities()) {
+            fillAllocations(planningActivity, resourceAllocationsTable);
+        }
+
+        for (PlanningActivity planningActivity : table.getActivities()) {
+
+            if (!StringUtils.isEmpty(planningActivity.getExaminer())) {
+                TeacherInfo teacherInfo = resourceAllocationsTable.getTeacherInfo(planningActivity.getExaminer());
+                teacherInfo.getCounter("Examiner").inc();
+                teacherInfo.addSpaceTime(planningActivity.getSpaceTime());
+                teacherInfo.getActivities().add(planningActivity);
+            }
+            if (!StringUtils.isEmpty(planningActivity.getChair())) {
+                TeacherInfo teacherInfo = resourceAllocationsTable.getTeacherInfo(planningActivity.getChair());
+                teacherInfo.getCounter("Chair").inc();
+                teacherInfo.addSpaceTime(planningActivity.getSpaceTime());
+                teacherInfo.getActivities().add(planningActivity);
+            }
+            for (String s : planningActivity.getInternship().getSupervisors()) {
+                if (!StringUtils.isEmpty(s)) {
+                    TeacherInfo teacherInfo = resourceAllocationsTable.getTeacherInfo(s);
+                    teacherInfo.getCounter("Supervisor").add(1.0 / planningActivity.getInternship().getSupervisors().size());
+                    teacherInfo.addSpaceTime(planningActivity.getSpaceTime());
+                    teacherInfo.getActivities().add(planningActivity);
+                }
+            }
+        }
+        for (TeacherInfo teacherInfo : resourceAllocationsTable.getTeacherInfos()) {
+            Collections.sort(teacherInfo.getActivities(), new Comparator<PlanningActivity>() {
+                @Override
+                public int compare(PlanningActivity o1, PlanningActivity o2) {
+                    int o = o1.getSpaceTime().compareTo(o2.getSpaceTime());
+                    if (o == 0) {
+                        return o1.getInternship().getCode().compareTo(o2.getInternship().getCode());
+                    }
+                    return o;
+                }
+            });
+        }
+
+
+        return resourceAllocationsTable;
+    }
+
+
+
+    private Date parseDate(Object o){
+        if(o==null){
+            return null;
+        }
+        if( o instanceof Date){
+            return (Date) o;
+        }
+        if( o instanceof String){
+            String s=o.toString().trim();
+            if(s.length()>0) {
+                if (s.contains("/")) {
+                    try {
+                        return new SimpleDateFormat("MM/dd/yyyy HH:mm").parse(s);
+                    } catch (ParseException e) {
+                        throw new IllegalArgumentException(e);
+                    }
+                } else if (s.contains("-")) {
+                    try {
+                        return new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(s);
+                    } catch (ParseException e) {
+                        throw new IllegalArgumentException(e);
+                    }
+                } else {
+                    throw new IllegalArgumentException("Unsupported format for date " + o);
+                }
+            }else{
+                return null;
+            }
+        }
+        throw new IllegalArgumentException("Unsupported format for date " + o);
+    }
+
+    public PlanningActivityTable loadPlanningXlsFile(File file) throws IOException {
+        PlanningActivityTable t = new PlanningActivityTable();
+        ImportExportManager ie = UPA.getBootstrapFactory().createObject(ImportExportManager.class);
+        ie.setFactory(UPA.getBootstrapFactory());
+//        ImportExportManager ie = UPA.getPersistenceUnit().getImportExportManager();
+        SheetParser p = ie.createSheetParser(file);
+        p.setContainsHeader(true);
+        DataReader reader = p.parse();
+        int window = 5;
+        while (reader.hasNext()) {
+            DataRow dataRow = reader.readRow();
+            int roomsCount = (dataRow.getColumns().length - 3) / window;
+            Object[] values = dataRow.getValues();
+            Date timeObj = parseDate(values[0]);
+            int d = Integer.parseInt(StringUtils.trimObject(values[1]));
+            int h = Integer.parseInt(StringUtils.trimObject(values[2]));
+            //String time = String.valueOf(timeObj);
+            if (timeObj != null) {
+                for (int r = 0; r < roomsCount; r++) {
+                    String code = StringUtils.trimObject(values[r * window + 3]);
+                    boolean enabled = true;
+                    if (code.endsWith("(disabled)")) {
+                        code = code.substring(0, code.length() - "(disabled)".length());
+                        enabled = false;
+                    }
+                    String room = "Salle" + (r + 1);
+                    if (!StringUtils.isEmpty(code)) {
+                        String student = StringUtils.trimObject(values[r * window + 4]);
+                        String supervisor = StringUtils.trimObject(values[r * window + 5]);
+                        String chair = StringUtils.trimObject(values[r * window + 6]);
+                        String examiner = StringUtils.trimObject(values[r * window + 7]);
+                        if (StringUtils.isEmpty(supervisor)) {
+//                            System.out.println("Why");
+                        }
+                        if (StringUtils.isEmpty(chair)) {
+//                            System.out.println("Why");
+                        }
+                        if (StringUtils.isEmpty(examiner)) {
+//                            System.out.println("Why");
+                        }
+                        PlanningActivity a = new PlanningActivity();
+                        PlanningInternship is = new PlanningInternship();
+                        is.setCode(code);
+                        is.setStudent(student);
+                        is.setSupervisors(Arrays.asList(supervisor));
+                        a.setInternship(is);
+                        a.setEnabled(enabled);
+                        a.setExaminer(examiner.trim());
+                        a.setChair(chair.trim());
+                        a.setSpaceTime(new PlanningSpaceTime(new PlanningRoom(room), new PlanningTime(timeObj, h, d)));
+                        t.addActivity(a);
+                    }
+                }
+            }
+        }
+        return t;
+    }
+
+    public void fillAllocations(PlanningActivity a, ResourceAllocationList table) {
+        if (a.getChair() != null) {
+            String id = "P:" + a.getChair() + ";" + a.getTime();
+            table.add(new ResourceAllocation(id, "PersonSpaceTime", a, a.getChair() + " is Chair      of " + a.getInternship().getCode() + " at " + a.getSpaceTime()));
+        }
+        if (a.getExaminer() != null) {
+            String id = "P:" + a.getExaminer() + ";" + a.getTime();
+            table.add(new ResourceAllocation(id, "PersonSpaceTime", a, a.getExaminer() + " is Examiner   of " + a.getInternship().getCode() + " at " + a.getSpaceTime()));
+        }
+        if (a.getInternship().getSupervisors() != null) {
+            for (String s : a.getInternship().getSupervisors()) {
+                String id = "P:" + s + ";" + a.getTime();
+                table.add(new ResourceAllocation(id, "PersonSpaceTime", a, s + " is Supervisor of " + a.getInternship().getCode() + " at " + a.getSpaceTime()));
+            }
+        }
+        table.add(new ResourceAllocation("R:" + a.getSpaceTime(), "Room", a, a.getRoom().getName() + " is allocated to " + a.getInternship().getCode() + " at " + a.getTime()));
+    }
+
 
     public static void generate(int maxActivities, int days, File file) throws IOException {
         VrApp.runStandaloneNoLog();

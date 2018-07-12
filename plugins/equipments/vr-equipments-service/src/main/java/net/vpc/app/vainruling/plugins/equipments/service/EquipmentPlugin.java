@@ -12,6 +12,7 @@ import net.vpc.app.vainruling.core.service.plugins.InstallDemo;
 import net.vpc.app.vainruling.core.service.plugins.Start;
 import net.vpc.app.vainruling.plugins.equipments.service.model.*;
 import net.vpc.common.strings.StringUtils;
+import net.vpc.common.util.PlatformUtils;
 import net.vpc.common.util.Utils;
 import net.vpc.upa.Entity;
 import net.vpc.upa.PersistenceUnit;
@@ -21,10 +22,8 @@ import org.springframework.context.annotation.DependsOn;
 
 import java.sql.Timestamp;
 import java.util.*;
-import javax.net.ssl.SSLEngineResult;
+
 import net.vpc.app.vainruling.core.service.plugins.VrPlugin;
-import net.vpc.common.util.PlatformTypeUtils;
-import net.vpc.upa.NamedId;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -114,7 +113,7 @@ public class EquipmentPlugin {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity entity = pu.getEntity(Equipment.class);
         Equipment eq = entity.findById(equipmentId);
-        if (PlatformTypeUtils.isInteger(eq.getQuantity())) {
+        if (PlatformUtils.isInteger(eq.getQuantity())) {
             int qte = (int) eq.getQuantity();
             if (qte > 1) {
                 for (int i = 2; i < qte + 1; i++) {

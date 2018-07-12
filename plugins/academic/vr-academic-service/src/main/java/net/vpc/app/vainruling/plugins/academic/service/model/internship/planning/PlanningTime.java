@@ -1,5 +1,6 @@
 package net.vpc.app.vainruling.plugins.academic.service.model.internship.planning;
 
+import net.vpc.common.util.MutableDate;
 import org.joda.time.Days;
 import org.joda.time.LocalDateTime;
 import org.joda.time.Minutes;
@@ -13,6 +14,8 @@ import java.util.Date;
  * Created by vpc on 5/19/16.
  */
 public class PlanningTime implements Comparable<PlanningTime> {
+    public static final SimpleDateFormat TOSTRING_DATEONLY_FORMAT = new SimpleDateFormat("EEEE yyyy-MM-dd");
+    public static final SimpleDateFormat TOSTRING_FORMAT = new SimpleDateFormat("EEE yyyy-MM-dd HH:mm");
     public static final SimpleDateFormat DEFAULT_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm");
     public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
     public static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm");
@@ -22,13 +25,64 @@ public class PlanningTime implements Comparable<PlanningTime> {
 //    private int dayIndex;
 //    private int timeIndex;
     private Date time;
+    private int dayIndex;
+    private int hourIndex;
+
+    public PlanningTime(PlanningTime other) {
+        this.time=other.time;
+        this.dayIndex=other.dayIndex;
+        this.hourIndex=other.hourIndex;
+    }
+
+    public PlanningTime(Date time, int dayIndex, int hourIndex) {
+        this.time = time;
+        this.dayIndex = dayIndex;
+        this.hourIndex = hourIndex;
+    }
 
     public PlanningTime(String date) {
+        this.dayIndex = -1;
+        this.hourIndex = -1;
         try {
             this.time = DEFAULT_FORMAT.parse(date);
         } catch (ParseException e) {
-            throw new IllegalArgumentException(e);
+            // other format
+            // day index / hour index
+            // example T1.1
+            String d2 = date.toUpperCase();
+            if (d2.startsWith("T") && d2.indexOf(".") > 0) {
+                int d = Integer.parseInt(d2.substring(1, d2.indexOf('.')).trim());
+                int h = Integer.parseInt(d2.substring(d2.indexOf('.') + 1).trim());
+                MutableDate md = new MutableDate();
+                md.clear();
+                md.addDaysOfMonth(d);
+                md.addHoursOfDay(h);
+                md.setYear(2018);
+                this.dayIndex = d;
+                this.hourIndex = h;
+                this.time = md.getDateTime();
+            } else {
+                throw new IllegalArgumentException(e);
+            }
         }
+    }
+
+    public int getDayIndex() {
+        return dayIndex;
+    }
+
+    public PlanningTime setDayIndex(int dayIndex) {
+        this.dayIndex = dayIndex;
+        return this;
+    }
+
+    public int getHourIndex() {
+        return hourIndex;
+    }
+
+    public PlanningTime setHourIndex(int hourIndex) {
+        this.hourIndex = hourIndex;
+        return this;
     }
 
     public PlanningTime(Date time) {
@@ -60,7 +114,7 @@ public class PlanningTime implements Comparable<PlanningTime> {
 //
 
     public String getName() {
-        return DEFAULT_FORMAT.format(time);
+        return TOSTRING_FORMAT.format(time);
     }
 
     public String getDayName() {
@@ -82,6 +136,14 @@ public class PlanningTime implements Comparable<PlanningTime> {
     }
 
 
+    public Date getDateOnly() {
+        return new MutableDate(time).clearTime().getDateTime();
+    }
+
+    public Date getTimeOnly() {
+        return new MutableDate(time).clearDate().getDateTime();
+    }
+
     public Date getTime() {
         return time;
     }
@@ -98,11 +160,11 @@ public class PlanningTime implements Comparable<PlanningTime> {
     }
 
     public int dayDistance(PlanningTime o) {
-        return Days.daysBetween(new LocalDateTime(this.getTime()), new LocalDateTime(o.getTime())).getDays();
+        return Math.abs(Days.daysBetween(new LocalDateTime(this.getTime()), new LocalDateTime(o.getTime())).getDays());
     }
 
     public int minutesDistance(PlanningTime o) {
-        return Minutes.minutesBetween(new LocalDateTime(this.getTime()), new LocalDateTime(o.getTime())).getMinutes();
+        return Math.abs(Minutes.minutesBetween(new LocalDateTime(this.getTime()), new LocalDateTime(o.getTime())).getMinutes());
     }
 
     @Override
@@ -113,7 +175,6 @@ public class PlanningTime implements Comparable<PlanningTime> {
         PlanningTime that = (PlanningTime) o;
 
         return !(time != null ? !time.equals(that.time) : that.time != null);
-
     }
 
     @Override

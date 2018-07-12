@@ -24,6 +24,6 @@ public class ChairMarshaller extends BaseMarshaller {
     public void unmarshall(IChromosome iChromosome, PlanningActivityTableExt activityTable) {
         Object allele = (iChromosome.getGene(getIndex())).getAllele();
         String chair = allele == null ? null : activityTable.getTable().getChairs().get((int) allele);
-        activityTable.getTable().getActivities().get(getActivity()).setChair(chair);
+        activityTable.getTable().getActivity(getActivity()).setChair(chair);
     }
 }

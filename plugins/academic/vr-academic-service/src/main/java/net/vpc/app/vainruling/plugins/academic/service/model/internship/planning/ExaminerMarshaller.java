@@ -24,6 +24,6 @@ public class ExaminerMarshaller extends BaseMarshaller {
     public void unmarshall(IChromosome iChromosome, PlanningActivityTableExt activityTable) {
         Object allele = (iChromosome.getGene(getIndex())).getAllele();
         String examiner = allele == null ? null : activityTable.getTable().getExaminers().get((int) allele);
-        activityTable.getTable().getActivities().get(getActivity()).setExaminer(examiner);
+        activityTable.getTable().getActivity(getActivity()).setExaminer(examiner);
     }
 }

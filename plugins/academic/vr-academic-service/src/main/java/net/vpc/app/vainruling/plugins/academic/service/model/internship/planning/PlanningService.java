@@ -218,7 +218,7 @@ public class PlanningService {
                     a.getInternship().setId((int) Double.parseDouble(cols[7]));
                     a.getInternship().setDisciplines(cols[8]);
                     a.getInternship().setDisciplines(cols[9]);
-                    t.getActivities().add(a);
+                    t.addActivity(a);
                     break;
                 }
             }
@@ -352,7 +352,7 @@ public class PlanningService {
         if (t == null) {
             System.out.println("NULL TABLE");
         } else {
-            boolean time = t.getActivities().get(0).getTime() != null;
+            boolean time = t.getActivity(0).getTime() != null;
             PlanningActivityTableExt t2 = new PlanningActivityTableExt(t, true, time, null);
 
 
@@ -428,7 +428,7 @@ public class PlanningService {
             while (unsetExaminersIndexes.size() > 0 && conf_examiners.size() > 0 && maxLoops > 0) {
                 int a = r.nextInt(unsetExaminersIndexes.size());
                 int b = r.nextInt(conf_examiners.size());
-                PlanningActivity activity = tableExt.getTable().getActivities().get(a);
+                PlanningActivity activity = tableExt.getTable().getActivity(a);
                 String value = conf_examiners.get(b);
                 if (!activity.isSupervisor(value) && !(activity.isFixedChair() && activity.isChair(value))) {
                     activity.setExaminer(value);
@@ -446,7 +446,7 @@ public class PlanningService {
             while (unsetChairsIndexes.size() > 0 && conf_chairs.size() > 0 && maxLoops > 0) {
                 int a = r.nextInt(unsetChairsIndexes.size());
                 int b = r.nextInt(conf_chairs.size());
-                PlanningActivity activity = tableExt.getTable().getActivities().get(a);
+                PlanningActivity activity = tableExt.getTable().getActivity(a);
                 String value = conf_chairs.get(b);
                 if (!activity.isSupervisor(value) && !(activity.isExaminer(value))) {
                     activity.setChair(value);
@@ -644,7 +644,7 @@ public class PlanningService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        Collections.sort(bestActivityTable.getActivities());
+//        Collections.sort(bestActivityTable.getActivities());
         return new PlanningResult(bestActivityTable, bestFitnessValue);
     }
 

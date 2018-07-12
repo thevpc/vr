@@ -5,7 +5,7 @@
     <groupId>net.vpc.app.vain-ruling.plugins.mailbox</groupId>
     <artifactId>vr-mailbox-service</artifactId>
     <name>net.vpc.app.vain-ruling.plugins.mailbox.vr-mailbox-service</name>
-    <version>1.13.5</version>
+    <version>1.13.6</version>
     <packaging>jar</packaging>
     <url>https://github.com/thevpc/vr/wiki</url>
 
@@ -20,7 +20,7 @@
         <vr-plugin.component-type>service</vr-plugin.component-type>
         <vr-plugin.name>Mailbox Plugin</vr-plugin.name>
         <vr-plugin.description>Internal and External Mail Support</vr-plugin.description>
-        <version.vr-core-service>1.13.5</version.vr-core-service>
+        <version.vr-core-service>1.13.6</version.vr-core-service>
     </properties>
 
 

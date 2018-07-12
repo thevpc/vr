@@ -7,6 +7,11 @@ public class PlanningSpaceTime implements Comparable<PlanningSpaceTime> {
     private PlanningRoom room;
     private PlanningTime time;
 
+    public PlanningSpaceTime(PlanningSpaceTime st) {
+        this.room=new PlanningRoom(st.getRoom());
+        this.time=new PlanningTime(st.getTime());
+    }
+
     public PlanningSpaceTime(PlanningRoom room, PlanningTime time) {
         this.room = room;
         this.time = time;

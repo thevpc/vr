@@ -5,7 +5,7 @@
     <groupId>net.vpc.app.vain-ruling.plugins.academic-profile</groupId>
     <artifactId>vr-academic-profile-service</artifactId>
     <name>net.vpc.app.vain-ruling.plugins.academic-profile.vr-academic-profile-service</name>
-    <version>1.13.5</version>
+    <version>1.13.6</version>
     <packaging>jar</packaging>
     <parent>
         <groupId>net.vpc.app.vain-ruling.core</groupId>
@@ -28,7 +28,7 @@
         <vr-plugin.component-type>service</vr-plugin.component-type>
         <vr-plugin.name>Academic Profile Plugin</vr-plugin.name>
         <vr-plugin.description>Profile Pages Plugin</vr-plugin.description>
-        <version.vr-core-service>1.13.5</version.vr-core-service>
+        <version.vr-core-service>1.13.6</version.vr-core-service>
     </properties>
 
     <dependencies>
@@ -40,7 +40,7 @@
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.academic</groupId>
             <artifactId>vr-academic-service</artifactId>
-            <version>1.13.5</version>
+            <version>1.13.6</version>
         </dependency>
     </dependencies>
     <repositories>

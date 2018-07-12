@@ -1,0 +1,98 @@
+==================================================
+Walid Chainbi:
+	P210 Hela Naat            : E:2018-07-07 08:00-R1 : E:[Ihsen Saad] : P:Walid Chainbi : R:Aref Meddeb
+	P213 Ameni Hadj Mbarek    : E:2018-07-07 09:00-R1 : E:[Walid Chainbi] : P:Aref Meddeb : R:Anis Ben Arbia
+	P313 Feriel Khay          : E:2018-07-07 10:00-R1 : E:[Aref Meddeb] : P:Naoufel Khayati : R:Walid Chainbi
+	P102 Fatma Ben Ghanem     : E:2018-07-07 11:00-R1 : E:[Naoufel Khayati] : P:Walid Chainbi : R:Mohamed Nazih Omri
+	P304 Imen Gnanna          : E:2018-07-07 12:00-R1 : E:[Anis Ben Arbia] : P:Walid Chainbi : R:Naoufel Khayati
+	P111 Manel Anoud          : E:2018-07-08 08:00-R1 : E:[Mohamed Nazih Omri] : P:Manel Abdel Hedi : R:Walid Chainbi
+	P202 Wafa Sahli           : E:2018-07-08 09:00-R1 : E:[Ihsen Saad] : P:Walid Chainbi : R:Jamel Bel Hadj Taher
+	P115 Ghada Gharbi         : E:2018-07-08 10:00-R1 : E:[Manel Abdel Hedi] : P:Saoussen Ben Jabra : R:Walid Chainbi
+	P110 Nada Mahroug         : E:2018-07-08 11:00-R1 : E:[Jamel Bel Hadj Taher] : P:Walid Chainbi : R:Ihsen Saad
+	P109 Khalil Majjaouel     : E:2018-07-08 12:00-R1 : E:[Walid Chainbi] : P:Mohamed Nazih Omri : R:Ihsen Saad
+	P310 Sabri Abbassi        : E:2018-07-09 08:00-R1 : E:[Anis Ben Arbia] : P:Walid Chainbi : R:Taha Ben Salah
+	P318 Wafa Ben Mechlia     : E:2018-07-09 09:00-R1 : E:[Jamel Bel Hadj Taher] : P:Saoussen Ben Jabra : R:Walid Chainbi
+	P205 Khouloud Landari     : E:2018-07-09 11:00-R1 : E:[Walid Chainbi] : P:Anis Ben Arbia : R:Mohamed Nazih Omri
+	P116 Imed Kasmi           : E:2018-07-09 12:00-R1 : E:[Imed Bennour] : P:Jamel Bel Hadj Taher : R:Walid Chainbi
+
+==================================================
+Imed Bennour:
+	P116 Imed Kasmi           : E:2018-07-09 12:00-R1 : E:[Imed Bennour] : P:Jamel Bel Hadj Taher : R:Walid Chainbi
+
+==================================================
+Saoussen Ben Jabra:
+	P121 Ichrak Mehrez        : E:2018-07-05 10:00-R2 : E:[Mohamed Nazih Omri] : P:Anis Ben Arbia : R:Saoussen Ben Jabra
+	P129 Anis Elaroui         : E:2018-07-07 08:00-R2 : E:[Saoussen Ben Jabra] : P:Manel Abdel Hedi : R:Mohamed Nazih Omri
+	P204 Ai Kaboudi           : E:2018-07-07 10:00-R2 : E:[Saoussen Ben Jabra] : P:Mohamed Nazih Omri : R:Anis Ben Arbia
+	P119 Neyrouz Boussoffara  : E:2018-07-07 11:00-R2 : E:[Manel Abdel Hedi] : P:Ihsen Saad : R:Saoussen Ben Jabra
+	P306 Siwar Maalal         : E:2018-07-08 08:00-R2 : E:[Saoussen Ben Jabra] : P:Jamel Bel Hadj Taher : R:Taha Ben Salah
+	P117 Hamza Kraiem         : E:2018-07-08 09:00-R2 : E:[Mohamed Nazih Omri] : P:Saoussen Ben Jabra : R:Manel Abdel Hedi
+	P115 Ghada Gharbi         : E:2018-07-08 10:00-R1 : E:[Manel Abdel Hedi] : P:Saoussen Ben Jabra : R:Walid Chainbi
+	P303 Seifeddine Meddeb    : E:2018-07-09 08:00-R2 : E:[Saoussen Ben Jabra] : P:Mohamed Nazih Omri : R:Jamel Bel Hadj Taher
+	P318 Wafa Ben Mechlia     : E:2018-07-09 09:00-R1 : E:[Jamel Bel Hadj Taher] : P:Saoussen Ben Jabra : R:Walid Chainbi
+	P123 Saoussen Souilem     : E:2018-07-09 10:00-R2 : E:[Taha Ben Salah] : P:Anis Ben Arbia : R:Saoussen Ben Jabra
+
+==================================================
+Naoufel Khayati:
+	P313 Feriel Khay          : E:2018-07-07 10:00-R1 : E:[Aref Meddeb] : P:Naoufel Khayati : R:Walid Chainbi
+	P102 Fatma Ben Ghanem     : E:2018-07-07 11:00-R1 : E:[Naoufel Khayati] : P:Walid Chainbi : R:Mohamed Nazih Omri
+	P304 Imen Gnanna          : E:2018-07-07 12:00-R1 : E:[Anis Ben Arbia] : P:Walid Chainbi : R:Naoufel Khayati
+
+==================================================
+Taha Ben Salah:
+	P306 Siwar Maalal         : E:2018-07-08 08:00-R2 : E:[Saoussen Ben Jabra] : P:Jamel Bel Hadj Taher : R:Taha Ben Salah
+	P310 Sabri Abbassi        : E:2018-07-09 08:00-R1 : E:[Anis Ben Arbia] : P:Walid Chainbi : R:Taha Ben Salah
+	P123 Saoussen Souilem     : E:2018-07-09 10:00-R2 : E:[Taha Ben Salah] : P:Anis Ben Arbia : R:Saoussen Ben Jabra
+
+==================================================
+Anis Ben Arbia:
+	P121 Ichrak Mehrez        : E:2018-07-05 10:00-R2 : E:[Mohamed Nazih Omri] : P:Anis Ben Arbia : R:Saoussen Ben Jabra
+	P213 Ameni Hadj Mbarek    : E:2018-07-07 09:00-R1 : E:[Walid Chainbi] : P:Aref Meddeb : R:Anis Ben Arbia
+	P204 Ai Kaboudi           : E:2018-07-07 10:00-R2 : E:[Saoussen Ben Jabra] : P:Mohamed Nazih Omri : R:Anis Ben Arbia
+	P304 Imen Gnanna          : E:2018-07-07 12:00-R1 : E:[Anis Ben Arbia] : P:Walid Chainbi : R:Naoufel Khayati
+	P310 Sabri Abbassi        : E:2018-07-09 08:00-R1 : E:[Anis Ben Arbia] : P:Walid Chainbi : R:Taha Ben Salah
+	P123 Saoussen Souilem     : E:2018-07-09 10:00-R2 : E:[Taha Ben Salah] : P:Anis Ben Arbia : R:Saoussen Ben Jabra
+	P205 Khouloud Landari     : E:2018-07-09 11:00-R1 : E:[Walid Chainbi] : P:Anis Ben Arbia : R:Mohamed Nazih Omri
+
+==================================================
+Manel Abdel Hedi:
+	P129 Anis Elaroui         : E:2018-07-07 08:00-R2 : E:[Saoussen Ben Jabra] : P:Manel Abdel Hedi : R:Mohamed Nazih Omri
+	P119 Neyrouz Boussoffara  : E:2018-07-07 11:00-R2 : E:[Manel Abdel Hedi] : P:Ihsen Saad : R:Saoussen Ben Jabra
+	P111 Manel Anoud          : E:2018-07-08 08:00-R1 : E:[Mohamed Nazih Omri] : P:Manel Abdel Hedi : R:Walid Chainbi
+	P117 Hamza Kraiem         : E:2018-07-08 09:00-R2 : E:[Mohamed Nazih Omri] : P:Saoussen Ben Jabra : R:Manel Abdel Hedi
+	P115 Ghada Gharbi         : E:2018-07-08 10:00-R1 : E:[Manel Abdel Hedi] : P:Saoussen Ben Jabra : R:Walid Chainbi
+
+==================================================
+Mohamed Nazih Omri:
+	P121 Ichrak Mehrez        : E:2018-07-05 10:00-R2 : E:[Mohamed Nazih Omri] : P:Anis Ben Arbia : R:Saoussen Ben Jabra
+	P129 Anis Elaroui         : E:2018-07-07 08:00-R2 : E:[Saoussen Ben Jabra] : P:Manel Abdel Hedi : R:Mohamed Nazih Omri
+	P204 Ai Kaboudi           : E:2018-07-07 10:00-R2 : E:[Saoussen Ben Jabra] : P:Mohamed Nazih Omri : R:Anis Ben Arbia
+	P102 Fatma Ben Ghanem     : E:2018-07-07 11:00-R1 : E:[Naoufel Khayati] : P:Walid Chainbi : R:Mohamed Nazih Omri
+	P111 Manel Anoud          : E:2018-07-08 08:00-R1 : E:[Mohamed Nazih Omri] : P:Manel Abdel Hedi : R:Walid Chainbi
+	P117 Hamza Kraiem         : E:2018-07-08 09:00-R2 : E:[Mohamed Nazih Omri] : P:Saoussen Ben Jabra : R:Manel Abdel Hedi
+	P109 Khalil Majjaouel     : E:2018-07-08 12:00-R1 : E:[Walid Chainbi] : P:Mohamed Nazih Omri : R:Ihsen Saad
+	P303 Seifeddine Meddeb    : E:2018-07-09 08:00-R2 : E:[Saoussen Ben Jabra] : P:Mohamed Nazih Omri : R:Jamel Bel Hadj Taher
+	P205 Khouloud Landari     : E:2018-07-09 11:00-R1 : E:[Walid Chainbi] : P:Anis Ben Arbia : R:Mohamed Nazih Omri
+
+==================================================
+Aref Meddeb:
+	P210 Hela Naat            : E:2018-07-07 08:00-R1 : E:[Ihsen Saad] : P:Walid Chainbi : R:Aref Meddeb
+	P213 Ameni Hadj Mbarek    : E:2018-07-07 09:00-R1 : E:[Walid Chainbi] : P:Aref Meddeb : R:Anis Ben Arbia
+	P313 Feriel Khay          : E:2018-07-07 10:00-R1 : E:[Aref Meddeb] : P:Naoufel Khayati : R:Walid Chainbi
+
+==================================================
+Ihsen Saad:
+	P210 Hela Naat            : E:2018-07-07 08:00-R1 : E:[Ihsen Saad] : P:Walid Chainbi : R:Aref Meddeb
+	P119 Neyrouz Boussoffara  : E:2018-07-07 11:00-R2 : E:[Manel Abdel Hedi] : P:Ihsen Saad : R:Saoussen Ben Jabra
+	P202 Wafa Sahli           : E:2018-07-08 09:00-R1 : E:[Ihsen Saad] : P:Walid Chainbi : R:Jamel Bel Hadj Taher
+	P110 Nada Mahroug         : E:2018-07-08 11:00-R1 : E:[Jamel Bel Hadj Taher] : P:Walid Chainbi : R:Ihsen Saad
+	P109 Khalil Majjaouel     : E:2018-07-08 12:00-R1 : E:[Walid Chainbi] : P:Mohamed Nazih Omri : R:Ihsen Saad
+
+==================================================
+Jamel Bel Hadj Taher:
+	P306 Siwar Maalal         : E:2018-07-08 08:00-R2 : E:[Saoussen Ben Jabra] : P:Jamel Bel Hadj Taher : R:Taha Ben Salah
+	P202 Wafa Sahli           : E:2018-07-08 09:00-R1 : E:[Ihsen Saad] : P:Walid Chainbi : R:Jamel Bel Hadj Taher
+	P110 Nada Mahroug         : E:2018-07-08 11:00-R1 : E:[Jamel Bel Hadj Taher] : P:Walid Chainbi : R:Ihsen Saad
+	P303 Seifeddine Meddeb    : E:2018-07-09 08:00-R2 : E:[Saoussen Ben Jabra] : P:Mohamed Nazih Omri : R:Jamel Bel Hadj Taher
+	P318 Wafa Ben Mechlia     : E:2018-07-09 09:00-R1 : E:[Jamel Bel Hadj Taher] : P:Saoussen Ben Jabra : R:Walid Chainbi
+	P116 Imed Kasmi           : E:2018-07-09 12:00-R1 : E:[Imed Bennour] : P:Jamel Bel Hadj Taher : R:Walid Chainbi

@@ -1332,3 +1332,6 @@ span.ui-autocomplete.vr-form-control:focus{
     color: var(--vr-color-main99) !important;
 }
 
+.ui-menu .ui-menuitem-link {
+    width: 100%;
+}

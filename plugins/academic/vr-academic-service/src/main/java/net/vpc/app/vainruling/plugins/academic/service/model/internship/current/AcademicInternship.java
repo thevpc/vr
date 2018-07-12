@@ -59,8 +59,7 @@ public class AcademicInternship {
     @Field(max = "4000")
     private String description;
 
-    @Properties(
-            @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.DISCIPLINE))
+    @Properties(@Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.DISCIPLINE))
     private String mainDiscipline;
     @Summary
     private AcademicInternshipStatus internshipStatus;
@@ -149,6 +148,8 @@ public class AcademicInternship {
     }
     )
     private String reportFilePath;
+
+    @Path("Defense")
     @Field(max = "4000")
     private AcademicTeacher firstExaminer;
     private AcademicTeacher secondExaminer;

@@ -37,10 +37,10 @@
     <orderEntry type="module" module-name="upa-api" />
     <orderEntry type="module" module-name="upa-impl" scope="RUNTIME" />
     <orderEntry type="module" module-name="upa-impl-core" scope="RUNTIME" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: cglib:cglib:3.2.6" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: org.ow2.asm:asm:6.0" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.ant:ant:1.9.6" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.ant:ant-launcher:1.9.6" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: cglib:cglib:3.2.7" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.ow2.asm:asm:6.2" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.ant:ant:1.10.3" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.ant:ant-launcher:1.10.3" level="project" />
     <orderEntry type="library" name="Maven: net.sourceforge.jexcelapi:jxl:2.6.10" level="project" />
     <orderEntry type="library" name="Maven: log4j:log4j:1.2.14" level="project" />
     <orderEntry type="module" module-name="vpc-common-strings" />
@@ -49,7 +49,6 @@
     <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.8.2" level="project" />
     <orderEntry type="module" module-name="vfs" />
     <orderEntry type="module" module-name="vpc-common-jeep" />
-    <orderEntry type="library" name="Maven: org.apache.commons:commons-lang3:3.1" level="project" />
     <orderEntry type="library" name="Maven: com.rometools:rome:1.5.0" level="project" />
     <orderEntry type="library" name="Maven: com.rometools:rome-utils:1.5.0" level="project" />
     <orderEntry type="library" name="Maven: org.jdom:jdom:2.0.2" level="project" />

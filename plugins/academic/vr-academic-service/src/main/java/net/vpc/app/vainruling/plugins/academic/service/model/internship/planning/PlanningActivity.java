@@ -15,17 +15,40 @@ public class PlanningActivity implements Comparable<PlanningActivity>, Cloneable
     private PlanningSpaceTime spaceTime;
     private String examiner;
     private String chair;
+    private boolean enabled=true;
     private boolean fixedExaminer;
     private boolean fixedChair;
     private boolean fixedTime;
     private boolean fixedSpace;
 
 
+
+    public PlanningActivity(PlanningActivity activity) {
+        this.internship = activity.getInternship();
+        this.spaceTime = activity.getSpaceTime()==null?null:new PlanningSpaceTime(activity.getSpaceTime());
+        this.examiner = activity.getExaminer();
+        this.chair = activity.getChair();
+        this.fixedExaminer = activity.fixedExaminer;
+        this.fixedChair = activity.fixedChair;
+        this.fixedTime = activity.fixedTime;
+        this.fixedSpace = activity.fixedSpace;
+        this.enabled = activity.enabled;
+    }
+
     public PlanningActivity(PlanningInternship internship) {
         this.internship = internship;
     }
 
     public PlanningActivity() {
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public PlanningActivity setEnabled(boolean enabled) {
+        this.enabled = enabled;
+        return this;
     }
 
     public PlanningActivity copy() {
@@ -232,13 +255,10 @@ public class PlanningActivity implements Comparable<PlanningActivity>, Cloneable
     public String toString() {
         return "PlanningActivity{" +
                 "internship=" + internship +
-                ", spaceTime=" + spaceTime +
-                ", examiner='" + examiner + '\'' +
-                ", chair='" + chair + '\'' +
-                ", fixedExaminer=" + fixedExaminer +
-                ", fixedChair=" + fixedChair +
-                ", fixedTime=" + fixedTime +
-                ", fixedSpace=" + fixedSpace +
+                ", space=" + spaceTime.getRoom() +(fixedSpace?"(*)":"")+
+                ", time=" + spaceTime.getTime() +(fixedTime?"(*)":"")+
+                ", examiner='" + examiner + '\'' +(fixedExaminer?"(*)":"")+
+                ", chair='" + chair + '\'' +(fixedChair?"(*)":"")+
                 '}';
     }
 }
