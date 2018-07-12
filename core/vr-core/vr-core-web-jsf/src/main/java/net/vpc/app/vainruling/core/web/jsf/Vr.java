@@ -30,9 +30,7 @@ import net.vpc.common.io.IOUtils;
 import net.vpc.common.io.PathInfo;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
-import net.vpc.common.util.BytesSizeFormat;
-import net.vpc.common.util.CollectionUtils;
-import net.vpc.common.util.Utils;
+import net.vpc.common.util.*;
 import net.vpc.common.vfs.VFile;
 import net.vpc.common.vfs.VFileFilter;
 import net.vpc.common.vfs.VFileVisitor;
@@ -64,7 +62,6 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import net.vpc.common.util.PlatformTypeUtils;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -1358,14 +1355,14 @@ public class Vr {
                     if (strVal.startsWith("'")) {
                         strVal = strVal.substring(1);
                     }
-                    if (PlatformTypeUtils.isDouble(strVal)) {
+                    if (PlatformUtils.isDouble(strVal)) {
                         cell.setCellType(HSSFCell.CELL_TYPE_BLANK);
                         cell.setCellType(HSSFCell.CELL_TYPE_NUMERIC);
-                        if (PlatformTypeUtils.isInteger(strVal)) {
+                        if (PlatformUtils.isInteger(strVal)) {
                             int intVal = Integer.valueOf(strVal.trim());
                             cell.setCellStyle(intStyle);
                             cell.setCellValue(intVal);
-                        } else if (PlatformTypeUtils.isDouble(strVal)) {
+                        } else if (PlatformUtils.isDouble(strVal)) {
                             double dblVal = Double.valueOf(strVal.trim());
                             cell.setCellStyle(decStyle);
                             cell.setCellValue(dblVal);
@@ -1373,7 +1370,7 @@ public class Vr {
                     } else {
                         boolean isDate = false;
                         for (String dteFormat : new String[]{"yyyy-MM-dd HH:mm:ss.SSS", "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm", "yyyy-MM-dd", "HH:mm"}) {
-                            if (PlatformTypeUtils.isDate(strVal, dteFormat)) {
+                            if (PlatformUtils.isDate(strVal, dteFormat)) {
                                 HSSFCellStyle dateStyle = datFormats.get(dteFormat.trim());
                                 if (dateStyle == null) {
                                     dateStyle = book.createCellStyle();

@@ -10,7 +10,7 @@ import jxl.Workbook;
 import jxl.read.biff.BiffException;
 import jxl.write.*;
 import net.vpc.common.util.Convert;
-import net.vpc.common.util.PlatformTypeUtils;
+import net.vpc.common.util.PlatformUtils;
 import net.vpc.common.vfs.VFS;
 import net.vpc.common.vfs.VFile;
 import org.springframework.util.PropertyPlaceholderHelper;
@@ -105,7 +105,7 @@ public class ExcelTemplate {
                 WritableCell cell = sheet.getWritableCell(c, r);
                 if (cell.getContents().contains("${")) {
                     String v2 = hp.replacePlaceholders(cell.getContents(), placeholderResolver);
-                    if (PlatformTypeUtils.isDouble(v2.trim())) {
+                    if (PlatformUtils.isDouble(v2.trim())) {
                         jxl.write.Number n = new jxl.write.Number(c, r, Double.parseDouble(v2.trim()), cell.getCellFormat());
                         try {
                             sheet.addCell(n);

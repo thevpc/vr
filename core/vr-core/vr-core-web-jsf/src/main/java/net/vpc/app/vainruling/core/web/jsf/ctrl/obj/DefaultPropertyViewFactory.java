@@ -7,7 +7,7 @@ package net.vpc.app.vainruling.core.web.jsf.ctrl.obj;
 
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.app.vainruling.core.web.obj.ViewContext;
-import net.vpc.common.util.PlatformTypeUtils;
+import net.vpc.common.util.PlatformUtils;
 import net.vpc.upa.Field;
 import net.vpc.upa.KeyType;
 import net.vpc.upa.types.DataType;
@@ -64,25 +64,25 @@ public class DefaultPropertyViewFactory implements PropertyViewFactory {
                     propView.setColspan(Integer.MAX_VALUE);
                     propView.setAppendNewLine(true);
                 }
-            } else if (PlatformTypeUtils.isIntegerType(t)) {
+            } else if (PlatformUtils.isIntegerType(t)) {
                 String controlType = UPAObjectHelper.findStringProperty(field, UIConstants.Form.CONTROL, null, UIConstants.Control.INTEGER);
                 propView = new FieldPropertyView(componentId, field, nfo.dataType, controlType, manager);
-            } else if (PlatformTypeUtils.isLongType(t)) {
+            } else if (PlatformUtils.isLongType(t)) {
                 String controlType = UPAObjectHelper.findStringProperty(field, UIConstants.Form.CONTROL, null, UIConstants.Control.LONG);
                 propView = new FieldPropertyView(componentId, field, nfo.dataType, controlType, manager);
-            } else if (PlatformTypeUtils.isFloatType(t)) {
+            } else if (PlatformUtils.isFloatType(t)) {
                 String controlType = UPAObjectHelper.findStringProperty(field, UIConstants.Form.CONTROL, null, UIConstants.Control.FLOAT);
                 propView = new FieldPropertyView(componentId, field, nfo.dataType, controlType, manager);
-            } else if (PlatformTypeUtils.isDoubleType(t)) {
+            } else if (PlatformUtils.isDoubleType(t)) {
                 String controlType = UPAObjectHelper.findStringProperty(field, UIConstants.Form.CONTROL, null, UIConstants.Control.DOUBLE);
                 propView = new FieldPropertyView(componentId, field, nfo.dataType, controlType, manager);
-            } else if (PlatformTypeUtils.isAnyIntegerType(t)) {
+            } else if (PlatformUtils.isAnyIntegerType(t)) {
                 String controlType = UPAObjectHelper.findStringProperty(field, UIConstants.Form.CONTROL, null, UIConstants.Control.TEXT);
                 propView = new FieldPropertyView(componentId, field, nfo.dataType, controlType, manager);
-            } else if (PlatformTypeUtils.isAnyFloatType(t)) {
+            } else if (PlatformUtils.isAnyFloatType(t)) {
                 String controlType = UPAObjectHelper.findStringProperty(field, UIConstants.Form.CONTROL, null, UIConstants.Control.TEXT);
                 propView = new FieldPropertyView(componentId, field, nfo.dataType, controlType, manager);
-            } else if (PlatformTypeUtils.isDateType(t)) {
+            } else if (PlatformUtils.isDateType(t)) {
                 if (nfo.dataType instanceof DateType) {
                     DateType ddt = (DateType) nfo.dataType;
                     if (ddt.isDateOnly()) {
@@ -106,7 +106,7 @@ public class DefaultPropertyViewFactory implements PropertyViewFactory {
                     String controlType = UPAObjectHelper.findStringProperty(field, UIConstants.Form.CONTROL, null, UIConstants.Control.DATETIME);
                     propView = new FieldPropertyView(componentId, field, nfo.dataType, controlType, manager);
                 }
-            } else if (PlatformTypeUtils.isBooleanType(t)) {
+            } else if (PlatformUtils.isBooleanType(t)) {
                 String controlType = UPAObjectHelper.findStringProperty(field, UIConstants.Form.CONTROL, null, UIConstants.Control.CHECKBOX);
                 propView = new FieldPropertyView(componentId, field, nfo.dataType, controlType, manager);
                 propView.setRequired(false);//no threestate

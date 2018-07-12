@@ -11,7 +11,6 @@ import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppCompany;
 import net.vpc.app.vainruling.core.service.model.AppUser;
-import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.service.security.UserToken;
 import net.vpc.app.vainruling.core.service.util.wiki.VrWikiParser;
 import net.vpc.common.io.IOUtils;
@@ -19,7 +18,7 @@ import net.vpc.common.io.PathInfo;
 import net.vpc.common.strings.StringCollection;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.ListValueMap;
-import net.vpc.common.util.Utils;
+import net.vpc.common.util.PlatformUtils;
 import net.vpc.common.vfs.VFile;
 import net.vpc.upa.CustomDefaultObject;
 import net.vpc.upa.filters.ObjectFilter;
@@ -42,7 +41,6 @@ import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
-import net.vpc.common.util.PlatformTypeUtils;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -901,7 +899,7 @@ public class VrUtils {
         if (t == null) {
             return null;
         }
-        if (!PlatformTypeUtils.toBoxingType(toType).isInstance(t)) {
+        if (!PlatformUtils.toBoxingType(toType).isInstance(t)) {
             if (t instanceof JSObject) {
                 t = convertThroughJson(t, toType);
             } else if (t instanceof String) {
@@ -929,7 +927,7 @@ public class VrUtils {
         if (t == null) {
             return null;
         }
-        if (!PlatformTypeUtils.toBoxingType(toType).isInstance(t)) {
+        if (!PlatformUtils.toBoxingType(toType).isInstance(t)) {
             if (t instanceof net.vpc.upa.Document) {
                 return t;
             } else if (t instanceof JSObject) {

@@ -22,10 +22,8 @@ import net.vpc.app.vainruling.core.web.menu.VrMenuManager;
 import net.vpc.app.vainruling.core.web.obj.*;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
-import net.vpc.common.util.Convert;
-import net.vpc.common.util.DoubleParserConfig;
-import net.vpc.common.util.IntegerParserConfig;
-import net.vpc.common.util.PlatformTypeUtils;
+import net.vpc.common.util.*;
+import net.vpc.common.util.PlatformUtils;
 import net.vpc.upa.*;
 import net.vpc.upa.Package;
 import net.vpc.upa.expressions.Expression;
@@ -1073,7 +1071,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
                         readonly = true;
                     }
                     String type = UIConstants.Control.TEXT;
-                    if (PlatformTypeUtils.isBooleanType(field.getDataType().getPlatformType())) {
+                    if (PlatformUtils.isBooleanType(field.getDataType().getPlatformType())) {
                         type = UIConstants.Control.CHECKBOX;
                     }
                     String property = field.getName();

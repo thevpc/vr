@@ -2,7 +2,7 @@ package net.vpc.app.vainruling.core.service.util;
 
 import net.vpc.common.io.PathInfo;
 import net.vpc.common.strings.StringUtils;
-import net.vpc.common.util.Utils;
+import net.vpc.common.util.PlatformUtils;
 import net.vpc.common.vfs.VFile;
 
 import javax.imageio.ImageIO;
@@ -17,7 +17,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
-import net.vpc.common.util.PlatformTypeUtils;
 
 public class VrPlatformUtils {
     public static final String SLASH = System.getProperty("file.separator");
@@ -404,7 +403,7 @@ public class VrPlatformUtils {
                 }
             }
         }
-        return PlatformTypeUtils.toPrimitiveIntArray(all);
+        return PlatformUtils.toPrimitiveIntArray(all);
     }
 
     public static long[] getLongArrayConstantsValues(Class cls,String wpattern){
@@ -420,6 +419,6 @@ public class VrPlatformUtils {
                 }
             }
         }
-        return PlatformTypeUtils.toPrimitiveLongArray(all);
+        return PlatformUtils.toPrimitiveLongArray(all);
     }
 }

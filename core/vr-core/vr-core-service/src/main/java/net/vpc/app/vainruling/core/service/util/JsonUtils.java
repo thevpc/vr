@@ -7,7 +7,8 @@ package net.vpc.app.vainruling.core.service.util;
 
 import java.util.HashMap;
 import java.util.Map;
-import net.vpc.common.util.PlatformTypeUtils;
+
+import net.vpc.common.util.PlatformUtils;
 
 /**
  *
@@ -36,7 +37,7 @@ public class JsonUtils {
                 }
             }
         });
-        for (Class cls : PlatformTypeUtils.getPrimitiveBoxingTypes()) {
+        for (Class cls : PlatformUtils.getPrimitiveBoxingTypes()) {
             register(cls, new TypeParser() {
                 @Override
                 public Object parse(String value, Class type) {
@@ -48,12 +49,12 @@ public class JsonUtils {
                 }
             });
         }
-        for (Class cls : PlatformTypeUtils.getPrimitiveTypes()) {
+        for (Class cls : PlatformUtils.getPrimitiveTypes()) {
             register(cls, new TypeParser() {
                 @Override
                 public Object parse(String value, Class type) {
                     if (value == null) {
-                        return PlatformTypeUtils.getDefaultValue(cls);
+                        return PlatformUtils.getDefaultValue(cls);
                     }
                     value = value.trim();
                     return VrUtils.GSON.fromJson(value, type);

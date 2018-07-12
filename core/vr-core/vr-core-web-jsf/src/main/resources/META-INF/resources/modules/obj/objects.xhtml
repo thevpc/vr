@@ -65,6 +65,12 @@ and open the template in the editor.
                                 <p:menuitem value="Fermer" title ="Enregister et Fermer"  onclick="processOnSaveCurrentAndClose()"
                                             ajax="true" update=":buttonsForm :listForm :itemForm :pageTitleForm"
                                             icon="ui-icon-arrowrefresh-1-w"/>
+                                <p:menuitem value="Suivant" title ="Enregister et Fermer"  onclick="processOnSaveCurrentAndNext()"
+                                            ajax="true" update=":buttonsForm :listForm :itemForm :pageTitleForm"
+                                            icon="ui-icon-arrowrefresh-1-w"/>
+                                <p:menuitem value="Précédent" title ="Enregister et Fermer"  onclick="processOnSaveCurrentAndPrevious()"
+                                            ajax="true" update=":buttonsForm :listForm :itemForm :pageTitleForm"
+                                            icon="ui-icon-arrowrefresh-1-w"/>
                                 <p:menuitem value="Copier" title ="Enregister une Copie"  onclick="processOnCloneCurrent()"
                                             ajax="true" update=":buttonsForm :listForm :itemForm :pageTitleForm"
                                             icon="ui-icon-arrowrefresh-1-w"/>
@@ -734,6 +740,17 @@ and open the template in the editor.
                                             <p:inputText id="tfile" value="#{data.value}" required="#{data.required}"
                                                          disabled="#{data.disabled}"
                                                          styleClass="form-control vr-form-control vr-form-control-with-button60"/>
+                                            <p:commandLink
+                                                rendered="#{vr.isFSPath(vr.trim(data.value))}"
+                                                target="_blank"
+                                                value="..."
+                                                styleClass="btn  btn-default vr-form-control-right-button30"
+                                                style="margin-left: 3px;margin-right: 3px;margin-top: 5px;"
+                                                ajax="false"
+                                            >
+                                                <p:fileDownload value="#{vr.downloadPath(vr.trim(data.value))}"/>
+                                            </p:commandLink>
+                                            
                                             <p:commandButton
                                                 styleClass="vr-form-control-right-button30"
                                                 ajax="true" value=""
@@ -768,6 +785,12 @@ and open the template in the editor.
                     <p:remoteCommand name="processOnSaveCurrentAndClose" process="@form"
                                      update=":listForm :itemForm  :buttonsForm"
                                      action="#{objCtrl.onSaveCurrentAndClose()}"/>
+                    <p:remoteCommand name="processOnSaveCurrentAndNext" process="@form"
+                                     update=":listForm :itemForm  :buttonsForm"
+                                     action="#{objCtrl.onSaveCurrentAndNext()}"/>
+                    <p:remoteCommand name="processOnSaveCurrentAndPrevious" process="@form"
+                                     update=":listForm :itemForm  :buttonsForm"
+                                     action="#{objCtrl.onSaveCurrentAndPrevious()}"/>
                     <p:remoteCommand name="processOnSaveCurrent" process="@form" update=":listForm :itemForm  :buttonsForm"
                                      action="#{objCtrl.onSaveCurrent()}"/>
                     <p:remoteCommand name="processOnCloneCurrent" process="@form" update=":listForm :itemForm  :buttonsForm"
