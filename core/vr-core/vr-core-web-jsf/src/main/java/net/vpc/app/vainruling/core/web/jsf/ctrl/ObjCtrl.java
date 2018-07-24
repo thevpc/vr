@@ -381,6 +381,16 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
         }
     }
 
+    public void onSaveCurrentAndNext() {
+        onSaveCurrent();
+        onSelectNext();
+    }
+
+    public void onSaveCurrentAndPrevious() {
+        onSaveCurrent();
+        onSelectPrevious();
+    }
+
     public void onSaveCurrent() {
         enabledButtons.clear();
         try {

@@ -28,7 +28,7 @@ public class SimpleJavaEvaluator implements InSetEvaluator {
         }
     }
 
-    private final ExpressionEvaluatorDefinition definition = new ExpressionEvaluatorDefinition();
+    private final ExpressionEvaluatorDefinition definition ;
 
 
     private final DefaultExpressionEvaluator evaluator;
@@ -46,6 +46,7 @@ public class SimpleJavaEvaluator implements InSetEvaluator {
 //        evaluator.declareConst("false", false, "none", "aucun");
 //        evaluator.setParseFunctions(true);
         this.items = set;
+        definition= new ExpressionEvaluatorDefinition();
         definition.declareBinaryOperators("+", "-", "&&", "||");
 
         definition.declareOperatorAlias("et", "&&", Boolean.TYPE, Boolean.TYPE);
