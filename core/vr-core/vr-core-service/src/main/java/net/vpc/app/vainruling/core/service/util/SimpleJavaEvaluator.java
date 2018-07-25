@@ -28,9 +28,6 @@ public class SimpleJavaEvaluator implements InSetEvaluator {
         }
     }
 
-    private final ExpressionEvaluatorDefinition definition ;
-
-
     private final DefaultExpressionEvaluator evaluator;
 
     private Set<String> items;
@@ -46,40 +43,35 @@ public class SimpleJavaEvaluator implements InSetEvaluator {
 //        evaluator.declareConst("false", false, "none", "aucun");
 //        evaluator.setParseFunctions(true);
         this.items = set;
-        definition= new ExpressionEvaluatorDefinition();
-        definition.declareBinaryOperators("+", "-", "&&", "||");
+        evaluator=new DefaultExpressionEvaluator();
+        evaluator.declareBinaryOperators("+", "-", "&&", "||");
 
-        definition.declareOperatorAlias("et", "&&", Boolean.TYPE, Boolean.TYPE);
-        definition.declareOperatorAlias("and", "&&", Boolean.TYPE, Boolean.TYPE);
-        definition.declareOperatorAlias("&", "&&", Boolean.TYPE, Boolean.TYPE);
+        evaluator.declareOperatorAlias("et", "&&", Boolean.TYPE, Boolean.TYPE);
+        evaluator.declareOperatorAlias("and", "&&", Boolean.TYPE, Boolean.TYPE);
+        evaluator.declareOperatorAlias("&", "&&", Boolean.TYPE, Boolean.TYPE);
 
-        definition.declareOperatorAlias(",", "||", Boolean.TYPE, Boolean.TYPE);
-        definition.declareOperatorAlias("ou", "||", Boolean.TYPE, Boolean.TYPE);
-        definition.declareOperatorAlias("or", "||", Boolean.TYPE, Boolean.TYPE);
-        definition.declareOperatorAlias("|" , "||", Boolean.TYPE, Boolean.TYPE);
-        definition.declareOperatorAlias("", "or", Boolean.TYPE, Boolean.TYPE);
+        evaluator.declareOperatorAlias(",", "||", Boolean.TYPE, Boolean.TYPE);
+        evaluator.declareOperatorAlias("ou", "||", Boolean.TYPE, Boolean.TYPE);
+        evaluator.declareOperatorAlias("or", "||", Boolean.TYPE, Boolean.TYPE);
+        evaluator.declareOperatorAlias("|" , "||", Boolean.TYPE, Boolean.TYPE);
+        evaluator.declareOperatorAlias("", "or", Boolean.TYPE, Boolean.TYPE);
 
-        definition.declareOperatorAlias("sauf", "-", Boolean.TYPE, Boolean.TYPE);
-        definition.declareOperatorAlias("but", "-", Boolean.TYPE, Boolean.TYPE);
+        evaluator.declareOperatorAlias("sauf", "-", Boolean.TYPE, Boolean.TYPE);
+        evaluator.declareOperatorAlias("but", "-", Boolean.TYPE, Boolean.TYPE);
 
 
-        definition.declareConst("true", true);
-        definition.declareConst("all", true);
-        definition.declareConst("tous", true);
-        definition.declareConst("false", false);
-        definition.declareConst("aucun", false);
-        definition.declareConst("none", false);
+        evaluator.declareConst("true", true);
+        evaluator.declareConst("all", true);
+        evaluator.declareConst("tous", true);
+        evaluator.declareConst("false", false);
+        evaluator.declareConst("aucun", false);
+        evaluator.declareConst("none", false);
 
-        definition.importType(PlatformHelper.class);
-        definition.importType(ExtraHelper.class);
-        definition.addResolver(new ExpressionEvaluatorResolver() {
-            @Override
-            public ExpressionVariable resolveVarDef(String name, ExpressionEvaluatorDefinition definition) {
-                return ExpressionEvaluatorFactory.createConstVar(name, items.contains(name.toLowerCase()));
-            }
-
-        });
-        evaluator=new DefaultExpressionEvaluator(definition);
+        evaluator.importType(PlatformHelper.class);
+        evaluator.importType(ExtraHelper.class);
+        for (String item : items) {
+            evaluator.declareVar(item,Boolean.TYPE,true);
+        }
     }
 
     //    public static void main(String[] args) {

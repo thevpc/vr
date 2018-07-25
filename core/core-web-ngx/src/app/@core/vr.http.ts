@@ -32,6 +32,7 @@ export class VrHttp {
    * @returns {Observable<CurrentUser>}
    */
   public authenticate(username: any, password: any): Observable<CurrentUser> {
+    alert('Why ' + username + ' , ' + password);
     if (username == null || username == '' || password == null || password == '') {
       return this.throwSecurityException();
     }
@@ -45,6 +46,7 @@ export class VrHttp {
       }
       this.model.sessionId.next(jsessionid);
       const item = res.json();
+      alert(JSON.stringify(item))
       let ret: CurrentUser;
       if (item['$1'] != null) {
         this.model.currentUser.next(ret = new CurrentUser(item['$1'].userFullName, '', item['$1'], true));

@@ -21,6 +21,10 @@ export class VrService {
      return this.vrHttp.invokeBeanMethod('core',`findArticlesByCategory('${dispo}')`);
    }
 
+  public findAllContacts(): Observable<any> {
+    return this.vrHttp.invokeBeanMethod('core', 'findAllContacts()');
+  }
+
   public getCurrentStudentId () : Observable<any> {
 
     return this.vrHttp.invokeBeanMethod('academicPlugin', 'getCurrentStudent().getId()');
@@ -35,8 +39,8 @@ export class VrService {
     return this.vrHttp.invokeBeanMethod('core', `getContact()`);
   }
 
-  public getPicture (studentId) : Observable<any> {
-    let url = 'getUserPhoto('+studentId+')';
+  public getPicture (studentId): Observable<any> {
+    let url = 'getUserPhoto(' + studentId + ')';
     return this.vrHttp.invokeBeanMethod('core', url);
   }
 
@@ -48,6 +52,13 @@ export class VrService {
       }
     );
   }
+
+  // -------------------------Ramzi---------------------------
+  public getEntityData(entityName: string):Observable<any>{
+    return this.vrHttp.invokeBeanMethod('core','findAll("'+entityName+'")');
+  }
+  // ---------------------------------------------------------
+
 
   public getEntityInfo(entityName: string): Observable<any> {
     return this.getPersistenceUnitInfo().map(v=>{
@@ -124,4 +135,14 @@ export class VrService {
   public logout(): Observable<any> {
     return this.vrHttp.logout();
   }
+
+  public saveDataToBase(opj:string, entityTitle:string){
+    var request:string = "save(\""+entityTitle+'\",'+opj+")";
+    request = encodeURI(request);
+    this.vrHttp.invokeBeanMethod('core',request).subscribe(val => console.log(val));
+    //this.vrHttp.invokeWScript(request);
+    //console.log("hello World");
+
+  }
+
 }

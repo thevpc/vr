@@ -104,6 +104,91 @@ export class FormEntityComponent implements OnInit {
     });
   }
 
+  //---------------------------Ramzi----------------------------
+  public elements:any = {"null":null }
+  public elementsTitles:any = {}
+  public entityTitle:string = "";
+  public foreignElements:any = {}
+  public foreignElementEntityValue:any = {};
+  public isElementIsForeign = {}
+  public entityData:any = []
+  public entityDataArranged:any = []
+  public entityKeys:string[] = [];
+  public isNew:boolean = false;
+  public isList:boolean = true;
+
+  public onSave(){
+    if(this.isNew){
+      //console.log(this.entityName);
+    var xTitles = document.getElementsByClassName('col-sm-3 col-form-label');
+    var xValues = document.getElementsByClassName('form-control');
+    var i:number;
+    var j:number;
+    //var newDate=$filter('date')('2015/12/12', 'medium');
+
+    //console.log("----"+JSON.stringify(this.elements));
+    //console.log("++++"+JSON.stringify(xTitles));
+
+    for (var key in this.elements){
+      //console.log(this.elements[key]);
+      for(i = 0 ; i<xTitles.length ; i++){
+        if((<HTMLInputElement>xTitles[i]).innerText == this.elementsTitles[key]){
+
+          if(this.isElementIsForeign[key]==true){
+            for(var fkey in this.foreignElements){
+              if(fkey == key){
+                for(j=0; j<this.foreignElements[fkey].length; j++){
+                  if (this.foreignElements[fkey][j].name == (<HTMLInputElement>xValues[i]).value){
+                    this.elements[key] = this.foreignElements[fkey][j];
+                    break;
+                  }
+                }
+              }
+            }
+          }
+
+          else{
+            this.elements[key] = (<HTMLInputElement>xValues[i]).value;
+            break;
+          }
+          
+        }
+      }
+    }
+
+    this.elements["id"] = 0;
+    delete this.elements["system"];
+
+    //this.vrService.saveDataToBase(JSON.stringify(this.elements), this.entityTitle);
+    //this.findForeignValues();
+    //console.log(this.foreignElementEntityValue);
+    //console.log((<HTMLInputElement>xValues[0]).value);
+    console.log(JSON.stringify(this.entityData));
+    //console.log(JSON.stringify(this.isElementIsForeign));
+    //console.log(this.entityInfo);
+    }
+    else{
+      alert("You need to fill the data");
+    }
+  }
+
+  public onList(){
+    this.findForeignValues();
+    this.getArrangedData();
+    //console.log(this.foreignElementEntityValue);
+
+    console.log(this.entityData);
+    this.isList = true;
+    this.isNew = false;
+    console.log('List');
+  }
+
+  public onNew(){
+    this.isNew = true;
+    this.isList = false;
+    console.log("New");
+  } 
+  //----------------------------------------------------------------
 
   init(colors: any) {
     this.settings = [];
@@ -111,6 +196,7 @@ export class FormEntityComponent implements OnInit {
       class: 'btn-hero-primary',
       container: 'primary-container',
       title: 'Primary Button',
+      fun: ()=>{this.onSave();},
       buttonTitle: 'Enregistrer',
       default: {
         gradientLeft: `adjust-hue(${colors.primary}, 20deg)`,
@@ -127,6 +213,7 @@ export class FormEntityComponent implements OnInit {
       class: 'btn-hero-warning',
       container: 'warning-container',
       title: 'Warning Button',
+      fun : ()=>{this.onNew();},
       buttonTitle: 'Nouveau',
       default: {
         gradientLeft: `adjust-hue(${colors.warning}, 10deg)`,
@@ -139,7 +226,7 @@ export class FormEntityComponent implements OnInit {
         shadow: 'rgba (33, 7, 77, 0.5)',
         glow: `adjust-hue(${colors.warning}, 5deg)`,
       },
-    }, {
+    }/*, {
       class: 'btn-hero-success',
       container: 'success-container',
       title: 'Rafraichir',
@@ -155,10 +242,11 @@ export class FormEntityComponent implements OnInit {
         shadow: 'rgba (33, 7, 77, 0.5)',
         glow: `adjust-hue(${colors.success}, 10deg)`,
       },
-    }, {
+    }*/, {
       class: 'btn-hero-info',
       container: 'info-container',
       title: 'Liste',
+      fun : ()=>{this.onList();},
       buttonTitle: 'Liste',
       default: {
         gradientLeft: `adjust-hue(${colors.info}, -10deg)`,
@@ -171,7 +259,7 @@ export class FormEntityComponent implements OnInit {
         shadow: 'rgba (33, 7, 77, 0.5)',
         glow: `adjust-hue(${colors.info}, -5deg)`,
       },
-    }, {
+    }/*, {
       class: 'btn-hero-danger',
       container: 'danger-container',
       title: 'Danger Button',
@@ -201,7 +289,7 @@ export class FormEntityComponent implements OnInit {
         shadow: 'rgba (33, 7, 77, 0.5)',
         glow: 'rgba (146, 141, 255, 1)',
       },
-    }];
+    }*/];
   }
 
   ngOnDestroy() {
@@ -307,6 +395,14 @@ export class FormEntityComponent implements OnInit {
      this.vrService.getSelectList(this.entityName, f.name, null, null).subscribe(val => {
        f.vals = val
           // console.log('these are fvalues = ' + JSON.stringify(f.values));
+
+      //----------------------Ramzi--------------------------
+       //console.log(f.name);
+       //console.log("F values = "+JSON.stringify(f.vals));
+       this.foreignElements[f.name] = f.vals;
+       console.log(this.foreignElements);
+      //-----------------------------------------------------
+
        console.log("F values = "+JSON.stringify(f.vals));
        }
      );
@@ -487,9 +583,73 @@ export class FormEntityComponent implements OnInit {
     //alert('updateRows '+JSON.stringify(this.entityInfo));
     console.clear();
     console.log(this.entityInfo);
+
+    //----------------Ramzi------------------------
+    this.isNew = true;
+    this.isList = false;
+    this.entityTitle = this.entityInfo.name;
+    this.entityKeys = [];
+    this.elements = {};
+    this.elementsTitles = {};
+    this.foreignElements = {}
+    this.foreignElementEntityValue = {};
+    this.isElementIsForeign = {}
+    this.entityInfo.children.forEach(element => {
+      if(element.name != "system"){
+        this.entityKeys.push(element.name);
+      }
+      this.elements[element.name] = "";
+      this.elementsTitles[element.name] = element.title;
+      this.isElementIsForeign[element.name] = element.manyToOne;
+    });
+    console.log(this.entityKeys);
+    this.vrService.getEntityData(this.entityTitle).subscribe((data)=>{this.entityData = data;})
+
+    //console.log(this.foreignElementEntityValue);
+    console.log(this.elements);
+
+    //---------------------------------------------
+
     this.editorRows = this.createFormEntitySectionRows(this.entityInfo);
   //  console.log(' HERE '+JSON.stringify(this.editorRows));
   }
+
+  //----------------------Ramzi----------------------
+  public findForeignValues(){
+    var k:number;
+    var j:number;
+    //console.log(this.entityData.length);
+    for(k=0; k<this.entityData.length; k++){
+      let localValues:any = {};
+      for (let key in this.entityData[k]){
+        if(this.isElementIsForeign[key]==true){
+          for(var fkey in this.foreignElements){
+            if(fkey == key){
+              for(j=0; j<this.foreignElements[fkey].length; j++){
+                if (this.foreignElements[fkey][j].id == this.entityData[k][key].id){
+                  localValues[key] = this.foreignElements[fkey][j].name;
+                  break;
+                }
+              }
+            }
+          }
+        }
+      }
+      this.foreignElementEntityValue[k]=localValues;
+    }
+    //console.log(this.foreignElementEntityValue);
+  }
+
+  public getArrangedData(){
+    for(var i=0; i<this.entityData.length; i++){
+      for(var key in this.entityData[i]){
+        if(this.isElementIsForeign[key]){
+          this.entityData[i][key] = this.foreignElementEntityValue[i][key]
+        }
+      }
+    }
+  }
+  //-------------------------------------------------
 
 
   // NOT Really Needed!

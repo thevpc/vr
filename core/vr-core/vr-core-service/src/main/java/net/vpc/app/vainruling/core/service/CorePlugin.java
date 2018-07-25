@@ -420,6 +420,10 @@ public class CorePlugin {
         return bodySecurityManager.findContact(c);
     }
 
+    public List<AppContact> findAllContacts() {
+        return UPA.getPersistenceUnit().findAll(AppContact.class);
+    }
+
     public List<AppContact> findContacts(String name, String type) {
         return bodySecurityManager.findContacts(name, type);
     }
