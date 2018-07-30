@@ -9,7 +9,6 @@ import net.vpc.upa.UPA;
 
 import java.util.List;
 import net.vpc.app.vainruling.core.service.plugins.VrPlugin;
-import net.vpc.app.vainruling.plugins.academic.service.examples.model.Ambulance;
 
 @VrPlugin
 public class ENISoInfoPlugin {
@@ -84,50 +83,4 @@ public class ENISoInfoPlugin {
 //        }
 
     }
-    
-    public void kanbelOAllAmbulances(){
-        PersistenceUnit pu = UPA.getPersistenceUnit();
-        //pu.clear(Ambulance.class,null);
-        List<Ambulance> toutes=pu.findAll(Ambulance.class);
-        for (Ambulance a : toutes) {
-            //delete
-            pu.remove(a);
-        }
-    }
-    
-    public List<Ambulance> jeebToutesLesAmbulanceParMarque(String marque){
-        PersistenceUnit pu = UPA.getPersistenceUnit();
-        return pu.findByField(Ambulance.class, "marque", marque);
-    }
-    
-    public List<Ambulance> jeebToutesLesAmbulanceDontLeChauffeurEst(String nomDuChauffeur){
-        PersistenceUnit pu = UPA.getPersistenceUnit();
-        //UPQL(UPA) == JPQL(JPA) == HQL (Hibernate)
-        return pu.createQuery("Select a from Ambulance a where a.chauffeur.nom=:v")
-                .setParameter("v", nomDuChauffeur)
-                .getResultList();
-    }
-    public List<Ambulance> jeebToutesLesAmbulanceParMarque2(String marque){
-        PersistenceUnit pu = UPA.getPersistenceUnit();
-        return pu
-                //pas du SQL
-                .createQuery("Select a from Ambulance a where a.marque=:uneVariable")
-                .setParameter("uneVariable", marque)
-                .getResultList()
-                ;
-    }
-    
-    public void echriAmbulance(){
-        Ambulance a=new Ambulance();
-        a.setImmatriculation("Test 1");
-        PersistenceUnit dao = UPA.getPersistenceUnit();
-        //insert !!
-        dao.persist(a);
-        
-        a.setMarque("Marc Lavoine");
-        //mettre à jour
-        dao.merge(a);
-        //dao.update(a);
-    }
-
 }

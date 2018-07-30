@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.vpc.app.vain-ruling.core</groupId>
     <artifactId>vr-core-model</artifactId>
-    <version>1.13.6</version>
+    <version>1.13.7</version>
     <name>net.vpc.app.vain-ruling.core.vr-core-model</name>
     <packaging>jar</packaging>
     <url>https://github.com/thevpc/vr/wiki</url>
@@ -24,7 +24,7 @@
         <dependency>
             <groupId>net.vpc.upa</groupId>
             <artifactId>upa-api</artifactId>
-            <version>1.2.0.44</version>
+            <version>1.2.0.45</version>
         </dependency>
     </dependencies>
 

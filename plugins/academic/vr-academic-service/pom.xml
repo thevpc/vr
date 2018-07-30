@@ -5,7 +5,7 @@
     <groupId>net.vpc.app.vain-ruling.plugins.academic</groupId>
     <artifactId>vr-academic-service</artifactId>
     <name>net.vpc.app.vain-ruling.plugins.academic.vr-academic-service</name>
-    <version>1.13.6</version>
+    <version>1.13.7</version>
     <packaging>jar</packaging>
     <url>https://github.com/thevpc/vr/wiki</url>
 
@@ -20,7 +20,7 @@
         <vr-plugin.component-type>service</vr-plugin.component-type>
         <vr-plugin.name>Academic Plugin</vr-plugin.name>
         <vr-plugin.description>Teachers and Students Management</vr-plugin.description>
-        <version.vr-core-service>1.13.6</version.vr-core-service>
+        <version.vr-core-service>1.13.7</version.vr-core-service>
     </properties>
 
     <dependencies>
