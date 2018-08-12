@@ -181,7 +181,11 @@ class CorePluginBodyPluginManager extends CorePluginBody {
 //            bundleToComponents = new HashMap<>();
             try {
                 //first load all
-                for (URL url : Collections.list(Thread.currentThread().getContextClassLoader().getResources("/META-INF/vr-plugin.properties"))) {
+                Set<URL> allUrls=new HashSet<>();
+                allUrls.addAll(Collections.list(Thread.currentThread().getContextClassLoader().getResources("/META-INF/vr-plugin.properties")));
+                allUrls.addAll(Collections.list(Thread.currentThread().getContextClassLoader().getResources("META-INF/vr-plugin.properties")));
+
+                for (URL url : allUrls) {
                     String urlString = url.toString();
                     int pos = urlString.lastIndexOf("/META-INF/vr-plugin.properties");
                     String p = urlString.substring(0, pos) + urlString.substring(pos + "/META-INF/vr-plugin.properties".length());
@@ -478,6 +482,8 @@ class CorePluginBodyPluginManager extends CorePluginBody {
                 _appVersion.setBuildNumber(p.getProperty("build-number"));
                 _appVersion.setBuildDate(p.getProperty("build-date"));
                 _appVersion.setAuthor(p.getProperty("author"));
+                _appVersion.setAuthorUrl(p.getProperty("author-url"));
+                _appVersion.setAuthorAffiliation(p.getProperty("author-affiliation"));
                 _appVersion.setDefaultPublicTheme(p.getProperty("default-public-theme"));
                 _appVersion.setDefaultPrivateTheme(p.getProperty("default-private-theme"));
                 for (Object k : p.keySet()) {

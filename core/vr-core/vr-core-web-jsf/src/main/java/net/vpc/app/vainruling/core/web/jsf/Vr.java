@@ -76,7 +76,6 @@ public class Vr {
     public static final String NULL_VALUE_STR = "-*Aucune Valeur*-";
 
 
-
     private MessageTextService messageTextService;
     private TaskTextService taskTextService;
     private NotificationTextService notificationTextService;
@@ -765,24 +764,24 @@ public class Vr {
     }
 
     public String escapeJsQuotedString(String value) {
-        StringBuilder sb=new StringBuilder();
-        if(value!=null){
-            for (char c: value.toCharArray()) {
-                switch (c){
+        StringBuilder sb = new StringBuilder();
+        if (value != null) {
+            for (char c : value.toCharArray()) {
+                switch (c) {
                     case '\'':
-                    case '\\':{
+                    case '\\': {
                         sb.append('\\').append(c);
                         break;
                     }
-                    case '\n':{
+                    case '\n': {
                         sb.append("\\n");
                         break;
                     }
-                    case '\t':{
+                    case '\t': {
                         sb.append("\\t");
                         break;
                     }
-                    default :{
+                    default: {
                         sb.append(c);
                         break;
                     }
@@ -938,11 +937,11 @@ public class Vr {
         return r2;
     }
 
-    public String getAppPropertyOrDefault(String name,String defaultValue) {
+    public String getAppPropertyOrDefault(String name, String defaultValue) {
         AppProperty property = core.getAppProperty(name, null);
         if (property != null) {
             String propertyValue = property.getPropertyValue();
-            if(!StringUtils.isEmpty(propertyValue)) {
+            if (!StringUtils.isEmpty(propertyValue)) {
                 return propertyValue;
             }
         }
@@ -1465,43 +1464,43 @@ public class Vr {
     public void prepareCurrArticleType(ContentText listItem) {
         setHttpRequestAttribute("currArticleType",
                 (isEmpty(listItem.getImageURL()) ? "center"
-                : (this.contextTextHasDecoration(listItem, "left") ? "left"
-                : this.contextTextHasDecoration(listItem, "right") ? "right"
-                : this.contextTextHasDecoration(listItem, "center") ? "center"
-                : this.randomize("left", "right")))
+                        : (this.contextTextHasDecoration(listItem, "left") ? "left"
+                        : this.contextTextHasDecoration(listItem, "right") ? "right"
+                        : this.contextTextHasDecoration(listItem, "center") ? "center"
+                        : this.randomize("left", "right")))
         );
 
         this.setHttpRequestAttribute("currArticleBackground",
                 this.contextTextHasDecoration(listItem, "bg-rand-image") ? "rand-image"
-                : this.contextTextHasDecoration(listItem, "bg-image") ? (this.isEmpty(listItem.getImageURL()) ? "rand-image" : "image")
-                : this.contextTextHasDecoration(listItem, "bg-solid") ? "solid"
-                : this.isEmpty(listItem.getImageURL()) ? this.randomize("solid", "solid")
-                : "solid"
+                        : this.contextTextHasDecoration(listItem, "bg-image") ? (this.isEmpty(listItem.getImageURL()) ? "rand-image" : "image")
+                        : this.contextTextHasDecoration(listItem, "bg-solid") ? "solid"
+                        : this.isEmpty(listItem.getImageURL()) ? this.randomize("solid", "solid")
+                        : "solid"
         );
 
         this.setHttpRequestAttribute("currArticleBackgroundImage",
                 (this.getHttpRequest().getAttribute("currArticleBackground") == "rand-image")
-                ? (this.randomizeList(this.listFlattenAndTrimAndAppend(this.strcat(this.getPublicThemeContext(), "/wplugins/crew/images/slide_5.jpg"), this.fsurlList(this.findValidImages("/Site/wplugins/crew/images/slider")))))
-                : (this.getHttpRequest().getAttribute("currArticleBackground") == "image")
-                ? (this.randomizeList(this.fsurlList(this.findValidImages(listItem.getImageURL()))))
-                : ""
+                        ? (this.randomizeList(this.listFlattenAndTrimAndAppend(this.strcat(this.getPublicThemeContext(), "/wplugins/crew/images/slide_5.jpg"), this.fsurlList(this.findValidImages("/Site/wplugins/crew/images/slider")))))
+                        : (this.getHttpRequest().getAttribute("currArticleBackground") == "image")
+                        ? (this.randomizeList(this.fsurlList(this.findValidImages(listItem.getImageURL()))))
+                        : ""
         );
 
         this.setHttpRequestAttribute("currArticleCompanionImage",
                 (this.getHttpRequest().getAttribute("currArticleBackground") == "rand-image")
-                ? this.url(listItem.getImageURL())
-                : (this.getHttpRequest().getAttribute("currArticleBackground") == "image")
-                ? (this.randomizeList(this.contentPathToFSUrlList(this.findImageAttachments(listItem.getImageAttachments()))))
-                : this.url(listItem.getImageURL())
+                        ? this.url(listItem.getImageURL())
+                        : (this.getHttpRequest().getAttribute("currArticleBackground") == "image")
+                        ? (this.randomizeList(this.contentPathToFSUrlList(this.findImageAttachments(listItem.getImageAttachments()))))
+                        : this.url(listItem.getImageURL())
         );
 
         this.setHttpRequestAttribute("currArticleBackgroundSolid",
                 (this.getHttpRequest().getAttribute("currArticleBackground") == "solid")
-                ? this.randomize("#38569f", "#352f44", "#2f4432", "#44362f", "#442f39", "#38969f")
-                : ""
+                        ? this.randomize("#38569f", "#352f44", "#2f4432", "#44362f", "#442f39", "#38969f")
+                        : ""
         );
     }
-    
+
     public void closeDialog() {
         DialogBuilder.closeCurrent();
         //RequestContext.getCurrentInstance().closeDialog(null);

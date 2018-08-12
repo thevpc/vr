@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.vpc.app.vain-ruling.apps.eniso-info.plugins</groupId>
     <artifactId>eniso-info-main-web</artifactId>
-    <version>1.13.7</version>
+    <version>1.13.8</version>
     <packaging>jar</packaging>
     <name>net.vpc.app.vain-ruling.apps.eniso-info.plugins.eniso-info-main-web</name>
     <url>https://github.com/thevpc/vr/wiki</url>
@@ -18,7 +18,7 @@
 
     <properties>
         <vr-plugin.component-type>web</vr-plugin.component-type>
-        <version.vr-core-web-jsf>1.13.7</version.vr-core-web-jsf>
+        <version.vr-core-web-jsf>1.13.8</version.vr-core-web-jsf>
     </properties>
 
     <dependencies>
@@ -30,19 +30,19 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>eniso-info-main-service</artifactId>
-            <version>1.13.7</version>
+            <version>1.13.8</version>
         </dependency>
 
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.themes</groupId>
             <artifactId>vr-public-theme-crew</artifactId>
-            <version>1.13.7</version>
+            <version>1.13.8</version>
         </dependency>
 
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.themes</groupId>
             <artifactId>vr-private-theme-adminlte</artifactId>
-            <version>1.13.7</version>
+            <version>1.13.8</version>
         </dependency>
 
         <!--<dependency>-->
@@ -59,66 +59,66 @@
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.tasks</groupId>
             <artifactId>vr-tasks-web</artifactId>
-            <version>1.13.7</version>
+            <version>1.13.8</version>
         </dependency>
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.academic</groupId>
             <artifactId>vr-academic-web</artifactId>
-            <version>1.13.7</version>
+            <version>1.13.8</version>
         </dependency>
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.academic-report</groupId>
             <artifactId>vr-academic-report-web</artifactId>
-            <version>1.13.7</version>
+            <version>1.13.8</version>
         </dependency>
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.academic-planning</groupId>
             <artifactId>vr-academic-planning-web</artifactId>
-            <version>1.13.7</version>
+            <version>1.13.8</version>
         </dependency>
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.academic-perf-eval</groupId>
             <artifactId>vr-academic-perf-eval-web</artifactId>
-            <version>1.13.7</version>
+            <version>1.13.8</version>
         </dependency>
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.mailbox</groupId>
             <artifactId>vr-mailbox-web</artifactId>
-            <version>1.13.7</version>
+            <version>1.13.8</version>
         </dependency>
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.academic-project-based-learning</groupId>
             <artifactId>vr-academic-project-based-learning-web</artifactId>
-            <version>1.13.7</version>
+            <version>1.13.8</version>
         </dependency>
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.dev-toolbox</groupId>
             <artifactId>vr-dev-toolbox-web</artifactId>
-            <version>1.13.7</version>
+            <version>1.13.8</version>
         </dependency>
 
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.equipments</groupId>
             <artifactId>vr-equipments-web</artifactId>
-            <version>1.13.7</version>
+            <version>1.13.8</version>
         </dependency>
 
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.equipment-tracker</groupId>
             <artifactId>vr-equipment-tracker-web</artifactId>
-            <version>1.13.7</version>
+            <version>1.13.8</version>
         </dependency>
 
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.academic-profile</groupId>
             <artifactId>vr-academic-profile-web</artifactId>
-            <version>1.13.7</version>
+            <version>1.13.8</version>
         </dependency>
 
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.forum</groupId>
             <artifactId>vr-forum-web</artifactId>
-            <version>1.13.7</version>
+            <version>1.13.8</version>
         </dependency>
 
         <dependency>

@@ -21,8 +21,10 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
+import net.vpc.common.util.MapUtils;
 
 public class WebScriptServiceInvoker {
+
     public static ThreadLocal<ScriptEngine> currentEngine = new ThreadLocal<>();
     public Set<String> blacklistClassNames = new HashSet<>(
             Arrays.asList(
@@ -34,13 +36,12 @@ public class WebScriptServiceInvoker {
     );
     public List<Pattern> blacklistClassNamePatterns = new ArrayList<>();
 
-
-    public static Map buildError(Throwable error,Map out) {
-        return buildError(error.getClass().getSimpleName(),error.getMessage(),out);
+    public static Map buildError(Throwable error, Map out) {
+        return buildError(error.getClass().getSimpleName(), error.getMessage(), out);
     }
 
-    public static Map buildError(String type,String message,Map out) {
-        if(out==null) {
+    public static Map buildError(String type, String message, Map out) {
+        if (out == null) {
             out = new LinkedHashMap();
         }
         Map<String, Object> err = new LinkedHashMap<>();
@@ -50,8 +51,8 @@ public class WebScriptServiceInvoker {
         return out;
     }
 
-    public static Map buildSimpleResult(Object result,Map out) {
-        if(out==null) {
+    public static Map buildSimpleResult(Object result, Map out) {
+        if (out == null) {
             out = new LinkedHashMap();
         }
         out.put("$1", result);
@@ -60,23 +61,23 @@ public class WebScriptServiceInvoker {
 
     public Map invoke(String script) {
         UserToken s = CorePlugin.get().getCurrentToken();
-        if (s == null || s.getUserLogin()==null) {
-            return buildError("SecurityException","not connected",null);
+        if (s == null || s.getUserLogin() == null) {
+            return buildError("SecurityException", "not connected", null);
         }
-        if(StringUtils.isEmpty(script)){
+        if (StringUtils.isEmpty(script)) {
             return new HashMap();
         }
         ScriptEngine scriptEngine = createScriptEngine();
         currentEngine.set(scriptEngine);
         try {
             try {
-                String firstLineOfScript=new BufferedReader(new StringReader(script)).readLine();
-                TraceService.get().trace("web-script",firstLineOfScript,script,"web-script", Level.WARNING);
+                String firstLineOfScript = new BufferedReader(new StringReader(script)).readLine();
+                TraceService.get().trace("System.web-script", null,MapUtils.map("script", firstLineOfScript), script, "web-script", Level.WARNING);
                 scriptEngine.eval(script);
                 return (Map) scriptEngine.get("out");
             } catch (Exception e) {
                 Map out = (Map) scriptEngine.get("out");
-                return buildError(e,out);
+                return buildError(e, out);
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -137,10 +138,11 @@ public class WebScriptServiceInvoker {
     }
 
     public static class VrJs {
+
         public Object bean(String name) {
             //force the bean to be a plugin!!
-            if(!name.endsWith("Plugin")){
-                name=name+"Plugin";
+            if (!name.endsWith("Plugin")) {
+                name = name + "Plugin";
             }
             return VrApp.getBean(name);
         }
@@ -269,7 +271,6 @@ public class WebScriptServiceInvoker {
 //            }
 //            return ret;
 //        }
-
         public boolean logout() {
             boolean ret = false;
             try {

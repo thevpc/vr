@@ -22,7 +22,7 @@ import net.vpc.app.vainruling.plugins.academic.service.stat.TeacherPeriodStat;
 import net.vpc.app.vainruling.plugins.academic.service.stat.TeacherSemesterStat;
 import net.vpc.app.vainruling.plugins.academic.service.util.*;
 import net.vpc.common.io.PathInfo;
-import net.vpc.common.strings.MapStringConverter;
+import net.vpc.common.strings.StringConverterMap;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.Chronometer;
 import net.vpc.common.util.MapList;
@@ -49,11 +49,14 @@ import java.text.DecimalFormat;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.vpc.app.vainruling.core.service.util.JsonUtils;
+import net.vpc.common.util.MapUtils;
 
 /**
  * Created by vpc on 6/25/16.
  */
 public class TeacherGenerationHelper {
+
     private static final Logger log = Logger.getLogger(TeacherGenerationHelper.class.getName());
     private static PropertyPlaceholderHelper h = new PropertyPlaceholderHelper("${", "}");
     private static DecimalFormat FF = new DecimalFormat("0.0#");
@@ -75,14 +78,13 @@ public class TeacherGenerationHelper {
             TeacherGenerationOptions options = (_options == null) ? new TeacherGenerationOptions() : _options;
 
             ProgressMonitor[] mon = options.getProgressMonitor().split(new double[]{
-                    2,
-                    2,
-                    5,
-                    2,
-                    1,
-                    1,
-                    1,
-            });
+                2,
+                2,
+                5,
+                2,
+                1,
+                1,
+                1,});
             CorePlugin core = VrApp.getBean(CorePlugin.class);
             AcademicPlugin academicPlugin = VrApp.getBean(AcademicPlugin.class);
 
@@ -114,6 +116,7 @@ public class TeacherGenerationHelper {
             }
             String outputNamePattern = _outputNamePattern;
             class Data {
+
                 List<TeacherPeriodStat> stats = null;
             }
             Data data = new Data();
@@ -131,124 +134,124 @@ public class TeacherGenerationHelper {
             ProgressMonitorFactory.invokeMonitoredAction(mon[0],
                     "TeacherListAssignmentsSummary ",
                     new VoidMonitoredAction() {
-                        @Override
-                        public void invoke(ProgressMonitor monitor, String messagePrefix) throws Exception {
-                            if (requestedContents.contains(GeneratedContent.TeacherListAssignmentsSummary) || requestedContents.contains(GeneratedContent.TeacherAssignments) || requestedContents.contains(GeneratedContent.GroupedTeacherAssignments)) {
-                                data.stats = academicPlugin.evalTeacherStatList(periodId, teacherIdsFilter, new CourseAssignmentFilterAnd().and(options.getCourseAssignmentFilter()).and(new DefaultCourseAssignmentFilter().addAcceptedSemester(semesterId)), options.getDeviationConfig(), monitor);
-                            }
-                        }
+                @Override
+                public void invoke(ProgressMonitor monitor, String messagePrefix) throws Exception {
+                    if (requestedContents.contains(GeneratedContent.TeacherListAssignmentsSummary) || requestedContents.contains(GeneratedContent.TeacherAssignments) || requestedContents.contains(GeneratedContent.GroupedTeacherAssignments)) {
+                        data.stats = academicPlugin.evalTeacherStatList(periodId, teacherIdsFilter, new CourseAssignmentFilterAnd().and(options.getCourseAssignmentFilter()).and(new DefaultCourseAssignmentFilter().addAcceptedSemester(semesterId)), options.getDeviationConfig(), monitor);
                     }
+                }
+            }
             );
             ProgressMonitorFactory.invokeMonitoredAction(mon[1],
                     "TeacherListAssignmentsSummary ",
                     new VoidMonitoredAction() {
-                        @Override
-                        public void invoke(ProgressMonitor monitor, String messagePrefix) throws Exception {
-                            if (requestedContents.contains(GeneratedContent.TeacherListAssignmentsSummary)) {
-                                TeacherPeriodStat[] statsArray = data.stats.toArray(new TeacherPeriodStat[data.stats.size()]);
-                                String teacherListAssignmentsSummaryFile_template = templateFolder + "/teacher-list-assignments-summary-template.xls";
-                                ProgressMonitor[] mons2 = monitor.split(new double[]{2, 1});
-                                generateTeacherListAssignmentsSummaryFile(periodId, statsArray,
-                                        fs.get(teacherListAssignmentsSummaryFile_template), fs.get(outputFolder + File.separator
-                                                + outputNamePattern.replace("*", "teacher-list-assignments-summary") + ".xls"), writeVars, mons2[0]);
+                @Override
+                public void invoke(ProgressMonitor monitor, String messagePrefix) throws Exception {
+                    if (requestedContents.contains(GeneratedContent.TeacherListAssignmentsSummary)) {
+                        TeacherPeriodStat[] statsArray = data.stats.toArray(new TeacherPeriodStat[data.stats.size()]);
+                        String teacherListAssignmentsSummaryFile_template = templateFolder + "/teacher-list-assignments-summary-template.xls";
+                        ProgressMonitor[] mons2 = monitor.split(new double[]{2, 1});
+                        generateTeacherListAssignmentsSummaryFile(periodId, statsArray,
+                                fs.get(teacherListAssignmentsSummaryFile_template), fs.get(outputFolder + File.separator
+                                + outputNamePattern.replace("*", "teacher-list-assignments-summary") + ".xls"), writeVars, mons2[0]);
 
-                                VFile currGenFile = fs.get(outputFolder + File.separator + "vars" + File.separator + "teacher-list-assignments.csv");
-                                VFile diffGenFile = fs.get(outputFolder + File.separator + "vars" + File.separator + "teacher-list-assignments-diff.html");
-                                VFile oldGenFile = StringUtils.isEmpty(options.getOldOutputFolder()) ? null : fs.get(options.getOldOutputFolder() + File.separator + "vars" + File.separator + "teacher-list-assignments.csv");
-                                generateTeacherAssignmentsCsvFile(periodId, statsArray, currGenFile, mons2[1]);
-                                if (oldGenFile != null && oldGenFile.exists()) {
-                                    VrUtils.diffToHtml(currGenFile, oldGenFile, diffGenFile, null);
-                                }
-                            }
+                        VFile currGenFile = fs.get(outputFolder + File.separator + "vars" + File.separator + "teacher-list-assignments.csv");
+                        VFile diffGenFile = fs.get(outputFolder + File.separator + "vars" + File.separator + "teacher-list-assignments-diff.html");
+                        VFile oldGenFile = StringUtils.isEmpty(options.getOldOutputFolder()) ? null : fs.get(options.getOldOutputFolder() + File.separator + "vars" + File.separator + "teacher-list-assignments.csv");
+                        generateTeacherAssignmentsCsvFile(periodId, statsArray, currGenFile, mons2[1]);
+                        if (oldGenFile != null && oldGenFile.exists()) {
+                            VrUtils.diffToHtml(currGenFile, oldGenFile, diffGenFile, null);
                         }
-                    });
-
+                    }
+                }
+            });
 
             ProgressMonitorFactory.invokeMonitoredAction(mon[2],
                     "TeacherListAssignmentsSummary ",
                     new VoidMonitoredAction() {
-                        @Override
-                        public void invoke(ProgressMonitor monitor, String messagePrefix) throws Exception {
-                            if (requestedContents.contains(GeneratedContent.TeacherAssignments)) {
-                                TeacherPeriodStat[] statsArray = data.stats.toArray(new TeacherPeriodStat[data.stats.size()]);
-                                generateTeacherAssignmentsFolder(periodId, statsArray, fs.get(teacherAssignments_template), fs.get(uu.getDirName()
-                                        + File.separator + uu.getNamePart() + "-details/" + outputNamePattern + ".xls"), writeVars, monitor);
-                            }
-                        }
-                    });
+                @Override
+                public void invoke(ProgressMonitor monitor, String messagePrefix) throws Exception {
+                    if (requestedContents.contains(GeneratedContent.TeacherAssignments)) {
+                        TeacherPeriodStat[] statsArray = data.stats.toArray(new TeacherPeriodStat[data.stats.size()]);
+                        generateTeacherAssignmentsFolder(periodId, statsArray, fs.get(teacherAssignments_template), fs.get(uu.getDirName()
+                                + File.separator + uu.getNamePart() + "-details/" + outputNamePattern + ".xls"), writeVars, monitor);
+                    }
+                }
+            });
 
             ProgressMonitorFactory.invokeMonitoredAction(mon[3],
                     "TeacherListAssignmentsSummary ",
                     new VoidMonitoredAction() {
-                        @Override
-                        public void invoke(ProgressMonitor monitor, String messagePrefix) throws Exception {
-                            if (requestedContents.contains(GeneratedContent.GroupedTeacherAssignments)) {
-                                TeacherPeriodStat[] statsArray = data.stats.toArray(new TeacherPeriodStat[data.stats.size()]);
-                                generateTeacherAssignmentsFile(periodId, statsArray, fs.get(teacherAssignments_template), fs.get(teacherAssignments_filename), monitor);
-                            }
-                        }
-                    });
+                @Override
+                public void invoke(ProgressMonitor monitor, String messagePrefix) throws Exception {
+                    if (requestedContents.contains(GeneratedContent.GroupedTeacherAssignments)) {
+                        TeacherPeriodStat[] statsArray = data.stats.toArray(new TeacherPeriodStat[data.stats.size()]);
+                        generateTeacherAssignmentsFile(periodId, statsArray, fs.get(teacherAssignments_template), fs.get(teacherAssignments_filename), monitor);
+                    }
+                }
+            });
 
             ProgressMonitorFactory.invokeMonitoredAction(mon[4],
                     "TeacherListAssignmentsSummary ",
                     new VoidMonitoredAction() {
-                        @Override
-                        public void invoke(ProgressMonitor monitor, String messagePrefix) throws Exception {
-                            if (requestedContents.contains(GeneratedContent.CourseListLoads)) {
-                                String courseListLoads_template = templateFolder + "/course-list-loads-template.xls";
-                                VFile t = fs.get(courseListLoads_template);
-                                ProgressMonitor[] mons2 = monitor.split(new double[]{1, 1});
-                                generateCourseListLoadsFile(periodId, t, fs.get(outputFolder + File.separator + outputNamePattern.replace("*", "course-list-loads") + ".xls"), mons2[0]);
+                @Override
+                public void invoke(ProgressMonitor monitor, String messagePrefix) throws Exception {
+                    if (requestedContents.contains(GeneratedContent.CourseListLoads)) {
+                        String courseListLoads_template = templateFolder + "/course-list-loads-template.xls";
+                        VFile t = fs.get(courseListLoads_template);
+                        ProgressMonitor[] mons2 = monitor.split(new double[]{1, 1});
+                        generateCourseListLoadsFile(periodId, t, fs.get(outputFolder + File.separator + outputNamePattern.replace("*", "course-list-loads") + ".xls"), mons2[0]);
 
-                                courseListLoads_template = templateFolder + "/course-assignments-template.xls";
-                                t = fs.get(courseListLoads_template);
-                                generateCourseListAssignmentsFile(periodId, t, fs.get(outputFolder + File.separator + outputNamePattern.replace("*", "course-assignments") + ".xls"), options.getVersion(), mons2[1]);
-                            }
-                        }
-                    });
+                        courseListLoads_template = templateFolder + "/course-assignments-template.xls";
+                        t = fs.get(courseListLoads_template);
+                        generateCourseListAssignmentsFile(periodId, t, fs.get(outputFolder + File.separator + outputNamePattern.replace("*", "course-assignments") + ".xls"), options.getVersion(), mons2[1]);
+                    }
+                }
+            });
 
             ProgressMonitorFactory.invokeMonitoredAction(mon[5],
                     "TeacherListAssignmentsSummary ",
                     new VoidMonitoredAction() {
-                        @Override
-                        public void invoke(ProgressMonitor monitor, String messagePrefix) throws Exception {
-                            generateGlobalVars(periodId, fs.get(outputFolder + File.separator + "vars" + File.separator + "vars.config"), options.getVersion());
-                        }
-                    });
+                @Override
+                public void invoke(ProgressMonitor monitor, String messagePrefix) throws Exception {
+                    generateGlobalVars(periodId, fs.get(outputFolder + File.separator + "vars" + File.separator + "vars.config"), options.getVersion());
+                }
+            });
 
             ProgressMonitorFactory.invokeMonitoredAction(mon[6],
                     "TeacherListAssignmentsSummary ",
                     new VoidMonitoredAction() {
-                        @Override
-                        public void invoke(ProgressMonitor monitor, String messagePrefix) throws Exception {
-                            if (requestedContents.contains(GeneratedContent.Bundle)) {
-                                Chronometer c2 = new Chronometer();
-                                String zipFile = outputFolder + File.separator + outputNamePattern.replace("*", "bundle") + ".zip";
-                                log.log(Level.FINE, "creating bundle {0} from {1}", new Object[]{(zipFile), outputFolder});
-                                VZipUtils.zip(fs.get(zipFile), new VZipOptions()
-                                                .setSkipRoots(true)
-                                                .setTempFileSystem(new NativeVFS())
-                                                .setTempFile(true),
-                                        fs.get(outputFolder)
-                                );
-                                log.log(Level.FINE, "created bundle in {0}", c2.stop());
-                            }
-                        }
-                    });
-
-            System.out.println("data generated in " + ch.stop());
-        }catch (Exception ex){
-            TraceService.get().trace("TeacherLoadGeneration", "Some error occurred", StringUtils.stacktraceToString(ex), "Academic", Level.SEVERE);
-            log.log(Level.SEVERE, "Some error occurred",ex);
-            if(ex instanceof RuntimeException){
+                @Override
+                public void invoke(ProgressMonitor monitor, String messagePrefix) throws Exception {
+                    if (requestedContents.contains(GeneratedContent.Bundle)) {
+                        Chronometer c2 = new Chronometer();
+                        String zipFile = outputFolder + File.separator + outputNamePattern.replace("*", "bundle") + ".zip";
+                        log.log(Level.FINE, "creating bundle {0} from {1}", new Object[]{(zipFile), outputFolder});
+                        VZipUtils.zip(fs.get(zipFile), new VZipOptions()
+                                .setSkipRoots(true)
+                                .setTempFileSystem(new NativeVFS())
+                                .setTempFile(true),
+                                fs.get(outputFolder)
+                        );
+                        log.log(Level.FINE, "created bundle in {0}", c2.stop());
+                    }
+                }
+            });
+            ch.stop();
+            TraceService.get().trace("Academic.teacher-load-generation", "success", MapUtils.map("time", ch.toString()), JsonUtils.jsonMap("time", ch.toString()), "Academic", Level.SEVERE);
+        } catch (Exception ex) {
+            //StringUtils.stacktraceToString(ex)
+            TraceService.get().trace("Academic.teacher-load-generation", "error", MapUtils.map("error", ex.getMessage()), JsonUtils.jsonMap("error", ex.getMessage()), "Academic", Level.SEVERE);
+            log.log(Level.SEVERE, "Error", ex);
+            if (ex instanceof RuntimeException) {
                 throw (RuntimeException) ex;
             }
             throw new RuntimeException(ex);
         }
     }
 
-    private void generateTeacherAssignmentsFile(int periodId, TeacherPeriodStat[] stats, VFile template, VFile output,ProgressMonitor mon) throws IOException {
-        ProgressMonitor monitor=ProgressMonitorFactory.nonnull(mon);
+    private void generateTeacherAssignmentsFile(int periodId, TeacherPeriodStat[] stats, VFile template, VFile output, ProgressMonitor mon) throws IOException {
+        ProgressMonitor monitor = ProgressMonitorFactory.nonnull(mon);
         if (stats.length == 0) {
             throw new IllegalArgumentException("No valid Teacher found");
         }
@@ -279,7 +282,7 @@ public class TeacherGenerationHelper {
                 int count0 = copy.getSheets().length;
                 int count = count0;
                 for (TeacherPeriodStat st : stats) {
-                    monitor.setProgress(count,stats.length);
+                    monitor.setProgress(count, stats.length);
                     copy.copySheet(0, AppContact.getName(st.getTeacher().resolveContact()), count);
                     WritableSheet sheet2 = copy.getSheet(count);
 //                    sheet2.setName(st.getTeacher().getName());
@@ -308,8 +311,8 @@ public class TeacherGenerationHelper {
         }
     }
 
-    private void generateTeacherAssignmentsCsvFile(int periodId, TeacherPeriodStat[] stats, VFile output,ProgressMonitor mon) throws IOException {
-        ProgressMonitor monitor=ProgressMonitorFactory.nonnull(mon);
+    private void generateTeacherAssignmentsCsvFile(int periodId, TeacherPeriodStat[] stats, VFile output, ProgressMonitor mon) throws IOException {
+        ProgressMonitor monitor = ProgressMonitorFactory.nonnull(mon);
         if (stats.length == 0) {
             throw new IllegalArgumentException("No valid Teacher found");
         }
@@ -338,23 +341,22 @@ public class TeacherGenerationHelper {
                     @Override
                     public DataColumn[] getColumns() {
                         return new DataColumn[]{
-                                new DataColumn(0, "Id"),
-                                new DataColumn(0, "Assignment"),
-                                new DataColumn(0, "Teacher"),
-                                new DataColumn(0, "Groups"),
-                                new DataColumn(0, "Shares"),
-                        };
+                            new DataColumn(0, "Id"),
+                            new DataColumn(0, "Assignment"),
+                            new DataColumn(0, "Teacher"),
+                            new DataColumn(0, "Groups"),
+                            new DataColumn(0, "Shares"),};
                     }
 
                     @Override
                     public Object[] objectToRow(Object o) {
                         AcademicCourseAssignmentInfo a = (AcademicCourseAssignmentInfo) o;
                         return new Object[]{
-                                a.getAssignment().getId(),
-                                a.getAssignment().getFullName(),
-                                a.getAssignment().getTeacher() == null ? null : a.resolveContact().getFullName(),
-                                a.getAssignment().getGroupCount(),
-                                a.getAssignment().getShareCount()
+                            a.getAssignment().getId(),
+                            a.getAssignment().getFullName(),
+                            a.getAssignment().getTeacher() == null ? null : a.resolveContact().getFullName(),
+                            a.getAssignment().getGroupCount(),
+                            a.getAssignment().getShareCount()
                         };
                     }
                 });
@@ -416,12 +418,12 @@ public class TeacherGenerationHelper {
         }
     }
 
-    public void generateTeacherListAssignmentsSummaryFile(int periodId, TeacherPeriodStat[] stats, VFile template, VFile output, boolean writeVarFiles,ProgressMonitor mon) throws IOException {
-        ProgressMonitor monitor=ProgressMonitorFactory.nonnull(mon);
+    public void generateTeacherListAssignmentsSummaryFile(int periodId, TeacherPeriodStat[] stats, VFile template, VFile output, boolean writeVarFiles, ProgressMonitor mon) throws IOException {
+        ProgressMonitor monitor = ProgressMonitorFactory.nonnull(mon);
         Chronometer ch = new Chronometer();
         Map<String, Object> p = new HashMap<String, Object>();
         for (int i = 0; i < stats.length; i++) {
-            monitor.setProgress(i,stats.length);
+            monitor.setProgress(i, stats.length);
             TeacherPeriodStat stat = stats[i];
             Map<String, Object> p0 = preparePrintableTeacherLoadProperties(periodId, stat);
             copyPrefixed(p0, p, "row(" + (i + 1) + ")");
@@ -433,15 +435,15 @@ public class TeacherGenerationHelper {
         log.log(Level.FINE, "generateTeacherListAssignmentsSummaryFile {0} teachers in {1}", new Object[]{stats.length, ch.stop()});
     }
 
-    public void generateCourseListLoadsFile(int periodId, VFile template, VFile output,ProgressMonitor mon) throws IOException {
-        ProgressMonitor monitor=ProgressMonitorFactory.nonnull(mon);
+    public void generateCourseListLoadsFile(int periodId, VFile template, VFile output, ProgressMonitor mon) throws IOException {
+        ProgressMonitor monitor = ProgressMonitorFactory.nonnull(mon);
         Chronometer ch = new Chronometer();
         Map<String, Object> p = new HashMap<String, Object>();
         NamedDoubles inc = new NamedDoubles();
 
         AcademicPlugin academicPlugin = VrApp.getBean(AcademicPlugin.class);
         List<AcademicCoursePlan> coursePlans = academicPlugin.findCoursePlans(periodId);
-        monitor=monitor.createIncrementalMonitor(coursePlans.size());
+        monitor = monitor.createIncrementalMonitor(coursePlans.size());
         for (AcademicCoursePlan c : coursePlans) {
             monitor.inc();
             String prefix;
@@ -493,7 +495,7 @@ public class TeacherGenerationHelper {
 //            ));
 //            for (AcademicCourseAssignment m : semAssignments) {
             for (AcademicCourseAssignmentInfo m2 : semAssignments) {
-                AcademicCourseAssignment m=m2.getAssignment();
+                AcademicCourseAssignment m = m2.getAssignment();
                 if ((Math.abs(m.getValueC()) + Math.abs(m.getValuePM()) + Math.abs(m.getValueTD()) + Math.abs(m.getValueTP())) * Math.abs(m.getGroupCount() * m.getShareCount()) != 0) {
                     String modulePrefix = semesterPrefix + ".mod(" + moduleIndex + ")";
                     p.put(modulePrefix + ".name", m.getName());
@@ -589,11 +591,11 @@ public class TeacherGenerationHelper {
 //        TeacherStat[] stats = evalTeachersStat(yearId, teacherIds, semester);
 //        generateTeacherAssignmentsFolder(stats, template, output);
 //    }
-    private void generateTeacherAssignmentsFolder(int periodId, TeacherPeriodStat[] stats, VFile template, VFile output, boolean writeVars,ProgressMonitor mon) throws IOException {
+    private void generateTeacherAssignmentsFolder(int periodId, TeacherPeriodStat[] stats, VFile template, VFile output, boolean writeVars, ProgressMonitor mon) throws IOException {
 //        if (!output.endsWith(File.separator) && !output.endsWith("/")) {
 //            output = output + File.separator;
 //        }
-        ProgressMonitor monitor=ProgressMonitorFactory.nonnull(mon);
+        ProgressMonitor monitor = ProgressMonitorFactory.nonnull(mon);
         CorePlugin core = VrApp.getBean(CorePlugin.class);
         String soutput = output.getPath();
         if (!soutput.contains("*")) {
@@ -602,10 +604,10 @@ public class TeacherGenerationHelper {
         if (!soutput.toLowerCase().endsWith(".xls")) {
             soutput = soutput + ".xls";
         }
-        int i=0;
-        int max=stats.length;
+        int i = 0;
+        int max = stats.length;
         for (TeacherPeriodStat st : stats) {
-            monitor.setProgress(i++,max);
+            monitor.setProgress(i++, max);
             String pp = soutput.replace("*", AppContact.getName(st.getTeacher().resolveContact()));
             VFile f2 = core.getRootFileSystem().get(pp);
             f2.getParentFile().mkdirs();
@@ -658,7 +660,8 @@ public class TeacherGenerationHelper {
         p.put(prefix + "td.grp", c.getGroupCountTD());
         p.put(prefix + "tp.grp", c.getGroupCountTP());
         p.put(prefix + "pm.grp", c.getGroupCountPM());
-        p.put(prefix + "tppm.grp", c.getGroupCountTPPM());
+        //REMOVE ME
+        p.put(prefix + "tppm.grp", c.getGroupCountPM());
         p.put(prefix + "c", c.getValueC());
         p.put(prefix + "td", c.getValueTD());
         p.put(prefix + "tp", c.getValueTP());
@@ -674,7 +677,10 @@ public class TeacherGenerationHelper {
         p.put(prefix + "w1.td", c.getValueTD() / wtd);
         p.put(prefix + "w1.tp", c.getValueTP() / wtp);
         p.put(prefix + "w1.pm", c.getValuePM() / wpm);
-        p.put(prefix + "w1.tppm", c.getValueTPPM() / wtppm);
+
+//        p.put(prefix + "w1.tppm", c.getValueTPPM() / wtppm);
+        // REMOVE ME
+        p.put(prefix + "w1.tppm", (c.getValueTP() + (2.0 / 3.0) * c.getValuePM()) / wtppm);
 
         p.put(prefix + "class.name", c.resolveAcademicClass().getName());
         p.put(prefix + "class.name2", c.resolveAcademicClass().getName2());
@@ -699,8 +705,8 @@ public class TeacherGenerationHelper {
         return p2;
     }
 
-    public void generateCourseListAssignmentsFile(int periodId, VFile template, VFile output, String version,ProgressMonitor mon) throws IOException {
-        ProgressMonitor monitor=ProgressMonitorFactory.nonnull(mon);
+    public void generateCourseListAssignmentsFile(int periodId, VFile template, VFile output, String version, ProgressMonitor mon) throws IOException {
+        ProgressMonitor monitor = ProgressMonitorFactory.nonnull(mon);
         Chronometer ch = new Chronometer();
         Map<String, Object> p = new HashMap<String, Object>();
         NamedDoubles inc = new NamedDoubles();
@@ -803,7 +809,8 @@ public class TeacherGenerationHelper {
             p.put(prefix + "td.grp", coursePlan.getGroupCountTD());
             p.put(prefix + "tp.grp", coursePlan.getGroupCountTP());
             p.put(prefix + "pm.grp", coursePlan.getGroupCountPM());
-            p.put(prefix + "tppm.grp", coursePlan.getGroupCountTPPM());
+            //REMOVE ME
+            p.put(prefix + "tppm.grp", coursePlan.getGroupCountPM());
 
             p.put(prefix + "w.c", wc);
             p.put(prefix + "w.td", wtd);
@@ -815,7 +822,8 @@ public class TeacherGenerationHelper {
             p.put(prefix + "w1.td", c.getValueTD() / wtd);
             p.put(prefix + "w1.tp", c.getValueTP() / wtp);
             p.put(prefix + "w1.pm", c.getValuePM() / wpm);
-            p.put(prefix + "w1.tppm", coursePlan.getValueTPPM() / wtppm);
+            p.put(prefix + "w1.tppm", (c.getValueTP() + (2.0 / 3.0) * c.getValuePM()) / wtppm);
+//            p.put(prefix + "w1.tppm", coursePlan.getValueTPPM() / wtppm);
             if (cls != null) {
                 p.put(prefix + "class.name", cls.getName());
                 p.put(prefix + "class.name2", cls.getName2());
@@ -832,7 +840,7 @@ public class TeacherGenerationHelper {
         p.put(prefix + "teacher.discipline", c.getTeacher() == null ? null : c.getTeacher().getDiscipline());
     }
 
-    public void generateTeachingLoad(int periodId, CourseAssignmentFilter courseAssignmentFilter, String version, String oldRefVersion,ProgressMonitor monitor) throws IOException {
+    public void generateTeachingLoad(int periodId, CourseAssignmentFilter courseAssignmentFilter, String version, String oldRefVersion, ProgressMonitor monitor) throws IOException {
         CorePlugin core = VrApp.getBean(CorePlugin.class);
 //        try {
         AppPeriod mainPeriod = core.findPeriodOrMain(periodId);
@@ -905,7 +913,7 @@ public class TeacherGenerationHelper {
         vars.put("home", System.getProperty("user.home"));
         vars.put("year", year);
         vars.put("version", version);
-        return StringUtils.replaceDollarPlaceHolders(namePattern, new MapStringConverter(vars));
+        return StringUtils.replaceDollarPlaceHolders(namePattern, new StringConverterMap(vars));
     }
 
     public String getConfigFolder(int periodId, String version) {
@@ -920,7 +928,7 @@ public class TeacherGenerationHelper {
         vars.put("year", year);
         vars.put("version", goodVersion);
 
-        return StringUtils.replaceDollarPlaceHolders(dir, new MapStringConverter(vars));
+        return StringUtils.replaceDollarPlaceHolders(dir, new StringConverterMap(vars));
     }
 
     public String getOutputFolder(int periodId, String version0) {
@@ -935,7 +943,7 @@ public class TeacherGenerationHelper {
         vars.put("year", year);
         vars.put("version", version);
         String path = (String) core.getOrCreateAppPropertyValue("AcademicPlugin.outputFolder", null, "/Documents/ByProfile/DirectorOfStudies/Charges/${year}/${version}");
-        return StringUtils.replaceDollarPlaceHolders(path, new MapStringConverter(vars));
+        return StringUtils.replaceDollarPlaceHolders(path, new StringConverterMap(vars));
     }
 
 }

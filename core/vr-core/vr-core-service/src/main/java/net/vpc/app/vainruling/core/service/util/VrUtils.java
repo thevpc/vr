@@ -46,9 +46,10 @@ import java.util.List;
  * @author taha.bensalah@gmail.com
  */
 public class VrUtils {
-    public static SimpleDateFormat UNIVERSAL_DATE_FORMAT=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    public static NullAsEmptyStringComparator NULL_AS_EMPTY_STRING_COMPARATOR=new NullAsEmptyStringComparator();
-    public static String STRING_SEP=", ;";
+
+    public static SimpleDateFormat UNIVERSAL_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    public static NullAsEmptyStringComparator NULL_AS_EMPTY_STRING_COMPARATOR = new NullAsEmptyStringComparator();
+    public static String STRING_SEP = ", ;";
 
     public static final Gson GSON = new Gson();
     public static final CustomDefaultObject DEFAULT_OBJECT_CURRENT_USER = new CustomDefaultObject() {
@@ -233,8 +234,8 @@ public class VrUtils {
     }
 
     public static String fstr(String format, Object... a) {
-        UserToken s =  CorePlugin.get().getCurrentToken();
-        Locale loc = s == null ? null : s.getLocale()==null?null:new Locale(s.getLocale());
+        UserToken s = CorePlugin.get().getCurrentToken();
+        Locale loc = s == null ? null : s.getLocale() == null ? null : new Locale(s.getLocale());
         if (loc == null) {
             loc = Locale.getDefault(Locale.Category.DISPLAY);
         }
@@ -330,7 +331,7 @@ public class VrUtils {
             } else if (pt.isInstance(Number.class)) {
                 throw new IllegalArgumentException("Not yet supported");
             } else {
-                arg = cmd.isEmpty()?null:GSON.fromJson(cmd, pt);
+                arg = cmd.isEmpty() ? null : GSON.fromJson(cmd, pt);
             }
         }
         return (T) arg;
@@ -438,21 +439,21 @@ public class VrUtils {
         if (d.isFullPage()) {
             html.append("<html>");
             html.append("\n<head>");
-            html.append("\n<style>\n" +
-                    "." + d.getInsertedClass() + " {\n" +
-                    "    background-color: #d2efb2;\n" +
-                    "}\n" +
-                    "." + d.getDeletedClass() + " {\n" +
-                    "    background-color: #f9ae97;\n" +
-                    "    text-decoration: line-through;\n" +
-                    "}\n" +
-                    "." + d.getLineClass() + " {\n" +
-                    "    \n" +
-                    "}\n" +
-                    "." + d.getDivClass() + " {\n" +
-                    "    \n" +
-                    "}\n" +
-                    "</style>"
+            html.append("\n<style>\n"
+                    + "." + d.getInsertedClass() + " {\n"
+                    + "    background-color: #d2efb2;\n"
+                    + "}\n"
+                    + "." + d.getDeletedClass() + " {\n"
+                    + "    background-color: #f9ae97;\n"
+                    + "    text-decoration: line-through;\n"
+                    + "}\n"
+                    + "." + d.getLineClass() + " {\n"
+                    + "    \n"
+                    + "}\n"
+                    + "." + d.getDivClass() + " {\n"
+                    + "    \n"
+                    + "}\n"
+                    + "</style>"
             );
             html.append("\n</head>");
             html.append("\n<body>");
@@ -586,6 +587,7 @@ public class VrUtils {
 
     public static <T> List<T> sortPreserveIndex(List<T> list, Comparator<T> comp) {
         class IndexedItem<T> {
+
             T item;
             int index;
 
@@ -894,7 +896,6 @@ public class VrUtils {
         return new String(chars);
     }
 
-
     public static Object convertDataObject(Object t, Class toType) {
         if (t == null) {
             return null;
@@ -919,9 +920,10 @@ public class VrUtils {
 
     /**
      * Convert
+     *
      * @param t
      * @param toType
-     * @return 
+     * @return
      */
     public static Object convertDataObjectOrDocument(Object t, Class toType) {
         if (t == null) {
@@ -986,7 +988,6 @@ public class VrUtils {
 
     }
 
-
     public static VFile getUserAbsoluteFile(int id, String... path) {
         VFile[] p = getUserAbsoluteFiles(id, path);
         if (p.length == 0) {
@@ -1027,33 +1028,29 @@ public class VrUtils {
         return files.toArray(new VFile[files.size()]);
     }
 
-    public static <T> T checkBean(T instance,Class<T> t){
-        if(instance==null){
-            instance=VrApp.getBean(t);
+    public static <T> T checkBean(T instance, Class<T> t) {
+        if (instance == null) {
+            instance = VrApp.getBean(t);
         }
         return instance;
     }
 
-
-
-
-    public static int[] append(int[] array,int value){
-        int[] array2=new int[array.length+1];
-        System.arraycopy(array,0,array2,0,array.length);
-        array2[array.length]=value;
+    public static int[] append(int[] array, int value) {
+        int[] array2 = new int[array.length + 1];
+        System.arraycopy(array, 0, array2, 0, array.length);
+        array2[array.length] = value;
         return array2;
     }
 
-    public static int[] append(int[] array1,int[] array2){
-        int[] rarray=new int[array1.length+array2.length];
-        System.arraycopy(array1,0,rarray,0,array1.length);
-        System.arraycopy(array2,0,rarray,array1.length,array2.length);
+    public static int[] append(int[] array1, int[] array2) {
+        int[] rarray = new int[array1.length + array2.length];
+        System.arraycopy(array1, 0, rarray, 0, array1.length);
+        System.arraycopy(array2, 0, rarray, array1.length, array2.length);
         return rarray;
     }
 
-
     public static VFile getOrResizeIcon(VFile file) throws IOException {
-        return getOrResizePhoto(file,128);
+        return getOrResizePhoto(file, 128);
     }
 
     public static VFile getOrResizePhoto(VFile file, int width) throws IOException {
@@ -1064,12 +1061,12 @@ public class VrUtils {
         String extension = pathInfo.getExtensionPart();
         String bestExtension = extension;
         VFile validFile = VrPlatformUtils.changeFileSuffix(file, "-" + width);
-        if("jpeg".equalsIgnoreCase(bestExtension) || "png".equalsIgnoreCase(bestExtension) || "jpg".equalsIgnoreCase(bestExtension)){
+        if ("jpeg".equalsIgnoreCase(bestExtension) || "png".equalsIgnoreCase(bestExtension) || "jpg".equalsIgnoreCase(bestExtension)) {
             //ok
-            bestExtension=bestExtension.toLowerCase();
-        }else{
-            validFile=VrPlatformUtils.changeFileExtension(validFile, "png");
-            bestExtension="png";
+            bestExtension = bestExtension.toLowerCase();
+        } else {
+            validFile = VrPlatformUtils.changeFileExtension(validFile, "png");
+            bestExtension = "png";
         }
         if (validFile.exists() && validFile.lastModified() > file.lastModified()) {
             return validFile;
@@ -1121,7 +1118,6 @@ public class VrUtils {
         return info;
     }
 
-
     public static List<String> parseWords(String value) {
         if (value == null) {
             value = "";
@@ -1154,27 +1150,26 @@ public class VrUtils {
         return new String[]{code, name};
     }
 
-    public static StringCollection createStringMap(String value){
+    public static StringCollection createStringMap(String value) {
         StringCollection map = StringUtils.createStringMap(VrUtils.STRING_SEP, StringUtils.LOWER, null);
         map.add(value);
         return map;
     }
 
-    public static StringCollection createStringSet(String value){
+    public static StringCollection createStringSet(String value) {
         StringCollection map = StringUtils.createStringMap(VrUtils.STRING_SEP, StringUtils.LOWER, StringUtils.LOWER);
         map.add(value);
         return map;
     }
 
-    public static String conditionalString(String value,boolean condition){
-        return condition?value:"";
+    public static String conditionalString(String value, boolean condition) {
+        return condition ? value : "";
     }
-
 
     public static String getBeanName(Object o) {
         return getBeanName(PlatformReflector.getTargetClass(o));
     }
-    
+
     private static class NullAsEmptyStringComparator implements Comparator<String> {
 
         public NullAsEmptyStringComparator() {
@@ -1190,6 +1185,25 @@ public class VrUtils {
             }
             return o1.compareTo(o2);
         }
+    }
+
+    public static double compareLenientV(double a, double b, double precision) {
+        double e = a - b;
+        if (Math.abs(e) < precision) {
+            return 0;
+        }
+        return e;
+    }
+
+    public static int compareLenient(double a, double b, double precision) {
+        double e = a - b;
+        if (Math.abs(e) < precision) {
+            return 0;
+        }
+        if (a < 0) {
+            return -1;
+        }
+        return 1;
     }
 
 }

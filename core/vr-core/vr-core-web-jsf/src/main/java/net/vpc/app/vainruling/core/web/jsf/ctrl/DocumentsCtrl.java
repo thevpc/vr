@@ -46,6 +46,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.vpc.common.util.MapUtils;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -174,7 +175,7 @@ public class DocumentsCtrl implements VRMenuProvider, VrControllerInfoResolver, 
         } else {
             getModel().setCurrent(DocumentsUtils.createFileInfo("/", VFileKind.ROOT, getModel().getFileSystem().get("/")));
         }
-        TraceService.get().trace("visit-document", "path visited " + getModel().getCurrent().getFile().getPath(), getModel().getCurrent().getFile().getPath(), "/System/Access", Level.FINE);
+        TraceService.get().trace("System.visit-document", null,MapUtils.map("path",getModel().getCurrent().getFile().getPath()), getModel().getCurrent().getFile().getPath(), "/System/Access", Level.FINE);
         onRefresh();
     }
 
@@ -186,7 +187,7 @@ public class DocumentsCtrl implements VRMenuProvider, VrControllerInfoResolver, 
 //    }
     public void updateCurrent(VFile file) {
         getModel().setCurrent(DocumentsUtils.createFileInfo(file));
-        TraceService.get().trace("visit-document", "path visited " + getModel().getCurrent().getFile().getPath(), getModel().getCurrent().getFile().getPath(), "/System/Access", Level.FINE);
+        TraceService.get().trace("System.visit-document", null,MapUtils.map("path",getModel().getCurrent().getFile().getPath()), getModel().getCurrent().getFile().getPath(), "/System/Access", Level.FINE);
         onRefresh();
     }
 

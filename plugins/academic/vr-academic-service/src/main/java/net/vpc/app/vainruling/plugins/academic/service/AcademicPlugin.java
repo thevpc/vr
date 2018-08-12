@@ -44,6 +44,9 @@ import java.io.IOException;
 import java.util.*;
 import java.util.logging.Logger;
 import net.vpc.app.vainruling.core.service.plugins.VrPlugin;
+import net.vpc.app.vainruling.core.service.util.VrUtils;
+import net.vpc.upa.PersistenceUnit;
+import net.vpc.upa.UPA;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -1089,4 +1092,148 @@ public class AcademicPlugin {
     public AcademicSemester getCurrentSemester() {
         return config.getCurrentSemester();
     }
+    
+        public void academicCoursePlan_validationErrors_Formula_fix(int academicPlanId) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        AcademicCoursePlan d = (AcademicCoursePlan) pu.findById(AcademicCoursePlan.class, academicPlanId);
+        if (d == null) {
+            return;
+        }
+        AcademicPlugin t = VrApp.getBean(AcademicPlugin.class);
+        List<AcademicCourseAssignment> assignments = t.findAcademicCourseAssignmentListByCoursePlanId(d.getId());
+//        Set<String> errors = new TreeSet<String>();
+        boolean saveMe = false;
+        if (d.getValueC() < 0) {
+            d.setValueC(0);
+            saveMe = true;
+        } else if (d.getValueC() > 0 && d.getGroupCountC() == 0) {
+            d.setGroupCountC(1);
+            saveMe = true;
+        } else if (d.getGroupCountC() < 0) {
+            d.setGroupCountC(0);
+            saveMe = true;
+        }
+
+        if (d.getValueTD() < 0) {
+            d.setValueTD(0);
+            saveMe = true;
+        } else if (d.getValueTD() > 0 && d.getGroupCountTD() == 0) {
+            d.setGroupCountTD(1);
+            saveMe = true;
+        } else if (d.getGroupCountTD() < 0) {
+            d.setGroupCountTD(0);
+            saveMe = true;
+        }
+
+        if (d.getValueTP() < 0) {
+            d.setValueTP(0);
+            saveMe = true;
+        } else if (d.getValueTP() > 0 && d.getGroupCountTP() == 0) {
+            d.setGroupCountTP(2);
+            saveMe = true;
+        } else if (d.getGroupCountTP() < 0) {
+            d.setGroupCountTP(0);
+            saveMe = true;
+        }
+
+        if (d.getValuePM() < 0) {
+            d.setValuePM(0);
+            saveMe = true;
+        } else if (d.getValuePM() > 0 && d.getGroupCountPM() == 0) {
+            d.setGroupCountPM(2);
+            saveMe = true;
+        } else if (d.getGroupCountPM() < 0) {
+            d.setGroupCountPM(2);
+            saveMe = true;
+        }
+
+        if (saveMe) {
+            pu.merge(d);
+        }
+        double c = 0;
+        double td = 0;
+        double tp = 0;
+        double pm = 0;
+        for (AcademicCourseAssignment assignment : assignments) {
+            saveMe = false;
+            double ac = assignment.getValueC();
+            double atd = assignment.getValueTD();
+            double atp = assignment.getValueTP();
+            double apm = assignment.getValuePM();
+            double g = assignment.getGroupCount();
+            double s = assignment.getShareCount();
+            if (g < 0) {
+                g = 0;
+                assignment.setGroupCount(g);
+                saveMe = true;
+            }
+            if (g <= 0) {
+                if (assignment.getValueC() > 0 || assignment.getValueTD() > 0) {
+                    assignment.setGroupCount(1);
+                    saveMe = true;
+                } else if (assignment.getValueTP() > 0 || assignment.getValuePM() > 0) {
+                    assignment.setGroupCount(2);
+                    saveMe = true;
+                }
+            }
+            if (s < 1) {
+                s = 1;
+                assignment.setShareCount(s);
+                saveMe = true;
+            }
+            if (s <= 1) {
+                if (assignment.getValueC() > 0 || assignment.getValueTD() > 0) {
+                    assignment.setShareCount(1);
+                    saveMe = true;
+                } else if (assignment.getValueTP() > 0 || assignment.getValuePM() > 0) {
+                    assignment.setShareCount(1);
+                    saveMe = true;
+                }
+            }
+            c += ac * g / s;
+            td += atd * g / s;
+            tp += atp * g / s;
+            pm += apm * g / s;
+            if (saveMe) {
+                pu.merge(assignment);
+            }
+        }
+//        double epsilon = 1E-3;
+//        double err = 1E-3;
+//        for (AcademicCourseAssignment assignment : assignments) {
+//            saveMe = false;
+//            if ((err = VrUtils.compareLenientV(d.getValueC() * d.getGroupCountC(), c, epsilon)) != 0) {
+//                if (c != 0) {
+//                    double v2 = assignment.getValueC() * assignment.getGroupCount() / assignment.getShareCount() / c * d.getValueC();
+//                    assignment.setValueC(v2);
+//                    saveMe=true;
+//                }
+//            }
+//            if ((err = VrUtils.compareLenientV(d.getValueTD() * d.getGroupCountTD(), c, epsilon)) != 0) {
+//                if (c != 0) {
+//                    double v2 = assignment.getValueTD() * assignment.getGroupCount() / assignment.getShareCount() / c * d.getValueTD();
+//                    assignment.setValueTD(v2);
+//                    saveMe=true;
+//                }
+//            }
+//            if ((err = VrUtils.compareLenientV(d.getValueTP() * d.getGroupCountTP(), c, epsilon)) != 0) {
+//                if (c != 0) {
+//                    double v2 = assignment.getValueTP() * assignment.getGroupCount() / assignment.getShareCount() / c * d.getValueTP();
+//                    assignment.setValueTP(v2);
+//                    saveMe=true;
+//                }
+//            }
+//            if ((err = VrUtils.compareLenientV(d.getValuePM() * d.getGroupCountTP(), c, epsilon)) != 0) {
+//                if (c != 0) {
+//                    double v2 = assignment.getValuePM() * assignment.getGroupCount() / assignment.getShareCount() / c * d.getValuePM();
+//                    assignment.setValuePM(v2);
+//                    saveMe=true;
+//                }
+//            }
+//            if(saveMe){
+//                pu.merge(assignment);
+//            }
+//        }
+    }
+
 }

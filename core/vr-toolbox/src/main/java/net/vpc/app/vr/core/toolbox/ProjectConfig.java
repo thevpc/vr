@@ -1,16 +1,21 @@
 package net.vpc.app.vr.core.toolbox;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ProjectConfig {
 
     private final Properties config = new Properties();
     private final Map<String, Getter> getters = new HashMap<String, Getter>();
 
-    private TemplateConsole io = new DefaultConsole();
+    private TemplateConsole console = new DefaultConsole();
 
     public ProjectConfig() {
     }
@@ -25,8 +30,12 @@ public class ProjectConfig {
         getters.put(name, (n, c) -> c.get(n, defaultvalue, g));
     }
 
-    public void setIo(TemplateConsole io) {
-        this.io = io;
+    public void setConsole(TemplateConsole console) {
+        this.console = console;
+    }
+
+    public TemplateConsole getConsole() {
+        return console;
     }
 
     public void unset(String propertyName) {
@@ -39,6 +48,16 @@ public class ProjectConfig {
         } else {
             config.setProperty(propertyName, value);
         }
+    }
+
+    public void loadProperties(File file) {
+        Properties p = new Properties();
+        try {
+            p.load(new FileReader(file));
+        } catch (IOException ex) {
+            throw new IllegalArgumentException(ex);
+        }
+        config.putAll(p);
     }
 
     public String getModuleName() {
@@ -74,14 +93,21 @@ public class ProjectConfig {
         if (defaultValue == null) {
             defaultValue = config.getProperty(name + "DefaultValue");
         }
-        String o = io.askForString(name, v, defaultValue);
-        if (o != null) {
-
-        }
+        String o = console.ask(name, v, defaultValue);
         if (o != null) {
             set(name, o);
         }
         return o;
+    }
+
+    public Properties getProperties(boolean includeDefaults) {
+        Properties p = new Properties();
+        for (Map.Entry<Object, Object> entry : config.entrySet()) {
+            if (includeDefaults || !entry.getKey().toString().endsWith("DefaultValue")) {
+                p.put(entry.getKey(), entry.getValue());
+            }
+        }
+        return p;
     }
 
     public String get(String name) {

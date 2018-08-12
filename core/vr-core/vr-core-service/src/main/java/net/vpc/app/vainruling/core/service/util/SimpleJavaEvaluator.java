@@ -11,11 +11,11 @@ import net.vpc.common.jeep.*;
  */
 public class SimpleJavaEvaluator implements InSetEvaluator {
 
-    public static void main(String[] args) {
-        SimpleJavaEvaluator s = new SimpleJavaEvaluator(new HashSet<>(Arrays.asList("toto", "titi")));
-        Object v = s.evaluateExpression("toti , toto");
-        System.out.println(v);
-    }
+//    public static void main(String[] args) {
+//        SimpleJavaEvaluator s = new SimpleJavaEvaluator(new HashSet<>(Arrays.asList("toto", "titi")));
+//        Object v = s.evaluateExpression("toti , toto");
+//        System.out.println(v);
+//    }
 
     public static class ExtraHelper {
 

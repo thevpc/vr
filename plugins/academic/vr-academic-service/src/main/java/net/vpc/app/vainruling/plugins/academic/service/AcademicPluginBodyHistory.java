@@ -16,8 +16,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
+import net.vpc.app.vainruling.core.service.util.JsonUtils;
+import net.vpc.common.util.MapUtils;
 
 public class AcademicPluginBodyHistory extends AcademicPluginBody {
+
     private CorePlugin core;
     private TraceService trace;
     private AcademicPlugin academic;
@@ -76,7 +79,7 @@ public class AcademicPluginBodyHistory extends AcademicPluginBody {
         UPA.getPersistenceUnit().createQuery("delete from AcademicHistCoursePlan a where a.academiYear=:y").setParameter("y", year).executeNonQuery();
         UPA.getPersistenceUnit().createQuery("delete from AcademicHistCourseGroup a where a.courseLevel.program.academiYear=:y").setParameter("y", year).executeNonQuery();
         UPA.getPersistenceUnit().createQuery("delete from AcademicHistProgram a where a.academiYear=:y").setParameter("y", year).executeNonQuery();
-        trace.trace("resetAcademicYear", "reset Academic Year", String.valueOf(year), "/Education", Level.FINE);
+        trace.trace("Academic.history-reset-year", "success", MapUtils.map("year", year), JsonUtils.jsonMap("year", year), "/Education", Level.FINE);
     }
 
     public void resetHistAcademicYears() {
@@ -88,7 +91,7 @@ public class AcademicPluginBodyHistory extends AcademicPluginBody {
         UPA.getPersistenceUnit().createQuery("delete from AcademicHistCoursePlan").executeNonQuery();
         UPA.getPersistenceUnit().createQuery("delete from AcademicHistCourseGroup").executeNonQuery();
         UPA.getPersistenceUnit().createQuery("delete from AcademicHistProgram").executeNonQuery();
-        trace.trace("resetHistAcademicYears", "reset Academic Years", "", "/Education", Level.FINE);
+        trace.trace("Academic.history-reset-years", "success", null, "{}", "/Education", Level.FINE);
     }
 
     public List<AcademicHistTeacherAnnualLoad> findHistTeacherAnnualLoads(int year) {
@@ -210,21 +213,19 @@ public class AcademicPluginBodyHistory extends AcademicPluginBody {
             h.setGroupCountPM(m.getGroupCountPM());
             h.setGroupCountTD(m.getGroupCountTD());
             h.setGroupCountTP(m.getGroupCountTP());
-            h.setGroupCountTPPM(m.getGroupCountTPPM());
+//            h.setGroupCountTPPM(m.getGroupCountTPPM());
 
             h.setWeeksC(m.getWeeksC());
             h.setWeeksPM(m.getWeeksPM());
             h.setWeeksTD(m.getWeeksTD());
             h.setWeeksTP(m.getWeeksTP());
-            h.setWeeksPM(m.getWeeksPM());
             h.setWeeksTPPM(m.getWeeksTPPM());
 
             h.setValueC(m.getValueC());
             h.setValuePM(m.getValuePM());
             h.setValueTD(m.getValueTD());
             h.setValueTP(m.getValueTP());
-            h.setValuePM(m.getValuePM());
-            h.setValueTPPM(m.getValueTPPM());
+//            h.setValueTPPM(m.getValueTPPM());
 
             h.setStudentClass(m.getCourseLevel().getAcademicClass());
             h.setSemester(m.getCourseLevel().getSemester());
@@ -233,7 +234,6 @@ public class AcademicPluginBodyHistory extends AcademicPluginBody {
         return s;
     }
 
-
     /**
      *
      */
@@ -241,26 +241,28 @@ public class AcademicPluginBodyHistory extends AcademicPluginBody {
         CorePluginSecurity.requireRight("Admin.ResetEducation");
         resetCurrentYear();
         resetHistAcademicYears();
-        trace.trace("resetModuleTeaching", "reset Module Academic", null, "/Education", Level.FINE);
     }
 
     public void resetTeachers() {
         CorePluginSecurity.requireRight("Admin.ResetEducation");
         resetAssignments();
-        UPA.getPersistenceUnit().createQuery("delete from AcademicTeacherSemestrialLoad").executeNonQuery();
-        UPA.getPersistenceUnit().createQuery("delete from AcademicTeacher").executeNonQuery();
+        //IGNORE ME
+//        UPA.getPersistenceUnit().createQuery("delete from AcademicTeacherSemestrialLoad").executeNonQuery();
+//        UPA.getPersistenceUnit().createQuery("delete from AcademicTeacher").executeNonQuery();
     }
 
     public void resetAssignments() {
         CorePluginSecurity.requireRight("Admin.ResetEducation");
-        UPA.getPersistenceUnit().createQuery("delete from AcademicCourseIntent").executeNonQuery();
-        UPA.getPersistenceUnit().createQuery("delete from AcademicCourseAssignment").executeNonQuery();
+        //IGNORE ME
+        //UPA.getPersistenceUnit().createQuery("delete from AcademicCourseIntent").executeNonQuery();
+        //UPA.getPersistenceUnit().createQuery("delete from AcademicCourseAssignment").executeNonQuery();
     }
 
     public void resetCourses() {
         CorePluginSecurity.requireRight("Admin.ResetEducation");
-        UPA.getPersistenceUnit().createQuery("delete from AcademicCoursePlan").executeNonQuery();
-        UPA.getPersistenceUnit().createQuery("delete from AcademicCourseGroup").executeNonQuery();
+        //IGNORE ME
+        //UPA.getPersistenceUnit().createQuery("delete from AcademicCoursePlan").executeNonQuery();
+        //UPA.getPersistenceUnit().createQuery("delete from AcademicCourseGroup").executeNonQuery();
     }
 
     public void resetCurrentYear() {
@@ -274,7 +276,7 @@ public class AcademicPluginBodyHistory extends AcademicPluginBody {
 //        UPA.getPersistenceUnit().createQuery("delete from AcademicSemester").executeNonQuery();
 //        UPA.getPersistenceUnit().createQuery("delete from AcademicTeacherSituation").executeNonQuery();
 //        UPA.getPersistenceUnit().createQuery("delete from AcademicTeacherDegree").executeNonQuery();
-        trace.trace("resetCurrentYear", "reset Module Academic", null, "/Education", Level.FINE);
+//        trace.trace("Academic-hsitory-reset-current-year", "success","reset Module Academic", null, "/Education", Level.FINE);
     }
 
 }

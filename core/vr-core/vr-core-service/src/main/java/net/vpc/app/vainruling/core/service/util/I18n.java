@@ -36,7 +36,7 @@ public class I18n implements Serializable {
     private final LinkedHashSet<String> bundlesUrls = new LinkedHashSet<String>();
     private final Map<String, ResourceBundleSuite> bundles = new HashMap<>();
 
-    public static I18n get(){
+    public static I18n get() {
         return VrApp.getBean(I18n.class);
     }
 
@@ -47,22 +47,20 @@ public class I18n implements Serializable {
         bundlesUrls.add(bundle);
     }
 
-
-
     public Properties loadResourceBundle(String baseName,
-                                             Locale locale) {
+            Locale locale) {
         List<Plugin> plugins = VrApp.getBean(CorePlugin.class).getPlugins();
-        Properties properties=new Properties();
+        Properties properties = new Properties();
         for (Plugin plugin : plugins) {
             for (String s : toBundleNames(baseName, locale)) {
                 for (PluginComponent component : plugin.getInfo().getComponents()) {
                     URL url = null;
                     try {
-                        url = component.getRuntimeURL("/" + s.replace('.','/')+".properties");
+                        url = component.getRuntimeURL("/" + s.replace('.', '/') + ".properties");
                     } catch (MalformedURLException e) {
                         //ignore
                     }
-                    if (url != null){
+                    if (url != null) {
                         InputStream is = null;
                         try {
                             try {
@@ -73,9 +71,9 @@ public class I18n implements Serializable {
                                     is.close();
                                 }
                             }
-                        }catch(FileNotFoundException e){
+                        } catch (FileNotFoundException e) {
                             //ignore
-                        }catch(Exception e){
+                        } catch (Exception e) {
                             log.log(Level.SEVERE, e.toString());
                         }
                     }
@@ -85,32 +83,31 @@ public class I18n implements Serializable {
         return properties;
     }
 
-
     private List<String> toBundleNames(String baseName, Locale locale) {
         List<String> list = new ArrayList<>();
         if (locale != null) {
             list.add(toBundleName0(baseName, locale));
             if (!StringUtils.isEmpty(locale.getVariant())) {
-                list.add(0,toBundleName0(baseName, new Locale(locale.getLanguage(), locale.getCountry())));
+                list.add(0, toBundleName0(baseName, new Locale(locale.getLanguage(), locale.getCountry())));
                 if (!StringUtils.isEmpty(locale.getCountry())) {
-                    list.add(0,toBundleName0(baseName, new Locale(locale.getLanguage())));
+                    list.add(0, toBundleName0(baseName, new Locale(locale.getLanguage())));
                     if (!StringUtils.isEmpty(locale.getLanguage())) {
-                        list.add(0,toBundleName0(baseName, Locale.ROOT));
+                        list.add(0, toBundleName0(baseName, Locale.ROOT));
                     }
                 }
-            }else{
+            } else {
                 if (!StringUtils.isEmpty(locale.getCountry())) {
-                    list.add(0,toBundleName0(baseName, new Locale(locale.getLanguage())));
+                    list.add(0, toBundleName0(baseName, new Locale(locale.getLanguage())));
                     if (!StringUtils.isEmpty(locale.getLanguage())) {
-                        list.add(0,toBundleName0(baseName, Locale.ROOT));
+                        list.add(0, toBundleName0(baseName, Locale.ROOT));
                     }
-                }else{
+                } else {
                     if (!StringUtils.isEmpty(locale.getLanguage())) {
-                        list.add(0,toBundleName0(baseName, Locale.ROOT));
+                        list.add(0, toBundleName0(baseName, Locale.ROOT));
                     }
                 }
             }
-        }else{
+        } else {
             list.add(baseName);
         }
         return list;
@@ -191,15 +188,37 @@ public class I18n implements Serializable {
         return s + "!!";
     }
 
-    public String get(UPAObject s, Object... params) {
-        if(s==null){
+    public String get(UPAObject s, Map<String,Object> params) {
+        if (s == null) {
+            return "null!!";
+        }
+        return get(s.getI18NTitle(), params);
+    }
+    public String get(UPAObject s, Arg... params) {
+        if (s == null) {
             return "null!!";
         }
         return get(s.getI18NTitle(), params);
     }
 
-    public String get(I18NString s, Object... params) {
-        if(s==null){
+    public String get(I18NString s, Map<String,Object> params) {
+        if (s == null) {
+            return "null!!";
+        }
+        for (String key : s.getKeys()) {
+            String v = getResourceBundleSuite().get(key, null, params);
+            if (v != null) {
+                return v;
+            }
+        }
+        String d = s.getDefaultValue();
+        if (d == null) {
+            return s.toString() + "!!";
+        }
+        return d;
+    }
+    public String get(I18NString s, Arg... params) {
+        if (s == null) {
             return "null!!";
         }
         for (String key : s.getKeys()) {
@@ -215,7 +234,16 @@ public class I18n implements Serializable {
         return d;
     }
 
-    public String getOrNull(I18NString s, Object... params) {
+    public String getOrNull(I18NString s, Arg... params) {
+        for (String key : s.getKeys()) {
+            String v = getResourceBundleSuite().get(key, null, params);
+            if (v != null) {
+                return v;
+            }
+        }
+        return null;
+    }
+    public String getOrNull(I18NString s, Map<String,Object> params) {
         for (String key : s.getKeys()) {
             String v = getResourceBundleSuite().get(key, null, params);
             if (v != null) {
@@ -225,22 +253,22 @@ public class I18n implements Serializable {
         return null;
     }
 
-    public String getOrDefault(String s, String defaultValue,Object[] params) {
+    public String getOrDefault(String s, String defaultValue, Arg[] params) {
         String v = getOrNull(s, params);
-        if(v!=null){
+        if (v != null) {
             return v;
         }
-        if(params==null || params.length==0){
+        if (params == null || params.length == 0) {
             return defaultValue;
         }
-        return format(defaultValue,params);
+        return format(defaultValue, params);
     }
 
-    public String getOrNull(UPAObject s, Object... params) {
+    public String getOrNull(UPAObject s, Arg... params) {
         return getOrNull(s.getI18NTitle(), params);
     }
 
-    public String getOrNull(String key, Object... params) {
+    public String getOrNull(String key, Arg... params) {
         return getResourceBundleSuite().get(key, null, params);
     }
 
@@ -262,24 +290,28 @@ public class I18n implements Serializable {
     }
 
     public String get(String key) {
-        return get(key, new Object[0]);
+        return get(key, new Arg[0]);
     }
 
-    public String get(String key, Object... params) {
+    public String get(String key, Arg... params) {
+        return getResourceBundleSuite().get(key, key + "!!", params);
+    }
+    
+    public String get(String key, Map<String,Object> params) {
         return getResourceBundleSuite().get(key, key + "!!", params);
     }
 
     public String format(String message) {
-        return format(message, new Object[0]);
+        return format(message, new Arg[0]);
     }
 
-    public String format(String message, Object... params) {
-        return getResourceBundleSuite().format(message, message + "!!", params);
+    public String format(String message, Arg... params) {
+        return getResourceBundleSuite().format(message, /*message + "!!", */ params);
     }
 
     public String getConcat(String key, String keyConcat) {
         String param = key + keyConcat;
-        return get(param, new Object[0]);
+        return get(param, new Arg[0]);
     }
 
     //    public String getInfoSys(String key) {
@@ -287,17 +319,17 @@ public class I18n implements Serializable {
 //        return get(k, new Object[0]);
 //    }
     public static class PropertiesResourceBundle extends ResourceBundle {
-        private Map<String,String> lookup;
+
+        private Map<String, String> lookup;
 
         @SuppressWarnings({"unchecked", "rawtypes"})
-        public PropertiesResourceBundle(Map<String,String> lookup) {
+        public PropertiesResourceBundle(Map<String, String> lookup) {
             this.lookup = lookup;
         }
 
         public PropertiesResourceBundle(Properties properties) {
             this.lookup = new HashMap(properties);
         }
-
 
         // Implements java.util.ResourceBundle.handleGetObject; inherits javadoc specification.
         public Object handleGetObject(String key) {
@@ -308,11 +340,11 @@ public class I18n implements Serializable {
         }
 
         /**
-         * Returns an <code>Enumeration</code> of the keys contained in
-         * this <code>ResourceBundle</code> and its parent bundles.
+         * Returns an <code>Enumeration</code> of the keys contained in this
+         * <code>ResourceBundle</code> and its parent bundles.
          *
-         * @return an <code>Enumeration</code> of the keys contained in
-         * this <code>ResourceBundle</code> and its parent bundles.
+         * @return an <code>Enumeration</code> of the keys contained in this
+         * <code>ResourceBundle</code> and its parent bundles.
          * @see #keySet()
          */
         public Enumeration<String> getKeys() {
@@ -337,6 +369,7 @@ public class I18n implements Serializable {
     }
 
     public static class ResourceBundleEnumeration implements Enumeration<String> {
+
         Set<String> set;
         Iterator<String> iterator;
         Enumeration<String> enumeration;
@@ -351,10 +384,10 @@ public class I18n implements Serializable {
         public boolean hasMoreElements() {
             if (this.next == null) {
                 if (this.iterator.hasNext()) {
-                    this.next = (String)this.iterator.next();
+                    this.next = (String) this.iterator.next();
                 } else if (this.enumeration != null) {
-                    while(this.next == null && this.enumeration.hasMoreElements()) {
-                        this.next = (String)this.enumeration.nextElement();
+                    while (this.next == null && this.enumeration.hasMoreElements()) {
+                        this.next = (String) this.enumeration.nextElement();
                         if (this.set.contains(this.next)) {
                             this.next = null;
                         }

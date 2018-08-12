@@ -48,8 +48,8 @@ public class AcademicHistCoursePlan {
     private double valueTP;
     @Summary
     private double valuePM;
-    @Summary
-    private double valueTPPM;
+//    @Summary
+//    private double valueTPPM;
     //    private double valueDU;
     //Unite enseignement/UE
     @Summary
@@ -222,13 +222,13 @@ public class AcademicHistCoursePlan {
         this.groupCountPM = groupCountPM;
     }
 
-    public double getValueTPPM() {
-        return valueTPPM;
-    }
-
-    public void setValueTPPM(double valueTPPM) {
-        this.valueTPPM = valueTPPM;
-    }
+//    public double getValueTPPM() {
+//        return valueTPPM;
+//    }
+//
+//    public void setValueTPPM(double valueTPPM) {
+//        this.valueTPPM = valueTPPM;
+//    }
 
     public int getGroupCountTPPM() {
         return groupCountTPPM;

@@ -5,8 +5,8 @@
 
     <groupId>${{vrProjectGroup}}.${{vrProjectName}}</groupId>
     <artifactId>${{vrProjectName}}-app-web</artifactId>
-    <name>${{vrProjectGroup}}.${{vrProjectName}}.${{vrProjectName}}-app-web</name>
     <version>1.0.0</version>
+    <name>${{vrProjectGroup}}.${{vrProjectName}}.${{vrProjectName}}-app-web</name>
     <packaging>war</packaging>
     <url>https://github.com/thevpc/vr/wiki</url>
 
@@ -52,18 +52,16 @@
 
     <dependencies>
         <dependency>
+            <groupId>${{vrProjectGroup}}.${{vrProjectName}}</groupId>
+            <artifactId>${{vrProjectName}}-app-service</artifactId>
+            <version>${{vrProjectVersion}}</version>            
+        </dependency>
+
+        <dependency>
             <groupId>${{vrProjectGroup}}.${{vrProjectName}}.plugins.${{vrModuleName}}</groupId>
             <artifactId>${{vrModuleName}}-web</artifactId>
             <version>${{vrProjectVersion}}</version>
         </dependency>
-
-        <!--<dependency>-->
-            <!--<groupId>org.apache.tomcat</groupId>-->
-            <!--<artifactId>tomcat-catalina</artifactId>-->
-            <!--<version>8.0.21</version>-->
-            <!--<scope>provided</scope>-->
-        <!--</dependency>-->
-
 
         <dependency>
             <groupId>javax</groupId>
@@ -79,7 +77,7 @@
         <dependency>
             <groupId>net.bull.javamelody</groupId>
             <artifactId>javamelody-core</artifactId>
-            <version>1.60.0</version>
+            <version>1.71.0</version>
         </dependency>
 
     </dependencies>
@@ -98,7 +96,7 @@
     </distributionManagement>
 
     <build>
-        <finalName>enisoinfo</finalName>
+        <finalName>${{vrProjectName}}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

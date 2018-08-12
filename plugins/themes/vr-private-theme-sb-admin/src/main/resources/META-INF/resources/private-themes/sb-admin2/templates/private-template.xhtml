@@ -277,7 +277,7 @@ and open the template in the editor.
                                 </div>
                                 <!-- /input-group -->
                             </li>
-                            <h:inputHidden value="#{vr.buildMenu()}"/>
+                            #{vr.buildMenu()}
 
                             <ui:repeat value="#{vr.menu.resolveGroups()}" var="p0">
                                 <li>

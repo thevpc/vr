@@ -26,6 +26,8 @@ import net.vpc.upa.UPA;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.logging.Level;
+import net.vpc.app.vainruling.core.service.util.JsonUtils;
+import net.vpc.common.util.MapUtils;
 
 public class AcademicPluginBodyInternships extends AcademicPluginBody {
 
@@ -509,8 +511,8 @@ public class AcademicPluginBodyInternships extends AcademicPluginBody {
             }
         }
         if (generatedCount > 0) {
-            TraceService.get().trace("Academic.GeneratedInternships", "Generated Internships : board " + internship.getBoard().getName() + " ; count=" + generatedCount + " ; old=" + alreadyFoundCount,
-                    " {board='" + internship.getBoard().getName() + "' , count=" + generatedCount + ", old=" + alreadyFoundCount + "}",
+            TraceService.get().trace("Academic.generated-internships", "success", MapUtils.map("name", internship.getBoard().getName(), "count", generatedCount, "oldCount", alreadyFoundCount),
+                    JsonUtils.jsonMap("name", internship.getBoard().getName(), "count", generatedCount, "oldCount", alreadyFoundCount),
                     "/Education/Internships", Level.INFO
             );
         }
@@ -941,7 +943,7 @@ public class AcademicPluginBodyInternships extends AcademicPluginBody {
 
         if (boardId <= 0) {
             StringBuilder boardList = new StringBuilder();
-            List<AcademicInternshipBoard> goodBoards=null;
+            List<AcademicInternshipBoard> goodBoards = null;
             if (teacherId > 0) {
                 goodBoards = pu.createQuery("Select u.board from AcademicInternshipBoardTeacher u where "
                         + " 1=1"

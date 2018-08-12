@@ -707,13 +707,13 @@ public class AcademicPluginBodyLoad extends AcademicPluginBody {
         coursePlan.setValueTD(td);
         coursePlan.setValueTP(tp);
         coursePlan.setValuePM(pm);
-        coursePlan.setValueTPPM(tppm);
+//        coursePlan.setValueTPPM(tppm);
 
         coursePlan.setGroupCountC(gc);
         coursePlan.setGroupCountTD(gtd);
         coursePlan.setGroupCountTP(gtp);
         coursePlan.setGroupCountPM(gpm);
-        coursePlan.setGroupCountTPPM(gtp + gpm);
+//        coursePlan.setGroupCountTPPM(gtp + gpm);
 
         coursePlan.setWeeksC(wc);
         coursePlan.setWeeksTD(wtd);

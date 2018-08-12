@@ -10,7 +10,6 @@ import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.CorePluginSecurity;
 import net.vpc.app.vainruling.core.service.TraceService;
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.service.util.*;
 import net.vpc.app.vainruling.core.web.*;
 import net.vpc.app.vainruling.core.web.obj.ActionDialogAdapter;
@@ -34,6 +33,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.vpc.common.util.MapUtils;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
@@ -120,7 +120,7 @@ public class VrMenuManager {
         String searchText = req == null ? null : req.getParameter("searchTextInput");
         getModel().setSearchText("");
         getModel().setRoot(createMenu(searchText));
-        return "ignore-me";
+        return "";//ignore-me
     }
 
     private List<VRMenuInfo> findCustomMenus(String parent, List<VRMenuInfo> autowiredCustomMenusByCtrl) {
@@ -445,7 +445,7 @@ public class VrMenuManager {
         if (!StringUtils.isEmpty(arguments)) {
             data += " ; " + arguments;
         }
-        TraceService.get().trace("visit-page", "page visited " + lvp.toString(), data, "/System/Access", Level.FINE);
+        TraceService.get().trace("System.visit-document", null,MapUtils.map("path", lvp.toString()), data, "/System/Access", Level.FINE);
         if (StringUtils.isEmpty(url)) {
             return null;
         }

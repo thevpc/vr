@@ -290,7 +290,7 @@ public class VrUPAUtils {
     }
 
     public static String getEntityListLabel(Entity entity) {
-        String orNull = VrApp.getBean(I18n.class).getOrNull("Entity." + entity.getName() + ".ListTitle");
+        String orNull = VrApp.getBean(I18n.class).getOrNull("Entity." + entity.getName() + ".ListTitle",new Arg("name", entity.getName()),new Arg("title", entity.getTitle()));
         if (orNull == null) {
             orNull = entity.getTitle()+"s";
         }
@@ -300,9 +300,10 @@ public class VrUPAUtils {
     public static String resolveLabel(RelationshipRole rols) {
         String orNull = VrApp.getBean(I18n.class).getOrNull(rols);
         if (orNull == null) {
-            orNull = VrApp.getBean(I18n.class).getOrNull("Entity." + rols.getEntity().getName() + ".ListTitle");
+            Entity entity = rols.getEntity();
+            orNull = VrApp.getBean(I18n.class).getOrNull("Entity." + entity.getName() + ".ListTitle",new Arg("name", entity.getName()),new Arg("title", entity.getTitle()));
             if (orNull == null) {
-                orNull = VrApp.getBean(I18n.class).getOrNull(rols.getEntity());
+                orNull = VrApp.getBean(I18n.class).getOrNull(entity);
             }
         }
         if (orNull == null) {

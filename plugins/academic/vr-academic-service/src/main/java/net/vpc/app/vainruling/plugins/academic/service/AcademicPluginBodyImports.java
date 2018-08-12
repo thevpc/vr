@@ -9,7 +9,7 @@ import net.vpc.app.vainruling.plugins.academic.service.helper.XlsxLoadImporter;
 import net.vpc.app.vainruling.plugins.academic.service.model.imp.AcademicStudentImport;
 import net.vpc.app.vainruling.plugins.academic.service.model.imp.AcademicTeacherImport;
 import net.vpc.app.vainruling.plugins.academic.service.util.ImportOptions;
-import net.vpc.common.strings.MapStringConverter;
+import net.vpc.common.strings.StringConverterMap;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.vfs.VFile;
 
@@ -68,7 +68,7 @@ public class AcademicPluginBodyImports extends AcademicPluginBody {
             vars.put("year", year);
             vars.put("version", version);
 
-            dir = StringUtils.replaceDollarPlaceHolders(dir, new MapStringConverter(vars));
+            dir = StringUtils.replaceDollarPlaceHolders(dir, new StringConverterMap(vars));
 
             String dataFolder = dir + "/data";
 

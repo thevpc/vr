@@ -22,7 +22,7 @@ public enum EquipmentStatusType {
     INTERVENTION_ON_COMPLAINT(0),
     COMPLAINT(0),
     ACQUISITION(1),
-//    BORROWABLE(1),
+    BORROWABLE(1),
     INSTORE(1)
     ;
 

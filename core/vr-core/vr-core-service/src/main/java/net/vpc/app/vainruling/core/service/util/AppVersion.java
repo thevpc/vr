@@ -14,6 +14,8 @@ public class AppVersion {
     private String buildDate = "2016-06-17";
     private String buildNumber = "54";
     private String author = "Taha BEN SALAH (c)";
+    private String authorUrl = "http://tahabensalah.net";
+    private String authorAffiliation = "ENISo";
     private String defaultPublicTheme = "default";
     private String defaultPrivateTheme = "default";
     private Map<String,String> config = new HashMap<>();
@@ -97,4 +99,21 @@ public class AppVersion {
     public void setDefaultPrivateTheme(String defaultPrivateTheme) {
         this.defaultPrivateTheme = defaultPrivateTheme;
     }
+
+    public String getAuthorUrl() {
+        return authorUrl;
+    }
+
+    public void setAuthorUrl(String authorUrl) {
+        this.authorUrl = authorUrl;
+    }
+
+    public String getAuthorAffiliation() {
+        return authorAffiliation;
+    }
+
+    public void setAuthorAffiliation(String authorAffiliation) {
+        this.authorAffiliation = authorAffiliation;
+    }
+    
 }

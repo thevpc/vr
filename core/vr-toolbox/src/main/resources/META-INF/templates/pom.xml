@@ -9,6 +9,5 @@
     <modules>
         <module>app/${{vrProjectName}}-app-service</module>
         <module>app/${{vrProjectName}}-app-web</module>
-        <module>plugins/${{vrModuleName}}</module>
     </modules>
 </project>

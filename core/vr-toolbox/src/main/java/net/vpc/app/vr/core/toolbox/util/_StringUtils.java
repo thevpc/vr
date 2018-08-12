@@ -5,6 +5,9 @@
  */
 package net.vpc.app.vr.core.toolbox.util;
 
+import java.util.Arrays;
+import net.vpc.common.strings.StringUtils;
+
 /**
  *
  * @author vpc
@@ -14,6 +17,12 @@ public class _StringUtils {
 //    public static boolean isStartsWithWords(String string, String portions) {
 //        return isStartsWithWords(string.split(" "), portions);
 //    }
+    public static String sortLines(String string) {
+        String[] all=string.split("\n");
+        Arrays.sort(all);
+        return StringUtils.join("\n", all);
+    }
+    
     public static String consumeWord(String string) {
         string = string.trim();
         if (string.isEmpty()) {

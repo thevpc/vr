@@ -29,7 +29,7 @@ and open the template in the editor.
 
         <ui:composition template="#{vr.privateTemplatePath}">
             <ui:define name="content">
-                <h:form id="buttonsForm">
+                <h:form id="listForm">
                     <p:confirmDialog message="Etes vous sur de vouloir supprimer la selection ?" header="Suppression"
                                      widgetVar="confirmationDelete">
                         <p:commandButton value="Oui en effet" onclick="PF('confirmationDelete').hide();
@@ -51,28 +51,28 @@ and open the template in the editor.
                                              styleClass="ui-ribbon-bigbutton  vr-toolbox-button btn btn-default"
                                              ajax="true"
                                              actionListener="#{objCtrl.onRefreshCurrent}"
-                                             update=":buttonsForm :listForm :itemForm :pageTitleForm" alt=""
+                                             update=" :listForm  :pageTitleForm" alt=""
                                              value="Actualiser"
                                              />
                             <p:splitButton title="Enregistrer" rendered="#{objCtrl.isEnabledButton('Save')}"
                                            onclick="processOnSaveCurrent()"
-                                           update=":buttonsForm :listForm :itemForm :pageTitleForm" icon="fa fa-save"
+                                           update=" :listForm  :pageTitleForm" icon="fa fa-save"
                                            styleClass=" vr-toolbox-split-button "
                                            value="Enregistrer"
                                            >
                                 <p:menuitem value="Enregistrer" title ="Enregister"  onclick="processOnSaveCurrent()" ajax="true"
-                                            update=":buttonsForm :listForm :itemForm :pageTitleForm" icon="ui-icon-close"/>
+                                            update=" :listForm  :pageTitleForm" icon="ui-icon-close"/>
                                 <p:menuitem value="Fermer" title ="Enregister et Fermer"  onclick="processOnSaveCurrentAndClose()"
-                                            ajax="true" update=":buttonsForm :listForm :itemForm :pageTitleForm"
+                                            ajax="true" update=" :listForm  :pageTitleForm"
                                             icon="ui-icon-arrowrefresh-1-w"/>
                                 <p:menuitem value="Suivant" title ="Enregister et Fermer"  onclick="processOnSaveCurrentAndNext()"
-                                            ajax="true" update=":buttonsForm :listForm :itemForm :pageTitleForm"
+                                            ajax="true" update=" :listForm  :pageTitleForm"
                                             icon="ui-icon-arrowrefresh-1-w"/>
                                 <p:menuitem value="Précédent" title ="Enregister et Fermer"  onclick="processOnSaveCurrentAndPrevious()"
-                                            ajax="true" update=":buttonsForm :listForm :itemForm :pageTitleForm"
+                                            ajax="true" update=" :listForm  :pageTitleForm"
                                             icon="ui-icon-arrowrefresh-1-w"/>
                                 <p:menuitem value="Copier" title ="Enregister une Copie"  onclick="processOnCloneCurrent()"
-                                            ajax="true" update=":buttonsForm :listForm :itemForm :pageTitleForm"
+                                            ajax="true" update=" :listForm  :pageTitleForm"
                                             icon="ui-icon-arrowrefresh-1-w"/>
                             </p:splitButton>
 
@@ -80,7 +80,7 @@ and open the template in the editor.
                                              styleClass="ui-ribbon-bigbutton  vr-toolbox-button btn btn-primary"
                                              ajax="true"
                                              actionListener="#{objCtrl.onNew}"
-                                             update=":buttonsForm :listForm :itemForm :pageTitleForm"
+                                             update=" :listForm  :pageTitleForm"
                                              value="Nouveau"
                                              />
 
@@ -95,22 +95,22 @@ and open the template in the editor.
                             <p:splitButton title="Chercher" rendered="#{objCtrl.isEnabledButton('Search')}"
                                            icon="fa fa-search"
                                            onclick="document.getElementById('listForm:processOnSimpleSearchLink').click();"
-                                           update=":buttonsForm :listForm :itemForm :pageTitleForm"
+                                           update=" :listForm  :pageTitleForm"
                                            styleClass=" vr-toolbox-split-button"
                                            value="Chercher"
                                            >
                                 <p:menuitem value="Simple Rech." title="Simple Rechercher par mots clés"  icon=""
                                             onclick="document.getElementById('listForm:processOnSimpleSearchLink').click();"
-                                            ajax="true" update=":buttonsForm :listForm :itemForm :pageTitleForm"/>
+                                            ajax="true" update=" :listForm  :pageTitleForm"/>
                                 <p:menuitem value="Annuler Rech." title="Annuler Recherche"  icon="ui-icon-close" onclick="processOnClearSearch()"
-                                            ajax="true" update=":buttonsForm :listForm :itemForm :pageTitleForm"/>
+                                            ajax="true" update=" :listForm  :pageTitleForm"/>
                                 <p:separator/>
                                 <p:menuitem value="Propriétés" title="Sélectionner les propriétés à afficher" icon=""
                                             onclick="document.getElementById('listForm:processOnSimpleFieldSelectionLink').click();"
-                                            ajax="true" update=":buttonsForm :listForm :itemForm :pageTitleForm"/>
+                                            ajax="true" update=" :listForm  :pageTitleForm"/>
                                 <p:menuitem value="Reini. Prop." title="Reinitialiser les Propriétés à afficher"  icon="ui-icon-close"
                                             onclick="processOnClearFieldSelection()" ajax="true"
-                                            update=":buttonsForm :listForm :itemForm :pageTitleForm"/>
+                                            update=" :listForm  :pageTitleForm"/>
                             </p:splitButton>
 
 
@@ -132,79 +132,79 @@ and open the template in the editor.
                                              icon="ui-ribbonicon-canc"
                                              styleClass="ui-ribbon-bigbutton  vr-toolbox-button" ajax="true"
                                              actionListener="#{objCtrl.onAssignCurrent}"
-                                             update=":buttonsForm :listForm :itemForm :pageTitleForm"/>
+                                             update=" :listForm  :pageTitleForm"/>
                             <p:commandButton value="Ann." rendered="#{objCtrl.isEnabledButton('Unassign')}"
                                              icon="ui-ribbonicon-canc"
                                              styleClass="ui-ribbon-bigbutton  vr-toolbox-button" ajax="true"
                                              actionListener="#{objCtrl.onUnassignCurrent}"
-                                             update=":buttonsForm :listForm :itemForm :pageTitleForm"/>
+                                             update=" :listForm  :pageTitleForm"/>
                             <p:commandButton value="Ann." rendered="#{objCtrl.isEnabledButton('Done')}"
                                              icon="ui-ribbonicon-canc"
                                              styleClass="ui-ribbon-bigbutton  vr-toolbox-button" ajax="true"
                                              actionListener="#{objCtrl.onDoneCurrent}"
-                                             update=":buttonsForm :listForm :itemForm :pageTitleForm"/>
+                                             update=" :listForm  :pageTitleForm"/>
                             <p:commandButton value="Ann." rendered="#{objCtrl.isEnabledButton('Verify')}"
                                              icon="ui-ribbonicon-canc"
                                              styleClass="ui-ribbon-bigbutton  vr-toolbox-button" ajax="true"
                                              actionListener="#{objCtrl.onVerifyCurrent}"
-                                             update=":buttonsForm :listForm :itemForm :pageTitleForm"/>
+                                             update=" :listForm  :pageTitleForm"/>
 
                             <p:commandButton value="Cop." rendered="#{objCtrl.isEnabledButton('Copy')}" icon="fa fa-copy"
                                              styleClass="ui-ribbon-bigbutton  vr-toolbox-button"
-                                             update=":buttonsForm :listForm :itemForm :pageTitleForm"/>
+                                             update=" :listForm  :pageTitleForm"/>
                             <p:commandButton value="Coll." rendered="#{objCtrl.isEnabledButton('Paste')}" icon="fa fa-paste"
                                              styleClass="ui-ribbon-bigbutton  vr-toolbox-button"
-                                             update=":buttonsForm :listForm :itemForm :pageTitleForm"/>
+                                             update=" :listForm  :pageTitleForm"/>
                             <p:commandButton value="Coup." rendered="#{objCtrl.isEnabledButton('Cut')}" icon="fa fa-cut"
                                              styleClass="ui-ribbon-bigbutton  vr-toolbox-button"
-                                             update=":buttonsForm :listForm :itemForm :pageTitleForm"/>
+                                             update=" :listForm  :pageTitleForm"/>
 
                             <p:commandButton value="impr." rendered="#{objCtrl.isEnabledButton('Print')}" icon="fa fa-print"
                                              styleClass="ui-ribbon-bigbutton  vr-toolbox-button"
-                                             update=":buttonsForm :listForm :itemForm :pageTitleForm"/>
+                                             update=" :listForm  :pageTitleForm"/>
 
                             <p:commandButton value="imp." rendered="#{objCtrl.isEnabledButton('Import')}"
                                              icon="fa fa-cloud-upload"
                                              styleClass="ui-ribbon-bigbutton  vr-toolbox-button"
-                                             update=":buttonsForm :listForm :itemForm :pageTitleForm"/>
+                                             update=" :listForm  :pageTitleForm"/>
                             <p:commandButton value="csv" rendered="#{objCtrl.isEnabledButton('ExportCSV')}"
                                              icon="fa fa-file-text-o"
                                              styleClass="ui-ribbon-bigbutton  vr-toolbox-button"
-                                             update=":buttonsForm :listForm :itemForm :pageTitleForm"/>
+                                             update=" :listForm  :pageTitleForm"/>
                             <p:commandButton value="xls" rendered="#{objCtrl.isEnabledButton('ExportXls')}"
                                              icon="fa fa-file-excel-o"
                                              styleClass="ui-ribbon-bigbutton  vr-toolbox-button"
-                                             update=":buttonsForm :listForm :itemForm :pageTitleForm"/>
+                                             update=" :listForm  :pageTitleForm"/>
                             <p:commandButton value="pdf" rendered="#{objCtrl.isEnabledButton('ExportPdf')}"
                                              icon="fa fa-file-pdf-o"
                                              styleClass="ui-ribbon-bigbutton  vr-toolbox-button"
-                                             update=":buttonsForm :listForm :itemForm :pageTitleForm"/>
+                                             update=" :listForm  :pageTitleForm"/>
                             <p:commandButton value="Auth." rendered="#{objCtrl.isEnabledButton('Authorization')}"
                                              icon="fa fa-user-secret"
                                              styleClass="ui-ribbon-bigbutton  vr-toolbox-button" type="button"
-                                             update=":buttonsForm :listForm :itemForm :pageTitleForm"/>
+                                             update=" :listForm  :pageTitleForm"/>
                             <p:commandButton value="Trace" rendered="#{objCtrl.isEnabledButton('Log')}"
                                              icon="fa fa-backward"
                                              styleClass="ui-ribbon-bigbutton  vr-toolbox-button" type="button"
-                                             update=":buttonsForm :listForm :itemForm :itemForm :pageTitleForm"/>
+                                             update=" :listForm   :pageTitleForm"/>
                             <p:commandButton value="Liste" title="Afficher la Liste" rendered="#{objCtrl.isEnabledButton('List')}"
                                              icon="fa fa-list-ol"
                                              styleClass="ui-ribbon-bigbutton  vr-toolbox-button" ajax="true"
                                              actionListener="#{objCtrl.onList}"
-                                             update=":buttonsForm :listForm :itemForm :pageTitleForm"/>
+                                             update=" :listForm  :pageTitleForm"/>
 
                             <p:commandButton title="Precédant" icon="fa fa-angle-left"
                                              action="#{objCtrl.onSelectPrevious}"
                                              rendered="#{objCtrl.enabledSelectPrevious}"
                                              ajax="true" styleClass="ui-ribbon-bigbutton  vr-toolbox-button"
-                                             update=":buttonsForm :listForm :itemForm :pageTitleForm"
+                                             update=" :listForm  :pageTitleForm"
                                              />
 
                             <p:commandButton title="Suivant" icon="fa fa-angle-right"
                                              action="#{objCtrl.onSelectNext}"
                                              rendered="#{objCtrl.enabledSelectNext}"
                                              ajax="true" styleClass="ui-ribbon-bigbutton  vr-toolbox-button"
-                                             update=":buttonsForm :listForm :itemForm :pageTitleForm"
+                                             update=" :listForm  :pageTitleForm"
                                              />
 
 <!--                            <p:commandButton title="Retour" icon="fa fa-backward"
@@ -220,7 +220,7 @@ and open the template in the editor.
                                                             ajax="true"
                                                             actionListener="#_{objCtrl.openActionDialog(objCtrl.model.actions.get(0).key)}"
                                                             >
-                                                            <p:ajax event="dialogReturn" listener="#_{objCtrl.onActionDialogClosed}" update=":buttonsForm :listForm :itemForm :itemForm :pageTitleForm" />
+                                                            <p:ajax event="dialogReturn" listener="#_{objCtrl.onActionDialogClosed}" update=" :listForm   :pageTitleForm" />
     
                                                         </p:commandButton>-->
 <!--                            <p:commandButton
@@ -241,7 +241,7 @@ and open the template in the editor.
                                              actionListener="# {objCtrl.openActionDialog(objCtrl.model.actions.get(1).key)}"
                                              >
                                 <p:ajax event="dialogReturn" listener="# {objCtrl.onActionDialogClosed}"
-                                        update=":buttonsForm :listForm :itemForm :itemForm :pageTitleForm"/>
+                                        update=" :listForm   :pageTitleForm"/>
                             </p:commandButton>
 
                             <p:commandButton value="# {objCtrl.model.actions.get(2).value}"
@@ -252,7 +252,7 @@ and open the template in the editor.
                                              actionListener="# {objCtrl.openActionDialog(objCtrl.model.actions.get(2).key)}"
                                              >
                                 <p:ajax event="dialogReturn" listener="# {objCtrl.onActionDialogClosed}"
-                                        update=":buttonsForm :listForm :itemForm :itemForm :pageTitleForm"/>
+                                        update=" :listForm   :pageTitleForm"/>
                             </p:commandButton>-->
 
                             <!-- some crazy bug in PF cant help make this work (stackoverflow in dynaform) -->
@@ -260,12 +260,14 @@ and open the template in the editor.
                                 <p:commandButton value="#{aac.value}" rendered="#{(aac.type eq 'invoke') or (aac.type eq 'dialog')}"
                                                  icon="#{aac.icon}"
                                                  styleClass="ui-ribbon-bigbutton  vr-toolbox-button"
-                                                 action="#{objCtrl.openActionDialog(aac.key)}"
-                                                 update=":buttonsForm :listForm :itemForm :itemForm :pageTitleForm"/>
+                                                 process=":listForm :listForm:listTable @form"
+                                                 actionListener="#{objCtrl.openActionDialog(aac.key)}"
+                                                 update=" :listForm   :pageTitleForm"/>
                                 <p:commandButton value="#{aac.value}" rendered="#{(aac.type eq 'goto')}"
                                                  title="#{aac.description}"
                                                  icon="#{aac.icon}"
                                                  styleClass="ui-ribbon-bigbutton  vr-toolbox-button"
+                                                 process=":listForm:listTable @form"
                                                  action="#{vr.gotoPage(aac.command[0],aac.command[1])}"
                                                  />
                             </ui:repeat><!-- -->
@@ -297,8 +299,7 @@ and open the template in the editor.
                         </ui:repeat>
                     </p:panelGrid>
                     <!-- /.row -->
-                </h:form>
-                <h:form id="listForm">
+
                     <div style="margin-bottom: 10px;">
                         <p:inputText
                             rendered="#{objCtrl.isListMode()}" title="#{objCtrl.model.searchTextHelper}"
@@ -349,10 +350,9 @@ and open the template in the editor.
                                         <p:commandLink
                                             disabled="#{!(i.read)}"
                                             ajax="true" actionListener="#{objCtrl.onSelect(i)}"
-
-                                            update=":listForm :itemForm :buttonsForm :pageTitleForm">
+                                            update=":listForm   :pageTitleForm">
                                             <i class="fa fa-pencil-square-o"
-                                               style="font-size: 17px;color: var(--vr-color-main14);"></i>
+                                               style="font-size: 17px; color: var(--vr-color-main14);"></i>
                                             <f:setPropertyActionListener target="#{objCtrl.model.current}" value="#{i}"/>
                                         </p:commandLink>
                                     </p:column>
@@ -435,42 +435,42 @@ and open the template in the editor.
                         <!-- /.row -->
                     </p:outputPanel>
                     <p:remoteCommand name="processOnDeleteCurrent" process="@form"
-                                     update=":listForm :itemForm  :buttonsForm" action="#{objCtrl.onDeleteCurrent()}"/>
+                                     update=":listForm   " action="#{objCtrl.onDeleteCurrent()}"/>
                     <p:remoteCommand name="processOnArchiveCurrent" process="@form"
-                                     update=":listForm :itemForm  :buttonsForm" action="#{objCtrl.onArchiveCurrent()}"/>
-                    <p:remoteCommand name="processOnSimpleSearch" process="@form" update=":listForm :itemForm  :buttonsForm"
+                                     update=":listForm   " action="#{objCtrl.onArchiveCurrent()}"/>
+                    <p:remoteCommand name="processOnSimpleSearch" process="@form" update=":listForm   "
                                      action="#{objCtrl.onSimpleSearch()}"/>
-                    <p:remoteCommand name="processOnClearSearch" process="@form" update=":listForm :itemForm  :buttonsForm"
+                    <p:remoteCommand name="processOnClearSearch" process="@form" update=":listForm   "
                                      action="#{objCtrl.onClearSearch()}"/>
                     <p:remoteCommand name="processOnSimpleFieldSelection" process="@form"
-                                     update=":listForm :itemForm  :buttonsForm"
+                                     update=":listForm   "
                                      action="#{objCtrl.onSimpleFieldSelection()}"/>
                     <p:remoteCommand name="processOnClearFieldSelection" process="@form"
-                                     update=":listForm :itemForm  :buttonsForm"
+                                     update=":listForm   "
                                      action="#{objCtrl.onClearFieldSelection()}"/>
 
-                    <p:remoteCommand name="processOnUpdate" process="@form" update=":listForm :itemForm  :buttonsForm"
+                    <p:remoteCommand name="processOnUpdate" process="@form" update=":listForm   "
                                      action="#{objCtrl.onDoNothing()}"/>
 
                     <p:commandLink id="processOnSimpleSearchLink" action="#{objCtrl.onSimpleSearch()}"
-                                   update=":buttonsForm :listForm :itemForm :itemForm :pageTitleForm">
+                                   update=" :listForm   :pageTitleForm">
                         <p:ajax event="dialogReturn" listener="#{objCtrl.onSearchDialogClosed}" update=":listForm"/>
                     </p:commandLink>
                     <p:commandLink id="processOnAutoFilterLink" action="#{objCtrl.onAutoFilterChange()}"
-                                   update=":buttonsForm :listForm :itemForm :itemForm :pageTitleForm">
+                                   update=" :listForm   :pageTitleForm">
                     </p:commandLink>
                     <p:commandLink id="processOnSimpleFieldSelectionLink" action="#{objCtrl.onSimpleFieldSelection()}"
-                                   update=":buttonsForm :listForm :itemForm :itemForm :pageTitleForm">
+                                   update=" :listForm   :pageTitleForm">
                         <p:ajax event="dialogReturn" listener="#{objCtrl.onSearchDialogClosed}" update=":listForm"/>
                     </p:commandLink>
 
 
                     <p:commandButton style="display: none" id="processOpenActionDialog0"
                                      action="#{objCtrl.openActionDialog(objCtrl.model.actions.get(0).key)}"
-                                     update=":buttonsForm :listForm :itemForm :itemForm :pageTitleForm"
+                                     update=" :listForm   :pageTitleForm"
                                      >
                         <p:ajax event="dialogReturn" listener="#{objCtrl.onActionDialogClosed}"
-                                update=":buttonsForm :listForm :itemForm :itemForm :pageTitleForm"/>
+                                update=" :listForm   :pageTitleForm"/>
                     </p:commandButton>
 
                     <div>
@@ -783,21 +783,18 @@ and open the template in the editor.
 
                     </p:outputPanel>
                     <p:remoteCommand name="processOnSaveCurrentAndClose" process="@form"
-                                     update=":listForm :itemForm  :buttonsForm"
+                                     update=":listForm   "
                                      action="#{objCtrl.onSaveCurrentAndClose()}"/>
                     <p:remoteCommand name="processOnSaveCurrentAndNext" process="@form"
-                                     update=":listForm :itemForm  :buttonsForm"
+                                     update=":listForm   "
                                      action="#{objCtrl.onSaveCurrentAndNext()}"/>
                     <p:remoteCommand name="processOnSaveCurrentAndPrevious" process="@form"
-                                     update=":listForm :itemForm  :buttonsForm"
+                                     update=":listForm   "
                                      action="#{objCtrl.onSaveCurrentAndPrevious()}"/>
-                    <p:remoteCommand name="processOnSaveCurrent" process="@form" update=":listForm :itemForm  :buttonsForm"
+                    <p:remoteCommand name="processOnSaveCurrent" process="@form" update=":listForm   "
                                      action="#{objCtrl.onSaveCurrent()}"/>
-                    <p:remoteCommand name="processOnCloneCurrent" process="@form" update=":listForm :itemForm  :buttonsForm"
+                    <p:remoteCommand name="processOnCloneCurrent" process="@form" update=":listForm   "
                                      action="#{objCtrl.onCloneCurrent()}"/>
-                </h:form>
-
-                <h:form id="itemForm" enctype="multipart/form-data">
                 </h:form>
 
                 <h:outputScript id="dynaFormScript" target="body">

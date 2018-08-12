@@ -1,50 +1,78 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package ${{vrProjectGroup}}.${{packageName(vrModuleName)}}.web;
 
-import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.core.web.VrController;
+import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import ${{vrProjectGroup}}.${{packageName(vrModuleName)}}.service;
+import net.vpc.app.vainruling.core.service.CorePlugin;
+import net.vpc.app.vainruling.core.web.OnPageLoad;
+import net.vpc.app.vainruling.core.web.VrController;
+import ${{vrProjectGroup}}.${{packageName(vrModuleName)}}.service.*;
+
 /**
- *
+ * ${{className(vrPageName)}} component implementation.
+ * A component is an MVC component defining a Controller (this class), a Model 
+ * (sub class Model) and a view (url path to xhtml file)
+ * 
  * @author ${{vrConfigAuthor}}
  */
 @VrController(
+        // bind controller to the menu
         menu = "${{vrPageMenuPath}}",
-        url = "modules/${{vrPageName}}",
-        securityKey = "Custom.Page.$${vrPageName}}"
+        // bind controller to the xhtml page
+        url = "modules/${{vrModuleName}}/${{vrPageName}}",
+        // define security access user should have to use this component
+        securityKey = "Custom.Page.${{vrPageName}}"
 )
 @Controller
 public class ${{className(vrPageName)}}Ctrl {
-    private static final Logger log = Logger.getLogger(${{className(vrPageName)}}Ctrl.class.getName());
+    private static final Logger log = Logger.getLogger(MyPageCtrl.class.getName());
 
-    private Model model = new Model();
-    
+    private final Model model = new Model();
+
     @Autowired
     private CorePlugin core;
 
     @Autowired
-    private ${{className(vrProjectName)}}Plugin srv;
+    private ${{className(vrProjectName)}}${{className(vrModuleName)}}Plugin ${{varName(vrModuleName)}};
 
     public Model getModel() {
         return model;
     }
 
+    /**
+     * Page inititialization.
+     * Called when subsequent menu is clicked or the controller is invoked
+     * via url /p/${{className(vrPageName)}}
+     * controller url can accept config as json bound to the 'a' http request parameter
+     * Example : /p/${{className(vrPageName)}}?a={'initialCounter':15}
+     * When subsequent menu is clicked, config param is passed as bare null!
+     * @param conf initialization config.
+     */
     @OnPageLoad
     private void init(Config conf) {
-        if(conf!=null && conf.updateMessage){
-            getModel().setMessage("Hello World");
+        if (conf != null) {
+            getModel().setCounter(conf.initialCounter);
         }
+        getModel().setMessage("Hello World from " + core.getCurrentUserLogin());
     }
 
-    public class Model {
+    /**
+     * controller action
+     */
+    public String onUpdateCounter() {
+        //update model
+        getModel().setCounter(getModel().getCounter() + 1);
+        //return to the same page
+        return null;
+    }
+
+    /**
+     * Model Class for the current Controller (MVC Pattern enforced)
+     */
+    public static class Model {
 
         private String message;
+        private int counter;
 
         public String getMessage() {
             return message;
@@ -54,10 +82,22 @@ public class ${{className(vrPageName)}}Ctrl {
             this.message = message;
         }
 
+        public int getCounter() {
+            return counter;
+        }
+
+        public void setCounter(int counter) {
+            this.counter = counter;
+        }
+
     }
-    
+
+    /**
+     * Config Class for the current Controller
+     */
     public static class Config {
-        boolean updateMessage;
+
+        int initialCounter;
     }
 }
  

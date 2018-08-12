@@ -35,6 +35,7 @@ import net.vpc.app.vainruling.core.service.model.content.ArticlesItem;
 import net.vpc.app.vainruling.core.service.model.content.ArticlesItemStrict;
 import net.vpc.app.vainruling.core.service.model.content.ArticlesProperty;
 import net.vpc.app.vainruling.core.service.model.content.FullArticle;
+import net.vpc.app.vainruling.core.service.util.AppVersion;
 import net.vpc.common.util.MutableDate;
 
 class CorePluginBodyContentManager extends CorePluginBody {
@@ -43,17 +44,18 @@ class CorePluginBodyContentManager extends CorePluginBody {
     public void onInstall() {
         CorePlugin core = getContext().getCorePlugin();
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        core.getOrCreateAppPropertyValue("System.App.Title", null, "My App");
-        core.getOrCreateAppPropertyValue("System.App.Description", null, "My Application Web Site");
+        AppVersion vv = core.getAppVersion();
+        core.getOrCreateAppPropertyValue("System.App.Title", null, vv.getLongName());
+        core.getOrCreateAppPropertyValue("System.App.Description", null, vv.getLongName()+" Web Site");
         core.getOrCreateAppPropertyValue("System.App.Keywords", null, "vr");
         core.getOrCreateAppPropertyValue("System.App.Title.Major.Main", null, "My");
         core.getOrCreateAppPropertyValue("System.App.Title.Major.Secondary", null, "App");
         core.getOrCreateAppPropertyValue("System.App.Title.Minor.Main", null, "My");
         core.getOrCreateAppPropertyValue("System.App.Title.Minor.Secondary", null, "App");
-        core.getOrCreateAppPropertyValue("System.App.Copyrights.Date", null, "2015-2017");
-        core.getOrCreateAppPropertyValue("System.App.Copyrights.Author.Name", null, "Taha Ben Salah");
-        core.getOrCreateAppPropertyValue("System.App.Copyrights.Author.URL", null, "http://tahabensalah.net");
-        core.getOrCreateAppPropertyValue("System.App.Copyrights.Author.Affiliation", null, "My Company");
+        core.getOrCreateAppPropertyValue("System.App.Copyrights.Date", null, vv.getBuildDate());
+        core.getOrCreateAppPropertyValue("System.App.Copyrights.Author.Name", null, vv.getAuthor());
+        core.getOrCreateAppPropertyValue("System.App.Copyrights.Author.URL", null, vv.getAuthorUrl());
+        core.getOrCreateAppPropertyValue("System.App.Copyrights.Author.Affiliation", null, vv.getAuthorAffiliation());
         core.getOrCreateAppPropertyValue("System.App.GotoWelcomeText", null, "My Space");
         core.getOrCreateAppPropertyValue("System.App.GotoLoginText", null, "My Space");
 

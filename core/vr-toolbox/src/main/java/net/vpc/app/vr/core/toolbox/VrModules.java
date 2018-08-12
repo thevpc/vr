@@ -48,7 +48,7 @@ public class VrModules {
         return all.get(name);
     }
 
-    public static void main(String[] args) {
+    public static void _main(String[] args) {
         for (VrModule value : all.values()) {
             if (value.isModel()) {
                 System.out.println("${{vrMavenModelDependency('" + value.getBaseArtifactId() + "')}}");

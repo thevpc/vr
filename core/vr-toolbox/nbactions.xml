@@ -12,7 +12,7 @@
             <properties>
                 <exec.args>-classpath %classpath net.vpc.app.vr.core.toolbox.Main</exec.args>
                 <exec.executable>java</exec.executable>
-                <exec.workingdir>/data/vpc/Data/temp/myFolder</exec.workingdir>
+                <exec.workingdir>/data/vpc/Data/temp/myFolder2</exec.workingdir>
             </properties>
         </action>
         <action>
@@ -28,7 +28,7 @@
                 <exec.args>-Xdebug -Xrunjdwp:transport=dt_socket,server=n,address=${jpda.address} -classpath %classpath net.vpc.app.vr.core.toolbox.Main</exec.args>
                 <exec.executable>java</exec.executable>
                 <jpda.listen>true</jpda.listen>
-                <exec.workingdir>/data/vpc/Data/temp/myFolder</exec.workingdir>
+                <exec.workingdir>/data/vpc/Data/temp/myFolder2</exec.workingdir>
             </properties>
         </action>
         <action>
@@ -43,7 +43,7 @@
             <properties>
                 <exec.args>-classpath %classpath net.vpc.app.vr.core.toolbox.Main</exec.args>
                 <exec.executable>java</exec.executable>
-                <exec.workingdir>/data/vpc/Data/temp/myFolder</exec.workingdir>
+                <exec.workingdir>/data/vpc/Data/temp/myFolder2</exec.workingdir>
             </properties>
         </action>
     </actions>

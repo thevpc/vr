@@ -25,12 +25,15 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.vpc.app.vainruling.core.service.util.I18n;
+import net.vpc.common.util.MapUtils;
 
 /**
  * @author taha.bensalah@gmail.com
  */
 @Service
 public class TraceService {
+
     public static final Logger log = Logger.getLogger(TraceService.class.getName());
     private static final ThreadLocal<Integer> SILENCE = new ThreadLocal<>();
 
@@ -133,13 +136,18 @@ public class TraceService {
 //            return null;
 //        }
 //    }
-
     public boolean accept(Entity entity) {
         return !entity.getModifiers().contains(EntityModifier.SYSTEM)
                 && !entity.getEntityType().equals(AppTrace.class);
     }
 
-    public void trace(String action, String message, String data, String module, Level level) {
+    public void trace(String action, String extraKey, Map<String, Object> messageParams, String data, String module, Level level) {
+        String msgKey = (extraKey == null) ? ("trace." + action + ".message") : ("trace." + action + "." + extraKey + ".message");
+        trace(action, I18n.get().get("trace." + msgKey + ".message", messageParams), data, module, level);
+    }
+
+    @Deprecated
+    private void trace(String action, String message, String data, String module, Level level) {
         if (isSilenced()) {
             return;
         }
@@ -152,7 +160,9 @@ public class TraceService {
         }
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity e = pu.getEntity(entityName);
-        trace("added", e.getName() + " added", dump(o), module, e.getName(), e.getBuilder().objectToId(o), level);
+        Object id = e.getBuilder().objectToId(o);
+        String name = e.getBuilder().objectToName(o);
+        trace("System.entity-added", "success", MapUtils.map("name", e.getName(), "title", e.getTitle(), "value", name, "id", id), dump(o), module, e.getName(), e.getBuilder().objectToId(o), level);
     }
 
     public void updated(String entityName, Object o, Object old, String module, Level level) {
@@ -161,7 +171,11 @@ public class TraceService {
         }
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity e = pu.getEntity(entityName);
-        trace("updated", e.getName() + " updated", dumpDiff(old, o, e), module, e.getName(), e.getBuilder().objectToId(o), level);
+        Object id = e.getBuilder().objectToId(o);
+        String name = e.getBuilder().objectToName(o);
+        trace("System.entity-updated", "success",
+                MapUtils.map("name", e.getName(), "title", e.getTitle(), "value", name, "id", id, "fields", buildUpdatedFieldsString(old, o, e)),
+                 dumpDiff(old, o, e), module, e.getName(), e.getBuilder().objectToId(o), level);
     }
 
     public void removed(String entityName, Object o, String module, Level level) {
@@ -171,7 +185,9 @@ public class TraceService {
         if (o != null) {
             PersistenceUnit pu = UPA.getPersistenceUnit();
             Entity e = pu.getEntity(entityName);
-            trace("removed", e.getName() + " removed", dump(o), module, e.getName(), e.getBuilder().objectToId(o), level);
+            Object id = e.getBuilder().objectToId(o);
+            String name = e.getBuilder().objectToName(o);
+            trace("System.entity-removed", "success",MapUtils.map("name", e.getName(), "title", e.getTitle(), "value", name, "id", id), dump(o), module, e.getName(), e.getBuilder().objectToId(o), level);
         }
     }
 
@@ -181,7 +197,9 @@ public class TraceService {
         }
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity e = pu.getEntity(entityName);
-        trace("soft-removed", e.getName(), dump(o), module, e.getName(), e.getBuilder().objectToId(o), level);
+        Object id = e.getBuilder().objectToId(o);
+        String name = e.getBuilder().objectToName(o);
+        trace("System.entity-soft-removed", "success",MapUtils.map("name", e.getName(), "title", e.getTitle(), "value", name, "id", id), dump(o), module, e.getName(), e.getBuilder().objectToId(o), level);
     }
 
     public void archived(String entityName, Object o, String module, Level level) {
@@ -190,9 +208,17 @@ public class TraceService {
         }
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity e = pu.getEntity(entityName);
-        trace("archived", e.getName(), dump(o), module, e.getName(), e.getBuilder().objectToId(o), level);
+        Object id = e.getBuilder().objectToId(o);
+        String name = e.getBuilder().objectToName(o);
+        trace("System.entity-archived", "success",MapUtils.map("name", e.getName(), "title", e.getTitle(), "value", name, "id", id), dump(o), module, e.getName(), e.getBuilder().objectToId(o), level);
     }
 
+    public void trace(String action, String extraKey, Map<String, Object> messageParams, String data, String module, String objectName, Object objectId, Level level) {
+        String msgKey = (extraKey == null) ? ("trace." + action + ".message") : ("trace." + action + "." + extraKey + ".message");
+        trace(action, I18n.get().get("trace." + msgKey + ".message", messageParams), data, module, objectName, objectId, level);
+    }
+
+    @Deprecated
     public void trace(String action, String message, String data, String module, String objectName, Object objectId, Level level) {
         if (isSilenced()) {
             return;
@@ -220,6 +246,7 @@ public class TraceService {
             @Override
             public void run() {
                 Entity entity = pu.getEntity(AppTrace.class);
+                log.log(level, message);
                 String message2 = VrUtils.strcut(message, entity, "message");
                 String data2 = VrUtils.strcut(data, entity, "data");
                 pu.persist(new AppTrace(message2, data2, module,
@@ -337,6 +364,30 @@ public class TraceService {
         }
     }
 
+    private String buildUpdatedFieldsString(Object o1, Object o2, Entity e) {
+        Set<String> fields = new HashSet<>();
+        Document rec1 = e.getBuilder().objectToDocument(o1, true);
+        Document rec2 = e.getBuilder().objectToDocument(o2, true);
+        Set<String> otherTracedFields = new TreeSet<>(rec2.keySet());
+        Set<String> mainTracedFields = new TreeSet<>();
+        //always add
+        for (Field field : e.getIdFields()) {
+            mainTracedFields.add(field.getName());
+        }
+        otherTracedFields.removeAll(mainTracedFields);
+        for (String fieldName : otherTracedFields) {
+            Field field = e.findField(fieldName);
+            if (field != null) {
+                String val1 = getFieldStringValue(rec1.getObject(fieldName), field);
+                String val2 = getFieldStringValue(rec2.getObject(fieldName), field);
+                if (!Objects.equals(val1, val2)) {
+                    fields.add(field.getTitle());
+                }
+            }
+        }
+        return StringUtils.join(",", fields);
+    }
+
     private String dumpDiff(Object o1, Object o2, Entity e) {
         StringBuilder b = new StringBuilder(e.getName()).append("{");
         Document rec1 = e.getBuilder().objectToDocument(o1, true);
@@ -344,13 +395,13 @@ public class TraceService {
         boolean first = true;
 
         Set<String> otherTracedFields = new TreeSet<>(rec2.keySet());
-        Set<String>  mainTracedFields= new TreeSet<>();
+        Set<String> mainTracedFields = new TreeSet<>();
         //always add
         for (Field field : e.getIdFields()) {
             mainTracedFields.add(field.getName());
         }
         Field mainField = e.getMainField();
-        if(mainField!=null){
+        if (mainField != null) {
             mainTracedFields.add(mainField.getName());
         }
         otherTracedFields.removeAll(mainTracedFields);
@@ -360,8 +411,8 @@ public class TraceService {
             if (field != null) {
                 String val1 = getFieldStringValue(rec1.getObject(fieldName), field);
                 String val2 = getFieldStringValue(rec2.getObject(fieldName), field);
-                if(!rec2.isSet(fieldName)){
-                    val2=val1;
+                if (!rec2.isSet(fieldName)) {
+                    val2 = val1;
                 }
                 if (field.isId()) {
                     if (first) {
@@ -381,7 +432,7 @@ public class TraceService {
                     b.append(field.getName());
                     b.append(":");
                     b.append(val1).append("->").append(val2);
-                }else{
+                } else {
                     if (first) {
                         first = false;
                     } else {

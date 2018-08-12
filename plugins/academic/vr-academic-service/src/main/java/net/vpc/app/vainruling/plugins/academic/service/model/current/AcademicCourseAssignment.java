@@ -38,7 +38,9 @@ import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSeme
             ,
                 @Property(name = "ui.auto-filter.class", value = "{expr='this.coursePlan.courseLevel.academicClass',order=7}")
             ,
-                @Property(name = "ui.auto-filter.teacher", value = "{expr='this.teacher',order=8}")
+                @Property(name = "ui.auto-filter.semester", value = "{expr='this.coursePlan.courseLevel.semester',order=8}")
+            ,
+                @Property(name = "ui.auto-filter.teacher", value = "{expr='this.teacher',order=9}")
         }
 )
 public class AcademicCourseAssignment {

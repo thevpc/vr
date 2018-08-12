@@ -6,7 +6,9 @@
 package net.vpc.app.vainruling.core.service.util;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import net.vpc.common.util.MapUtils;
 
 import net.vpc.common.util.PlatformUtils;
 
@@ -87,6 +89,10 @@ public class JsonUtils {
             return null;
         }
         return VrUtils.GSON.fromJson(str, type);
+    }
+
+    public static String jsonMap(Object... keyVal) {
+        return VrUtils.GSON.toJson(MapUtils.map(new LinkedHashMap<Object, Object>((keyVal == null || keyVal.length < 2) ? 1 : (keyVal.length / 2 + 1)), keyVal));
     }
 
     private interface TypeParser {

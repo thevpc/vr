@@ -117,13 +117,13 @@ public class AcademicPluginBodyAssignments extends AcademicPluginBody {
     }
 
     public void addCourseAssignment(AcademicCourseAssignment assignment) {
-        AcademicPluginSecurity.requireManageableCourseAssignment(assignment);
+        AcademicPluginSecurity.requireUpdatableCourseAssignment(assignment);
         PersistenceUnit pu = UPA.getPersistenceUnit();
         pu.persist(assignment);
     }
 
     public void updateCourseAssignment(AcademicCourseAssignment assignment) {
-        AcademicPluginSecurity.requireManageableCourseAssignment(assignment);
+        AcademicPluginSecurity.requireUpdatableCourseAssignment(assignment);
         PersistenceUnit pu = UPA.getPersistenceUnit();
         pu.merge(assignment);
     }
@@ -131,7 +131,7 @@ public class AcademicPluginBodyAssignments extends AcademicPluginBody {
     public void addCourseAssignment(int teacherId, int assignementId) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         AcademicCourseAssignment a = pu.findById(AcademicCourseAssignment.class, assignementId);
-        AcademicPluginSecurity.requireManageableCourseAssignment(a);
+        AcademicPluginSecurity.requireUpdatableCourseAssignment(a);
         a.setTeacher(getContext().getPlugin().findTeacher(teacherId));
         pu.merge(a);
     }
@@ -140,7 +140,7 @@ public class AcademicPluginBodyAssignments extends AcademicPluginBody {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         AcademicCourseAssignment a = pu.findById(AcademicCourseAssignment.class, assignementId);
         if (a != null) {
-            AcademicPluginSecurity.requireManageableCourseAssignment(a);
+            AcademicPluginSecurity.requireUpdatableCourseAssignment(a);
             if (hardRemoval) {
                 pu.remove(a);
             } else {
@@ -159,7 +159,7 @@ public class AcademicPluginBodyAssignments extends AcademicPluginBody {
         AcademicPluginSecurity.requireTeacherOrManager(teacherId);
         PersistenceUnit pu = UPA.getPersistenceUnit();
         AcademicCourseAssignment assignment = pu.findById(AcademicCourseAssignment.class, assignementId);
-        AcademicPluginSecurity.requireManageableCourseAssignment(assignment);
+        AcademicPluginSecurity.requireUpdatableCourseAssignment(assignment);
         AcademicCourseIntent i = pu.createQuery("Select a from AcademicCourseIntent a where a.teacherId=:teacherId and a.assignmentId=:assignementId")
                 .setParameter("teacherId", teacherId)
                 .setParameter("assignementId", assignementId)
@@ -179,7 +179,7 @@ public class AcademicPluginBodyAssignments extends AcademicPluginBody {
         AcademicPluginSecurity.requireTeacherOrManager(teacherId);
         PersistenceUnit pu = UPA.getPersistenceUnit();
         AcademicCourseAssignment assignment = pu.findById(AcademicCourseAssignment.class, assignementId);
-        AcademicPluginSecurity.requireManageableCourseAssignment(assignment);
+        AcademicPluginSecurity.requireUpdatableCourseAssignment(assignment);
         AcademicCourseIntent i = pu.createQuery("Select a from AcademicCourseIntent a where a.teacherId=:teacherId and a.assignmentId=:assignementId")
                 .setParameter("teacherId", teacherId)
                 .setParameter("assignementId", assignementId)
@@ -193,7 +193,7 @@ public class AcademicPluginBodyAssignments extends AcademicPluginBody {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         AcademicCourseAssignment assignment = pu.findById(AcademicCourseAssignment.class, assignementId);
         if (assignment != null) {
-            AcademicPluginSecurity.requireManageableCourseAssignment(assignment);
+            AcademicPluginSecurity.requireUpdatableCourseAssignment(assignment);
             AcademicTeacher t = assignment.getTeacher();
             AcademicPluginSecurity.requireTeacherOrManager(t == null ? -1 : t.getId());
             List<AcademicCourseIntent> intentList = pu.createQuery("Select a from AcademicCourseIntent a where a.assignmentId=:assignementId")
@@ -208,7 +208,7 @@ public class AcademicPluginBodyAssignments extends AcademicPluginBody {
     public AcademicCourseAssignment findAcademicCourseAssignment(int assignmentId) {
         AcademicPluginSecurity.requireTeacherOrManager(-1);
         AcademicCourseAssignment assignment = UPA.getPersistenceUnit().findById(AcademicCourseAssignment.class, assignmentId);
-        AcademicPluginSecurity.requireManageableCourseAssignment(assignment);
+        AcademicPluginSecurity.requireUpdatableCourseAssignment(assignment);
         return assignment;
     }
 
@@ -329,7 +329,7 @@ public class AcademicPluginBodyAssignments extends AcademicPluginBody {
                     }
                 } else {
                     if (tt != null && !tp.isEnabled()) {
-                        System.out.println("Found assignments for teacherId=" + teacher + " : " + tt + " but he/she seems to be not enabled!");
+                        System.out.println("Found assignments for teacherId=" + teacher + " : " + tt + " but he/she seems to be not enabled in "+core.findPeriod(periodId).getName());
                     }
                     for (AcademicCourseAssignment value : list) {
                         if (filter == null || filter.acceptAssignment(new AcademicCourseAssignment1(value))) {
@@ -372,7 +372,7 @@ public class AcademicPluginBodyAssignments extends AcademicPluginBody {
                     }
                 } else {
                     if (tt != null && !tp.isEnabled()) {
-                        System.out.println("Found assignments for teacherId=" + teacher + " : " + tt + " but he/she seems to be not enabled!");
+                        System.out.println("Found assignments for teacherId=" + teacher + " : " + tt + " but he/she seems to be not enabled in "+core.findPeriod(periodId).getName());
                     }
                     for (AcademicCourseAssignment value : list) {
                         if (filter == null || filter.acceptAssignment(new AcademicCourseAssignment1(value))) {

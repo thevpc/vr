@@ -5,7 +5,7 @@
     <groupId>net.vpc.app.vain-ruling.plugins.equipment-tracker</groupId>
     <artifactId>vr-equipment-tracker-service</artifactId>
     <name>net.vpc.app.vain-ruling.plugins.equipment-tracker.vr-equipment-tracker-service</name>
-    <version>1.13.7</version>
+    <version>1.13.8</version>
     <packaging>jar</packaging>
     <url>https://github.com/thevpc/vr/wiki</url>
 
@@ -69,7 +69,7 @@
         <vr-plugin.component-type>service</vr-plugin.component-type>
         <vr-plugin.name>Equipment tracker</vr-plugin.name>
         <vr-plugin.description>Equipment tracker</vr-plugin.description>
-        <version.vr-core-service>1.13.7</version.vr-core-service>
+        <version.vr-core-service>1.13.8</version.vr-core-service>
     </properties>
 
     <dependencies>
@@ -81,7 +81,7 @@
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.equipments</groupId>
             <artifactId>vr-equipments-service</artifactId>
-            <version>1.13.7</version>
+            <version>1.13.8</version>
         </dependency>
     </dependencies>
 

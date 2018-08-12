@@ -1,5 +1,6 @@
 package net.vpc.app.vr.core.toolbox;
 
 public interface TemplateConsole {
-    String askForString(String propName,StringValidator validator,String defaultValue);
+    void println(String message);
+    String ask(String propName, StringValidator validator, String defaultValue);
 }

@@ -10,6 +10,7 @@ import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeac
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseAssignment;
 
 public class AcademicPluginSecurity {
+
     public static final String RIGHT_CUSTOM_EDUCATION_RESET = "Custom.Education.Reset";
     public static final String RIGHT_CUSTOM_EDUCATION_READ_LOAD = "Custom.Education.TeacherLoad.Read";
     public static final String RIGHT_CUSTOM_EDUCATION_CONFIG_READ = "Custom.Education.Config.Read";
@@ -25,7 +26,7 @@ public class AcademicPluginSecurity {
     public static final String RIGHT_CUSTOM_EDUCATION_ALL_TEACHERS_COURSE_LOAD = "Custom.Education.AllTeachersCourseLoad";
     public static final String RIGHT_CUSTOM_EDUCATION_COURSE_LOAD_UPDATE_INTENTS = "Custom.Education.CourseLoadUpdateIntents";
     public static final String RIGHT_CUSTOM_EDUCATION_COURSE_LOAD_UPDATE_ASSIGNMENTS = "Custom.Education.CourseLoadUpdateAssignments";
-    public static final String RIGHT_CUSTOM_EDUCATION_MY_COURSE_LOAD="Custom.Education.MyCourseLoad";
+    public static final String RIGHT_CUSTOM_EDUCATION_MY_COURSE_LOAD = "Custom.Education.MyCourseLoad";
     public static final String RIGHT_CUSTOM_EDUCATION_MY_INTERNSHIPS = "Custom.Education.MyInternships";
     public static final String RIGHT_CUSTOM_EDUCATION_MY_INTERNSHIP_BOARDS = "Custom.Education.MyInternshipBoards";
     public static final String RIGHT_CUSTOM_EDUCATION_ALL_INTERNSHIPS = "Custom.Education.AllInternships";
@@ -35,7 +36,7 @@ public class AcademicPluginSecurity {
     public static final String RIGHT_CUSTOM_EDUCATION_TEACHER_STAT_FEEDBACK = "Custom.Academic.TeacherStatFeedback";
     public static final String RIGHT_CUSTOM_EDUCATION_TEACHER_WORKING = "Custom.Academic.WorkingTeachers";
 
-    public static final String[] RIGHTS_ACADEMIC = VrPlatformUtils.getStringArrayConstantsValues(AcademicPluginSecurity.class,"RIGHT_*");
+    public static final String[] RIGHTS_ACADEMIC = VrPlatformUtils.getStringArrayConstantsValues(AcademicPluginSecurity.class, "RIGHT_*");
 
     public static void requireTeacherOrManager(int teacher) {
         if (!isTeacherOrManager(teacher)) {
@@ -60,6 +61,12 @@ public class AcademicPluginSecurity {
             }
         }
         return false;
+    }
+
+    public static void requireUpdatableCourseAssignment(AcademicCourseAssignment a) {
+        if (!isUpdatable(a)) {
+            throw new SecurityException("Not Allowed");
+        }
     }
 
     public static void requireManageableCourseAssignment(AcademicCourseAssignment a) {
@@ -91,6 +98,47 @@ public class AcademicPluginSecurity {
             if (core.isCurrentSessionAdminOrManagerOf(d.getId())) {
                 return true;
             }
+        }
+        return false;
+    }
+
+    public static boolean isUpdatable(AcademicCourseAssignment a) {
+        CorePlugin core = CorePlugin.get();
+        if (a == null) {
+            return true;
+        }
+        if (core.isCurrentSessionAdmin()) {
+            return true;
+        }
+        if (a == null) {
+            return false;
+        }
+        AppUser u = core.getCurrentUser();
+        AppDepartment d = a.getOwnerDepartment();
+        if (d != null) {
+            if (core.isCurrentSessionAdminOrManagerOf(d.getId())) {
+                return true;
+            }
+            if (u == null || u.getDepartment() == null) {
+                return false;
+            }
+            if (d.getId() == u.getDepartment().getId()) {
+                return true;
+            }
+            return false;
+        }
+        d = a.resolveDepartment();
+        if (d != null) {
+            if (core.isCurrentSessionAdminOrManagerOf(d.getId())) {
+                return true;
+            }
+            if (u == null || u.getDepartment() == null) {
+                return false;
+            }
+            if (d.getId() == u.getDepartment().getId()) {
+                return true;
+            }
+            return false;
         }
         return false;
     }

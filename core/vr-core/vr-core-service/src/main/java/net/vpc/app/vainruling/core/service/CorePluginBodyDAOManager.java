@@ -21,6 +21,8 @@ import net.vpc.upa.types.*;
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.logging.Level;
+import net.vpc.app.vainruling.core.service.util.JsonUtils;
+import net.vpc.common.util.MapUtils;
 
 class CorePluginBodyDAOManager extends CorePluginBody {
 
@@ -48,12 +50,12 @@ class CorePluginBodyDAOManager extends CorePluginBody {
         List<AutoFilterData> autoFilterDatasAll = new ArrayList<>();
         List<AutoFilterData> autoFilterDatas = new ArrayList<>();
         String all = StringUtils.trim(entity.getProperties().getString("ui.auto-filters"));
-        if(!all.isEmpty()){
+        if (!all.isEmpty()) {
             //this is a single value
-            if(all.startsWith("{")){
+            if (all.startsWith("{")) {
                 //VrUtils.parseJSONObject(all, AutoFilterData[].class)
                 autoFilterDatasAll.add(VrUtils.parseJSONObject(all, AutoFilterData.class));
-            }else{
+            } else {
                 autoFilterDatasAll.addAll(Arrays.asList(VrUtils.parseJSONObject(all, AutoFilterData[].class)));
             }
         }
@@ -71,7 +73,7 @@ class CorePluginBodyDAOManager extends CorePluginBody {
             }
         }
         Collections.sort(autoFilterDatas);
-        
+
         autoFilterDatasAll.addAll(autoFilterDatas);
         return autoFilterDatasAll;
     }
@@ -155,10 +157,8 @@ class CorePluginBodyDAOManager extends CorePluginBody {
             }
 
             pu.persist(entityName, t);
-//            trace.inserted(t, getClass(), Level.FINE);
         } else {
             pu.merge(entityName, t);
-//            trace.updated(t, old, getClass(), Level.FINE);
         }
         return t;
     }
@@ -250,8 +250,6 @@ class CorePluginBodyDAOManager extends CorePluginBody {
 //                }
 ////            Object old = pu.findById(type, id);
 //                pu.merge(t);
-//                trace.archived(pu.findById(type, id), entity.getParent().getPath(), Level.FINE);
-////            trace.updated(t, old, getClass(), Level.FINE);
 //            }
 //            return null;
 //        }
@@ -275,7 +273,6 @@ class CorePluginBodyDAOManager extends CorePluginBody {
                 return true;
             }
 //            Object old = pu.findById(type, id);
-//            trace.updated(t, old, getClass(), Level.FINE);
         }
         return false;
 //        invokeEntityAction(type, "Archive", object, null);
@@ -539,8 +536,8 @@ class CorePluginBodyDAOManager extends CorePluginBody {
     }
 
     public String createSearchHelperString(String name, String entityName) {
-        String d="Tapez ici les mots clés de recherche.";
-        if(StringUtils.isEmpty(entityName)){
+        String d = "Tapez ici les mots clés de recherche.";
+        if (StringUtils.isEmpty(entityName)) {
             return d;
         }
         PersistenceUnit pu = UPA.getPersistenceUnit();
@@ -552,16 +549,16 @@ class CorePluginBodyDAOManager extends CorePluginBody {
         EntityObjSearchFactory g = null;
         try {
             g = (EntityObjSearchFactory) Class.forName(f).newInstance();
-            String s=g.createHelperString(name, entity);
-            if(StringUtils.isEmpty(s)){
-                s=d;
+            String s = g.createHelperString(name, entity);
+            if (StringUtils.isEmpty(s)) {
+                s = d;
             }
             return s;
         } catch (Exception e) {
             throw new IllegalArgumentException(e);
         }
     }
-    
+
     public ObjSearch createSearch(String name, String entityName, String expression) {
         if (StringUtils.isEmpty(expression)) {
             return new ObjSimpleSearch(null);
@@ -606,12 +603,17 @@ class CorePluginBodyDAOManager extends CorePluginBody {
         CorePluginSecurity.requireAdmin();
         PersistenceUnit persistenceUnit = UPA.getPersistenceUnit();
         Entity entity = persistenceUnit.getEntity(entityName);
-        TraceService.get().trace("updateFormulas", "start updateFormulas", entityName, entity.getParent().getPath(), Level.INFO);
+        Map<String, Object> msg = MapUtils.map("name", entityName, "title", entity.getTitle());
+        String data = JsonUtils.jsonMap("name", entityName);
+        TraceService.get().trace("System.update-entity-formulas", "start", msg, data,
+                entity.getParent().getPath(), Level.INFO);
         try {
             persistenceUnit.updateFormulas(EntityFilters.byName(entityName), null);
-            TraceService.get().trace("updateFormulas", "succeeded updateFormulas", entityName, entity.getParent().getPath(), Level.INFO);
+            TraceService.get().trace("System.update-entity-formulas", "success", msg, data, entity.getParent().getPath(), Level.INFO);
         } catch (RuntimeException ex) {
-            TraceService.get().trace("updateFormulas", "failed updateFormulas : " + ex.toString(), entityName, entity.getParent().getPath(), Level.WARNING);
+            msg = MapUtils.map("name", entityName, "title", entity.getTitle(), "error", ex.getMessage());
+            data = JsonUtils.jsonMap("name", entityName, "error", ex.getMessage());
+            TraceService.get().trace("System.update-entity-formulas", "error",msg, data, entity.getParent().getPath(), Level.WARNING);
             throw ex;
         }
     }

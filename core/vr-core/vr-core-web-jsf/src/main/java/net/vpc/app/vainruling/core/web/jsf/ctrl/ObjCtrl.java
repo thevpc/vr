@@ -129,24 +129,27 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
             return ("???");
         }
         String newTitleString = "???";
+        Map<String,Object> args=new HashMap<>();
         String entityPlainTitle = entity.getTitle();
+        args.put("title", entityPlainTitle);
+        args.put("name", entity.getName());
         switch (mode) {
             case READ: {
-                newTitleString = i18n.getOrNull(entity.getI18NTitle().append("ListTitle"), entityPlainTitle);
+                newTitleString = i18n.getOrNull(entity.getI18NTitle().append("ListTitle"), args);
                 if (newTitleString == null) {
                     newTitleString = "Liste " + entityPlainTitle;
                 }
                 break;
             }
             case UPDATE: {
-                newTitleString = i18n.getOrNull(entity.getI18NTitle().append("UpdateTitle"), entityPlainTitle);
+                newTitleString = i18n.getOrNull(entity.getI18NTitle().append("UpdateTitle"), args);
                 if (newTitleString == null) {
                     newTitleString = "Mise à jour " + entityPlainTitle;
                 }
                 break;
             }
             case PERSIST: {
-                newTitleString = i18n.getOrNull(getEntity().getI18NTitle().append("NewTitle"), entityPlainTitle);
+                newTitleString = i18n.getOrNull(getEntity().getI18NTitle().append("NewTitle"), args);
                 if (newTitleString == null) {
                     newTitleString = "Nouveau " + entityPlainTitle;
                 }

@@ -11,7 +11,6 @@ http://www.springframework.org/schema/aop
 http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
 
     <context:annotation-config/>
-    <aop:aspectj-autoproxy/>
     <aop:aspectj-autoproxy proxy-target-class="true"/>
     <context:component-scan base-package="net.vpc"/>
     <!--    <tx:annotation-driven transaction-manager="txManager" />

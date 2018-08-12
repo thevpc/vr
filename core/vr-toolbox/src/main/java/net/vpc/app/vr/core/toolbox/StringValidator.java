@@ -1,8 +1,12 @@
 package net.vpc.app.vr.core.toolbox;
 
-@FunctionalInterface
 public interface StringValidator {
 
-    boolean validate(String value);
+    default String getHints() {
+        return null;
+    }
 
+    StringValidatorType getType();
+
+    String validate(String value);
 }

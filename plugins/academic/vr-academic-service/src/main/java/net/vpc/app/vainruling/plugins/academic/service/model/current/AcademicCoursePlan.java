@@ -88,15 +88,6 @@ public class AcademicCoursePlan {
             @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:120px")
     )
     private AcademicCourseLevel courseLevel;
-    @Summary
-    @Properties(
-            @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "#{concat('width:60px;','background-color:',"
-                    + " hashToStringArr(this.courseGroup.name,'{bgcolor1}','{bgcolor2}','{bgcolor3}','{bgcolor4}','{bgcolor5}','{bgcolor6}','{bgcolor7}','{bgcolor8}','{bgcolor9}','{bgcolor10}')"
-                    + ")"
-                    + "}")
-    )
-    @ManyToOne(filter = "that.period.id=this.period.id and that.academicClass.id=this.courseLevel.academicClass.id")
-    private AcademicCourseGroup courseGroup;
 
     private AcademicTeacher responsible;
     private AcademicTeacher responsible2;
@@ -127,13 +118,37 @@ public class AcademicCoursePlan {
             @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:40px")
     )
     private double valuePM;
-    private double valueTPPM;
+//    private double valueTPPM;
     @Summary
     @Properties(
             @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:40px")
     )
     @Field(defaultValue = "0")
     private double credits;
+    
+    @Summary
+    @Properties(
+            @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:40px")
+    )
+    @Field(defaultValue = "0")
+    private double ects;
+
+    @Summary
+    @Properties(
+            @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "#{concat('width:60px;','background-color:',"
+                    + " hashToStringArr(this.courseGroup.name,'{bgcolor1}','{bgcolor2}','{bgcolor3}','{bgcolor4}','{bgcolor5}','{bgcolor6}','{bgcolor7}','{bgcolor8}','{bgcolor9}','{bgcolor10}')"
+                    + ")"
+                    + "}")
+    )
+    @ManyToOne(filter = "that.period.id=this.period.id and that.academicClass.id=this.courseLevel.academicClass.id")
+    private AcademicCourseGroup courseGroup;
+    
+    private int groupCountC = 1;
+    private int groupCountTD = 1;
+    private int groupCountTP = 2;
+    private int groupCountPM = 1;
+//    private int groupCountTPPM = 1;
+
     private int evalMidExams;
     private boolean evalFinalExam;
     private int evalRandomExams;
@@ -144,21 +159,10 @@ public class AcademicCoursePlan {
     private int maxPopulationTD;
     private int maxPopulationTP;
 
-    @Summary
-    @Properties(
-            @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:40px")
-    )
-    @Field(defaultValue = "0")
-    private double ects;
     //    private double valueDU;
     //Unite enseignement/UE
 //    @Summary
     private int position;
-    private int groupCountC = 1;
-    private int groupCountTD = 1;
-    private int groupCountTP = 2;
-    private int groupCountPM = 1;
-    private int groupCountTPPM = 1;
     private int weeksC = 0;
     private int weeksTD = 0;
     private int weeksTP = 0;
@@ -229,6 +233,16 @@ public class AcademicCoursePlan {
     private Timestamp creationDate;
     @Formula(value = "CurrentTimestamp()", formulaType = {FormulaType.PERSIST, FormulaType.UPDATE})
     private Timestamp updateDate;
+
+    @Properties(
+            {
+                @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
+            }
+    )
+    @Formula(name = "academicCoursePlan_validationErrors_Formula")
+    @Field(max = "1024")
+    @Summary
+    private String validationErrors;
 
     public int getId() {
         return id;
@@ -381,21 +395,21 @@ public class AcademicCoursePlan {
         this.groupCountPM = groupCountPM;
     }
 
-    public double getValueTPPM() {
-        return valueTPPM;
-    }
+//    public double getValueTPPM() {
+//        return valueTPPM;
+//    }
+//
+//    public void setValueTPPM(double valueTPPM) {
+//        this.valueTPPM = valueTPPM;
+//    }
 
-    public void setValueTPPM(double valueTPPM) {
-        this.valueTPPM = valueTPPM;
-    }
-
-    public int getGroupCountTPPM() {
-        return groupCountTPPM;
-    }
-
-    public void setGroupCountTPPM(int groupCountTPPM) {
-        this.groupCountTPPM = groupCountTPPM;
-    }
+//    public int getGroupCountTPPM() {
+//        return groupCountTPPM;
+//    }
+//
+//    public void setGroupCountTPPM(int groupCountTPPM) {
+//        this.groupCountTPPM = groupCountTPPM;
+//    }
 
     public int getWeeksC() {
         return weeksC;
@@ -719,4 +733,13 @@ public class AcademicCoursePlan {
     public void setResponsibleAvailability(String responsibleAvailability) {
         this.responsibleAvailability = responsibleAvailability;
     }
+
+    public String getValidationErrors() {
+        return validationErrors;
+    }
+
+    public void setValidationErrors(String validationErrors) {
+        this.validationErrors = validationErrors;
+    }
+    
 }

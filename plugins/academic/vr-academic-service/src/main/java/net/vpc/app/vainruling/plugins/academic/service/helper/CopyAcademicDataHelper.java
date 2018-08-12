@@ -20,18 +20,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.vpc.app.vainruling.core.service.util.JsonUtils;
+import net.vpc.common.util.MapUtils;
 
 /**
  * Created by vpc on 6/25/16.
  */
 public class CopyAcademicDataHelper {
+
     public static final Logger log = Logger.getLogger(CopyAcademicDataHelper.class.getName());
 
     private Map<Integer, AcademicTeacherSemestrialLoad> _copyAcademicDataAcademicTeacherSemestrialLoad(int fromPeriodId, AppPeriod toPeriod, PersistenceUnit pu) {
         final AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
         Map<Integer, AcademicTeacherSemestrialLoad> oldIdToNewObject = new HashMap<>();
 //copy AcademicTeacherSemestrialLoad
-        Converter<AcademicTeacherSemestrialLoad,String> converter = new Converter<AcademicTeacherSemestrialLoad,String>() {
+        Converter<AcademicTeacherSemestrialLoad, String> converter = new Converter<AcademicTeacherSemestrialLoad, String>() {
             @Override
             public String convert(AcademicTeacherSemestrialLoad value) {
                 return value.getTeacher().getId() + "-" + value.getSemester();
@@ -47,7 +50,7 @@ public class CopyAcademicDataHelper {
                 converter
         );
         for (AcademicTeacherSemestrialLoad v : fromList) {
-            if (!toList.containsMappedValue(v)) {
+            if (!toList.containsKey(converter.convert(v))) {
                 AcademicTeacherSemestrialLoad v2 = pu.copyObject(v);
                 v2.setId(0);
                 v2.setPeriod(toPeriod);
@@ -79,7 +82,7 @@ public class CopyAcademicDataHelper {
                 converter
         );
         for (AcademicCoursePlan v : fromList) {
-            if (!toList.containsMappedValue(v)) {
+            if (!toList.containsKey(converter.convert(v))) {
                 AcademicCoursePlan v2 = pu.copyObject(v);
                 v2.setId(0);
                 v2.setPeriod(toPeriod);
@@ -112,7 +115,7 @@ public class CopyAcademicDataHelper {
                 converter
         );
         for (AcademicCourseGroup v : fromList) {
-            if (!toList.containsMappedValue(v)) {
+            if (!toList.containsKey(converter.convert(v))) {
                 AcademicCourseGroup v2 = pu.copyObject(v);
                 v2.setId(0);
                 v2.setPeriod(toPeriod);
@@ -163,6 +166,8 @@ public class CopyAcademicDataHelper {
 //    }
     private Map<Integer, AcademicCourseAssignment> _copyAcademicDataAcademicCourseAssignment(int fromPeriodId, AppPeriod toPeriod, Map<Integer, AcademicCoursePlan> coursePlanMap, PersistenceUnit pu) {
         final AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
+        CorePlugin core = CorePlugin.get();
+        AppPeriod fromPeriodObj = core.findPeriod(fromPeriodId);
         Map<Integer, AcademicCourseAssignment> oldIdToNewObject = new HashMap<>();
         Converter<AcademicCourseAssignment, String> converter = new Converter<AcademicCourseAssignment, String>() {
             @Override
@@ -191,8 +196,13 @@ public class CopyAcademicDataHelper {
                 }
             }
             if (reported.size() > 0) {
-                TraceService.get().trace("CopyAcademicData", "Some Course Assignments have similar names", StringUtils.substring(error.toString(), 0, 4096), "Academic", Level.SEVERE);
-                log.severe(error.toString());
+                TraceService.get().trace("Academic.copy-academic-assignments", "error", MapUtils.map(
+                        "from", fromPeriodObj.getName(),
+                        "to", toPeriod.getName(),
+                        "error", error.toString()), JsonUtils.jsonMap(
+                        "from", fromPeriodObj.getName(),
+                        "to", toPeriod.getName(),
+                        "error", error.toString()), "Academic", Level.SEVERE);
                 throw new IllegalArgumentException("Some Course Assignments have similar names. Check log for details");
             }
         }
@@ -224,8 +234,13 @@ public class CopyAcademicDataHelper {
                     visited.put(item, assignment);
                 }
             }
-            TraceService.get().trace("CopyAcademicData", "Some Course Assignments have similar names", StringUtils.substring(error.toString(), 0, 4096), "Academic", Level.SEVERE);
-            log.severe(error.toString());
+            TraceService.get().trace("Academic.copy-academic-assignments", "error", MapUtils.map(
+                    "from", fromPeriodObj.getName(),
+                    "to", toPeriod.getName(),
+                    "error", error.toString()), JsonUtils.jsonMap(
+                    "from", fromPeriodObj.getName(),
+                    "to", toPeriod.getName(),
+                    "error", error.toString()), "Academic", Level.SEVERE);
             throw new IllegalArgumentException("Some Course Assignments have similar names. Check log for details");
         }
         for (AcademicCourseAssignment v : fromList) {
@@ -241,6 +256,13 @@ public class CopyAcademicDataHelper {
                 oldIdToNewObject.put(v.getId(), toList.getByValue(v));
             }
         }
+        TraceService.get().trace("Academic.copy-academic-assignments", "success", MapUtils.map(
+                "from", fromPeriodObj.getName(),
+                "to", toPeriod.getName()
+        ), JsonUtils.jsonMap(
+                "from", fromPeriodObj.getName(),
+                "to", toPeriod.getName()
+        ), "Academic", Level.SEVERE);
         return oldIdToNewObject;
     }
 

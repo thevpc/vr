@@ -358,7 +358,7 @@
                             <ui:fragment rendered="#{!vr.isEmpty(corePlugin.currentUser.department.name)}">
                                 <li class="header">Depatement #{corePlugin.currentUser.department.name}</li>
                             </ui:fragment>
-                            <h:inputHidden value="#{vr.buildMenu()}"/>
+                            #{vr.buildMenu()}
                             <li class="treeview">
                                 <h:outputLink value="#{vr.context}/p/welcome">
                                     <i class="fa fa-desktop"></i> Mon Mur
