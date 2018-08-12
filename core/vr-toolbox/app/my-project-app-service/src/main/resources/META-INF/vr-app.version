@@ -1,0 +1,12 @@
+short-name = ENISo info
+long-name = ENISo info
+id = eniso.info
+version = 1.1.155
+build-date = 2018-03-14
+build-number = 155
+author = Taha BEN SALAH (c)
+default-public-theme = crew
+default-private-theme = crew
+config.company=ENISo
+config.country=Tunisie
+config.industry=Education

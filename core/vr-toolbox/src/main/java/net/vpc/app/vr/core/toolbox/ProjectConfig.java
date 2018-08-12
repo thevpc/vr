@@ -1,71 +1,107 @@
 package net.vpc.app.vr.core.toolbox;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 public class ProjectConfig {
-    private Properties config=new Properties();
-    private IOTemplater io;
+
+    private final Properties config = new Properties();
+    private final Map<String, Getter> getters = new HashMap<String, Getter>();
+
+    private TemplateConsole io = new DefaultConsole();
 
     public ProjectConfig() {
-        config.setProperty("projectNameDefaultValue","MyProject");
-        config.setProperty("projectGroupDefaultValue","com.mycompany");
-        config.setProperty("projectVersionDefaultValue","1.0");
-        config.setProperty("moduleNameDefaultValue","MyModule");
-        config.setProperty("moduleVersionDefaultValue","1.0");
     }
 
-    public void unset(String propertyName){
-        set(propertyName,null);
+    public interface Getter {
+
+        String get(String name, ProjectConfig c);
     }
 
-    public void set(String propertyName, String value){
-        if(value==null || value.trim().isEmpty()){
+    public final void setProperty(String name, String defaultvalue, StringValidator g) {
+        config.setProperty(name + "DefaultValue", defaultvalue);
+        getters.put(name, (n, c) -> c.get(n, defaultvalue, g));
+    }
+
+    public void setIo(TemplateConsole io) {
+        this.io = io;
+    }
+
+    public void unset(String propertyName) {
+        set(propertyName, null);
+    }
+
+    public void set(String propertyName, String value) {
+        if (value == null || value.trim().isEmpty()) {
             config.remove(propertyName);
-        }else{
-            config.setProperty(propertyName,value);
+        } else {
+            config.setProperty(propertyName, value);
         }
     }
 
-    public String getModuleName(){
-        return getOrAskForId("moduleName");
+    public String getModuleName() {
+        return get("vrModuleName");
     }
 
-    public String getModuleVersion(){
-        return getOrAskForId("moduleVersion");
+    public String getModuleVersion() {
+        return get("vrModuleVersion");
     }
 
-    public String getProjectName(){
-        return getOrAskForId("projectName");
+    public String getProjectName() {
+        return get("vrProjectName");
     }
 
-    public String getProjectVersion(){
-        return getOrAskForId("projectVersion");
+    public String getProjectVersion() {
+        return get("vrProjectVersion");
     }
 
-    public String getProjectGroup(){
-        return getOrAskForId("projectGroup");
+    public String getProjectGroup() {
+        return get("vrProjectGroup");
     }
 
-    public String getOrAskForId(String id){
-        String defaultValue=config.getProperty(id+"DefaultValue");
-        return get(id,p->io.askForString(id,ValidatorFactory.ID,defaultValue));
+    public boolean getBoolean(String name, boolean defaultValue) {
+        String s = get(name, String.valueOf(defaultValue), ValidatorFactory.BOOLEAN);
+        return "true".equalsIgnoreCase(s) || "yes".equalsIgnoreCase(s);
     }
 
-    public File getProjectRootFolder(){
-        return new File(get("projectRootFolder",x->"."));
-    }
-
-    public String get(String name){
-        return get(name,null);
-    }
-
-    public String get(String name,PropertyProvider p){
+    public String get(String name, String defaultValue, StringValidator v) {
         String f = config.getProperty(name);
-        if(f==null && p!=null){
-            f=p.getProperty(name);
-            set(name,f);
+        if (f != null) {
+            return f;
         }
-        return f;
+        if (defaultValue == null) {
+            defaultValue = config.getProperty(name + "DefaultValue");
+        }
+        String o = io.askForString(name, v, defaultValue);
+        if (o != null) {
+
+        }
+        if (o != null) {
+            set(name, o);
+        }
+        return o;
     }
+
+    public String get(String name) {
+        String f = config.getProperty(name);
+        if (f != null) {
+            return f;
+        }
+        Getter p = getters.get(name);
+        if (p == null) {
+            p = (n, c) -> c.get(n, null, null);
+        }
+        String o = p.get(name, this);
+        if (o != null) {
+            set(name, o);
+        }
+        return o;
+    }
+
+    public File getProjectRootFolder() {
+        return new File(get("vrProjectRootFolder"));
+    }
+
 }
