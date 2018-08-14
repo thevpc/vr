@@ -148,7 +148,7 @@ public class AcademicPluginBodyLoad extends AcademicPluginBody {
     }
 
     public LoadValue getAssignmentLoadValue(AcademicCourseAssignment assignment, AcademicTeacherDegree degree, AcademicConversionTableHelper conversionTable) {
-        AcademicPluginSecurity.requireManageableCourseAssignment(assignment);
+        AcademicPluginSecurity.requireUpdatableCourseAssignment(assignment);
         LoadValue loadValue = new LoadValue(assignment.getValueC(), assignment.getValueTD(), assignment.getValueTP(), assignment.getValuePM());
         double equiv = evalValueEquiv(loadValue, degree, conversionTable);
         loadValue = loadValue.setEquiv(equiv);

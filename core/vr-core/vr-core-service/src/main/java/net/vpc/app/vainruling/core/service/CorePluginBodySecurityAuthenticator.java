@@ -108,7 +108,8 @@ class CorePluginBodySecurityAuthenticator extends CorePluginBody {
             } finally {
                 if (appUser == null) {
                     if (token != null) {
-                        invalidateToken(token.getSessionId());
+                        //should not invalidate in jsf!!
+                        //invalidateToken(token.getSessionId());
                     }
                 }
             }

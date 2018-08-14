@@ -23,9 +23,9 @@ class DefaultConsole implements TemplateConsole {
     }
 
     public String ask(String propName, StringValidator validator, String defaultValue) {
-        if (defaultValue != null) {
-            return defaultValue;
-        }
+//        if (defaultValue != null) {
+//            return defaultValue;
+//        }
         String hints = null;
         if (validator != null) {
             hints = validator.getHints();

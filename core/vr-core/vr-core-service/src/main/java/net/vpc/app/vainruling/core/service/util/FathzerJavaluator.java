@@ -10,6 +10,7 @@ import java.util.Set;
  * Created by vpc on 4/16/17.
  */
 public class FathzerJavaluator extends AbstractEvaluator<Boolean> implements InSetEvaluator {
+
     /**
      * The logical AND operator.
      */
@@ -72,10 +73,9 @@ public class FathzerJavaluator extends AbstractEvaluator<Boolean> implements InS
         return false;
     }
 
-
     @Override
     protected Boolean evaluate(Operator operator, Iterator<Boolean> operands,
-                               Object evaluationContext) {
+            Object evaluationContext) {
         Boolean o1 = operands.next();
         Boolean o2 = operands.next();
         Boolean result;
@@ -90,9 +90,14 @@ public class FathzerJavaluator extends AbstractEvaluator<Boolean> implements InS
         }
         return result;
     }
-    public <T> T evaluateExpression(String expression) {
-        return (T) evaluate(expression);
-    }
 
+    public boolean evaluateExpression(String expression) {
+        try {
+            return (Boolean) evaluate(expression);
+        } catch (Exception e) {
+            //error
+        }
+        return false;
+    }
 
 }

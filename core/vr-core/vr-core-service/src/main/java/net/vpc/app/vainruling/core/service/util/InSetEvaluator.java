@@ -10,6 +10,6 @@ package net.vpc.app.vainruling.core.service.util;
  */
 public interface InSetEvaluator {
 
-    <T> T evaluateExpression(String expression) ;
+    boolean evaluateExpression(String expression) ;
 
 }

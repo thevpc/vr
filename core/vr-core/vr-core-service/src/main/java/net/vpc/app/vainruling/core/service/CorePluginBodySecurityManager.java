@@ -10,6 +10,7 @@ import net.vpc.upa.*;
 
 import java.util.*;
 import java.util.logging.Level;
+import net.vpc.common.util.Chronometer;
 
 class CorePluginBodySecurityManager extends CorePluginBody {
 
@@ -178,8 +179,8 @@ class CorePluginBodySecurityManager extends CorePluginBody {
                     modifications++;
                 }
                 visitedSet.add(r.getRight().getName());
-            }else{
-                    pu.remove(r);
+            } else {
+                pu.remove(r);
             }
         }
         for (String s : baseSet) {
@@ -922,7 +923,15 @@ class CorePluginBodySecurityManager extends CorePluginBody {
         final HashMap<String, Object> cache = new HashMap<String, Object>();
         if (in != null) {
             for (T i : in) {
-                if (userMatchesProfileFilter(userId, login, new ProfileFilterExpression(filter.getProfilePattern(i)), cache)) {
+                String profilePattern = filter.getProfilePattern(i);
+                Chronometer ch = new Chronometer();
+                boolean b = userMatchesProfileFilter(userId, login, new ProfileFilterExpression(profilePattern), cache);
+                ch.stop();
+                int sec = (int) (ch.getTime() / 1000000000);
+                if(sec>1){
+                    b = userMatchesProfileFilter(userId, login, new ProfileFilterExpression(profilePattern), cache);
+                }
+                if (b) {
                     out.add(i);
                 }
             }
