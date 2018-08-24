@@ -16,7 +16,7 @@
     </parent>
 
     <properties>
-        <version.vr>1.13.8</version.vr>
+        <version.vr>1.13.9</version.vr>
     </properties>
 
     <dependencies>

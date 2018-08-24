@@ -34,8 +34,8 @@ public class AcademicTeachersWithAssignmentsCtrl {
         AcademicTeacher currentTeacher = academicPlugin.getCurrentTeacher();
         getModel().setTeacherDepartment(null);
         getModel().setAssignmentDepartment(null);
-        if(currentTeacher!=null && currentTeacher.getDepartment()!=null){
-            getModel().setTeacherDepartment(currentTeacher.getDepartment());
+        if(currentTeacher!=null && currentTeacher.getUser().getDepartment()!=null){
+            getModel().setTeacherDepartment(currentTeacher.getUser().getDepartment());
         }
         onRefresh();
     }

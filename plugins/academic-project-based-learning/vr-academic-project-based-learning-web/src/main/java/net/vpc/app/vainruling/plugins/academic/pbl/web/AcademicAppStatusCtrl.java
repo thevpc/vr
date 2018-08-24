@@ -218,7 +218,7 @@ public class AcademicAppStatusCtrl {
         getModel().setTeachers(apbl.findTeacherInfos(selectedSessionsInts, false, new ObjectFilter<AcademicTeacher>() {
             @Override
             public boolean accept(AcademicTeacher value) {
-                AppDepartment d = value.getDepartment();
+                AppDepartment d = value.getUser().getDepartment();
                 String selectedDepartment = getModel().getSelectedDepartment();
                 if (!(StringUtils.isEmpty(selectedDepartment) || (d != null && selectedDepartment.equals("" + d.getId())))) {
                     return false;
@@ -229,7 +229,7 @@ public class AcademicAppStatusCtrl {
         List<ApblStudentInfo> studentInfos = apbl.findStudentInfos(selectedSessionsInts, true, new ObjectFilter<AcademicStudent>() {
             @Override
             public boolean accept(AcademicStudent value) {
-                AppDepartment d = value.getDepartment();
+                AppDepartment d = value.getUser().getDepartment();
                 String selectedDepartment = getModel().getSelectedDepartment();
                 if (!(StringUtils.isEmpty(selectedDepartment) || (d != null && selectedDepartment.equals("" + d.getId())))) {
                     return false;

@@ -431,12 +431,12 @@ public class AcademicPluginBodyInternships extends AcademicPluginBody {
                     continue;
                 }
                 if (department != null) {
-                    if ((student.getDepartment() == null) || (department.getId() != student.getDepartment().getId())) {
+                    if ((student.getUser().getDepartment() == null) || (department.getId() != student.getUser().getDepartment().getId())) {
                         continue;
                     }
                 }
                 if (department2 != null) {
-                    if (student.getDepartment() == null || department2.getId() != student.getDepartment().getId()) {
+                    if (student.getUser().getDepartment() == null || department2.getId() != student.getUser().getDepartment().getId()) {
                         continue;
                     }
                 }
@@ -800,7 +800,7 @@ public class AcademicPluginBodyInternships extends AcademicPluginBody {
     public List<AcademicInternship> findActualInternshipsByTeacher(int teacherId, int boardId) {
         AcademicPlugin ap = VrApp.getBean(AcademicPlugin.class);
         AcademicTeacher t = ap.findTeacher(teacherId);
-        AppDepartment d = t == null ? null : t.getDepartment();
+        AppDepartment d = t == null ? null : t.getUser().getDepartment();
         AcademicTeacher h = d == null ? null : ap.findHeadOfDepartment(d.getId());
         PersistenceUnit pu = UPA.getPersistenceUnit();
         if (h != null && d != null && h.getId() == teacherId) {
@@ -882,7 +882,7 @@ public class AcademicPluginBodyInternships extends AcademicPluginBody {
         AcademicPlugin ap = VrApp.getBean(AcademicPlugin.class);
         CorePlugin cp = VrApp.getBean(CorePlugin.class);
         AcademicTeacher t = teacherId < 0 ? null : ap.findTeacher(teacherId);
-        AppDepartment d = deptId < 0 ? (t == null ? null : t.getDepartment()) : cp.findDepartment(deptId);
+        AppDepartment d = deptId < 0 ? (t == null ? null : t.getUser().getDepartment()) : cp.findDepartment(deptId);
         AcademicTeacher h = d == null ? null : ap.findHeadOfDepartment(d.getId());
         PersistenceUnit pu = UPA.getPersistenceUnit();
         if (h != null && d != null && h.getId() == teacherId) {
@@ -1006,7 +1006,7 @@ public class AcademicPluginBodyInternships extends AcademicPluginBody {
         AcademicPlugin ap = VrApp.getBean(AcademicPlugin.class);
         CorePlugin cp = VrApp.getBean(CorePlugin.class);
         AcademicTeacher t = teacherId < 0 ? null : ap.findTeacher(teacherId);
-        AppDepartment d = deptId < 0 ? (t == null ? null : t.getDepartment()) : cp.findDepartment(deptId);
+        AppDepartment d = deptId < 0 ? (t == null ? null : t.getUser().getDepartment()) : cp.findDepartment(deptId);
         AcademicTeacher teacher = d == null ? null : ap.findHeadOfDepartment(d.getId());
         PersistenceUnit pu = UPA.getPersistenceUnit();
 

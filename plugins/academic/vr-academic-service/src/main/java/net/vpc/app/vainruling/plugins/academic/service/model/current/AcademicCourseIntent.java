@@ -182,11 +182,11 @@ public class AcademicCourseIntent {
         return null;
     }
 
-    public AppContact resolveContact() {
-        AcademicCourseAssignment assignment = getAssignment();
-        if(assignment!=null){
-            return assignment.resolveContact();
-        }
-        return null;
-    }
+//    public AppContact resolveContact() {
+//        AcademicCourseAssignment assignment = getAssignment();
+//        if(assignment!=null){
+//            return assignment.resolveContact();
+//        }
+//        return null;
+//    }
 }

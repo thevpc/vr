@@ -148,7 +148,7 @@ public class AcademicPluginBodyLoad extends AcademicPluginBody {
     }
 
     public LoadValue getAssignmentLoadValue(AcademicCourseAssignment assignment, AcademicTeacherDegree degree, AcademicConversionTableHelper conversionTable) {
-        AcademicPluginSecurity.requireUpdatableCourseAssignment(assignment);
+//        AcademicPluginSecurity.requireTeacherOrManager(assignment);
         LoadValue loadValue = new LoadValue(assignment.getValueC(), assignment.getValueTD(), assignment.getValueTP(), assignment.getValuePM());
         double equiv = evalValueEquiv(loadValue, degree, conversionTable);
         loadValue = loadValue.setEquiv(equiv);
@@ -1138,7 +1138,7 @@ public class AcademicPluginBodyLoad extends AcademicPluginBody {
                 AcademicTeacherSituation situation = stat.getTeacher().getSituation();
                 AcademicTeacherDegree degree = stat.getTeacher().getDegree();
                 AcademicOfficialDiscipline discipline = stat.getTeacher().getOfficialDiscipline();
-                AppDepartment department = stat.getTeacher().getDepartment();
+                AppDepartment department = stat.getTeacher().getUser().getDepartment();
                 String k = "";
                 if (groups.contains(DeviationGroup.DEGREE)) {
                     k += ":" + (degree == null ? "" : String.valueOf(degree.getId()));
@@ -1200,7 +1200,7 @@ public class AcademicPluginBodyLoad extends AcademicPluginBody {
             } else {
                 AcademicTeacherSituation situation = stat.getTeacher().getSituation();
                 AcademicTeacherDegree degree = stat.getTeacher().getDegree();
-                AppDepartment department = stat.getTeacher().getDepartment();
+                AppDepartment department = stat.getTeacher().getUser().getDepartment();
                 AcademicOfficialDiscipline discipline = stat.getTeacher().getOfficialDiscipline();
 
                 String k = "";

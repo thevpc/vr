@@ -86,7 +86,7 @@ public class GlobalStatCtrl {
 
     private void setValue(PieChartModel m, String name, double value) {
         if (value != 0) {
-            m.set(name + " (" + VrUtils.dformat(value, "0.00") + ")", value);
+            m.set(name + " (" + VrUtils.dformat(value, "0.000") + ")", value);
         }
     }
 

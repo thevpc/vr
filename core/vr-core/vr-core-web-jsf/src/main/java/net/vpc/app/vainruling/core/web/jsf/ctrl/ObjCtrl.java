@@ -129,7 +129,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
             return ("???");
         }
         String newTitleString = "???";
-        Map<String,Object> args=new HashMap<>();
+        Map<String, Object> args = new HashMap<>();
         String entityPlainTitle = entity.getTitle();
         args.put("title", entityPlainTitle);
         args.put("name", entity.getName());
@@ -170,17 +170,17 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
     }
 
     protected boolean isSaveAllowed() {
+        Entity e = getEntity();
+        if (e == null) {
+            return false;
+        }
         switch (getModel().getMode()) {
 
             case PERSIST: {
-                return UPA.getPersistenceUnit().getSecurityManager().isAllowedPersist(getEntity());
+                return e.getShield().isPersistSupported() && e.getShield().isPersistEnabled();
             }
             case UPDATE: {
-                UPASecurityManager sm = UPA.getPersistenceUnit().getSecurityManager();
-                boolean allowedUpdate = sm.isAllowedUpdate(getEntity());
-                if (!allowedUpdate) {
-                    return false;
-                }
+                return e.getShield().isUpdateSupported() && e.getShield().isUpdateEnabled();
             }
         }
         return false;
@@ -201,13 +201,21 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
                         return true;
                     }
                     if ("New".equals(buttonId)) {
-                        return UPA.getPersistenceUnit().getSecurityManager().isAllowedPersist(getEntity());
+                        Entity e = getEntity();
+                        if (e == null) {
+                            return false;
+                        }
+                        return e.getShield().isPersistSupported() && e.getShield().isPersistEnabled();
                     }
                     if ("List".equals(buttonId)) {
                         return false;
                     }
                     if ("Remove".equals(buttonId)) {
-                        return UPA.getPersistenceUnit().getSecurityManager().isAllowedRemove(getEntity());
+                        Entity e = getEntity();
+                        if (e == null) {
+                            return false;
+                        }
+                        return e.getShield().isRemoveSupported() && e.getShield().isRemoveEnabled();
                     }
                     if ("Advanced".equals(buttonId)) {
                         return isEnabledButton("Archive")
@@ -215,8 +223,11 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
                     }
 
                     if ("Archive".equals(buttonId)) {
-                        return UPA.getPersistenceUnit().getSecurityManager()
-                                .isAllowedUpdate(getEntity())
+                        Entity e = getEntity();
+                        if (e == null) {
+                            return false;
+                        }
+                        return e.getShield().isUpdateSupported() && e.getShield().isUpdateEnabled()
                                 && core.isArchivable(getModel().getEntityName());
                     }
 
@@ -232,7 +243,11 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
                 }
                 case PERSIST: {
                     if ("Save".equals(buttonId)) {
-                        return UPA.getPersistenceUnit().getSecurityManager().isAllowedPersist(getEntity());
+                        Entity e = getEntity();
+                        if (e == null) {
+                            return false;
+                        }
+                        return e.getShield().isPersistSupported() && e.getShield().isPersistEnabled();
                     }
                     if ("List".equals(buttonId)) {
                         return true;
@@ -246,7 +261,11 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
                 case UPDATE: {
                     if ("Save".equals(buttonId)) {
                         UPASecurityManager sm = UPA.getPersistenceUnit().getSecurityManager();
-                        boolean allowedUpdate = sm.isAllowedUpdate(getEntity());
+                        Entity e = getEntity();
+                        if (e == null) {
+                            return false;
+                        }
+                        boolean allowedUpdate = e.getShield().isUpdateSupported() && e.getShield().isUpdateEnabled();
                         if (!allowedUpdate) {
                             return false;
                         }
@@ -254,7 +273,11 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
                         return sm.isAllowedUpdate(getEntity(), getCurrentId(), getCurrentEntityObject());
                     }
                     if ("New".equals(buttonId)) {
-                        return UPA.getPersistenceUnit().getSecurityManager().isAllowedPersist(getEntity());
+                        Entity e = getEntity();
+                        if (e == null) {
+                            return false;
+                        }
+                        return e.getShield().isPersistSupported() && e.getShield().isPersistEnabled();
                     }
                     if ("Refresh".equals(buttonId)) {
                         return true;
@@ -263,7 +286,11 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
                         return true;
                     }
                     if ("Remove".equals(buttonId)) {
-                        return UPA.getPersistenceUnit().getSecurityManager().isAllowedRemove(getEntity());
+                        Entity e = getEntity();
+                        if (e == null) {
+                            return false;
+                        }
+                        return e.getShield().isRemoveSupported() && e.getShield().isRemoveEnabled();
                     }
                     if ("Archive".equals(buttonId)) {
                         return UPA.getPersistenceUnit().getSecurityManager()
@@ -782,13 +809,13 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
                 String expr = v.substring(2, v.length() - 1);
                 ExpressionManager expressionManager = pu.getExpressionManager();
                 if (!expressionManager.containsFunction("inthash")) {
-                    expressionManager.addFunction("inthash", TypesFactory.INT, inthash);
+                    expressionManager.addFunction("inthash", DataTypeFactory.INT, inthash);
                 }
                 if (!expressionManager.containsFunction("hashToStringArr")) {
-                    expressionManager.addFunction("hashToStringArr", TypesFactory.STRING, hashToStringArr);
+                    expressionManager.addFunction("hashToStringArr", DataTypeFactory.STRING, hashToStringArr);
                 }
                 if (!expressionManager.containsFunction("hashCssColor")) {
-                    expressionManager.addFunction("hashCssColor", TypesFactory.STRING, hashCssColor);
+                    expressionManager.addFunction("hashCssColor", DataTypeFactory.STRING, hashCssColor);
                 }
                 Expression expression = expressionManager.simplifyExpression(expr, map);
                 QLEvaluator evaluator = expressionManager.createEvaluator();
@@ -826,10 +853,10 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
                 String expr = v.substring(2, v.length() - 1);
                 ExpressionManager expressionManager = pu.getExpressionManager();
                 if (!expressionManager.containsFunction("inthash")) {
-                    expressionManager.addFunction("inthash", TypesFactory.INT, inthash);
+                    expressionManager.addFunction("inthash", DataTypeFactory.INT, inthash);
                 }
                 if (!expressionManager.containsFunction("hashToStringArr")) {
-                    expressionManager.addFunction("hashToStringArr", TypesFactory.STRING, hashToStringArr);
+                    expressionManager.addFunction("hashToStringArr", DataTypeFactory.STRING, hashToStringArr);
                 }
                 Expression expression = expressionManager.simplifyExpression(expr, map);
                 QLEvaluator evaluator = expressionManager.createEvaluator();
@@ -1100,10 +1127,10 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
 
                 ViewContext viewContext = new ViewContext();
                 List<OrderedPropertyView> propertyViews = new ArrayList<OrderedPropertyView>();
-                List<EntityPart> entityParts = ot.getParts();
+                List<EntityItem> entityParts = ot.getItems();
 //                List<EntityPart> entityParts = VrUtils.sortPreserveIndex(ot.getParts(), new Comparator<EntityPart>() {
 //                    @Override
-//                    public int compare(EntityPart o1, EntityPart o2) {
+//                    public int compare(EntityItem o1, EntityItem o2) {
 ////                    if (o1 instanceof Section && o2 instanceof Section) {
 ////                        return 0;
 ////                    }
@@ -1123,7 +1150,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
                 if (!saveAllowed) {
                     viewContext.getProperties().put("enabled", false);
                 }
-                for (EntityPart entityPart : entityParts) {
+                for (EntityItem entityPart : entityParts) {
                     if (entityPart instanceof Section) {
                         List<Field> sectionFields = ((Section) entityPart).getFields(FieldFilters.byModifiersNoneOf(FieldModifier.SYSTEM));
                         List<Field> sectionSortedFields = VrUtils.sortPreserveIndex(sectionFields, new Comparator<Field>() {

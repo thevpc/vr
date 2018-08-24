@@ -320,7 +320,7 @@ and open the template in the editor.
                                             <p:column styleClass="ui-widget-header"><p:outputLabel style="font-weight: bold"
                                                                                                    value="Maitres Assistants pour assurer charge heures supp permanents"/></p:column>
                                             <p:column><p:outputLabel value="#{globalStatCtrl.model.stat.permanentOverloadTeacherCount}">
-                                                    <f:convertNumber type="number" groupingUsed="true" minFractionDigits="2" pattern="#0.00"/>
+                                                    <f:convertNumber type="number" groupingUsed="true" minFractionDigits="2" pattern="#0.000"/>
                                                 </p:outputLabel></p:column>
 
 
@@ -328,7 +328,7 @@ and open the template in the editor.
                                                                                                    value="Maitres Assistants pour assurer charge non permanents"/></p:column>
                                             <p:column><p:outputLabel
                                                     value="#{globalStatCtrl.model.stat.nonPermanentLoadTeacherCount}">
-                                                    <f:convertNumber type="number" groupingUsed="true" minFractionDigits="2" pattern="#0.00"/>
+                                                    <f:convertNumber type="number" groupingUsed="true" minFractionDigits="2" pattern="#0.000"/>
                                                 </p:outputLabel></p:column>
 
 
@@ -338,7 +338,7 @@ and open the template in the editor.
                                                                                                    value="Maitres Assistants pour assurer charge manquant"/></p:column>
                                             <p:column><p:outputLabel
                                                     value="#{globalStatCtrl.model.stat.unassignedLoadTeacherCount}" >
-                                                    <f:convertNumber type="number" groupingUsed="true" minFractionDigits="2" pattern="#0.00"/>
+                                                    <f:convertNumber type="number" groupingUsed="true" minFractionDigits="2" pattern="#0.000"/>
                                                 </p:outputLabel>
                                             </p:column>
 
@@ -346,7 +346,7 @@ and open the template in the editor.
                                             <p:column styleClass="ui-widget-header"><p:outputLabel style="font-weight: bold"
                                                                                                    value="Enseignants restant à recruter"/></p:column>
                                             <p:column><p:outputLabel value="#{globalStatCtrl.model.stat.missing.teachersCount}">
-                                                    <f:convertNumber type="number" groupingUsed="true" minFractionDigits="2" pattern="#0.00"/>
+                                                    <f:convertNumber type="number" groupingUsed="true" minFractionDigits="2" pattern="#0.000"/>
                                                 </p:outputLabel></p:column>
                                         </p:row>
                                     </p:panelGrid>

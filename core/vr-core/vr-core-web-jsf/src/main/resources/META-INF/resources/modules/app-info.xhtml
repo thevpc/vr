@@ -27,7 +27,7 @@ and open the template in the editor.
                         <p:outputLabel value="Utilisateur"/>
                         <p:outputLabel style="margin-left: 10px" value=" :         "/>
                         <h:outputText style="margin-left: 20px"
-                                      value="#{corePlugin.currentUser==null?'anonymous' : vr.strcat(corePlugin.currentUserLogin,' / ',corePlugin.currentUser.contact.fullName) }"/>
+                                      value="#{corePlugin.currentUser==null?'anonymous' : vr.strcat(corePlugin.currentUserLogin,' / ',corePlugin.currentUser.fullName) }"/>
                         <p:outputLabel value="Version"/>
                         <p:outputLabel style="margin-left: 10px" value=" :          "/>
                         <h:outputText style="margin-left: 20px" value="#{corePlugin.appVersion.version}"/>

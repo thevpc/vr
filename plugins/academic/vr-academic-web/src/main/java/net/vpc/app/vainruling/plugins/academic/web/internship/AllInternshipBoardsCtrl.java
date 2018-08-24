@@ -44,8 +44,8 @@ public class AllInternshipBoardsCtrl extends MyInternshipBoardsCtrl {
         AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
         AcademicPlugin pi = VrApp.getBean(AcademicPlugin.class);
         AcademicTeacher t = p.findTeacher(teacherId);
-        if (t != null && t.getDepartment() != null) {
-            return pi.findEnabledInternshipBoardsByDepartment(-1,t.getDepartment().getId(),true);
+        if (t != null && t.getUser().getDepartment() != null) {
+            return pi.findEnabledInternshipBoardsByDepartment(-1,t.getUser().getDepartment().getId(),true);
         }
         return new ArrayList<>();
     }
@@ -54,7 +54,7 @@ public class AllInternshipBoardsCtrl extends MyInternshipBoardsCtrl {
     public AcademicInternshipExtList findActualInternshipsByTeacherAndBoard(int teacherId, int boardId, int internshipTypeId) {
         AcademicPlugin pi = VrApp.getBean(AcademicPlugin.class);
         AcademicTeacher t = getCurrentTeacher();
-        return pi.findInternshipsByTeacherExt(-1, (t != null && t.getDepartment() != null) ? t.getDepartment().getId() : -1, -1, internshipTypeId, boardId,
+        return pi.findInternshipsByTeacherExt(-1, (t != null && t.getUser().getDepartment() != null) ? t.getUser().getDepartment().getId() : -1, -1, internshipTypeId, boardId,
                 true);
     }
 

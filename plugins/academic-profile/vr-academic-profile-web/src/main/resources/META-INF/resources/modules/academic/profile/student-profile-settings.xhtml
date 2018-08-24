@@ -46,7 +46,7 @@ and open the template in the editor.
                                                            for="nin"/>
                                             <div class="col-sm-7">
                                                 <h:inputText required="true" requiredMessage="CIN obligatoire"
-                                                             value="#{studentProfileSettingsCtrl.model.contact.nin}"
+                                                             value="#{studentProfileSettingsCtrl.model.nin}"
                                                              class="form-control" id="nin"/>
                                             </div>
                                         </div>
@@ -67,7 +67,7 @@ and open the template in the editor.
                                                            for="firstName"/>
                                             <div class="col-sm-7">
                                                 <h:inputText required="true" requiredMessage="Prénom obligatoire"
-                                                             value="#{studentProfileSettingsCtrl.model.contact.firstName}"
+                                                             value="#{studentProfileSettingsCtrl.model.firstName}"
                                                              class="form-control" id="firstName"/>
                                             </div>
                                         </div>
@@ -77,7 +77,7 @@ and open the template in the editor.
                                                            for="lastName"/>
                                             <div class="col-sm-7">
                                                 <h:inputText required="true" requiredMessage="Nom obligatoire"
-                                                             value="#{studentProfileSettingsCtrl.model.contact.lastName}"
+                                                             value="#{studentProfileSettingsCtrl.model.lastName}"
                                                              class="form-control" id="lastName"/>
                                             </div>
                                         </div>
@@ -87,7 +87,7 @@ and open the template in the editor.
                                                            for="firstName2"/>
                                             <div class="col-sm-7">
                                                 <h:inputText
-                                                        value="#{studentProfileSettingsCtrl.model.contact.firstName2}"
+                                                        value="#{studentProfileSettingsCtrl.model.firstName2}"
                                                         class="form-control" id="firstName2"/>
                                             </div>
                                         </div>
@@ -97,7 +97,7 @@ and open the template in the editor.
                                                            for="lastName2"/>
                                             <div class="col-sm-7">
                                                 <h:inputText
-                                                        value="#{studentProfileSettingsCtrl.model.contact.lastName2}"
+                                                        value="#{studentProfileSettingsCtrl.model.lastName2}"
                                                         class="form-control" id="lastName2"/>
                                             </div>
                                         </div>
@@ -107,7 +107,7 @@ and open the template in the editor.
                                                            for="birthdate"/>
                                             <div class="col-sm-7">
                                                 <p:calendar 
-                                                        value="#{studentProfileSettingsCtrl.model.contact.birthDate}"
+                                                        value="#{studentProfileSettingsCtrl.model.birthDate}"
                                                         id="birthdate"/>
                                             </div>
                                             <!-- styleClass="from-control vr-form-calendar-text"-->
@@ -118,7 +118,7 @@ and open the template in the editor.
                                                            for="birthLocation"/>
                                             <div class="col-sm-7">
                                                 <h:inputText
-                                                        value="#{studentProfileSettingsCtrl.model.contact.birthLocation}"
+                                                        value="#{studentProfileSettingsCtrl.model.birthLocation}"
                                                         class="form-control" id="birthLocation"/>
                                             </div>
                                         </div>
@@ -130,7 +130,7 @@ and open the template in the editor.
                                             <div class="col-sm-7">
                                                 <p:selectOneMenu class="form-control vr-form-control"
                                                                  id="birthGovernorate"
-                                                                 value="#{studentProfileSettingsCtrl.model.contact.birthGovernorate}"
+                                                                 value="#{studentProfileSettingsCtrl.model.birthGovernorate}"
                                                                  converter="#{vr.entityObjConverter('AppGovernorate')}">
                                                     <f:selectItems
                                                             value="#{vr.entitySelectItems('AppGovernorate',true,false)}"/>
@@ -143,7 +143,7 @@ and open the template in the editor.
                                                            for="gender"/>
                                             <div class="col-sm-7">
                                                 <p:selectOneRadio id="gender"
-                                                                  value="#{studentProfileSettingsCtrl.model.student.user.contact.gender}"
+                                                                  value="#{studentProfileSettingsCtrl.model.student.user.gender}"
                                                                   converter="#{vr.entityObjConverter('AppGender')}">
                                                     <f:selectItems
                                                             value="#{vr.entitySelectItems('AppGender',true,false)}"/>
@@ -156,7 +156,7 @@ and open the template in the editor.
                                                            for="civility"/>
                                             <div class="col-sm-7">
                                                 <p:selectOneRadio id="civility"
-                                                                  value="#{studentProfileSettingsCtrl.model.contact.civility}"
+                                                                  value="#{studentProfileSettingsCtrl.model.civility}"
                                                                   converter="#{vr.entityObjConverter('AppCivility')}">
                                                     <f:selectItems
                                                             value="#{vr.entitySelectItems('AppCivility',true,false)}"/>
@@ -170,7 +170,7 @@ and open the template in the editor.
                                                            for="title1"/>
                                             <div class="col-sm-7">
                                                 <h:inputText
-                                                        value="#{studentProfileSettingsCtrl.model.contact.positionTitle1}"
+                                                        value="#{studentProfileSettingsCtrl.model.positionTitle1}"
                                                         class="form-control" id="title1"/>
                                             </div>
                                         </div>
@@ -181,7 +181,7 @@ and open the template in the editor.
                                                            for="title2"/>
                                             <div class="col-sm-7">
                                                 <h:inputText
-                                                        value="#{studentProfileSettingsCtrl.model.contact.positionTitle2}"
+                                                        value="#{studentProfileSettingsCtrl.model.positionTitle2}"
                                                         class="form-control" id="title2"/>
                                             </div>
                                         </div>
@@ -192,7 +192,7 @@ and open the template in the editor.
                                                            for="title3"/>
                                             <div class="col-sm-7">
                                                 <h:inputText
-                                                        value="#{studentProfileSettingsCtrl.model.contact.positionTitle1}"
+                                                        value="#{studentProfileSettingsCtrl.model.positionTitle1}"
                                                         class="form-control" id="title3"/>
                                             </div>
                                         </div>
@@ -224,7 +224,7 @@ and open the template in the editor.
                                             <h:outputLabel class="col-sm-3 control-label text-blue" value="Email 1"
                                                            for="email1"/>
                                             <div class="col-sm-7">
-                                                <h:inputText value="#{studentProfileSettingsCtrl.model.contact.email}"
+                                                <h:inputText value="#{studentProfileSettingsCtrl.model.email}"
                                                              class="form-control" id="email1"/>
                                             </div>
                                         </div>
@@ -233,7 +233,7 @@ and open the template in the editor.
                                             <h:outputLabel class="col-sm-3 control-label text-blue" value="Email 2"
                                                            for="email2"/>
                                             <div class="col-sm-7">
-                                                <h:inputText value="#{studentProfileSettingsCtrl.model.contact.email2}"
+                                                <h:inputText value="#{studentProfileSettingsCtrl.model.email2}"
                                                              class="form-control" id="email2"/>
                                             </div>
                                         </div>
@@ -242,7 +242,7 @@ and open the template in the editor.
                                             <h:outputLabel class="col-sm-3 control-label text-blue" value="Tél 1"
                                                            for="phone1"/>
                                             <div class="col-sm-7">
-                                                <h:inputText value="#{studentProfileSettingsCtrl.model.contact.phone1}"
+                                                <h:inputText value="#{studentProfileSettingsCtrl.model.phone1}"
                                                              class="form-control" id="phone1"/>
                                             </div>
                                         </div>
@@ -251,7 +251,7 @@ and open the template in the editor.
                                             <h:outputLabel class="col-sm-3 control-label text-blue" value="Tél 2"
                                                            for="phone2"/>
                                             <div class="col-sm-7">
-                                                <h:inputText value="#{studentProfileSettingsCtrl.model.contact.phone2}"
+                                                <h:inputText value="#{studentProfileSettingsCtrl.model.phone2}"
                                                              class="form-control" id="phone2"/>
                                             </div>
                                         </div>
@@ -260,7 +260,7 @@ and open the template in the editor.
                                             <h:outputLabel class="col-sm-3 control-label text-blue" value="Tél 3"
                                                            for="phone3"/>
                                             <div class="col-sm-7">
-                                                <h:inputText value="#{studentProfileSettingsCtrl.model.contact.phone3}"
+                                                <h:inputText value="#{studentProfileSettingsCtrl.model.phone3}"
                                                              class="form-control" id="phone3"/>
                                             </div>
                                         </div>
@@ -351,7 +351,7 @@ and open the template in the editor.
                                                            for="description"/>
                                             <div class="col-sm-7">
                                                 <h:inputTextarea
-                                                        value="#{studentProfileSettingsCtrl.model.contact.description}"
+                                                        value="#{studentProfileSettingsCtrl.model.description}"
                                                         rows="3" class="form-control" id="description"/>
                                             </div>
                                         </div>

@@ -278,7 +278,7 @@ public class XlsxLoadImporter {
                 importLoadConversionTable(file);
             } else {
                 count++;
-                trace.trace("Academic.import-load-conversion-table-default", "success",null, "{}", getClass().getSimpleName(), Level.INFO);
+                trace.trace("Academic.import-load-conversion-table-default", "success", null, "{}", getClass().getSimpleName(), Level.INFO);
                 XlsxLoadImporter.this.importLoadConversionTable();
             }
         }
@@ -288,7 +288,7 @@ public class XlsxLoadImporter {
                 importTeacherDegrees(file);
             } else {
                 count++;
-                trace.trace("Academic.import-teacher-degrees-default","success",null, "{}", "/Education/Config", Level.INFO);
+                trace.trace("Academic.import-teacher-degrees-default", "success", null, "{}", "/Education/Config", Level.INFO);
                 XlsxLoadImporter.this.importTeacherDegrees();
             }
         }
@@ -386,12 +386,12 @@ public class XlsxLoadImporter {
         }
 
         AcademicTeacher academicTeacher = new AcademicTeacher();
-        AppContact contact = new AppContact();
-        contact.setNin(a.getNin());
-        contact.setFirstName(VrUtils.validateContactName(a.getFirstName()));
-        contact.setLastName(VrUtils.validateContactName(a.getLastName()));
-        contact.setFullName(VrUtils.validateContactName(AppContact.getName(contact)));
-        contact.setPhone1(a.getPhone());
+        AppUser user = new AppUser();
+        user.setNin(a.getNin());
+        user.setFirstName(VrUtils.validateContactName(a.getFirstName()));
+        user.setLastName(VrUtils.validateContactName(a.getLastName()));
+        user.setFullName(VrUtils.validateContactName(AppContact.getName(user)));
+        user.setPhone1(a.getPhone());
 
         AppDepartment dept = null;
         if (a.getDepartmentId() != null) {
@@ -491,22 +491,35 @@ public class XlsxLoadImporter {
             }
         }
 
-        contact = core.findOrCreateContact(contact);
-        contact.setCompany(ctx.mainCompany);
-        AcademicTeacher oldAcademicTeacher = service.findTeacherByContact(contact.getId());
+        user.setCompany(ctx.mainCompany);
+        user.setFirstName2(a.getFirstName2());
+        user.setLastName2(a.getLastName2());
+        user.setFullName2(AppContact.getName2(user));
+        user.setEmail(a.getEmail());
+        if (user.getGender() == null) {
+            user.setGender(gender);
+        }
+        if (user.getCivility() == null) {
+            user.setCivility(civility);
+        }
+        if (user.getCivility() == null) {
+            user.setCivility(civility);
+        }
+        user.setDepartment(dept);
+        AppUserType teacherType = core.findUserType("Teacher");
+        user.setType(teacherType);
+
+        user = core.findOrCreateUser(user, new String[]{"Teacher"}, VrPasswordStrategyRandom.INSTANCE);
+        AcademicTeacher oldAcademicTeacher = service.findTeacherByUser(user.getId());
         if (oldAcademicTeacher != null) {
             academicTeacher = oldAcademicTeacher;
         } else {
-            AppUser u = core.findUserByContact(contact.getId());
+            AppUser u = core.findUserByContact(user.getId());
             if (u != null) {
                 academicTeacher.setUser(u);
             }
         }
-        academicTeacher.setDepartment(dept);
-        contact.setFirstName2(a.getFirstName2());
-        contact.setLastName2(a.getLastName2());
-        contact.setFullName2(AppContact.getName2(contact));
-        contact.setEmail(a.getEmail());
+//        academicTeacher.setDepartment(dept);
 
         List<AcademicTeacherSemestrialLoad> semestrialLoads = new ArrayList<>();
         academicTeacher.setDegree(degree);
@@ -514,34 +527,12 @@ public class XlsxLoadImporter {
         academicTeacher.setSituation(situation);
         academicTeacher.setStartPeriod(period);
         academicTeacher.setLastPeriod(period);
-        if (contact.getGender() == null) {
-            contact.setGender(gender);
-        }
-        if (contact.getCivility() == null) {
-            contact.setCivility(civility);
-        }
-        if (contact.getCivility() == null) {
-            contact.setCivility(civility);
-        }
-
         academicTeacher.setDiscipline(VrApp.getBean(AcademicPlugin.class).formatDisciplinesNames(a.getDiscipline(), true));
+        academicTeacher.setUser(user);
+
         CorePlugin corePlugin = CorePlugin.get();
-        corePlugin.save(null, contact);
+        corePlugin.save(null, user);
 
-        AppDepartment finalDept = dept;
-        AppContact finalContact = contact;
-        if (academicTeacher.getUser() == null) {
-            AppUser user = UPA.getContext().invokePrivileged(new Action<AppUser>() {
-
-                @Override
-                public AppUser run() {
-                    AppUserType teacherType = core.findUserType("Teacher");
-                    return core.createUser(finalContact, teacherType.getId(), finalDept.getId(), true, new String[]{"Teacher"}, VrPasswordStrategyRandom.INSTANCE);
-                }
-
-            }, null);
-            academicTeacher.setUser(user);
-        }
         corePlugin.save(null, academicTeacher);
 
         if (a.getWeekLoads() != null) {
@@ -826,44 +817,41 @@ public class XlsxLoadImporter {
             throw new NoSuchElementException("Department Not Found ");
         }
         boolean force = false;
-        AppContact contact = new AppContact();
-        contact.setNin(a.getNin());
-        contact.setFirstName(VrUtils.validateContactName(a.getFirstName()));
-        contact.setLastName(VrUtils.validateContactName(a.getLastName()));
-        contact.setFullName(VrUtils.validateContactName(AppContact.getName(contact)));
+        AppUser user = new AppUser();
+        user.setNin(a.getNin());
+        user.setFirstName(VrUtils.validateContactName(a.getFirstName()));
+        user.setLastName(VrUtils.validateContactName(a.getLastName()));
+        user.setFullName(VrUtils.validateContactName(AppContact.getName(user)));
         String fs2 = a.getFirstName2();
         if (ctx.isSimulate()) {
-            AppContact old = core.findContact(contact);
+            AppUser old = core.findUser(user);
             if (old != null) {
-                contact = old;
+                user = old;
             }
         } else {
-            contact = core.findOrCreateContact(contact);
+            user = core.findOrCreateUser(user, new String[]{"Student"}, VrPasswordStrategyNin.INSTANCE);
         }
         AcademicStudent academicStudent = null;
-        AcademicStudent oldAcademicStudent = service.findStudentByContact(contact.getId());
+        AcademicStudent oldAcademicStudent = service.findStudentByUser(user.getId());
         if (oldAcademicStudent != null) {
             academicStudent = oldAcademicStudent;
         } else {
             academicStudent = new AcademicStudent();
-            AppUser u = core.findUserByContact(contact.getId());
-            if (u != null) {
-                academicStudent.setUser(u);
-            }
+            academicStudent.setUser(user);
         }
-        if (checkUpdatable(academicStudent.getDepartment(), studentclass.resolveDepartment(), force)) {
-            academicStudent.setDepartment(studentclass.resolveDepartment());
+        if (checkUpdatable(academicStudent.getUser().getDepartment(), studentclass.resolveDepartment(), force)) {
+            academicStudent.getUser().setDepartment(studentclass.resolveDepartment());
         }
-        if (academicStudent.getDepartment() == null) {
-            academicStudent.setDepartment(dept);
+        if (academicStudent.getUser().getDepartment() == null) {
+            academicStudent.getUser().setDepartment(dept);
         }
         String ln2 = a.getLastName2();
-        contact.setFirstName2(fs2);
-        contact.setLastName2(ln2);
-        contact.setFullName2(AppContact.getName2(contact));
+        user.setFirstName2(fs2);
+        user.setLastName2(ln2);
+        user.setFullName2(AppContact.getName2(user));
 
-        if (checkUpdatable(contact.getPhone1(), a.getPhone1(), force)) {
-            contact.setPhone1(a.getPhone1());
+        if (checkUpdatable(user.getPhone1(), a.getPhone1(), force)) {
+            user.setPhone1(a.getPhone1());
         }
         if (checkUpdatable(academicStudent.getFirstSubscription(), period, force)) {
             academicStudent.setFirstSubscription(period);
@@ -871,14 +859,14 @@ public class XlsxLoadImporter {
         if (checkUpdatable(academicStudent.getLastClass1(), studentclass, force)) {
             academicStudent.setLastClass1(studentclass);
         }
-        if (studentclass.getProgram() != null && checkUpdatable(academicStudent.getDepartment(), studentclass.resolveDepartment(), force)) {
-            academicStudent.setDepartment(studentclass.resolveDepartment());
+        if (studentclass.getProgram() != null && checkUpdatable(academicStudent.getUser().getDepartment(), studentclass.resolveDepartment(), force)) {
+            academicStudent.getUser().setDepartment(studentclass.resolveDepartment());
         }
-        if (checkUpdatable(contact.getGender(), gender, force)) {
-            contact.setGender(gender);
+        if (checkUpdatable(user.getGender(), gender, force)) {
+            user.setGender(gender);
         }
-        if (checkUpdatable(contact.getCivility(), civility, force)) {
-            contact.setCivility(civility);
+        if (checkUpdatable(user.getCivility(), civility, force)) {
+            user.setCivility(civility);
         }
         if (checkUpdatable(academicStudent.getSubscriptionNumber(), a.getSubscriptionNumber(), force)) {
             academicStudent.setSubscriptionNumber(a.getSubscriptionNumber());
@@ -906,32 +894,22 @@ public class XlsxLoadImporter {
             academicStudent.setPreClassScore(a.getPreClassPrepScore());
         }
 
-        if (checkUpdatable(contact.getEmail(), a.getEmail(), force)) {
-            contact.setEmail(a.getEmail());
+        if (checkUpdatable(user.getEmail(), a.getEmail(), force)) {
+            user.setEmail(a.getEmail());
         }
-        if (checkUpdatable(contact.getPositionSuffix(), studentclass.getName(), force)) {
-            contact.setPositionSuffix(studentclass.getName());
+        if (checkUpdatable(user.getPositionSuffix(), studentclass.getName(), force)) {
+            user.setPositionSuffix(studentclass.getName());
         }
-        contact.setPositionTitle1("Student " + studentclass.getName());
-        contact.setEnabled(true);
-        if (checkUpdatable(contact.getCompany(), ctx.mainCompany, force)) {
-            contact.setCompany(ctx.mainCompany);
+        user.setPositionTitle1("Student " + studentclass.getName());
+        user.setDepartment(dept);
+        user.setEnabled(true);
+        if (checkUpdatable(user.getCompany(), ctx.mainCompany, force)) {
+            user.setCompany(ctx.mainCompany);
         }
         if (!ctx.isSimulate()) {
-            CorePlugin.get().save(null, contact);
+            CorePlugin.get().save(null, user);
             academicStudent.setStage(AcademicStudentStage.ATTENDING);
             if (academicStudent.getUser() == null) {
-                final AppContact finalContact = contact;
-                final AppDepartment finalDept = dept;
-                AppUser user = UPA.getContext().invokePrivileged(new Action<AppUser>() {
-
-                    @Override
-                    public AppUser run() {
-                        AppUserType teacherType = core.findUserType("Student");
-                        return core.createUser(finalContact, teacherType.getId(), finalDept.getId(), true, new String[]{"Teacher"}, VrPasswordStrategyNin.INSTANCE);
-                    }
-
-                });
                 academicStudent.setUser(user);
             }
             CorePlugin.get().save(null, academicStudent);

@@ -692,7 +692,7 @@ public class InternshipsPlanningCtrl {
         List<SelectItem> internshipGroupsItems = new ArrayList<>();
         AcademicTeacher tt = academicPlugin.getCurrentTeacher();
         if (tt != null) {
-            List<AcademicInternshipGroup> internshipGroups = academicPlugin.findEnabledInternshipGroupsByDepartment(tt.getDepartment().getId());
+            List<AcademicInternshipGroup> internshipGroups = academicPlugin.findEnabledInternshipGroupsByDepartment(tt.getUser().getDepartment().getId());
             for (AcademicInternshipGroup t : internshipGroups) {
                 String n = t.getName();
                 internshipGroupsItems.add(FacesUtils.createSelectItem(String.valueOf(t.getId()), n,""));

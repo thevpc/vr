@@ -20,7 +20,7 @@ import net.vpc.upa.callbacks.UpdateEvent;
 import net.vpc.upa.config.Callback;
 import net.vpc.upa.config.*;
 import net.vpc.upa.exceptions.UPAException;
-import net.vpc.upa.types.TypesFactory;
+import net.vpc.upa.types.DataTypeFactory;
 
 import java.util.List;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacherPeriod;
@@ -40,10 +40,10 @@ public class AcademicTeacherCallback {
                 entity.addField(
                         new DefaultFieldBuilder().setName("contactEmail")
                                 .addModifier(UserFieldModifier.SUMMARY)
-                                .setDataType(TypesFactory.STRING)
+                                .setDataType(DataTypeFactory.STRING)
                                 .setProtectionLevel(ProtectionLevel.PROTECTED)
                                 .setIndex(3)
-                                .setLiveSelectFormula("this.user.contact.email")
+                                .setLiveSelectFormula("this.user.email")
                 );
             }
             if (!entity.containsField("phone1")) {
@@ -52,9 +52,9 @@ public class AcademicTeacherCallback {
                                 .setName("contactPhone1")
                                 .addModifier(UserFieldModifier.SUMMARY)
                                 .setProtectionLevel(ProtectionLevel.PROTECTED)
-                                .setDataType(TypesFactory.STRING)
+                                .setDataType(DataTypeFactory.STRING)
                                 .setIndex(4)
-                                .setLiveSelectFormula("this.user.contact.phone1")
+                                .setLiveSelectFormula("this.user.phone1")
                 );
             }
         }
@@ -143,14 +143,18 @@ public class AcademicTeacherCallback {
                     AcademicTeacher te = ap.findTeacher(t.getTeacher().getId());//reload teacher!!
                     if (t.isEnabled()) {
                         te.setDegree(t.getDegree());
-                        te.setDepartment(t.getDepartment());
+//                        te.setDepartment(t.getDepartment());
                         te.setSituation(t.getSituation());
                         pu.merge(te);
+                        te.getUser().setDepartment(t.getDepartment());
+                        pu.merge(te.getUser());
                     } else {
                         te.setDegree(t.getDegree());
-                        te.setDepartment(t.getDepartment());
+//                        te.setDepartment(t.getDepartment());
                         te.setSituation(null);
                         pu.merge(te);
+                        te.getUser().setDepartment(t.getDepartment());
+                        pu.merge(te.getUser());
                     }
                 }
             }

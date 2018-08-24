@@ -25,18 +25,18 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class AcademicPluginBodyStudents extends AcademicPluginBody {
+
     private CorePlugin core;
     private CacheService cacheService;
     private TraceService trace;
     private AcademicPlugin academic;
-
 
     @Override
     public void onStart() {
         cacheService = CacheService.get();
         core = CorePlugin.get();
         academic = getContext().getPlugin();
-        trace=TraceService.get();
+        trace = TraceService.get();
         AppUserType studentType = new AppUserType();
         studentType.setCode("Student");
         studentType.setName("Student");
@@ -76,36 +76,33 @@ public class AcademicPluginBodyStudents extends AcademicPluginBody {
                 .getFirstResultOrNull();
     }
 
-
     public List<AcademicStudent> findStudents(Integer department, AcademicStudentStage stage) {
         CorePluginSecurity.requireRight(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_STUDENTS);
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        QueryBuilder q = pu.createQueryBuilder(AcademicStudent.class);
-        AcademicStudent proto = new AcademicStudent();
-        proto.setDepartment(department == null ? null : core.findDepartment(department));
-        proto.setStage(stage);
-        q.byPrototype(proto);
-        return q.getResultList();
+        return pu.createQuery("Select a from AcademicStudent a where a.user.departmentId=:department and a.stage=:stage")
+                .setParameter("department", department)
+                .setParameter("stage", stage)
+                .getResultList();
     }
 
     public List<AcademicStudent> findStudents() {
         CorePluginSecurity.requireRight(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_STUDENTS);
-        return UPA.getPersistenceUnit().createQuery("Select s from AcademicStudent s where s.deleted=false order by s.user.contact.fullName").getResultList();
+        return UPA.getPersistenceUnit().createQuery("Select s from AcademicStudent s where s.deleted=false order by s.user.fullName").getResultList();
     }
 
-
     /**
-     * @param studentUpqlFilter ql expression x based. example "x.fullName like '%R%'"
+     * @param studentUpqlFilter ql expression x based. example "x.fullName like
+     * '%R%'"
      * @return
      */
     public List<AcademicStudent> findStudents(String studentProfileFilter, AcademicStudentStage stage, String studentUpqlFilter) {
         CorePluginSecurity.requireRight(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_STUDENTS);
-        List<AcademicStudent> base = UPA.getPersistenceUnit().createQuery("Select x from AcademicStudent x " +
-                " where " +
-                " x.deleted=false " +
-                (stage == null ? "" : " and x.stage=:stage ") +
-                ((StringUtils.isEmpty(studentUpqlFilter)) ? "" : (" and " + studentUpqlFilter)) +
-                " order by x.user.contact.fullName")
+        List<AcademicStudent> base = UPA.getPersistenceUnit().createQuery("Select x from AcademicStudent x "
+                + " where "
+                + " x.deleted=false "
+                + (stage == null ? "" : " and x.stage=:stage ")
+                + ((StringUtils.isEmpty(studentUpqlFilter)) ? "" : (" and " + studentUpqlFilter))
+                + " order by x.user.fullName")
                 .setParameter("stage", AcademicStudentStage.ATTENDING, stage != null)
                 .getResultList();
         return filterStudents(base, studentProfileFilter);
@@ -116,7 +113,6 @@ public class AcademicPluginBodyStudents extends AcademicPluginBody {
         return objects.stream().filter(x -> filter.accept(x)).collect(Collectors.toList());
     }
 
-
     public List<AcademicFormerStudent> findGraduatedStudents() {
         CorePluginSecurity.requireRight(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_STUDENTS);
         return UPA.getPersistenceUnit().createQuery("Select u from AcademicFormerStudent u where u.deleted=false and u.graduated=true").getResultList();
@@ -124,7 +120,7 @@ public class AcademicPluginBodyStudents extends AcademicPluginBody {
 
     public AcademicStudent findStudentByFullName(String name) {
         AcademicPluginSecurity.requireTeacherOrManager(-1);
-        return (AcademicStudent) UPA.getPersistenceUnit().createQuery("Select u from AcademicStudent s where s.user.contact.fullName=:name").setParameter("name", name).getFirstResultOrNull();
+        return (AcademicStudent) UPA.getPersistenceUnit().createQuery("Select u from AcademicStudent s where s.user.fullName=:name").setParameter("name", name).getFirstResultOrNull();
     }
 
     public AcademicFormerStudent findFormerStudent(int studentId) {
@@ -174,9 +170,7 @@ public class AcademicPluginBodyStudents extends AcademicPluginBody {
         formerStudent.setLastClass3(student.getLastClass3());
         formerStudent.setCurriculumVitae(student.getCurriculumVitae());
 
-
         formerStudent.setEmploymentDelay(EmploymentDelay.UNEMPLOYED);
-
 
         AcademicInternship pfe = academic.findStudentPFE(studentId);
         if (pfe != null) {
@@ -295,11 +289,10 @@ public class AcademicPluginBodyStudents extends AcademicPluginBody {
         return (AcademicStudent) UPA.getPersistenceUnit().findById(AcademicStudent.class, t);
     }
 
-
     public boolean addUserForStudent(AcademicStudent academicStudent) {
         CorePluginSecurity.requireRight(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_CONFIG_WRITE);
         AppUserType teacherType = VrApp.getBean(CorePlugin.class).findUserType("Student");
-        AppUser u = core.createUser(academicStudent.resolveContact(), teacherType.getId(), academicStudent.getDepartment().getId(), false, new String[]{"Student"}, VrPasswordStrategyNin.INSTANCE);
+        AppUser u = core.createUser(academicStudent.getUser(), teacherType.getId(), academicStudent.getUser().getDepartment().getId(), false, new String[]{"Student"}, VrPasswordStrategyNin.INSTANCE);
         academicStudent.setUser(u);
         UPA.getPersistenceUnit().merge(academicStudent);
         for (AcademicClass c : new AcademicClass[]{academicStudent.getLastClass1(), academicStudent.getLastClass2(), academicStudent.getLastClass3()}) {
@@ -314,7 +307,7 @@ public class AcademicPluginBodyStudents extends AcademicPluginBody {
                 core.userAddProfile(u.getId(), p.getCode());
             }
         }
-        AppDepartment d = academicStudent.getDepartment();
+        AppDepartment d = academicStudent.getUser().getDepartment();
         if (d != null) {
             AppProfile p = core.findOrCreateCustomProfile(d.getCode(), "Department");
             core.userAddProfile(u.getId(), p.getCode());
@@ -323,13 +316,12 @@ public class AcademicPluginBodyStudents extends AcademicPluginBody {
         return true;
     }
 
-
     public String getValidName(AcademicStudent t) {
         if (t == null) {
             return "";
         }
         String name = t.resolveFullName();
-        if (t.resolveContact() != null) {
+        if (t.getUser() != null) {
             name = t.resolveFullName();
         }
         if (StringUtils.isEmpty(name) && t.getUser() != null) {
@@ -341,42 +333,26 @@ public class AcademicPluginBodyStudents extends AcademicPluginBody {
         return (name);
     }
 
-
     public void validateAcademicData_Student(int studentId, int periodId) {
         CorePluginSecurity.requireRight(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_CONFIG_WRITE);
         PersistenceUnit pu = UPA.getPersistenceUnit();
         AcademicStudent s = findStudent(studentId);
         Map<Integer, AcademicClass> academicClasses = academic.findAcademicClassesMap();
         AppUser u = s.getUser();
-        AppContact c = s.resolveContact();
-        AppDepartment d = s.getDepartment();
+        AppDepartment d = null;
         Set<String> managedProfileTypes = new HashSet<>(Arrays.asList("Department", "StatusType", "AcademicClass", "AcademicProgram"));
-        if (c == null && u != null) {
-            c = u.getContact();
-        }
         if (d == null && u != null) {
             d = u.getDepartment();
         }
-        if (s.getDepartment() == null && d != null) {
-            s.setDepartment(d);
-            UPA.getPersistenceUnit().merge(s);
-        }
-//        if (s.resolveContact() == null && c != null) {
-//            s.setContact(c);
+//        if (s.getDepartment() == null && d != null) {
+//            s.setDepartment(d);
 //            UPA.getPersistenceUnit().merge(s);
 //        }
         if (u != null) {
-
-            if (u.getDepartment() == null && d != null) {
-                u.setDepartment(d);
-                UPA.getPersistenceUnit().merge(u);
-            }
-            if (u.getContact() == null && c != null) {
-                u.setContact(c);
-                UPA.getPersistenceUnit().merge(u);
-            }
-        }
-        if (c != null) {
+//            if (u.getDepartment() == null && d != null) {
+//                u.setDepartment(d);
+//                UPA.getPersistenceUnit().merge(u);
+//            }
             HashSet<Integer> goodProfiles = new HashSet<>();
 
             {
@@ -404,7 +380,6 @@ public class AcademicPluginBodyStudents extends AcademicPluginBody {
                     }
                 }
             }
-
 
             for (AcademicClass ac : academic.findAcademicUpHierarchyList(new AcademicClass[]{s.getLastClass1(), s.getLastClass2(), s.getLastClass3()}, academicClasses)) {
                 if (ac != null) {
@@ -458,10 +433,10 @@ public class AcademicPluginBodyStudents extends AcademicPluginBody {
                 }
             }
 
-            c.setPositionSuffix(goodSuffix.toString());
+            u.setPositionSuffix(goodSuffix.toString());
 
-            c.setPositionTitle1("Student " + goodSuffix);
-            pu.merge(c);
+            u.setPositionTitle1("Student " + goodSuffix);
+            pu.merge(u);
 
             if (u != null) {
                 List<AppProfile> oldProfiles = core.findProfilesByUser(u.getId());
@@ -479,8 +454,6 @@ public class AcademicPluginBodyStudents extends AcademicPluginBody {
             }
         }
     }
-
-
 
     public List<AcademicClass> findStudentClasses(int studentId, boolean down, boolean up) {
         AcademicStudent student = findStudent(studentId);

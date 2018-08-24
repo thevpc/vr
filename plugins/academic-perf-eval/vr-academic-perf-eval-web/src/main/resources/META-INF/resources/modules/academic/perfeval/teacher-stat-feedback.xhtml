@@ -186,7 +186,7 @@ and open the template in the editor.
                         <p:dataTable value="#{teacherStatFeedbackCtrl.model.statData.studentinfos}" var="s"
                                      style="margin-top: 20px;">
                             <p:column headerText="Elève" width="30%">
-                                <p:outputLabel value="#{s.student.user.contact.fullTitle}"/>
+                                <p:outputLabel value="#{s.student.user.fullTitle}"/>
                             </p:column>
                             <p:column headerText="Reponses" width="70%">
                                 <div class="vr-progress-container" style="width: 100%;position: relative;height: 16px;">

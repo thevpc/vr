@@ -66,7 +66,7 @@
                                         <p:separator style="border-color: #63C6AE;margin-bottom: 0px;"/>
                                         <div>
                                             <h:outputText style="margin-top: 0px;float: right; margin-right: 10px;"
-                                                          value="by #{articlesCtrl.model.current.user.contact.fullName}, #{vr.date(articlesCtrl.model.current.publishTime,vr.getLocale('en'))}, #{articlesCtrl.model.current.visitCount+1} views"/>
+                                                          value="by #{articlesCtrl.model.current.user.fullName}, #{vr.date(articlesCtrl.model.current.publishTime,vr.getLocale('en'))}, #{articlesCtrl.model.current.visitCount+1} views"/>
                                             <h:commandLink value="#{vr.fullContext}/p/news?a={#{vr.strFormat('id=%d',articlesCtrl.model.current.id)}}">
                                                 <h:graphicImage value="#{vr.strcat(vr.publicThemePath,'/images/icons/link16.png')}"/>
                                             </h:commandLink>

@@ -1,17 +1,33 @@
 package net.vpc.app.vainruling.plugins.enisoinfo;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.vpc.app.vainruling.core.service.CorePlugin;
+import net.vpc.app.vainruling.core.service.model.AppContact;
+import net.vpc.app.vainruling.core.service.model.AppDepartment;
+import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.model.content.ArticlesDisposition;
 import net.vpc.app.vainruling.core.service.plugins.Install;
 import net.vpc.app.vainruling.core.service.plugins.Start;
-import net.vpc.upa.PersistenceUnit;
-import net.vpc.upa.UPA;
-
-import java.util.List;
 import net.vpc.app.vainruling.core.service.plugins.VrPlugin;
+import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
+import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
+import net.vpc.upa.Document;
+import net.vpc.upa.EntityUsage;
+import net.vpc.upa.PersistenceUnit;
+import net.vpc.upa.RemoveOptions;
+import net.vpc.upa.UPA;
+import net.vpc.upa.persistence.UConnection;
 
 @VrPlugin
 public class ENISoInfoPlugin {
+
+    protected static Logger log = Logger.getLogger(ENISoInfoPlugin.class.getName());
+
     private CorePlugin core;
 
     @Install
@@ -47,10 +63,115 @@ public class ENISoInfoPlugin {
         if (core == null) {
             core = CorePlugin.get();
         }
+        updateVersionNative();
         updateVersion();
     }
 
+    private void updateVersionNative() {
+        String sql ="";
+//                = "update ACADEMIC_TEACHER set CONTACT_ID=null;\n"
+//                + "update ACADEMIC_STUDENT set CONTACT_ID=null;\n"
+//                + "alter table ACADEMIC_TEACHER drop foreign key ACADEMIC_TEACHER_CONTACT;\n"
+//                + "alter table ACADEMIC_STUDENT drop foreign key ACADEMIC_STUDENT_CONTACT;\n"
+//                + "";
+
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        UConnection cnx = null;
+        try {
+            cnx = pu.getPersistenceStore().createConnection();
+            for (String line : sql.split(";")) {
+                line = line.trim();
+                if (line.length() > 0) {
+                    cnx.beginTransaction();
+                    boolean ok = false;
+                    try {
+                        cnx.executeNonQuery(line, null, null);
+                        ok = true;
+                    } catch (Exception ex) {
+                        log.log(Level.SEVERE, "Error in : " + line, ex);
+                        cnx.rollbackTransaction();
+                    }
+                    if (ok) {
+                        cnx.commitTransaction();
+                    }
+                }
+            }
+        } finally {
+            if (cnx != null) {
+                cnx.close();
+            }
+        }
+
+    }
+
     private void updateVersion() {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        Set<Integer> toRemoveContacts = new HashSet<>();
+        if (pu.getEntity(AppUser.class).containsField("contact")) {
+            List<Document> list = pu.createQuery("Select a from AppUser a where a.contact !=null").getDocumentList();
+            for (Document user : list) {
+                Document contact = pu.getEntity(AppContact.class).getBuilder().objectToDocument(user.get("contact"));
+                if (contact != null) {
+                    for (Map.Entry<String, Object> entry : contact.entrySet()) {
+                        if (!entry.getKey().equals("id")) {
+                            user.setObject(entry.getKey(), entry.getValue());
+                        } else {
+                            toRemoveContacts.add((Integer) entry.getValue());
+                        }
+                    }
+                    user.setObject("contact", null);
+                    pu.merge(AppUser.class, user);
+                }
+            }
+        }
+        if (toRemoveContacts.size() > 0) {
+            for (Integer toRemoveContact : toRemoveContacts) {
+                List<EntityUsage> u = pu.getEntity(AppContact.class).findUsage(toRemoveContact);
+                for (EntityUsage entityUsage : u) {
+                    System.out.println("Contact : "
+                            + pu.<AppContact>findById(AppContact.class, toRemoveContact).getFullName() + " used in "
+                            + entityUsage.getUsageEntity().getName() + ":" + entityUsage.getUsageId() + " = "
+                            + entityUsage.getUsageEntity().getBuilder().objectToName(entityUsage.getUsageEntity().findById(entityUsage.getUsageId()))
+                    );
+                }
+            }
+        }
+        if (toRemoveContacts.size() > 0) {
+            for (Integer toRemoveContact : toRemoveContacts) {
+                pu.remove(AppContact.class, RemoveOptions.forId(toRemoveContact));
+            }
+        }
+        for (AcademicTeacher t : pu.<AcademicTeacher>findAll(AcademicTeacher.class)) {
+            AppDepartment d0 = t.getDepartment();
+            AppDepartment d1 = t.getUser().getDepartment();
+            if (d1 == null && d0 != null) {
+                t.getUser().setDepartment(d0);
+                pu.merge(t.getUser());
+                t.setDepartment(null);
+                pu.merge(t);
+            } else if (d1 != null && d0 != null) {
+                t.getUser().setDepartment(d0);
+                pu.merge(t.getUser());
+                t.setDepartment(null);
+                pu.merge(t);
+            }
+        }
+        for (AcademicStudent t : pu.<AcademicStudent>findAll(AcademicStudent.class)) {
+            AppDepartment d0 = t.getDepartment();
+            AppDepartment d1 = t.getUser().getDepartment();
+            if (d1 == null && d0 != null) {
+                t.getUser().setDepartment(d0);
+                pu.merge(t.getUser());
+                t.setDepartment(null);
+                pu.merge(t);
+            } else if (d1 != null && d0 != null) {
+                t.getUser().setDepartment(d0);
+                pu.merge(t.getUser());
+                t.setDepartment(null);
+                pu.merge(t);
+            }
+        }
+
 //        PersistenceUnit pu = UPA.getPersistenceUnit();
 //        AcademicPlugin academicPlugin = AcademicPlugin.get();
 //        ApblPlugin apblPlugin = ApblPlugin.get();
@@ -81,6 +202,5 @@ public class ENISoInfoPlugin {
 //                }
 //            }
 //        }
-
     }
 }

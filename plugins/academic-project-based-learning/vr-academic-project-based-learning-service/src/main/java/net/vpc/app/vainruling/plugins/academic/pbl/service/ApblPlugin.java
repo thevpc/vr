@@ -590,7 +590,7 @@ public class ApblPlugin {
                         if (lastClass1 != null) {
                             classes.add(lastClass1.getName());
                         }
-                        AppDepartment department = m.getMember().getStudent().getDepartment();
+                        AppDepartment department = m.getMember().getStudent().getUser().getDepartment();
                         if (department != null) {
                             departments.add(department.getCode());
                         }
@@ -621,8 +621,8 @@ public class ApblPlugin {
         Collections.sort(apblStudentInfos, new Comparator<ApblStudentInfo>() {
             @Override
             public int compare(ApblStudentInfo o1, ApblStudentInfo o2) {
-                String s1 = o1.getStudent().resolveContact() != null ? o1.getStudent().resolveFullTitle() : "";
-                String s2 = o2.getStudent().resolveContact() != null ? o2.getStudent().resolveFullTitle() : "";
+                String s1 = o1.getStudent().getUser() != null ? o1.getStudent().resolveFullTitle() : "";
+                String s2 = o2.getStudent().getUser() != null ? o2.getStudent().resolveFullTitle() : "";
                 return s1.compareTo(s2);
             }
         });

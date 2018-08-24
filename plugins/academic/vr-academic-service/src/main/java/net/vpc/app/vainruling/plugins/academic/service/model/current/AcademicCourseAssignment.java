@@ -15,6 +15,7 @@ import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 import java.sql.Timestamp;
+import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSemester;
 
 /**
@@ -407,10 +408,10 @@ public class AcademicCourseAssignment {
         return getCoursePlan().resolveAcademicClass();
     }
 
-    public AppContact resolveContact() {
+    public AppUser resolveUser() {
         AcademicTeacher sc = getTeacher();
         if (sc != null) {
-            return sc.resolveContact();
+            return sc.getUser();
         }
         return null;
     }

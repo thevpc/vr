@@ -206,9 +206,9 @@ and open the template in the editor.
                                 <img class="profile-user-img img-responsive img-circle"
                                      src="#{vr.url(corePlugin.currentUserIcon)}" alt="User profile picture"/>
 
-                                <h3 class="profile-username text-center">#{corePlugin.currentUser==null?'anonymous' : corePlugin.currentUser.contact.fullName}</h3>
+                                <h3 class="profile-username text-center">#{corePlugin.currentUser==null?'anonymous' : corePlugin.currentUser.fullName}</h3>
 
-                                <p class="text-muted text-center">#{corePlugin.currentUser==null?'anonymous' : corePlugin.currentUser.contact.positionSuffix}</p>
+                                <p class="text-muted text-center">#{corePlugin.currentUser==null?'anonymous' : corePlugin.currentUser.positionSuffix}</p>
 
                                 <ul class="list-group list-group-unbordered">
                                     <li class="list-group-item">

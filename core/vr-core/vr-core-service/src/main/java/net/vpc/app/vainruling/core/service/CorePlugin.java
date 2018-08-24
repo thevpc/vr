@@ -156,6 +156,10 @@ public class CorePlugin {
         return bodySecurityManager.findUser(login);
     }
 
+    public AppUser findUser(AppUser user) {
+        return bodySecurityManager.findUser(user);
+    }
+
     public AppUser findUser(int id) {
         return bodySecurityManager.findUser(id);
     }
@@ -416,6 +420,10 @@ public class CorePlugin {
         return bodySecurityManager.findOrCreateContact(c);
     }
 
+    public AppUser findOrCreateUser(AppUser c, String[] defaultProfiles, VrPasswordStrategy passwordStrategy) {
+        return bodySecurityManager.findOrCreateUser(c, defaultProfiles, passwordStrategy);
+    }
+
     public AppContact findContact(AppContact c) {
         return bodySecurityManager.findContact(c);
     }
@@ -424,10 +432,9 @@ public class CorePlugin {
         return UPA.getPersistenceUnit().findAll(AppContact.class);
     }
 
-    public List<AppContact> findContacts(String name, String type) {
-        return bodySecurityManager.findContacts(name, type);
-    }
-
+//    public List<AppContact> findContacts(String name, String type) {
+//        return bodySecurityManager.findContacts(name, type);
+//    }
     public String getActualLogin() {
         return bodySecurityAuth.getActualLogin();
     }
@@ -436,7 +443,7 @@ public class CorePlugin {
         return bodyConfig.getCurrentConfig();
     }
 
-    public AppUser createUser(AppContact contact, int userTypeId, int departmentId, boolean attachToExistingUser, String[] defaultProfiles, VrPasswordStrategy passwordStrategy) {
+    public AppUser createUser(AppUser contact, int userTypeId, int departmentId, boolean attachToExistingUser, String[] defaultProfiles, VrPasswordStrategy passwordStrategy) {
         return bodySecurityManager.createUser(contact, userTypeId, departmentId, attachToExistingUser, defaultProfiles, passwordStrategy);
     }
 

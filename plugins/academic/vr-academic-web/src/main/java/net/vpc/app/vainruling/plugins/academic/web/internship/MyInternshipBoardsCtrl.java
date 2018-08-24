@@ -330,7 +330,7 @@ public class MyInternshipBoardsCtrl {
     public AcademicInternshipExtList findActualInternshipsByTeacherAndBoard(int teacherId, int boardId, int internshipTypeId) {
         AcademicPlugin pi = VrApp.getBean(AcademicPlugin.class);
         AcademicTeacher t = getCurrentTeacher();
-        return pi.findInternshipsByTeacherExt(-1, (t != null && t.getDepartment() != null) ? t.getDepartment().getId() : -1, teacherId, internshipTypeId, boardId,
+        return pi.findInternshipsByTeacherExt(-1, (t != null && t.getUser().getDepartment() != null) ? t.getUser().getDepartment().getId() : -1, teacherId, internshipTypeId, boardId,
                 true);
     }
 

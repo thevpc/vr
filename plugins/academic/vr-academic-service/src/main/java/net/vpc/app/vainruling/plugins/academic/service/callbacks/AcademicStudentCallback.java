@@ -9,10 +9,8 @@ import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.model.AppUserType;
-import net.vpc.app.vainruling.core.service.util.VrUPAUtils;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.upa.*;
 import net.vpc.upa.Entity;
 import net.vpc.upa.callbacks.EntityEvent;
@@ -22,9 +20,8 @@ import net.vpc.upa.callbacks.UpdateObjectEvent;
 import net.vpc.upa.config.*;
 import net.vpc.upa.config.Callback;
 import net.vpc.upa.exceptions.UPAException;
-import net.vpc.upa.types.TypesFactory;
+import net.vpc.upa.types.DataTypeFactory;
 
-import java.util.List;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -43,9 +40,9 @@ public class AcademicStudentCallback {
                                 .setName("contactEmail")
                                 .addModifier(UserFieldModifier.SUMMARY)
                                 .setReadProtectionLevel(ProtectionLevel.PROTECTED)
-                                .setDataType(TypesFactory.STRING)
+                                .setDataType(DataTypeFactory.STRING)
                                 .setIndex(3)
-                                .setLiveSelectFormula("this.user.contact.email")
+                                .setLiveSelectFormula("this.user.email")
                 );
             }
             if (!entity.containsField("phone1")) {
@@ -54,9 +51,9 @@ public class AcademicStudentCallback {
                                 .setName("contactPhone1")
                                 .addModifier(UserFieldModifier.SUMMARY)
                                 .setReadProtectionLevel(ProtectionLevel.PROTECTED)
-                                .setDataType(TypesFactory.STRING)
+                                .setDataType(DataTypeFactory.STRING)
                                 .setIndex(4)
-                                .setLiveSelectFormula("this.user.contact.phone1")
+                                .setLiveSelectFormula("this.user.phone1")
                 );
             }
         }

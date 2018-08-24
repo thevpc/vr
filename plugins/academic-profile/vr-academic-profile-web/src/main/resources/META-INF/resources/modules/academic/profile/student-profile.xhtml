@@ -38,31 +38,31 @@
                                                             <div class="col-md-6">
                                                                 <hr/>
                                                                 <strong class="text-green"><i class="fa fa-user margin-r-5"></i>Nom et prénom</strong>
-                                                                <p>#{studentProfileSettingsCtrl.model.contact.fullName}</p>
+                                                                <p>#{studentProfileSettingsCtrl.model.fullName}</p>
                                                                 <strong class="text-green"><i class="fa fa-user margin-r-5"></i>Nom et prénom (ar)</strong>
-                                                                <p>#{studentProfileSettingsCtrl.model.contact.lastName2} #{studentProfileSettingsCtrl.model.contact.firstName2}</p>
+                                                                <p>#{studentProfileSettingsCtrl.model.lastName2} #{studentProfileSettingsCtrl.model.firstName2}</p>
                                                                 <hr/>
                                                                 <strong class="text-green"><i class="fa fa-user margin-r-5"></i>CIN</strong>
-                                                                <p>#{studentProfileSettingsCtrl.model.contact.nin}</p>
+                                                                <p>#{studentProfileSettingsCtrl.model.nin}</p>
                                                                 <hr/>
                                                                 <strong class="text-green"><i class="fa fa-user margin-r-5"></i>N° Inscription</strong>
                                                                 <p>#{studentProfileSettingsCtrl.model.student.subscriptionNumber}</p>
                                                                 <hr/>
                                                                 <strong class="text-green"><i class="fa fa-user margin-r-5"></i>Titre(s)</strong>
-                                                                <p>#{vr.strcatsep(', ',studentProfileSettingsCtrl.model.contact.positionTitle1,studentProfileSettingsCtrl.model.contact.positionTitle2, studentProfileSettingsCtrl.model.contact.positionTitle3) }</p>
+                                                                <p>#{vr.strcatsep(', ',studentProfileSettingsCtrl.model.positionTitle1,studentProfileSettingsCtrl.model.positionTitle2, studentProfileSettingsCtrl.model.positionTitle3) }</p>
                                                                 <hr/>
 
                                                             </div>
                                                             <div class="col-md-6">
                                                                 <hr/>
                                                                 <strong class="text-green"><i class="fa fa-user margin-r-5"></i>Date et lieu de naissance</strong>
-                                                                <p>Né(e) le #{studentProfileSettingsCtrl.model.contact.birthDate} à #{studentProfileSettingsCtrl.model.contact.birthLocation} (#{studentProfileSettingsCtrl.model.contact.birthGovernorate})</p>
+                                                                <p>Né(e) le #{studentProfileSettingsCtrl.model.birthDate} à #{studentProfileSettingsCtrl.model.birthLocation} (#{studentProfileSettingsCtrl.model.birthGovernorate})</p>
                                                                 <hr/>
                                                                 <strong class="text-green"><i class="fa fa-user margin-r-5"></i>Genre</strong>
-                                                                <p>#{studentProfileSettingsCtrl.model.contact.gender}</p>
+                                                                <p>#{studentProfileSettingsCtrl.model.gender}</p>
                                                                 <hr/>
                                                                 <strong class="text-green"><i class="fa fa-user margin-r-5"></i>Civility</strong>
-                                                                <p>#{studentProfileSettingsCtrl.model.contact.civility}</p>
+                                                                <p>#{studentProfileSettingsCtrl.model.civility}</p>
                                                                 <hr/>
 
                                                             </div>
@@ -79,28 +79,28 @@
                                                             <div class="col-md-6">
                                                                 <hr/>
                                                                 <strong class="text-blue"><i class="fa fa-envelope margin-r-5"></i>Email 1</strong>
-                                                                <p>#{studentProfileSettingsCtrl.model.contact.email}</p>
+                                                                <p>#{studentProfileSettingsCtrl.model.email}</p>
                                                                 <hr/>
                                                                 <strong class="text-blue"><i class="fa fa-envelope margin-r-5"></i>Email 2</strong>
-                                                                <p>#{studentProfileSettingsCtrl.model.contact.email2}</p>
+                                                                <p>#{studentProfileSettingsCtrl.model.email2}</p>
                                                                 <hr/>
                                                                 <strong class="text-blue"><i class="fa fa-globe margin-r-5"></i>Site Web</strong>
                                                                 <p>#{studentProfileSettingsCtrl.model.studentCV.wwwURL}</p>
                                                                 <hr/>
                                                                 <strong class="text-blue"><i class="fa fa-university margin-r-5"></i>Département</strong>
-                                                                <p>#{studentProfileSettingsCtrl.model.student.department.name}</p>
+                                                                <p>#{studentProfileSettingsCtrl.model.student.user.department.name}</p>
                                                                 <hr/>
                                                             </div>
                                                             <div class="col-md-6">
                                                                 <hr/>
                                                                 <strong class="text-blue"><i class="fa fa-phone-square margin-r-5"></i>Tél 1</strong>
-                                                                <p>#{studentProfileSettingsCtrl.model.contact.phone1}</p>
+                                                                <p>#{studentProfileSettingsCtrl.model.phone1}</p>
                                                                 <hr/>
                                                                 <strong class="text-blue"><i class="fa fa-phone-square margin-r-5"></i>Tél 2</strong>
-                                                                <p>#{studentProfileSettingsCtrl.model.contact.phone2}</p>
+                                                                <p>#{studentProfileSettingsCtrl.model.phone2}</p>
                                                                 <hr/>
                                                                 <strong class="text-blue"><i class="fa fa-phone-square margin-r-5"></i>Tél 3</strong>
-                                                                <p>#{studentProfileSettingsCtrl.model.contact.phone3}</p>
+                                                                <p>#{studentProfileSettingsCtrl.model.phone3}</p>
                                                                 <hr/>
                                                                 <strong class="text-blue"><i class="fa fa-users margin-r-5"></i>Groupes</strong>
                                                                 <p>
@@ -129,7 +129,7 @@
                                                             <img class="img-responsive img-rounded" src="#{vr.url(vr.currentUserPhoto)}" alt="User profile picture"/>
                                                         </div>
                                                         <div class="col-md-8 text-black">
-                                                            <p>#{studentProfileSettingsCtrl.model.contact.description}</p>
+                                                            <p>#{studentProfileSettingsCtrl.model.description}</p>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -144,7 +144,7 @@
                                                             <li>
                                                                 <i class="fa fa-graduation-cap bg-purple"></i>
                                                                 <div class="timeline-item">
-                                                                    <h3 class="timeline-header bg-purple">#{studentProfileSettingsCtrl.model.contact.company}</h3>
+                                                                    <h3 class="timeline-header bg-purple">#{studentProfileSettingsCtrl.model.company}</h3>
                                                                     <div class="timeline-body">
                                                                         <p><strong><h:outputLabel value="Classe mastere pro : " rendered="#{studentProfileSettingsCtrl.model.student.lastClass3 != null}"/> </strong>#{studentProfileSettingsCtrl.model.student.lastClass3} </p>
                                                                         <p><strong><h:outputLabel value="Classe mastere de recherche : " rendered="#{studentProfileSettingsCtrl.model.student.lastClass2 != null}"/> </strong>#{studentProfileSettingsCtrl.model.student.lastClass2} </p>

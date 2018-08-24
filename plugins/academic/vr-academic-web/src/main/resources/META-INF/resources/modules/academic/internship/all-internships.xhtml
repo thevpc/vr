@@ -78,9 +78,9 @@ and open the template in the editor.
                                 </p:commandLink>
                             </p:column>
                             <p:column headerText="Elève Ing" style="width: 10%;"
-                                      sortBy="#{i.internship.student.user.contact.fullName}"
+                                      sortBy="#{i.internship.student.user.fullName}"
                                     >
-                                <p:outputLabel value="#{i.internship.student.user.contact.fullName}"/>
+                                <p:outputLabel value="#{i.internship.student.user.fullName}"/>
                             </p:column>
                             <p:column headerText="Entreprise" style="width: 10%;"
                                       sortBy="#{i.internship.company.name}"
@@ -119,9 +119,9 @@ and open the template in the editor.
                                         <p:row>
                                             <p:column><p:outputLabel value="Elève"/></p:column>
                                             <p:column colspan="2"><h:outputText style="width: 100%"
-                                                                                value="#{allInternshipBoardsCtrl.model.internship.student.user.contact.fullName}"/></p:column>
+                                                                                value="#{allInternshipBoardsCtrl.model.internship.student.user.fullName}"/></p:column>
                                             <p:column colspan="1"><h:outputText style="width: 100%"
-                                                                                value="#{allInternshipBoardsCtrl.model.internship.secondStudent.user.contact.fullName}"/></p:column>
+                                                                                value="#{allInternshipBoardsCtrl.model.internship.secondStudent.user.fullName}"/></p:column>
                                         </p:row>
                                         <p:row>
                                             <p:column><p:outputLabel value="Intitulé"/></p:column>
@@ -217,12 +217,12 @@ and open the template in the editor.
                                             <p:column><p:outputLabel value="Encadrement Ecole"/></p:column>
                                             <p:column>
                                                 <h:outputText
-                                                        value="#{allInternshipBoardsCtrl.model.internship.supervisor.contact.fullName}"/>
+                                                        value="#{allInternshipBoardsCtrl.model.internship.supervisor.fullName}"/>
                                             </p:column>
                                             <p:column>
                                                 <h:outputText
                                                         rendered="#{allInternshipBoardsCtrl.model.internship.board.multipleSupervisors}"
-                                                        value="#{allInternshipBoardsCtrl.model.internship.secondSupervisor.contact.fullName}"/>
+                                                        value="#{allInternshipBoardsCtrl.model.internship.secondSupervisor.fullName}"/>
                                             </p:column>
                                         </p:row>
                                         <p:row rendered="#{allInternshipBoardsCtrl.model.internship ne null}">
@@ -298,21 +298,21 @@ and open the template in the editor.
                                             <p:column><p:outputLabel value="President"/></p:column>
                                             <p:column>
                                                 <h:outputText
-                                                        value="#{allInternshipBoardsCtrl.model.internship.chairExaminer.contact.firstName}"/>
+                                                        value="#{allInternshipBoardsCtrl.model.internship.chairExaminer.firstName}"/>
                                             </p:column>
                                         </p:row>
                                         <p:row rendered="#{allInternshipBoardsCtrl.model.internship ne null}">
                                             <p:column><p:outputLabel value="Rapporteur"/></p:column>
                                             <p:column>
                                                 <h:outputText
-                                                        value="#{allInternshipBoardsCtrl.model.internship.firstExaminer.contact.firstName}"/>
+                                                        value="#{allInternshipBoardsCtrl.model.internship.firstExaminer.firstName}"/>
                                             </p:column>
                                         </p:row>
                                         <p:row rendered="#{allInternshipBoardsCtrl.model.internship ne null}">
                                             <p:column><p:outputLabel value="Examinateur"/></p:column>
                                             <p:column>
                                                 <h:outputText
-                                                        value="#{allInternshipBoardsCtrl.model.internship.secondExaminer.contact.firstName}"/>
+                                                        value="#{allInternshipBoardsCtrl.model.internship.secondExaminer.firstName}"/>
                                             </p:column>
                                         </p:row>
                                     </p:panelGrid>

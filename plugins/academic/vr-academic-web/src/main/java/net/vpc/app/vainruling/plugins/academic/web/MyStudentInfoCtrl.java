@@ -66,7 +66,7 @@ public class MyStudentInfoCtrl implements DocumentUploadListener ,VrActionEnable
                             AcademicPlugin.get().importStudent(CorePlugin.get().getCurrentPeriod().getId(),new AcademicStudentImport(getModel().getStudent()));
                         } else {
                             pu.merge(getModel().getStudent());
-                            pu.merge(getModel().getStudent().resolveContact());
+                            pu.merge(getModel().getStudent().getUser());
                         }
                         //p.importStudent(-1, getModel().getStudent());
                     } catch (Exception e) {
@@ -96,13 +96,13 @@ public class MyStudentInfoCtrl implements DocumentUploadListener ,VrActionEnable
         }
         getModel().setStudent(c);
         ValidatorProgressHelper h=new ValidatorProgressHelper();
-        h.checkNotDefault(c.resolveContact().getFirstName(),"Missing FirstName");
-        h.checkNotDefault(c.resolveContact().getLastName(),"Missing LastName");
-        h.checkNotDefault(c.resolveContact().getEmail(),"Missing Email");
-        h.checkNotDefault(c.resolveContact().getPhone1(),"Missing Phone1");
-        h.checkNotDefault(c.resolveContact().getCivility(),"Missing Civility");
-        h.checkNotDefault(c.resolveContact().getGender(),"Missing Gender");
-        h.checkNotDefault(c.getDepartment(),"Missing Department");
+        h.checkNotDefault(c.getUser().getFirstName(),"Missing FirstName");
+        h.checkNotDefault(c.getUser().getLastName(),"Missing LastName");
+        h.checkNotDefault(c.getUser().getEmail(),"Missing Email");
+        h.checkNotDefault(c.getUser().getPhone1(),"Missing Phone1");
+        h.checkNotDefault(c.getUser().getCivility(),"Missing Civility");
+        h.checkNotDefault(c.getUser().getGender(),"Missing Gender");
+        h.checkNotDefault(c.getUser().getDepartment(),"Missing Department");
         h.checkNotDefault(c.getBaccalaureateClass(),"Missing BaccalaureateClass");
         h.checkNotDefault(c.getBaccalaureateScore(),"Missing BaccalaureateScore");
         h.checkNotDefault(c.getPreClassType(),"Missing PreClassType");

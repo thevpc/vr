@@ -355,11 +355,11 @@ class CorePluginBodyDAOManager extends CorePluginBody {
             mainField = primaryField;
         }
         StringBuilder sb = new StringBuilder();
-        sb.append(aliasName + "." + mainField.getName());
+        sb.append(aliasName + ".").append(mainField.getName());
         while (mainField.getDataType() instanceof ManyToOneType) {
             Entity t = ((ManyToOneType) mainField.getDataType()).getRelationship().getTargetEntity();
             mainField = t.getMainField();
-            sb.append("." + mainField.getName());
+            sb.append(".").append(mainField.getName());
         }
         q.field(sb.toString(), "name");
 

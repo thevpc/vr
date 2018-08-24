@@ -11,7 +11,7 @@ import net.vpc.upa.Entity;
 import net.vpc.upa.Field;
 import net.vpc.upa.UPA;
 import net.vpc.upa.types.DataType;
-import net.vpc.upa.types.TypesFactory;
+import net.vpc.upa.types.DataTypeFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -126,7 +126,7 @@ public class PropertyViewManager {
             Entity ee = UPA.getPersistenceUnit().findEntity(dt);
             return createPropertyViews(componentId, ee.getDataType(), configuration, viewContext);
         }
-        return createPropertyViews(componentId, TypesFactory.forPlatformType(dt), configuration, viewContext);
+        return createPropertyViews(componentId, DataTypeFactory.forPlatformType(dt), configuration, viewContext);
     }
 
     public PropertyView[] createPropertyViews(String componentId, DataType dt, Map<String, Object> configuration, ViewContext viewContext) {

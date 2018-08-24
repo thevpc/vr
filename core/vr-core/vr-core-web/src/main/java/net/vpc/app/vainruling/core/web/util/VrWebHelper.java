@@ -15,7 +15,6 @@ import net.vpc.app.vainruling.core.web.themes.VrThemeFactory;
 import net.vpc.common.strings.StringConverter;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.*;
-import net.vpc.upa.exceptions.UPAIllegalArgumentException;
 import org.springframework.context.expression.BeanFactoryResolver;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
@@ -29,6 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.lang.reflect.Method;
 import java.util.*;
+import net.vpc.upa.exceptions.IllegalUPAArgumentException;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -98,7 +98,7 @@ public class VrWebHelper {
                     }
                 }
             } else {
-                throw new UPAIllegalArgumentException("Unsupported");
+                throw new IllegalUPAArgumentException("Unsupported");
             }
         } catch (java.lang.IllegalStateException e) {
             System.err.println("Unexpected Exception " + e);

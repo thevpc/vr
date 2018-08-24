@@ -93,7 +93,7 @@ public class MyInternshipsCtrl implements DocumentUploadListener{
         CorePlugin c = VrApp.getBean(CorePlugin.class);
         AcademicTeacher t = a.getCurrentTeacher();
         if (t != null) {
-            AppDepartment d = t.getDepartment();
+            AppDepartment d = t.getUser().getDepartment();
             if (d != null) {
                 AcademicTeacher h = a.findHeadOfDepartment(d.getId());
                 if (h != null && h.getId() == t.getId()) {

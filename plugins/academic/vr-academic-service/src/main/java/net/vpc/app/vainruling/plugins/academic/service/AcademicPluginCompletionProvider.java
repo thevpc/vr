@@ -50,13 +50,13 @@ public class AcademicPluginCompletionProvider implements CompletionProvider {
                                         c = AcademicPlugin.get().findStudent(Convert.toInt(objectId));
                                     }
                                     ValidatorProgressHelper h = new ValidatorProgressHelper();
-                                    h.checkNotDefault(c.resolveContact().getFirstName(),"Missing FirstName");
-                                    h.checkNotDefault(c.resolveContact().getLastName(),"Missing LastName");
-                                    h.checkNotDefault(c.resolveContact().getEmail(),"Missing Email");
-                                    h.checkNotDefault(c.resolveContact().getPhone1(),"Missing Phone1");
-                                    h.checkNotDefault(c.resolveContact().getCivility(),"Missing Civility");
-                                    h.checkNotDefault(c.resolveContact().getGender(),"Missing Gender");
-                                    h.checkNotDefault(c.getDepartment(),"Missing Department");
+                                    h.checkNotDefault(c.getUser().getFirstName(),"Missing FirstName");
+                                    h.checkNotDefault(c.getUser().getLastName(),"Missing LastName");
+                                    h.checkNotDefault(c.getUser().getEmail(),"Missing Email");
+                                    h.checkNotDefault(c.getUser().getPhone1(),"Missing Phone1");
+                                    h.checkNotDefault(c.getUser().getCivility(),"Missing Civility");
+                                    h.checkNotDefault(c.getUser().getGender(),"Missing Gender");
+                                    h.checkNotDefault(c.getUser().getDepartment(),"Missing Department");
                                     h.checkNotDefault(c.getBaccalaureateClass(),"Missing BaccalaureateClass");
                                     h.checkNotDefault(c.getBaccalaureateScore(),"Missing BaccalaureateScore");
                                     h.checkNotDefault(c.getPreClassType(),"Missing PreClassType");
@@ -80,7 +80,7 @@ public class AcademicPluginCompletionProvider implements CompletionProvider {
                                                     "info Contact manquante",
                                                     Level.SEVERE,
                                                     new String[]{
-                                                            c.getDepartment() == null ? null : c.getDepartment().getName(),
+                                                            c.getUser().getDepartment() == null ? null : c.getUser().getDepartment().getName(),
                                                             c.getLastClass1() == null ? null : c.getLastClass1().getProgram() == null ? null : c.getLastClass1().getProgram().getName(),
                                                             c.getLastClass1() == null ? null : c.getLastClass1().getName()
                                                     },
@@ -104,7 +104,7 @@ public class AcademicPluginCompletionProvider implements CompletionProvider {
                                                     "info Contact manquante",
                                                     Level.SEVERE,
                                                     new String[]{
-                                                            c.getDepartment() == null ? null : c.getDepartment().getName(),
+                                                            c.getUser().getDepartment() == null ? null : c.getUser().getDepartment().getName(),
                                                             c.getLastClass1() == null ? null : c.getLastClass1().getProgram() == null ? null : c.getLastClass1().getProgram().getName(),
                                                             c.getLastClass1() == null ? null : c.getLastClass1().getName()
                                                     },

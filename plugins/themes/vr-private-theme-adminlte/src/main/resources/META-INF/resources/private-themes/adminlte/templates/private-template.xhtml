@@ -106,7 +106,7 @@
                                                                      class="img-circle" alt="User Image"/>
                                                             </div>
                                                             <h4>
-                                                                #{i.user.contact.fullName}
+                                                                #{i.user.fullName}
                                                                 <small><i
                                                                         class="fa fa-clock-o"></i> #{vr.date(i.publishTime)}
                                                                 </small>
@@ -266,7 +266,7 @@
                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                                         <img src="#{vr.url(corePlugin.currentUserIcon)}"
                                              class="user-image" alt="User Image"/>
-                                        <span class="hidden-xs">#{corePlugin.currentUser.contact.fullName}</span>
+                                        <span class="hidden-xs">#{corePlugin.currentUser.fullName}</span>
                                     </a>
                                     <ul class="dropdown-menu">
                                         <!-- User image -->
@@ -275,8 +275,8 @@
                                                  class="img-circle" alt="User Image"/>
 
                                             <p>
-                                                #{corePlugin.currentUser.contact.fullName} - #{corePlugin.currentUser.contact.positionTitle1}
-                                                <small>Member since #{vr.date(corePlugin.currentUser.contact.creationDate,"MMM yyyy")}</small>
+                                                #{corePlugin.currentUser.fullName} - #{corePlugin.currentUser.positionTitle1}
+                                                <small>Member since #{vr.date(corePlugin.currentUser.creationDate,"MMM yyyy")}</small>
                                             </p>
                                         </li>
                                         <!-- Menu Body -->
@@ -335,7 +335,7 @@
                             <img src="#{vr.url(corePlugin.currentUserIcon)}" class="img-circle" alt="User Image"/>
                         </div>
                         <div class="pull-left info">
-                            <p>#{corePlugin.currentUser.contact.fullName}</p>
+                            <p>#{corePlugin.currentUser.fullName}</p>
                             <a href="#"><i class="fa fa-circle text-success"></i> En Ligne</a>
                         </div>
                     </div>

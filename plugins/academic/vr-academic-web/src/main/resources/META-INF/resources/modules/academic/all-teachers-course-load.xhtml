@@ -270,8 +270,8 @@ and open the template in the editor.
                                     </h:commandLink>
                                 </f:facet>
 
-                                <p:column headerText="Enseignant" width="10%" sortBy="#{i.teacher.user.contact.fullName}">
-                                    <h:outputText value="#{i.teacher.user.contact.fullName}"/>
+                                <p:column headerText="Enseignant" width="10%" sortBy="#{i.teacher.user.fullName}">
+                                    <h:outputText value="#{i.teacher.user.fullName}"/>
                                 </p:column>
 
                                 <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('degree')}"
@@ -301,7 +301,7 @@ and open the template in the editor.
                                         sortBy="#{i.due.c}"
                                 >
                                     <h:outputText value="#{i.due.c != 0 ? i.due.c : ''}"><f:convertNumber
-                                            pattern="#0.00"/></h:outputText>
+                                            pattern="#0.000"/></h:outputText>
                                 </p:column>
                                 <p:column
                                         rendered="#{allTeachersCourseLoadCtrl.containsFilter('due') and allTeachersCourseLoadCtrl.containsFilter('td')}"
@@ -310,13 +310,13 @@ and open the template in the editor.
                                         sortBy="#{i.due.td}"
                                 >
                                     <h:outputText value="#{i.due.td != 0 ? i.due.td : ''}"><f:convertNumber
-                                            pattern="#0.00"/></h:outputText>
+                                            pattern="#0.000"/></h:outputText>
                                 </p:column>
                                 <!--<p:column-->
                                 <!--rendered="#_{allTeachersCourseLoadCtrl.containsFilter('due') and allTeachersCourseLoadCtrl.containsFilter('tp')}"-->
                                 <!--headerText="du TP" width="5%">-->
                                 <!--<h:outputText value="#_{i.due.tp != 0 ? i.due.tp : ''}"><f:convertNumber-->
-                                <!--pattern="#0.00"/></h:outputText>-->
+                                <!--pattern="#0.000"/></h:outputText>-->
                                 <!--</p:column>-->
                                 <!--<p:column-->
                                 <!--rendered="#_{allTeachersCourseLoadCtrl.containsFilter('due') and allTeachersCourseLoadCtrl.containsFilter('pm')}"-->
@@ -331,7 +331,7 @@ and open the template in the editor.
                                         sortBy="#{i.due.equiv}"
                                 >
                                     <h:outputText value="#{i.due.equiv != 0 ? i.due.equiv : ''}"><f:convertNumber
-                                            pattern="#0.00"/></h:outputText>
+                                            pattern="#0.000"/></h:outputText>
                                 </p:column>
 
                                 <p:column
@@ -341,7 +341,7 @@ and open the template in the editor.
                                         sortBy="#{i.value.c}"
                                 >
                                     <h:outputText value="#{i.value.c != 0 ? i.value.c : ''}"><f:convertNumber
-                                            pattern="#0.00"/></h:outputText>
+                                            pattern="#0.000"/></h:outputText>
                                 </p:column>
                                 <p:column
                                         rendered="#{allTeachersCourseLoadCtrl.containsFilter('value') and allTeachersCourseLoadCtrl.containsFilter('td')}"
@@ -350,7 +350,7 @@ and open the template in the editor.
                                         sortBy="#{i.value.td}"
                                 >
                                     <h:outputText value="#{i.value.td != 0 ? i.value.td : ''}"><f:convertNumber
-                                            pattern="#0.00"/></h:outputText>
+                                            pattern="#0.000"/></h:outputText>
                                 </p:column>
                                 <p:column
                                         rendered="#{allTeachersCourseLoadCtrl.containsFilter('value') and allTeachersCourseLoadCtrl.containsFilter('tp')}"
@@ -359,7 +359,7 @@ and open the template in the editor.
                                         sortBy="#{i.value.tp}"
                                 >
                                     <h:outputText value="#{i.value.tp != 0 ? i.value.tp : ''}"><f:convertNumber
-                                            pattern="#0.00"/></h:outputText>
+                                            pattern="#0.000"/></h:outputText>
                                 </p:column>
                                 <p:column
                                         rendered="#{allTeachersCourseLoadCtrl.containsFilter('value') and allTeachersCourseLoadCtrl.containsFilter('pm')}"
@@ -368,7 +368,7 @@ and open the template in the editor.
                                         sortBy="#{i.value.pm}"
                                 >
                                     <h:outputText value="#{i.value.pm != 0 ? i.value.pm : ''}"><f:convertNumber
-                                            pattern="#0.00"/></h:outputText>
+                                            pattern="#0.000"/></h:outputText>
                                 </p:column>
                                 <p:column
                                         rendered="#{allTeachersCourseLoadCtrl.containsFilter('value') and allTeachersCourseLoadCtrl.containsFilter('tppm')}"
@@ -377,7 +377,7 @@ and open the template in the editor.
                                         sortBy="#{i.value.tppm}"
                                 >
                                     <h:outputText value="#{i.value.tppm != 0 ? i.value.tppm : ''}"><f:convertNumber
-                                            pattern="#0.00"/></h:outputText>
+                                            pattern="#0.000"/></h:outputText>
                                 </p:column>
                                 <p:column
                                         rendered="#{allTeachersCourseLoadCtrl.containsFilter('value') and allTeachersCourseLoadCtrl.containsFilter('eq')}"
@@ -386,7 +386,7 @@ and open the template in the editor.
                                         sortBy="#{i.value.equiv}"
                                 >
                                     <h:outputText value="#{i.value.equiv != 0 ? i.value.equiv : ''}"><f:convertNumber
-                                            pattern="#0.00"/></h:outputText>
+                                            pattern="#0.000"/></h:outputText>
                                 </p:column>
                                 <p:column
                                         rendered="#{allTeachersCourseLoadCtrl.containsFilter('extra') and allTeachersCourseLoadCtrl.containsFilter('c')}"
@@ -395,7 +395,7 @@ and open the template in the editor.
                                         sortBy="#{i.extra.c}"
                                 >
                                     <h:outputText value="#{i.extra.c != 0 ? i.extra.c : ''}"><f:convertNumber
-                                            pattern="#0.00"/></h:outputText>
+                                            pattern="#0.000"/></h:outputText>
                                 </p:column>
                                 <p:column
                                         rendered="#{allTeachersCourseLoadCtrl.containsFilter('extra') and allTeachersCourseLoadCtrl.containsFilter('td')}"
@@ -404,7 +404,7 @@ and open the template in the editor.
                                         sortBy="#{i.extra.td}"
                                 >
                                     <h:outputText value="#{i.extra.td != 0 ? i.extra.td : ''}"><f:convertNumber
-                                            pattern="#0.00"/></h:outputText>
+                                            pattern="#0.000"/></h:outputText>
                                 </p:column>
                                 <p:column
                                         rendered="#{allTeachersCourseLoadCtrl.containsFilter('extra') and allTeachersCourseLoadCtrl.containsFilter('tp')}"
@@ -413,7 +413,7 @@ and open the template in the editor.
                                         sortBy="#{i.extra.tp}"
                                 >
                                     <h:outputText value="#{i.extra.tp != 0 ? i.extra.tp : ''}"><f:convertNumber
-                                            pattern="#0.00"/></h:outputText>
+                                            pattern="#0.000"/></h:outputText>
                                 </p:column>
                                 <p:column
                                         rendered="#{allTeachersCourseLoadCtrl.containsFilter('extra') and allTeachersCourseLoadCtrl.containsFilter('tppm')}"
@@ -422,7 +422,7 @@ and open the template in the editor.
                                         sortBy="#{i.extra.tppm}"
                                 >
                                     <h:outputText value="#{i.extra.tppm != 0 ? i.extra.tppm : ''}"><f:convertNumber
-                                            pattern="#0.00"/></h:outputText>
+                                            pattern="#0.000"/></h:outputText>
                                 </p:column>
                                 <p:column
                                         rendered="#{allTeachersCourseLoadCtrl.containsFilter('extra') and allTeachersCourseLoadCtrl.containsFilter('eq')}"
@@ -431,7 +431,7 @@ and open the template in the editor.
                                         sortBy="#{i.extra.equiv}"
                                 >
                                     <h:outputText value="#{i.extra.equiv != 0 ? i.extra.equiv : ''}"><f:convertNumber
-                                            pattern="#0.00"/></h:outputText>
+                                            pattern="#0.000"/></h:outputText>
                                 </p:column>
 
 
@@ -442,7 +442,7 @@ and open the template in the editor.
                                         sortBy="#{i.dueWeek.c}"
                                 >
                                     <h:outputText value="#{i.dueWeek.c != 0 ? i.dueWeek.c : ''}"><f:convertNumber
-                                            pattern="#0.00"/></h:outputText>
+                                            pattern="#0.000"/></h:outputText>
                                 </p:column>
                                 <p:column
                                         rendered="#{allTeachersCourseLoadCtrl.containsFilter('dueWeek') and allTeachersCourseLoadCtrl.containsFilter('td')}"
@@ -451,7 +451,7 @@ and open the template in the editor.
                                         sortBy="#{i.dueWeek.td}"
                                 >
                                     <h:outputText value="#{i.dueWeek.td != 0 ? i.dueWeek.td : ''}"><f:convertNumber
-                                            pattern="#0.00"/></h:outputText>
+                                            pattern="#0.000"/></h:outputText>
                                 </p:column>
                                 <p:column
                                         rendered="#{allTeachersCourseLoadCtrl.containsFilter('dueWeek') and allTeachersCourseLoadCtrl.containsFilter('tp')}"
@@ -460,7 +460,7 @@ and open the template in the editor.
                                         sortBy="#{i.dueWeek.tp}"
                                 >
                                     <h:outputText value="#{i.dueWeek.tp != 0 ? i.dueWeek.tp : ''}"><f:convertNumber
-                                            pattern="#0.00"/></h:outputText>
+                                            pattern="#0.000"/></h:outputText>
                                 </p:column>
                                 <p:column
                                         rendered="#{allTeachersCourseLoadCtrl.containsFilter('dueWeek') and allTeachersCourseLoadCtrl.containsFilter('pm')}"
@@ -469,7 +469,7 @@ and open the template in the editor.
                                         sortBy="#{i.dueWeek.pm}"
                                 >
                                     <h:outputText value="#{i.dueWeek.pm != 0 ? i.dueWeek.pm : ''}"><f:convertNumber
-                                            pattern="#0.00"/></h:outputText>
+                                            pattern="#0.000"/></h:outputText>
                                 </p:column>
                                 <p:column
                                         rendered="#{allTeachersCourseLoadCtrl.containsFilter('dueWeek') and allTeachersCourseLoadCtrl.containsFilter('eq')}"
@@ -479,7 +479,7 @@ and open the template in the editor.
                                 >
                                     <h:outputText
                                             value="#{i.dueWeek.equiv != 0 ? i.dueWeek.equiv : ''}"><f:convertNumber
-                                            pattern="#0.00"/></h:outputText>
+                                            pattern="#0.000"/></h:outputText>
                                 </p:column>
 
 
@@ -490,7 +490,7 @@ and open the template in the editor.
                                         sortBy="#{i.valueWeek.c}"
                                 >
                                     <h:outputText value="#{i.valueWeek.c != 0 ? i.valueWeek.c : ''}"><f:convertNumber
-                                            pattern="#0.00"/></h:outputText>
+                                            pattern="#0.000"/></h:outputText>
                                 </p:column>
                                 <p:column
                                         rendered="#{allTeachersCourseLoadCtrl.containsFilter('valueWeek') and allTeachersCourseLoadCtrl.containsFilter('td')}"
@@ -499,7 +499,7 @@ and open the template in the editor.
                                         sortBy="#{i.valueWeek.td}"
                                 >
                                     <h:outputText value="#{i.valueWeek.td != 0 ? i.valueWeek.td : ''}"><f:convertNumber
-                                            pattern="#0.00"/></h:outputText>
+                                            pattern="#0.000"/></h:outputText>
                                 </p:column>
                                 <p:column
                                         rendered="#{allTeachersCourseLoadCtrl.containsFilter('valueWeek') and allTeachersCourseLoadCtrl.containsFilter('tp')}"
@@ -508,7 +508,7 @@ and open the template in the editor.
                                         sortBy="#{i.valueWeek.tp}"
                                 >
                                     <h:outputText value="#{i.valueWeek.tp != 0 ? i.valueWeek.tp : ''}"><f:convertNumber
-                                            pattern="#0.00"/></h:outputText>
+                                            pattern="#0.000"/></h:outputText>
                                 </p:column>
                                 <p:column
                                         rendered="#{allTeachersCourseLoadCtrl.containsFilter('valueWeek') and allTeachersCourseLoadCtrl.containsFilter('pm')}"
@@ -517,7 +517,7 @@ and open the template in the editor.
                                         sortBy="#{i.valueWeek.pm}"
                                 >
                                     <h:outputText value="#{i.valueWeek.pm != 0 ? i.valueWeek.pm : ''}"><f:convertNumber
-                                            pattern="#0.00"/></h:outputText>
+                                            pattern="#0.000"/></h:outputText>
                                 </p:column>
                                 <p:column
                                         rendered="#{allTeachersCourseLoadCtrl.containsFilter('valueWeek') and allTeachersCourseLoadCtrl.containsFilter('tppm')}"
@@ -527,7 +527,7 @@ and open the template in the editor.
                                 >
                                     <h:outputText
                                             value="#{i.valueWeek.tppm != 0 ? i.valueWeek.tppm : ''}"><f:convertNumber
-                                            pattern="#0.00"/></h:outputText>
+                                            pattern="#0.000"/></h:outputText>
                                 </p:column>
                                 <p:column
                                         rendered="#{allTeachersCourseLoadCtrl.containsFilter('valueWeek') and allTeachersCourseLoadCtrl.containsFilter('eq')}"
@@ -537,7 +537,7 @@ and open the template in the editor.
                                 >
                                     <h:outputText
                                             value="#{i.valueWeek.equiv != 0 ? i.valueWeek.equiv : ''}"><f:convertNumber
-                                            pattern="#0.00"/></h:outputText>
+                                            pattern="#0.000"/></h:outputText>
                                 </p:column>
 
 
@@ -548,7 +548,7 @@ and open the template in the editor.
                                         sortBy="#{i.extraWeekEff.c}"
                                 >
                                     <h:outputText value="#{i.extraWeekEff.c != 0 ? i.extraWeekEff.c : ''}"><f:convertNumber
-                                            pattern="#0.00"/></h:outputText>
+                                            pattern="#0.000"/></h:outputText>
                                 </p:column>
                                 <p:column
                                         rendered="#{allTeachersCourseLoadCtrl.containsFilter('extraWeek') and allTeachersCourseLoadCtrl.containsFilter('td')}"
@@ -557,7 +557,7 @@ and open the template in the editor.
                                         sortBy="#{i.extraWeekEff.td}"
                                 >
                                     <h:outputText value="#{i.extraWeekEff.td != 0 ? i.extraWeekEff.td : ''}"><f:convertNumber
-                                            pattern="#0.00"/></h:outputText>
+                                            pattern="#0.000"/></h:outputText>
                                 </p:column>
                                 <p:column
                                         rendered="#{allTeachersCourseLoadCtrl.containsFilter('extraWeek') and allTeachersCourseLoadCtrl.containsFilter('tppm')}"
@@ -566,7 +566,7 @@ and open the template in the editor.
                                         sortBy="#{i.extraWeekEff.tppm}"
                                 >
                                     <h:outputText value="#{i.extraWeekEff.tp != 0 ? i.extraWeekEff.tppm : ''}"><f:convertNumber
-                                            pattern="#0.00"/></h:outputText>
+                                            pattern="#0.000"/></h:outputText>
                                 </p:column>
                                 <p:column
                                         rendered="#{allTeachersCourseLoadCtrl.containsFilter('extraWeek') and allTeachersCourseLoadCtrl.containsFilter('tp')}"
@@ -575,7 +575,7 @@ and open the template in the editor.
                                         sortBy="#{i.extraWeekEff.tp}"
                                 >
                                     <h:outputText value="#{i.extraWeekEff.tp != 0 ? i.extraWeekEff.tp : ''}"><f:convertNumber
-                                            pattern="#0.00"/></h:outputText>
+                                            pattern="#0.000"/></h:outputText>
                                 </p:column>
                                 <p:column
                                         rendered="#{allTeachersCourseLoadCtrl.containsFilter('extraWeek') and allTeachersCourseLoadCtrl.containsFilter('pm')}"
@@ -584,7 +584,7 @@ and open the template in the editor.
                                         sortBy="#{i.extraWeekEff.pm}"
                                 >
                                     <h:outputText value="#{i.extraWeekEff.pm != 0 ? i.extraWeekEff.pm : ''}"><f:convertNumber
-                                            pattern="#0.00"/></h:outputText>
+                                            pattern="#0.000"/></h:outputText>
                                 </p:column>
                                 <p:column
                                         rendered="#{allTeachersCourseLoadCtrl.containsFilter('extraWeek') and allTeachersCourseLoadCtrl.containsFilter('eq')}"
@@ -594,7 +594,7 @@ and open the template in the editor.
                                 >
                                     <h:outputText
                                             value="#{i.extraWeekEff.equiv != 0 ? i.extraWeekEff.equiv : ''}"><f:convertNumber
-                                            pattern="#0.00"/></h:outputText>
+                                            pattern="#0.000"/></h:outputText>
                                 </p:column>
 
                                 <p:column
@@ -605,7 +605,7 @@ and open the template in the editor.
                                 >
                                     <h:outputText
                                             value="#{i.population.average != 0 ? i.population.average : ''}"><f:convertNumber
-                                            pattern="#0.00"/></h:outputText>
+                                            pattern="#0.000"/></h:outputText>
                                 </p:column>
 
                                 <p:column
@@ -641,7 +641,7 @@ and open the template in the editor.
                                 >
                                     <h:outputText
                                             value="#{i.population.standardDeviation != 0 ? i.population.standardDeviation : ''}"><f:convertNumber
-                                            pattern="#0.00"/></h:outputText>
+                                            pattern="#0.000"/></h:outputText>
                                 </p:column>
 
                                 <p:column

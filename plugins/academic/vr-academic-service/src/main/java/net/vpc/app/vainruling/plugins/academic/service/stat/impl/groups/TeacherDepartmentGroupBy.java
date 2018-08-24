@@ -25,7 +25,7 @@ public class TeacherDepartmentGroupBy implements KPIGroupBy<AcademicCourseAssign
     public List<KPIGroup> createGroups(AcademicCourseAssignmentInfo assignment) {
         Map<Integer, AppDepartment> departments = new HashMap<>();
         for (AcademicTeacher teacher : TeacherGroupBy.findTeachers(assignment, intents).values()) {
-            AppDepartment d = teacher.getDepartment();
+            AppDepartment d = teacher.getUser().getDepartment();
             if(d!=null){
                 departments.put(d.getId(),d);
             }

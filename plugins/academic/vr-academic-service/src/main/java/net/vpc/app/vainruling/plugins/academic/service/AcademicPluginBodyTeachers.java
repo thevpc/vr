@@ -121,7 +121,7 @@ public class AcademicPluginBodyTeachers extends AcademicPluginBody {
     public AcademicTeacher findTeacher(StringComparator t) {
         CorePluginSecurity.requireRight(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_TEACHER);
         for (AcademicTeacher teacher : findTeachers()) {
-            if (t.matches(teacher.resolveContact() == null ? null : teacher.resolveFullName())) {
+            if (t.matches(teacher.getUser()== null ? null : teacher.resolveFullName())) {
                 return teacher;
             }
         }
@@ -172,7 +172,7 @@ public class AcademicPluginBodyTeachers extends AcademicPluginBody {
 
     public List<AcademicTeacher> findEnabledTeachers(int periodId) {
         CorePluginSecurity.requireRight(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_TEACHER);
-        List<AcademicTeacher> periodId1 = UPA.getPersistenceUnit().createQuery("Select distinct u.teacher from AcademicTeacherPeriod u where u.teacher.deleted=false and u.enabled=true order by u.teacher.user.contact.fullName and u.periodId=:periodId")
+        List<AcademicTeacher> periodId1 = UPA.getPersistenceUnit().createQuery("Select distinct u.teacher from AcademicTeacherPeriod u where u.teacher.deleted=false and u.enabled=true order by u.teacher.user.fullName and u.periodId=:periodId")
                 .setParameter("periodId", periodId)
                 .getResultList();
         //there is a bug in distinct implementation in UPA, should fix it.
@@ -224,7 +224,7 @@ public class AcademicPluginBodyTeachers extends AcademicPluginBody {
                             + VrUtils.conditionalString(" and b.assignment.coursePlan.period.id=:periodId ", periodId >= 0)
                             + VrUtils.conditionalString(" and b.assignment.coursePlan.courseLevel.semesterId=:semesterId ", semesterId >= 0)
                             + VrUtils.conditionalString(" and b.assignment.coursePlan.courseLevel.academicClass.program.departmentId=:assignmentDepId ", assignmentDepId >= 0)
-                            + ") order by u.user.contact.fullName")
+                            + ") order by u.user.fullName")
                     .setParameter("periodId", periodId, periodId >= 0)
                     .setParameter("semesterId", semesterId, semesterId >= 0)
                     .setParameter("teacherDepId", teacherDepId, teacherDepId >= 0)
@@ -246,7 +246,7 @@ public class AcademicPluginBodyTeachers extends AcademicPluginBody {
                                 + VrUtils.conditionalString(" and a.coursePlan.period.id=:periodId ", periodId >= 0)
                                 + VrUtils.conditionalString(" and a.coursePlan.courseLevel.semesterId=:semesterId ", semesterId >= 0)
                                 + VrUtils.conditionalString(" and a.coursePlan.courseLevel.academicClass.program.departmentId=:assignmentDepId ", assignmentDepId >= 0)
-                                + ") order by u.user.contact.fullName")
+                                + ") order by u.user.fullName")
                         .setParameter("periodId", periodId, periodId >= 0)
                         .setParameter("semesterId", semesterId, semesterId >= 0)
                         .setParameter("teacherDepId", teacherDepId, teacherDepId >= 0)
@@ -268,7 +268,7 @@ public class AcademicPluginBodyTeachers extends AcademicPluginBody {
                                 + VrUtils.conditionalString(" and b.assignment.coursePlan.period.id=:periodId ", periodId >= 0)
                                 + VrUtils.conditionalString(" and b.assignment.coursePlan.courseLevel.semesterId=:semesterId ", semesterId >= 0)
                                 + VrUtils.conditionalString(" and b.assignment.coursePlan.courseLevel.academicClass.program.departmentId=:assignmentDepId ", assignmentDepId >= 0)
-                                + ") order by u.user.contact.fullName")
+                                + ") order by u.user.fullName")
                         .setParameter("periodId", periodId, periodId >= 0)
                         .setParameter("semesterId", semesterId, semesterId >= 0)
                         .setParameter("teacherDepId", teacherDepId, teacherDepId >= 0)
@@ -313,7 +313,7 @@ public class AcademicPluginBodyTeachers extends AcademicPluginBody {
 //                        + " Select t.id from AcademicTeacher t "
 //                        + " inner join AcademicCourseAssignment a on a.teacherId=t.id "
 //                        + " where a.coursePlan.period.id=:periodId "
-//                        + ") order by u.contact.fullName")
+//                        + ") order by u.fullName")
 //                .setParameter("periodId", periodId)
 //                .getResultList();
 //    }
@@ -325,14 +325,14 @@ public class AcademicPluginBodyTeachers extends AcademicPluginBody {
 //                        + " Select t.id from AcademicTeacher t "
 //                        + " inner join AcademicCourseIntent a on a.teacherId=t.id "
 //                        + " where a.assignment.coursePlan.period.id=:periodId "
-//                        + ") order by u.contact.fullName")
+//                        + ") order by u.fullName")
 //                .setParameter("periodId", periodId)
 //                .getResultList();
 //    }
 //
     public AcademicTeacher findTeacher(String t) {
         AcademicPluginSecurity.requireTeacherOrManager(-1);
-        return (AcademicTeacher) UPA.getPersistenceUnit().createQuery("Select u from AcademicTeacher u where u.user.contact.fullName=:name").setParameter("name", t).getFirstResultOrNull();
+        return (AcademicTeacher) UPA.getPersistenceUnit().createQuery("Select u from AcademicTeacher u where u.user.fullName=:name").setParameter("name", t).getFirstResultOrNull();
     }
 
 //    public List<AcademicTeacher> findTeachersWithAssignmentsOrIntents() {
@@ -343,7 +343,7 @@ public class AcademicPluginBodyTeachers extends AcademicPluginBody {
 //                        + " left join AcademicCourseAssignment a on a.teacheId=t.id"
 //                        + " left join AcademicCourseIntent i on i.teacherId=t.id"
 //                        + " where (a is not null) or (i is not null)"
-//                        + ") order by u.contact.fullName")
+//                        + ") order by u.fullName")
 //                .getResultList();
 //    }
 //
@@ -377,7 +377,7 @@ public class AcademicPluginBodyTeachers extends AcademicPluginBody {
         a.setTeacher(t);
         a.setSituation(t.getSituation());
         a.setDegree(t.getDegree());
-        a.setDepartment(t.getDepartment());
+        a.setDepartment(t.getUser().getDepartment());
 //        a.setEnabled(t.isEnabled());
         a.setPeriod(VrApp.getBean(CorePlugin.class).findPeriod(periodId));
         return a;
@@ -388,7 +388,7 @@ public class AcademicPluginBodyTeachers extends AcademicPluginBody {
             return "";
         }
         String name = null;
-        if (t.resolveContact() != null) {
+        if (t.getUser()!= null) {
             name = t.resolveFullName();
         }
         if (StringUtils.isEmpty(name) && t.getUser() != null) {
@@ -406,29 +406,25 @@ public class AcademicPluginBodyTeachers extends AcademicPluginBody {
         AcademicTeacher s = findTeacher(teacherId);
         Map<Integer, AcademicClass> academicClasses = academic.findAcademicClassesMap();
         AppUser u = s.getUser();
-        AppContact c = s.resolveContact();
-        AppDepartment d = s.getDepartment();
+        AppDepartment d = s.getUser().getDepartment();
 
-        if (c == null && u != null) {
-            c = u.getContact();
-        }
         if (d == null && u != null) {
             d = u.getDepartment();
         }
-        if (s.getDepartment() == null && d != null) {
-            s.setDepartment(d);
-            UPA.getPersistenceUnit().merge(s);
-        }
+//        if (s.getDepartment() == null && d != null) {
+//            s.setDepartment(d);
+//            UPA.getPersistenceUnit().merge(s);
+//        }
         if (u != null) {
 
             if (u.getDepartment() == null && d != null) {
                 u.setDepartment(d);
                 UPA.getPersistenceUnit().merge(u);
             }
-            if (u.getContact() == null && c != null) {
-                u.setContact(c);
-                UPA.getPersistenceUnit().merge(u);
-            }
+//            if (u.getContact() == null && c != null) {
+//                u.setContact(c);
+//                UPA.getPersistenceUnit().merge(u);
+//            }
         }
 
         int ss = academic.findSemesters().size();
@@ -440,7 +436,7 @@ public class AcademicPluginBodyTeachers extends AcademicPluginBody {
             );
         }
 
-        if (c != null) {
+        if (u != null) {
             HashSet<Integer> goodProfiles = new HashSet<>();
             String depCode = null;
             {
@@ -508,8 +504,8 @@ public class AcademicPluginBodyTeachers extends AcademicPluginBody {
             if (depCode != null) {
                 goodSuffix.append(" ").append(depCode);
             }
-            c.setPositionSuffix(goodSuffix.toString());
-            pu.merge(c);
+            u.setPositionSuffix(goodSuffix.toString());
+            pu.merge(u);
 
             if (u != null) {
                 for (AppProfile p : oldProfiles) {
@@ -552,7 +548,7 @@ public class AcademicPluginBodyTeachers extends AcademicPluginBody {
                 item.setDegree(teacher.getDegree());
                 item.setSituation(teacher.getSituation());
                 item.setEnabled(teacher.getSituation() != null);
-                item.setDepartment(teacher.getDepartment());
+                item.setDepartment(teacher.getUser().getDepartment());
             } else {
                 AcademicTeacherPeriod other = findAcademicTeacherPeriod(copyFromPeriod, teacher);
                 item.setDegree(other.getDegree());

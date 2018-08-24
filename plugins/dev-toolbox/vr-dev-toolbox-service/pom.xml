@@ -5,7 +5,7 @@
     <groupId>net.vpc.app.vain-ruling.plugins.dev-toolbox</groupId>
     <artifactId>vr-dev-toolbox-service</artifactId>
     <name>net.vpc.app.vain-ruling.plugins.dev-toolbox.vr-dev-toolbox-service</name>
-    <version>1.13.8</version>
+    <version>1.13.9</version>
     <packaging>jar</packaging>
     <url>https://github.com/thevpc/vr/wiki</url>
 
@@ -20,7 +20,7 @@
         <vr-plugin.component-type>service</vr-plugin.component-type>
         <vr-plugin.name>Developer Toolbox</vr-plugin.name>
         <vr-plugin.description>Developer Toolbox Plugin</vr-plugin.description>
-        <version.vr-core-service>1.13.8</version.vr-core-service>
+        <version.vr-core-service>1.13.9</version.vr-core-service>
     </properties>
 
     <dependencies>

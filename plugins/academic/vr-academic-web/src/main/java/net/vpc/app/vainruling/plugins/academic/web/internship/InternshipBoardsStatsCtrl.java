@@ -108,7 +108,7 @@ public class InternshipBoardsStatsCtrl /*extends MyInternshipBoardsCtrl*/ {
         }
 
         int periodId = Convert.toInt(getModel().getPeriodId(), IntegerParserConfig.LENIENT_F);
-        int departmentId = currentTeacher == null || currentTeacher.getDepartment() == null ? -1 : currentTeacher.getDepartment().getId();
+        int departmentId = currentTeacher == null || currentTeacher.getUser().getDepartment() == null ? -1 : currentTeacher.getUser().getDepartment().getId();
 
         if (currentTeacher != null) {
             int boardId = getModel().getInternshipBoard() == null ? -1 : getModel().getInternshipBoard().getId();

@@ -42,25 +42,25 @@
                                                             <div class="col-md-6">
                                                                 <hr/>
                                                                 <strong class="text-blue"><i class="fa fa-envelope margin-r-5"></i>Email</strong>
-                                                                <p>#{teacherProfileSettingsCtrl.model.contact.email}</p>
+                                                                <p>#{teacherProfileSettingsCtrl.model.email}</p>
                                                                 <hr/>
                                                                 <strong class="text-blue"><i class="fa fa-globe margin-r-5"></i>Site Web</strong>
                                                                 <p>#{teacherProfileSettingsCtrl.model.teacherCV.wwwURL}</p>
                                                                 <hr/>
                                                                 <strong class="text-blue"><i class="fa fa-phone-square margin-r-5"></i>Tél 1</strong>
-                                                                <p>#{teacherProfileSettingsCtrl.model.contact.phone1}</p>
+                                                                <p>#{teacherProfileSettingsCtrl.model.phone1}</p>
                                                                 <hr/>
                                                                 <strong class="text-blue"><i class="fa fa-phone-square margin-r-5"></i>Tél 2</strong>
-                                                                <p>#{teacherProfileSettingsCtrl.model.contact.phone2}</p>
+                                                                <p>#{teacherProfileSettingsCtrl.model.phone2}</p>
                                                                 <hr/>
                                                                 <strong class="text-blue"><i class="fa fa-phone-square margin-r-5"></i>Tél 3</strong>
-                                                                <p>#{teacherProfileSettingsCtrl.model.contact.phone3}</p>
+                                                                <p>#{teacherProfileSettingsCtrl.model.phone3}</p>
                                                                 <hr/>
                                                             </div>
                                                             <div class="col-md-6">
                                                                 <hr/>
                                                                 <strong class="text-blue"><i class="fa fa-university margin-r-5"></i>Département</strong>
-                                                                <p>#{teacherProfileSettingsCtrl.model.teacher.department}</p>
+                                                                <p>#{teacherProfileSettingsCtrl.model.teacher.user.department}</p>
                                                                 <hr/>
                                                                 <strong class="text-blue"><i class="fa fa-university margin-r-5"></i>Discipline</strong>
                                                                 <p>#{teacherProfileSettingsCtrl.model.teacher.officialDiscipline.name}</p>
@@ -78,10 +78,10 @@
                                                                 </p>
                                                                 <hr/>
                                                                 <strong class="text-blue"><i class="fa fa-map-marker margin-r-5"></i>Numéro du bureau</strong>
-                                                                <p>#{teacherProfileSettingsCtrl.model.contact.officeLocationNumber}</p>
+                                                                <p>#{teacherProfileSettingsCtrl.model.officeLocationNumber}</p>
                                                                 <hr/>
                                                                 <strong class="text-blue"><i class="fa fa-phone margin-r-5"></i>Numéro de téléphone du bureau</strong>
-                                                                <p>#{teacherProfileSettingsCtrl.model.contact.officePhoneNumber}</p>
+                                                                <p>#{teacherProfileSettingsCtrl.model.officePhoneNumber}</p>
                                                                 <hr/>
                                                             </div>
                                                         </div>
@@ -103,7 +103,7 @@
                                                             <img class="img-responsive img-rounded" src="#{vr.url(vr.currentUserPhoto)}" alt="User profile picture"/>
                                                         </div>
                                                         <div class="col-md-8 text-black">
-                                                            <p>#{teacherProfileSettingsCtrl.model.contact.description}</p>
+                                                            <p>#{teacherProfileSettingsCtrl.model.description}</p>
                                                         </div>
                                                     </div>
                                                 </div>

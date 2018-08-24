@@ -75,11 +75,11 @@ public class UPAObjectHelper {
         pv.setPrependEmptyCells(findIntProperty(f, UIConstants.Form.EMPTY_PREFIX, null, pv.getPrependEmptyCells()));
         pv.setAppendEmptyCells(findIntProperty(f, UIConstants.Form.EMPTY_SUFFIX, null, pv.getAppendEmptyCells()));
         if(f instanceof Field){
-            EntityPart parent = ((Field) f).getParent();
+            EntityItem parent = ((Field) f).getParent();
             if(parent!=null && parent instanceof Section){
                 String path = parent.getPath();
                 String name=parent.getTitle();
-                if(((Section) parent).getParts().get(0).getName().equals(f.getName())){
+                if(((Section) parent).getItemAt(0).getName().equals(f.getName())){
                     //first field in the section
                     pv.setSeparatorText(path);
                 }
@@ -89,7 +89,7 @@ public class UPAObjectHelper {
         if (f instanceof Field) {
             Field ff = (Field) f;
             Entity ffe = ((Field) f).getEntity();
-            EntityPart p1 = ff.getParent();
+            EntityItem p1 = ff.getParent();
             String separatorText=null;
             String toStoreSeparatorText=null;
             if (p1 != null && p1 instanceof Section) {

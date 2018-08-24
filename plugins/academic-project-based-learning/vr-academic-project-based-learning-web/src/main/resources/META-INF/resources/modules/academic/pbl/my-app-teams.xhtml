@@ -66,7 +66,7 @@ and open the template in the editor.
                                              emptyMessage="Aucun membre"
                                 >
                                     <p:column headerText="Nom">
-                                        <p:outputLabel value="#{e.student.user.contact.fullName}"/>
+                                        <p:outputLabel value="#{e.student.user.fullName}"/>
                                     </p:column>
                                     <p:column headerText="Classes">
                                         <p:outputLabel value="#{vr.strListifyNoEmpty(',',e.student.lastClass1,e.student.lastClass2,e.student.lastClass3)}"/>
@@ -75,10 +75,10 @@ and open the template in the editor.
                                         <p:outputLabel value="#{e.student.user.login}"/>
                                     </p:column>
                                     <p:column headerText="email externe">
-                                        <p:outputLabel value="#{e.student.user.contact.email}"/>
+                                        <p:outputLabel value="#{e.student.user.email}"/>
                                     </p:column>
                                     <p:column headerText="telephone">
-                                        <p:outputLabel value="#{e.student.user.contact.phone1}"/>
+                                        <p:outputLabel value="#{e.student.user.phone1}"/>
                                     </p:column>
                                 </p:dataTable>
                             </p:tab>
@@ -109,7 +109,7 @@ and open the template in the editor.
                                         <p:outputLabel value="#{(e.durationMinutes)}"/>
                                     </p:column>
                                     <p:column headerText="Enseignant">
-                                        <p:outputLabel value="#{(e.coaching.teacher.user.contact.fullTitle)}"/>
+                                        <p:outputLabel value="#{(e.coaching.teacher.user.fullTitle)}"/>
                                     </p:column>
                                     <p:column headerText="Description">
                                         <p:outputLabel value="#{vr.strcut(e.description,60)}"

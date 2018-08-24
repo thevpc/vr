@@ -5,7 +5,6 @@
  */
 package net.vpc.app.vainruling.plugins.academic.service.model.config;
 
-import net.vpc.app.vainruling.core.service.model.AppContact;
 import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.service.model.AppUser;
@@ -21,12 +20,12 @@ import java.sql.Timestamp;
 /**
  * @author taha.bensalah@gmail.com
  */
-@Entity(listOrder = "this.user.contact.fullName")
+@Entity(listOrder = "this.user.fullName")
 @Path("Contact")
 @Properties(
         {
                 @Property(name = "cache.navigationDepth", valueType = "int", value = "5"),
-                @Property(name = "ui.auto-filter.department", value = "{expr='this.department',order=1}"),
+                @Property(name = "ui.auto-filter.department", value = "{expr='this.user.department',order=1}"),
                 @Property(name = "ui.auto-filter.officialDiscipline", value = "{expr='this.officialDiscipline',order=2}"),
                 @Property(name = "ui.auto-filter.degree", value = "{expr='this.degree',order=3}"),
                 @Property(name = "ui.auto-filter.situation", value = "{expr='this.situation',order=3}"),
@@ -52,6 +51,7 @@ public class AcademicTeacher {
     @Summary
     @Field(protectionLevel = ProtectionLevel.PROTECTED)
     private AcademicTeacherSituation situation;
+    @Deprecated
     @Summary
     private AppDepartment department;
 
@@ -133,10 +133,12 @@ public class AcademicTeacher {
         this.situation = situation;
     }
 
+    @Deprecated
     public AppDepartment getDepartment() {
         return department;
     }
 
+    @Deprecated
     public void setDepartment(AppDepartment department) {
         this.department = department;
     }
@@ -253,18 +255,18 @@ public class AcademicTeacher {
         this.officialDiscipline = officialDiscipline;
     }
 
-    public AppContact resolveContact(){
-        AppUser c = getUser();
-        return c==null?null: c.getContact();
-    }
+//    public AppContact resolveContact(){
+//        AppUser c = getUser();
+//        return c==null?null: c.getContact();
+//    }
 
     public String resolveFullName(){
-        AppContact c = resolveContact();
+        AppUser c = getUser();
         return c==null?String.valueOf(getId()): c.getFullName();
     }
 
     public String resolveFullTitle(){
-        AppContact c = resolveContact();
+        AppUser c = getUser();
         return c==null?String.valueOf(getId()): c.getFullTitle();
     }
 

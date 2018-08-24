@@ -732,15 +732,8 @@ class CorePluginBodySecurityManager extends CorePluginBody {
     }
 
     public List<AppUser> findUsersByFullTitle(String fullTitle) {
-        List<AppContact> contacts = findContactsByFullTitle(fullTitle);
-        List<AppUser> users = new ArrayList<>();
-        for (AppContact contact : contacts) {
-            AppUser u = findUserByContact(contact.getId());
-            if (u != null) {
-                users.add(u);
-            }
-        }
-        return users;
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        return pu.createQueryBuilder(AppContact.class).byField("fullTitle", fullTitle).getResultList();
     }
 
     public List<AppContact> findContactsByFullName(String fullName) {
@@ -749,15 +742,8 @@ class CorePluginBodySecurityManager extends CorePluginBody {
     }
 
     public List<AppUser> findUsersByFullName(String fullName) {
-        List<AppContact> contacts = findContactsByFullName(fullName);
-        List<AppUser> users = new ArrayList<>();
-        for (AppContact contact : contacts) {
-            AppUser u = findUserByContact(contact.getId());
-            if (u != null) {
-                users.add(u);
-            }
-        }
-        return users;
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        return pu.createQueryBuilder(AppUser.class).byField("fullName", fullName).getResultList();
     }
 
     public List<AppUser> findUsersByProfile(int profileId) {
@@ -928,7 +914,7 @@ class CorePluginBodySecurityManager extends CorePluginBody {
                 boolean b = userMatchesProfileFilter(userId, login, new ProfileFilterExpression(profilePattern), cache);
                 ch.stop();
                 int sec = (int) (ch.getTime() / 1000000000);
-                if(sec>1){
+                if (sec > 1) {
                     b = userMatchesProfileFilter(userId, login, new ProfileFilterExpression(profilePattern), cache);
                 }
                 if (b) {
@@ -1125,8 +1111,8 @@ class CorePluginBodySecurityManager extends CorePluginBody {
                 .getResultList();
     }
 
-    public AppUser createUser(AppContact contact, int userTypeId, int departmentId, boolean attachToExistingUser, String[] defaultProfiles, VrPasswordStrategy passwordStrategy) {
-        AppUser u = findUserByContact(contact.getId());
+    public AppUser createUser(AppUser contact, int userTypeId, int departmentId, boolean attachToExistingUser, String[] defaultProfiles, VrPasswordStrategy passwordStrategy) {
+        AppUser u = findUser(contact.getId());
         if (u == null) {
             if (passwordStrategy == null) {
                 passwordStrategy = VrPasswordStrategyRandom.INSTANCE;
@@ -1181,7 +1167,8 @@ class CorePluginBodySecurityManager extends CorePluginBody {
             if (u == null) {
                 u = new AppUser();
                 u.setLogin(login);
-                u.setContact(contact);
+                // TODO FIX ME
+                //u.setContact(contact);
                 String pwd = password;
                 u.setPassword(pwd);
                 u.setPasswordAuto(pwd);
@@ -1190,7 +1177,8 @@ class CorePluginBodySecurityManager extends CorePluginBody {
                 u.setEnabled(true);
                 UPA.getPersistenceUnit().persist(u);
             } else {
-                u.setContact(contact);
+                // TODO FIX ME
+//                u.setContact(contact);
                 u.setType(userType);
                 UPA.getPersistenceUnit().merge(u);
             }
@@ -1290,7 +1278,7 @@ class CorePluginBodySecurityManager extends CorePluginBody {
         return sb.toString();
     }
 
-    public String resolveLoginProposal(AppContact contact) {
+    public String resolveLoginProposal(AppUser contact) {
         String fn = contact.getFirstName();
         String ln = contact.getLastName();
         if (fn == null) {
@@ -1302,13 +1290,12 @@ class CorePluginBodySecurityManager extends CorePluginBody {
         return StringUtils.normalize(fn.toLowerCase()).replace(" ", "") + "." + StringUtils.normalize(ln.toLowerCase()).replace(" ", "");
     }
 
-    public AppUser findUserByContact(int contactId) {
-        PersistenceUnit pu = UPA.getPersistenceUnit();
-        return pu.createQueryBuilder(AppUser.class)
-                .byField("contactId", contactId)
-                .getFirstResultOrNull();
-    }
-
+//    public AppUser findUserByContact(int contactId) {
+//        PersistenceUnit pu = UPA.getPersistenceUnit();
+//        return pu.createQueryBuilder(AppUser.class)
+//                .byField("contactId", contactId)
+//                .getFirstResultOrNull();
+//    }
     public List<AppTrace> findTraceByUser(int userId, int maxRows) {
         CorePluginSecurity.requireAdmin();
         List<AppTrace> found = new ArrayList<>();
@@ -1322,6 +1309,70 @@ class CorePluginBodySecurityManager extends CorePluginBody {
             }
         }
         return found;
+    }
+
+    public AppUser findOrCreateUser(AppUser user, String[] defaultProfiles, VrPasswordStrategy passwordStrategy) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        AppUser old = findUser(user);
+        if (old != null) {
+            return old;
+        }
+        if (passwordStrategy == null) {
+            passwordStrategy = VrPasswordStrategyRandom.INSTANCE;
+        }
+        String login = resolveLoginProposal(user);
+        if (StringUtils.isEmpty(login)) {
+            login = "user";
+        }
+        String password = passwordStrategy.generatePassword(user);
+
+        old = findUser(login);
+        if (old != null) {
+            //the is a user with same name!
+            String y = String.valueOf(Calendar.getInstance().get(Calendar.YEAR) - 2000);
+            old = findUser(login + y);
+            if (old == null) {
+                //ok
+                login = login + y;
+            } else {
+                String chars = "abcdefghijklmnopqrstuvwxyz";
+                for (int i = 0; i < chars.length(); i++) {
+                    old = findUser(login + y + chars.charAt(i));
+                    if (old == null) {
+                        login = login + y + chars.charAt(i);
+                        break;
+                    }
+                }
+            }
+            if (old != null) {
+                int index = 1;
+                while (true) {
+                    old = findUser(login + y + "_" + index);
+                    if (old == null) {
+                        login = login + y + "_" + index;
+                        break;
+                    }
+                    index++;
+                }
+            }
+            if (old != null) {
+                throw new IllegalArgumentException("Unable to add new user");
+            }
+        }
+        user.setLogin(login);
+        user.setPassword(password);
+        user.setPasswordAuto(password);
+        user.setEnabled(true);
+        pu.persist(user);
+
+        if (defaultProfiles != null) {
+            for (String defaultProfile : defaultProfiles) {
+                if (!StringUtils.isEmpty(defaultProfile)) {
+                    userAddProfile(user.getId(), defaultProfile);
+                }
+            }
+        }
+        return user;
     }
 
     public AppContact findOrCreateContact(AppContact c) {
@@ -1339,11 +1390,11 @@ class CorePluginBodySecurityManager extends CorePluginBody {
         String nin = c.getNin();
         if (!StringUtils.isEmpty(nin)) {
             nin = nin.trim();
-            AppContact oldAcademicTeacher = pu.createQueryBuilder(AppContact.class)
+            AppContact oldContact = pu.createQueryBuilder(AppContact.class)
                     .byField("nin", nin)
                     .getFirstResultOrNull();
-            if (oldAcademicTeacher != null) {
-                return oldAcademicTeacher;
+            if (oldContact != null) {
+                return oldContact;
             }
             StringBuilder s = new StringBuilder(nin);
             while (s.length() > 0 && s.charAt(0) == '0') {
@@ -1369,27 +1420,75 @@ class CorePluginBodySecurityManager extends CorePluginBody {
                 }
             }
         } else {
-            AppContact oldAcademicTeacher = pu.createQueryBuilder(AppContact.class)
+            AppContact oldContact = pu.createQueryBuilder(AppContact.class)
                     .byField("firstName", c.getFirstName())
                     .byField("lastName", c.getLastName())
                     .getFirstResultOrNull();
-            if (oldAcademicTeacher != null) {
-                return oldAcademicTeacher;
+            if (oldContact != null) {
+                return oldContact;
             }
         }
         return null;
     }
 
-    public List<AppContact> findContacts(String name, String type) {
+    public AppUser findUser(AppUser c) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        return pu.createQuery(
-                "Select u.contact from AppUser u where 1=1 "
-                + (StringUtils.isEmpty(name) ? "" : " u.contact.fullName like :name ")
-                + (StringUtils.isEmpty(type) ? "" : " and u.type.name =:type ")
-        )
-                .setParameter("name", "%" + name + "%", !StringUtils.isEmpty(name))
-                .setParameter("name", name, !StringUtils.isEmpty(name))
-                .getResultList();
+        if (!StringUtils.isEmpty(c.getLogin())) {
+            return findUser(c.getLogin());
+        }
+        String nin = c.getNin();
+        if (!StringUtils.isEmpty(nin)) {
+            nin = nin.trim();
+            AppUser oldUser = pu.createQueryBuilder(AppUser.class)
+                    .byField("nin", nin)
+                    .getFirstResultOrNull();
+            if (oldUser != null) {
+                return oldUser;
+            }
+            StringBuilder s = new StringBuilder(nin);
+            while (s.length() > 0 && s.charAt(0) == '0') {
+                s.delete(0, 1);
+            }
+            if (s.length() > 0) {
+                List<AppUser> possibleContacts = pu.createQuery("Select u from AppUser u where u.nin like :nin")
+                        .setParameter("nin", "%" + s + "%")
+                        .getResultList();
+                for (AppUser o : possibleContacts) {
+                    String nin1 = o.getNin();
+                    if (!StringUtils.isEmpty(nin1)) {
+                        nin1 = nin1.trim();
+                        StringBuilder s1 = new StringBuilder(nin1);
+                        while (s1.length() > 0 && s1.charAt(0) == '0') {
+                            s1.delete(0, 1);
+                        }
+                        if (s1.toString().equals(s.toString())) {
+                            //okkay found!
+                            return o;
+                        }
+                    }
+                }
+            }
+        } else {
+            AppUser oldUser = pu.createQueryBuilder(AppContact.class)
+                    .byField("firstName", c.getFirstName())
+                    .byField("lastName", c.getLastName())
+                    .getFirstResultOrNull();
+            if (oldUser != null) {
+                return oldUser;
+            }
+        }
+        return null;
     }
 
+//    public List<AppUser> findContacts(String name, String type) {
+//        PersistenceUnit pu = UPA.getPersistenceUnit();
+//        return pu.createQuery(
+//                "Select u from AppUser u where 1=1 "
+//                + (StringUtils.isEmpty(name) ? "" : " u.fullName like :name ")
+//                + (StringUtils.isEmpty(type) ? "" : " and u.type.name =:type ")
+//        )
+//                .setParameter("name", "%" + name + "%", !StringUtils.isEmpty(name))
+//                .setParameter("name", name, !StringUtils.isEmpty(name))
+//                .getResultList();
+//    }
 }

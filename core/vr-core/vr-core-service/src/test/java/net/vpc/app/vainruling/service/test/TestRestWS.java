@@ -1,7 +1,6 @@
 package net.vpc.app.vainruling.service.test;
 
 
-import net.vpc.upa.exceptions.UPAIllegalArgumentException;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.CookieStore;
@@ -18,6 +17,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
+import net.vpc.upa.exceptions.IllegalUPAArgumentException;
 
 /**
  * Created by vpc on 9/16/16.
@@ -72,7 +72,7 @@ public class TestRestWS {
                 if(arg instanceof String){
                     sarg="{\"String\":\""+arg+"\"}";
                 }else{
-                    throw new UPAIllegalArgumentException("Unhandled");
+                    throw new IllegalUPAArgumentException("Unhandled");
                 }
                 builder.setParameter((String)args[i], sarg);
             }

@@ -1,12 +1,12 @@
 package net.vpc.app.vainruling.core.service.util;
 
-import net.vpc.app.vainruling.core.service.model.AppContact;
+import net.vpc.app.vainruling.core.service.model.AppUser;
 
 public class VrPasswordStrategyRandom implements VrPasswordStrategy {
     public static final VrPasswordStrategy INSTANCE = new VrPasswordStrategyRandom();
 
     @Override
-    public String generatePassword(AppContact contact) {
+    public String generatePassword(AppUser contact) {
         String fn = contact.getFirstName();
         String ln = contact.getLastName();
         if (fn == null) {

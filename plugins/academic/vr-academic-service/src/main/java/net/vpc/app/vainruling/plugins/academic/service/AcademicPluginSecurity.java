@@ -55,7 +55,7 @@ public class AcademicPluginSecurity {
             if (teacher <= 0 || r.getId() == teacher) {
                 return true;
             }
-            AppDepartment d = r.getDepartment();
+            AppDepartment d = r.getUser().getDepartment();
             if (d != null) {
                 return core.isCurrentSessionAdminOrManagerOf(d.getId());
             }
@@ -183,7 +183,7 @@ public class AcademicPluginSecurity {
         if (user != null && teacher.getUser() != null && user.getId() == teacher.getUser().getId()) {
             return true;
         }
-        AppDepartment targetDept = (teacher == null) ? null : teacher.getDepartment();
+        AppDepartment targetDept = (teacher == null) ? null : teacher.getUser().getDepartment();
         if (targetDept == null) {
             targetDept = (teacher == null || teacher.getUser() == null) ? null : teacher.getUser().getDepartment();
         }
@@ -197,7 +197,7 @@ public class AcademicPluginSecurity {
             return true;
         }
 
-        AppDepartment targetDept = (student == null) ? null : student.getDepartment();
+        AppDepartment targetDept = (student == null) ? null : student.getUser().getDepartment();
         if (targetDept == null) {
             targetDept = (student == null || student.getUser() == null) ? null : student.getUser().getDepartment();
         }

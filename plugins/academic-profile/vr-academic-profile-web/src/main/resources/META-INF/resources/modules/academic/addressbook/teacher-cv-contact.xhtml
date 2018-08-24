@@ -5,7 +5,7 @@
 <!--@elvariable id="teacherCurriculumCtrl" type="net.vpc.app.vr.plugins.academicprofile.web.TeacherCurriculumCtrl"-->
 <h:head>
     <title>
-    #{teacherCurriculumCtrl.model.teacher.user.contact.fullName}</title>
+    #{teacherCurriculumCtrl.model.teacher.user.fullName}</title>
     <meta charset="utf-8"/>
     <meta name="author" content="vpc"/>
     <meta name="description" content="ENISo's people"/>
@@ -22,8 +22,8 @@
 </h:head>
 <h:body>
     <h:form id="contactForm">
-        <h:inputHidden id="teacher_name" value="#{teacherCurriculumCtrl.model.teacherCV.teacher.user.contact.fullName}"/>
-        <h:inputHidden id="teacher_email" value="#{teacherCurriculumCtrl.model.teacherCV.teacher.user.contact.email}"/>
+        <h:inputHidden id="teacher_name" value="#{teacherCurriculumCtrl.model.teacherCV.teacher.user.fullName}"/>
+        <h:inputHidden id="teacher_email" value="#{teacherCurriculumCtrl.model.teacherCV.teacher.user.email}"/>
     </h:form>
     <header>
         <div class="vr-top">
@@ -32,7 +32,7 @@
         </div>
 
         <div class="logo">
-            <a href="#" class="vr-contact">#{teacherCurriculumCtrl.model.teacher.user.contact.fullName}</a>
+            <a href="#" class="vr-contact">#{teacherCurriculumCtrl.model.teacher.user.fullName}</a>
         </div>
         <!-- end logo -->
         <ul style="list-style-type: none;font-family: 'Anivers', serif;">

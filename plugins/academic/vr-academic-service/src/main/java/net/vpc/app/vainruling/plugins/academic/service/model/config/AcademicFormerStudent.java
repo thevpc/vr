@@ -17,7 +17,7 @@ import java.util.Objects;
 /**
  * @author taha.bensalah@gmail.com
  */
-@Entity(listOrder = "this.student.user.contact.fullName")
+@Entity(listOrder = "this.student.user.fullName")
 @Path("Contact")
 @Properties(
         {

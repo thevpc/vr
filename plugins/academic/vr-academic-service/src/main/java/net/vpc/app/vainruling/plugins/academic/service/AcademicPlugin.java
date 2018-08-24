@@ -295,10 +295,10 @@ public class AcademicPlugin {
         return teachers.findTeacherByUser(userId);
     }
 
-    public AcademicTeacher findTeacherByContact(int contactId) {
-        return teachers.findTeacherByContact(contactId);
-    }
-
+//    public AcademicTeacher findTeacherByContact(int contactId) {
+//        return teachers.findTeacherByContact(contactId);
+//    }
+    
     public AcademicTeacher findTeacher(StringComparator t) {
         return teachers.findTeacher(t);
     }
@@ -354,9 +354,9 @@ public class AcademicPlugin {
         return students.findStudentByUser(userId);
     }
 
-    public AcademicStudent findStudentByContact(int contactId) {
-        return students.findStudentByContact(contactId);
-    }
+//    public AcademicStudent findStudentByContact(int contactId) {
+//        return students.findStudentByContact(contactId);
+//    }
 
     public List<AcademicStudent> findStudents(Integer department, AcademicStudentStage stage) {
         return students.findStudents(department, stage);
@@ -1092,8 +1092,8 @@ public class AcademicPlugin {
     public AcademicSemester getCurrentSemester() {
         return config.getCurrentSemester();
     }
-    
-        public void academicCoursePlan_validationErrors_Formula_fix(int academicPlanId) {
+
+    public void academicCoursePlan_validationErrors_Formula_fix(int academicPlanId) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         AcademicCoursePlan d = (AcademicCoursePlan) pu.findById(AcademicCoursePlan.class, academicPlanId);
         if (d == null) {
@@ -1234,6 +1234,20 @@ public class AcademicPlugin {
 //                pu.merge(assignment);
 //            }
 //        }
+    }
+
+    public boolean isCurrentTeacher(int teacherId) {
+        Integer uid = core.getCurrentUserId();
+        if (uid == null) {
+            return false;
+        }
+        AcademicPlugin ac = AcademicPlugin.get();
+        AcademicTeacher teacher = ac.findTeacher(teacherId);
+        Integer tid = (teacher == null || teacher.getUser() == null) ? null : teacher.getUser().getId();
+        if (tid == null) {
+            return false;
+        }
+        return uid.equals(tid);
     }
 
 }

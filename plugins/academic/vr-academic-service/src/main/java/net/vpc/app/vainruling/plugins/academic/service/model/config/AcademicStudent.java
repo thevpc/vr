@@ -9,22 +9,20 @@ import net.vpc.app.vainruling.core.service.model.*;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.*;
 import net.vpc.upa.FormulaType;
-import net.vpc.upa.UPA;
 import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 import java.sql.Timestamp;
-import java.util.List;
 import java.util.Objects;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@Entity(listOrder = "this.user.contact.fullName")
+@Entity(listOrder = "this.user.fullName")
 @Path("Contact")
 @Properties(
         {
-                @Property(name = "ui.auto-filter.department", value = "{expr='this.department',order=1}"),
+                @Property(name = "ui.auto-filter.department", value = "{expr='this.user.department',order=1}"),
                 @Property(name = "ui.auto-filter.lastClass1", value = "{expr='this.lastClass1',order=2}"),
                 @Property(name = "ui.auto-filter.stage", value = "{expr='this.stage',order=3}"),
                 @Property(name = "ui.auto-filter.firstSubscription", value = "{expr='this.firstSubscription',order=4}"),
@@ -40,6 +38,7 @@ public class AcademicStudent {
     @Sequence
     private int id;
     private String subscriptionNumber;
+    @Deprecated
     private AppDepartment department;
     @Main
     private AppUser user;
@@ -178,10 +177,12 @@ public class AcademicStudent {
         this.deletedOn = deletedOn;
     }
 
+    @Deprecated
     public AppDepartment getDepartment() {
         return department;
     }
 
+    @Deprecated
     public void setDepartment(AppDepartment department) {
         this.department = department;
     }
@@ -375,12 +376,12 @@ public class AcademicStudent {
     }
 
     public String resolveFullName(){
-        AppContact c = resolveContact();
+        AppUser c = getUser();
         return c==null?String.valueOf(getId()): c.getFullName();
     }
 
     public String resolveFullTitle(){
-        AppContact c = resolveContact();
+        AppUser c = getUser();
         return c==null?String.valueOf(getId()): c.getFullTitle();
     }
 
@@ -480,8 +481,8 @@ public class AcademicStudent {
         this.baccalaureateGovernorate = baccalaureateGovernorate;
     }
 
-    public AppContact resolveContact(){
-        AppUser c = getUser();
-        return c==null?null: c.getContact();
-    }
+//    public AppContact resolveContact(){
+//        AppUser c = getUser();
+//        return c==null?null: c.getContact();
+//    }
 }

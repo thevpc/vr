@@ -6,6 +6,7 @@
 package net.vpc.app.vainruling.plugins.academic.service.model.imp;
 
 import net.vpc.app.vainruling.core.service.model.AppContact;
+import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
 import net.vpc.upa.config.Id;
 import net.vpc.upa.config.Sequence;
@@ -59,18 +60,18 @@ public class AcademicStudentImport {
 
     public AcademicStudentImport(AcademicStudent student) {
         nin = student.getSubscriptionNumber();
-        AppContact contact = student.resolveContact();
-        if(contact !=null) {
-            firstName = contact.getFirstName();
-            firstName2 = contact.getFirstName2();
-            lastName = contact.getLastName();
-            lastName2 = contact.getLastName2();
-            email = contact.getEmail();
-            email2 = contact.getEmail2();
-            phone1 = contact.getPhone1();
-            phone2 = contact.getPhone1();
-            genderId = contact.getGender()==null?null:contact.getGender().getId();
-            civilityId = contact.getCivility()==null?null:contact.getCivility().getId();
+        AppUser user = student.getUser();
+        if(user !=null) {
+            firstName = user.getFirstName();
+            firstName2 = user.getFirstName2();
+            lastName = user.getLastName();
+            lastName2 = user.getLastName2();
+            email = user.getEmail();
+            email2 = user.getEmail2();
+            phone1 = user.getPhone1();
+            phone2 = user.getPhone1();
+            genderId = user.getGender()==null?null:user.getGender().getId();
+            civilityId = user.getCivility()==null?null:user.getCivility().getId();
         }
         preClassChoice1Id = student.getPreClassChoice1() == null ? null : student.getPreClassChoice1().getId();
         preClassChoice2Id = student.getPreClassChoice2() == null ? null : student.getPreClassChoice2().getId();

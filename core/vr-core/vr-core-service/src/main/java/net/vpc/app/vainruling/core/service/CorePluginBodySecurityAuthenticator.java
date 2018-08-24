@@ -52,21 +52,18 @@ class CorePluginBodySecurityAuthenticator extends CorePluginBody {
             c = core.findOrCreate(c);
             d.genders.add(c);
         }
-        AppContact adminContact = new AppContact();
-        adminContact.setFirstName("admin");
-        adminContact.setLastName("admin");
-        adminContact.setFullName("admin");
-        adminContact.setCivility(d.civilities.get(0));
-        adminContact.setGender(d.genders.get(0));
-        adminContact.setEmail("admin@vr.net");
-        adminContact = core.findOrCreate(adminContact, "firstName");
 
         AppUser uu = new AppUser();
         d.admin = uu;
+        d.admin.setFirstName("admin");
+        d.admin.setLastName("admin");
+        d.admin.setFullName("admin");
+        d.admin.setCivility(d.civilities.get(0));
+        d.admin.setGender(d.genders.get(0));
+        d.admin.setEmail("admin@vr.net");
         d.admin.setLogin("admin");
         d.admin.setPassword("admin");
         d.admin.setType(d.adminType);
-        d.admin.setContact(adminContact);
         d.admin.setEnabled(true);
         d.admin = core.findOrCreate(d.admin);
         if (d.admin == uu) {
@@ -538,39 +535,6 @@ class CorePluginBodySecurityAuthenticator extends CorePluginBody {
         });
         return found;
 
-//        if (currentSessionAdmin) {
-//            return found;
-//        }
-//        List<UserSession> valid = new ArrayList<>();
-//        for (UserSession userSession : found) {
-//            userSession = userSession.copy();
-//            userSession.setPlatformSession(null);
-//            userSession.setLastVisitedPageInfo(null);
-//            userSession.setLastVisitedPage(null);
-//            userSession.setRootUser(null);
-//            userSession.setProfileNames(null);
-//            userSession.setRights(new HashSet<>());
-//            AppUser u0 = userSession.getUser();
-//            if (u0 != null) {
-//                AppUser u = new AppUser();
-//                u.setId(u0.getId());
-//                u.setLogin(u0.getLogin());
-//                u.setType(u0.getType());
-//                u.setDepartment(u0.getDepartment());
-//                AppContact c0 = u0.getContact();
-//                if (c0 != null) {
-//                    AppContact c = new AppContact();
-//                    c.setId(c0.getId());
-//                    c.setFullName(c0.getFullName());
-//                    c.setCivility(c0.getCivility());
-//                    c.setCompany(c0.getCompany());
-//                    u.setContact(c);
-//                }
-//                userSession.setUser(u);
-//            }
-//            valid.add(userSession);
-//        }
-//        return valid;
     }
 
     public int getActiveSessionsCount() {

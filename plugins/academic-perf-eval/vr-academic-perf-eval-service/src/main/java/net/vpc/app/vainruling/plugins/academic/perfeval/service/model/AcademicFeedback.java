@@ -32,7 +32,7 @@ import net.vpc.upa.config.*;
     @Summary
     private AcademicFeedbackModel model;
     @Main
-    @Formula(value = "concat(coalesce(this.session.name),' - ',this.course.fullName,' - ',Coalesce(this.student.user.contact.fullTitle,''))",formulaOrder = 1)
+    @Formula(value = "concat(coalesce(this.session.name),' - ',this.course.fullName,' - ',Coalesce(this.student.user.fullTitle,''))",formulaOrder = 1)
     private String name;
     @Summary
     private AcademicCourseAssignment course;

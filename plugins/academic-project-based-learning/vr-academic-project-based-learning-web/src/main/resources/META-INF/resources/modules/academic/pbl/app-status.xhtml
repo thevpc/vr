@@ -195,11 +195,11 @@ and open the template in the editor.
                                                             fileName="proj-innov-enseignants-#{academicAppStatusCtrl.preferredFileName}"/>
                                         </h:commandLink>
                                     </f:facet>
-                                    <p:column headerText="Enseignant" sortBy="#{e.teacher.user.contact.fullTitle}">
-                                        <p:outputLabel value="#{e.teacher.user.contact.fullTitle}"/>
+                                    <p:column headerText="Enseignant" sortBy="#{e.teacher.user.fullTitle}">
+                                        <p:outputLabel value="#{e.teacher.user.fullTitle}"/>
                                     </p:column>
-                                    <p:column headerText="Departement" sortBy="#{e.teacher.department.name}">
-                                        <p:outputLabel value="#{e.teacher.department.name}"/>
+                                    <p:column headerText="Departement" sortBy="#{e.teacher.user.department.name}">
+                                        <p:outputLabel value="#{e.teacher.user.department.name}"/>
                                     </p:column>
                                     <p:column headerText="Nbr Equipes" sortBy="#{e.teamsCount}">
                                         <p:outputLabel styleClass="vr-center-text" value="#{(e.teamsCount)}"/>
@@ -328,14 +328,14 @@ and open the template in the editor.
                                                             fileName="proj-innov-eleves-#{academicAppStatusCtrl.preferredFileName}"/>
                                         </h:commandLink>
                                     </f:facet>
-                                    <p:column headerText="Elève" sortBy="#{s.student.user.contact.fullTitle}">
-                                        <p:outputLabel value="#{s.student.user.contact.fullTitle}"/>
+                                    <p:column headerText="Elève" sortBy="#{s.student.user.fullTitle}">
+                                        <p:outputLabel value="#{s.student.user.fullTitle}"/>
                                     </p:column>
                                     <p:column headerText="Equipe" sortBy="#{s.team.team.name}">
                                         <p:outputLabel value="#{s.team eq null? '':s.team.team.name}"/>
                                     </p:column>
-                                    <p:column headerText="Coach" sortBy="#{s.coach.user.contact.fullTitle}">
-                                        <p:outputLabel value="#{s.coach eq null? '':s.coach.user.contact.fullTitle}"/>
+                                    <p:column headerText="Coach" sortBy="#{s.coach.user.fullTitle}">
+                                        <p:outputLabel value="#{s.coach eq null? '':s.coach.user.fullTitle}"/>
                                     </p:column>
                                     <p:column headerText="Projet" sortBy="#{s.project.project.name}">
                                         <p:outputLabel value="#{s.project eq null? '':s.project.project.name}"/>

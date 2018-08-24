@@ -79,7 +79,7 @@ public abstract class AbstractCourseLoadCtrl {
         onChangePeriod();
     }
 
-    public void onInit(){
+    public void onInit() {
         getTeacherFilter().onInit();
         getCourseFilter().onInit();
         getOthersCourseFilter().onInit();
@@ -110,15 +110,14 @@ public abstract class AbstractCourseLoadCtrl {
         return null;
     }
 
-
     public void onChangePeriod() {
         AcademicPlugin ap = VrApp.getBean(AcademicPlugin.class);
         AppDepartment userDepartment = getUserDepartment();
         int periodId = getTeacherFilter().getPeriodId();
 
         getModel().setEnableLoadEditing(
-                (userDepartment == null || periodId < 0) ? false :
-                        ap.getAppDepartmentPeriodRecord(periodId, userDepartment.getId()).getBoolean("enableLoadEditing", false)
+                (userDepartment == null || periodId < 0) ? false
+                        : ap.getAppDepartmentPeriodRecord(periodId, userDepartment.getId()).getBoolean("enableLoadEditing", false)
         );
 
         getTeacherFilter().onChangePeriod();
@@ -139,17 +138,18 @@ public abstract class AbstractCourseLoadCtrl {
         onChangeOther();
     }
 
-
     public void onDoNothing() {
         System.out.println("....");
     }
+
     public void onChangeOther() {
         onRefresh();
     }
 
-    public void onChangeMultipleSelection(){
+    public void onChangeMultipleSelection() {
         //do nothing
     }
+
     public void onRefresh() {
         Chronometer chronometer = new Chronometer();
         int periodId = getTeacherFilter().getPeriodId();
@@ -211,12 +211,12 @@ public abstract class AbstractCourseLoadCtrl {
             DeviationConfig deviationConfig = getCourseFilter().getDeviationConfig();
             List<AcademicCourseAssignmentInfo> teacherAssignmentsAndIntents = a.findCourseAssignmentsAndIntents(periodId, teacherId, courseAssignmentFilter);
             for (AcademicCourseAssignmentInfo b : teacherAssignmentsAndIntents) {
-                if(!all.containsKey(b.getAssignment().getId())) {
+                if (!all.containsKey(b.getAssignment().getId())) {
                     all.put(b.getAssignment().getId(), new SelectableAssignment(b, teacherId));
                 }
             }
 
-            TeacherPeriodStat stat = a.evalTeacherStat(periodId, teacherId, courseAssignmentFilter, deviationConfig,null);
+            TeacherPeriodStat stat = a.evalTeacherStat(periodId, teacherId, courseAssignmentFilter, deviationConfig, null);
             for (TeacherSemesterStat teacherSemesterStat : stat.getSemesters()) {
                 for (AcademicCourseAssignmentInfo m : teacherSemesterStat.getAssignments()) {
                     visitedAssignmentId.add(m.getAssignment().getId());
@@ -224,8 +224,6 @@ public abstract class AbstractCourseLoadCtrl {
             }
             getModel().setStat(new TeacherPeriodStatExt(stat, all));
         }
-
-
 
         boolean conflict = isFiltered("conflict");
         List<AcademicCourseAssignmentInfo> others = new ArrayList<>();
@@ -237,11 +235,9 @@ public abstract class AbstractCourseLoadCtrl {
                 int chunk_size = chuncks.size();
                 boolean _intended = chunk_size > 0;
                 boolean accepted = true;
-                if (
-                        ((assigned && _assigned) || (nonassigned && !_assigned))
+                if (((assigned && _assigned) || (nonassigned && !_assigned))
                         && ((intended && _intended) || (nonintended && !_intended))
-                        && ((locked && _locked) || (unlocked && !_locked))
-                        ) {
+                        && ((locked && _locked) || (unlocked && !_locked))) {
                     //ok
                 } else {
                     accepted = false;
@@ -251,11 +247,11 @@ public abstract class AbstractCourseLoadCtrl {
                     if (chuncks.isEmpty()) {
                         accepted = false;
                     } else if (c.getAssignment().getTeacher() != null) {
-                        if(chunk_size > 1){
-                            accepted=true;
-                        }else if(chunk_size == 1){
-                            TeacherAssignmentChunck first=(TeacherAssignmentChunck) chuncks.values().toArray()[0];
-                            accepted=c.getAssignment().getTeacher().getId()!=first.getTeacherId();
+                        if (chunk_size > 1) {
+                            accepted = true;
+                        } else if (chunk_size == 1) {
+                            TeacherAssignmentChunck first = (TeacherAssignmentChunck) chuncks.values().toArray()[0];
+                            accepted = c.getAssignment().getTeacher().getId() != first.getTeacherId();
                         }
                     } else {
                         accepted = chunk_size > 1;
@@ -263,9 +259,9 @@ public abstract class AbstractCourseLoadCtrl {
                 }
                 if (accepted) {
                     boolean powerUser = CorePlugin.get().isCurrentSessionAdminOrManager();
-                    if((c.getAssignment().isLocked() || c.getAssignment().getCoursePlan().isLocked()) && !powerUser){
+                    if ((c.getAssignment().isLocked() || c.getAssignment().getCoursePlan().isLocked()) && !powerUser) {
                         //dont add
-                    }else {
+                    } else {
                         others.add(c);
                     }
                 }
@@ -278,27 +274,27 @@ public abstract class AbstractCourseLoadCtrl {
         System.out.println(chronometer);
     }
 
-    public void applyOthersTextFilter(){
+    public void applyOthersTextFilter() {
         getModel().setOthers(new TextSearchFilter(getModel().getOthersTextFilter(),
                 new ObjectToMapConverter() {
-                    @Override
-                    public Map<String, Object> convert(Object o) {
-                        Map<String, Object> m=new HashMap();
+            @Override
+            public Map<String, Object> convert(Object o) {
+                Map<String, Object> m = new HashMap();
 //                        m.putAll(DefaultObjectToMapConverter.INSTANCE.convert(o));
-                        SelectableAssignment sa=(SelectableAssignment) o;
-                        m.putAll(DefaultObjectToMapConverter.INSTANCE.convert(sa.getValue().getAssignment()));
-                        int keyIndex=1;
-                        for (TeacherAssignmentChunck chunck : sa.getValue().getAssignmentChunck().getChuncks().values()) {
-                            m.put("key"+keyIndex,chunck.getTeacherName());
-                            keyIndex++;
-                        }
-                        for (TeacherAssignmentChunck chunck : sa.getValue().getCourseChunck().getChuncks().values()) {
-                            m.put("key"+keyIndex,chunck.getTeacherName());
-                            keyIndex++;
-                        }
-                        return m;
-                    }
+                SelectableAssignment sa = (SelectableAssignment) o;
+                m.putAll(DefaultObjectToMapConverter.INSTANCE.convert(sa.getValue().getAssignment()));
+                int keyIndex = 1;
+                for (TeacherAssignmentChunck chunck : sa.getValue().getAssignmentChunck().getChuncks().values()) {
+                    m.put("key" + keyIndex, chunck.getTeacherName());
+                    keyIndex++;
                 }
+                for (TeacherAssignmentChunck chunck : sa.getValue().getCourseChunck().getChuncks().values()) {
+                    m.put("key" + keyIndex, chunck.getTeacherName());
+                    keyIndex++;
+                }
+                return m;
+            }
+        }
         ).filterList(getModel().getNonFilteredOthers()));
     }
 
@@ -314,7 +310,7 @@ public abstract class AbstractCourseLoadCtrl {
                 if (t != null) {
                     if (isAllowedUpdateMineIntents(assignment.getId())) {
                         a.addIntent(t.getId(), assignment.getId());
-                        a.removeCourseAssignment(assignment.getId(),false,false);
+                        a.removeCourseAssignment(assignment.getId(), false, false);
                     }
                 }
             }
@@ -433,16 +429,17 @@ public abstract class AbstractCourseLoadCtrl {
     }
 
     public void doDeleteAssignment(Integer assignementId) {
-        if(CorePlugin.get().isCurrentSessionAdminOrManager()){
+        if (CorePlugin.get().isCurrentSessionAdminOrManager()) {
             AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
-            a.removeCourseAssignment(assignementId,true,false);
+            a.removeCourseAssignment(assignementId, true, false);
         }
     }
+
     public void doUnAssign(Integer assignementId) {
         AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
         AcademicTeacher t = getModel().getCurrentTeacher();
         if (t != null && assignementId != null) {
-            a.removeCourseAssignment(assignementId,false,true);
+            a.removeCourseAssignment(assignementId, false, true);
         }
         onRefresh();
     }
@@ -472,10 +469,10 @@ public abstract class AbstractCourseLoadCtrl {
 
     public void doSwitchLockAssignment(Integer assignementId) {
         AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
-        if(CorePlugin.get().isCurrentSessionAdminOrManager()) {
+        if (CorePlugin.get().isCurrentSessionAdminOrManager()) {
             if (assignementId != null) {
                 AcademicCourseAssignment assignment = a.findCourseAssignment(assignementId);
-                if(assignment!=null) {
+                if (assignment != null) {
                     assignment.setLocked(!assignment.isLocked());
                     a.updateCourseAssignment(assignment);
                 }
@@ -486,7 +483,7 @@ public abstract class AbstractCourseLoadCtrl {
 
     public void doSwitchLockAssignmentSelected() {
         AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
-        if(CorePlugin.get().isCurrentSessionAdminOrManager()) {
+        if (CorePlugin.get().isCurrentSessionAdminOrManager()) {
             for (SelectableAssignment s : getModel().getAll().values()) {
                 if (s.isSelected()) {
                     AcademicCourseAssignment assignment = s.getValue().getAssignment();
@@ -497,29 +494,30 @@ public abstract class AbstractCourseLoadCtrl {
             onRefresh();
         }
     }
+
     public void doUnAssignSelected() {
         AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
 //        AcademicTeacher t = getModel().getCurrentTeacher();
 //        if (t != null) {
-            for (SelectableAssignment s : getModel().getAll().values()) {
-                if (s.isSelected()) {
-                    int assignementId = s.getValue().getAssignment().getId();
-                    a.removeCourseAssignment(assignementId,false,true);
-                }
+        for (SelectableAssignment s : getModel().getAll().values()) {
+            if (s.isSelected()) {
+                int assignementId = s.getValue().getAssignment().getId();
+                a.removeCourseAssignment(assignementId, false, true);
             }
+        }
 //        }
         onRefresh();
     }
 
     public void doDeleteSelected() {
         AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
-        if(CorePlugin.get().isCurrentSessionAdminOrManager()) {
+        if (CorePlugin.get().isCurrentSessionAdminOrManager()) {
 //        AcademicTeacher t = getModel().getCurrentTeacher();
 //        if (t != null) {
             for (SelectableAssignment s : getModel().getAll().values()) {
                 if (s.isSelected()) {
                     int assignementId = s.getValue().getAssignment().getId();
-                    a.removeCourseAssignment(assignementId, true,false);
+                    a.removeCourseAssignment(assignementId, true, false);
                 }
             }
 //        }
@@ -571,8 +569,8 @@ public abstract class AbstractCourseLoadCtrl {
             SelectableAssignment t0 = getModel().getAll().get(assignmentId);
             AcademicCourseAssignment t = t0 == null ? null : t0.getValue().getAssignment();
             if (t != null) {
-                AppUser user=core.findUser(userId);
-                if(user!=null) {
+                AppUser user = core.findUser(userId);
+                if (user != null) {
                     AppDepartment d = t.getOwnerDepartment();
                     if (d != null) {
                         if (core.isCurrentAllowed(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_COURSE_LOAD_UPDATE_INTENTS)) {
@@ -613,12 +611,11 @@ public abstract class AbstractCourseLoadCtrl {
             return false;
         }
 
-
         if (assignementId != null) {
             SelectableAssignment t0 = getModel().getAll().get(assignementId);
             AcademicCourseAssignment t = t0 == null ? null : t0.getValue().getAssignment();
-            AppUser u=core.findUser(userId);
-            if (u!=null && t != null) {
+            AppUser u = core.findUser(userId);
+            if (u != null && t != null) {
                 AppDepartment d = t.getOwnerDepartment();
                 if (d != null) {
                     if (core.isCurrentAllowed(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_COURSE_LOAD_UPDATE_ASSIGNMENTS)) {
@@ -753,39 +750,91 @@ public abstract class AbstractCourseLoadCtrl {
 //        return sb.toString();
     }
 
-    public void onSwitchDisplayOtherModules(){
+    public void onSwitchDisplayOtherModules() {
         getModel().setDisplayOtherModules(!getModel().isDisplayOtherModules());
     }
 
     public static class SelectableAssignment extends SelectableObject<AcademicCourseAssignmentInfo> {
+
+        private TeacherAssignmentChunck currentIntent;
         private List<TeacherAssignmentChunck> intents;
         private String rooms;
-        private  List<TeacherAssignmentChunck> courseIntents;
+        private List<TeacherAssignmentChunck> courseIntents;
         private AcademicClass academicClass;
         private boolean currentAssigned;
+        private boolean currentWish;
+        private boolean currentProposal;
+        private boolean currentAcceptedProposal;
+        private boolean currentAcceptedWish;
         private boolean otherAssigned;
         private boolean noneAssigned;
+        private String currentStatusLocalizedString;
+        private String currentStatusString;
 
         public SelectableAssignment(AcademicCourseAssignmentInfo value, int visitor) {
             super(value, false);
+            this.currentIntent = value.getAssignmentChunck().getForTeacher(visitor);
             this.intents = value.getAssignmentChunck().getAllButTeacher(visitor);
             this.courseIntents = value.getCourseChunck().getAllButTeacher(visitor);
-            academicClass=value.resolveAcademicClass();
+            this.currentWish = this.currentIntent != null && this.currentIntent.isWish();
+            this.currentProposal = this.currentIntent != null && this.currentIntent.isProposal();
+            this.currentAcceptedWish = this.currentIntent != null && this.currentIntent.isAcceptedWish();
+            this.currentAcceptedProposal = this.currentIntent != null && this.currentIntent.isAcceptedProposal();
+            this.currentStatusString=this.currentIntent == null ?"?":this.currentIntent.getStatusString();
+            this.currentStatusLocalizedString=this.currentIntent == null ?"?":this.currentIntent.getStatusLocalizedString();
+            academicClass = value.resolveAcademicClass();
             AcademicCourseType courseType = value.getAssignment().getCourseType();
-            if(courseType!=null && courseType.getName().equalsIgnoreCase("C")) {
+            if (courseType != null && courseType.getName().equalsIgnoreCase("C")) {
                 rooms = value.getAssignment().getCoursePlan().getRoomConstraintsC();
-            }else if(courseType!=null && courseType.getName().equalsIgnoreCase("TP")){
-                rooms=value.getAssignment().getCoursePlan().getRoomConstraintsTP();
+            } else if (courseType != null && courseType.getName().equalsIgnoreCase("TP")) {
+                rooms = value.getAssignment().getCoursePlan().getRoomConstraintsTP();
             }
-            if(value.isAssigned() && value.getAssignment().getTeacher()!=null){
-                if(value.getAssignment().getTeacher().getId()==visitor){
-                   currentAssigned=true;
-                }else{
-                    otherAssigned=true;
+            if (value.isAssigned() && value.getAssignment().getTeacher() != null) {
+                if (value.getAssignment().getTeacher().getId() == visitor) {
+                    currentAssigned = true;
+                } else {
+                    otherAssigned = true;
                 }
-            }else{
-                noneAssigned=true;
+            } else {
+                noneAssigned = true;
             }
+        }
+
+        public TeacherAssignmentChunck getCurrentIntent() {
+            return currentIntent;
+        }
+
+        public boolean isCurrentAcceptedProposal() {
+            return currentAcceptedProposal;
+        }
+
+        public boolean isCurrentAcceptedWish() {
+            return currentAcceptedWish;
+        }
+
+        public String getCurrentStatusLocalizedString() {
+            return currentStatusLocalizedString;
+        }
+
+        public String getCurrentStatusString() {
+            return currentStatusString;
+        }
+        
+
+        public boolean isCurrentWish() {
+            return currentWish;
+        }
+
+        public void setCurrentWish(boolean currentWish) {
+            this.currentWish = currentWish;
+        }
+
+        public boolean isCurrentProposal() {
+            return currentProposal;
+        }
+
+        public void setCurrentProposal(boolean currentProposal) {
+            this.currentProposal = currentProposal;
         }
 
         public String getRooms() {
@@ -804,7 +853,7 @@ public abstract class AbstractCourseLoadCtrl {
             return courseIntents;
         }
 
-        public SelectableAssignment setCourseIntents( List<TeacherAssignmentChunck> courseIntents) {
+        public SelectableAssignment setCourseIntents(List<TeacherAssignmentChunck> courseIntents) {
             this.courseIntents = courseIntents;
             return this;
         }
@@ -827,6 +876,7 @@ public abstract class AbstractCourseLoadCtrl {
     }
 
     public static class TeacherPeriodStatExt {
+
         private TeacherPeriodStat val;
         private TeacherSemesterStatExt[] semesters;
         private List<SelectableAssignment> assignments;
@@ -855,6 +905,7 @@ public abstract class AbstractCourseLoadCtrl {
     }
 
     public static class TeacherSemesterStatExt {
+
         private TeacherSemesterStat val;
         private List<SelectableAssignment> assignments;
 
@@ -970,33 +1021,33 @@ public abstract class AbstractCourseLoadCtrl {
         }
 
         public double getOthersSumC() {
-            double v=0;
+            double v = 0;
             for (SelectableAssignment other : others) {
-                v+=other.getValue().getAssignment().getValueC();
+                v += other.getValue().getAssignment().getValueC();
             }
             return v;
         }
 
         public double getOthersSumTD() {
-            double v=0;
+            double v = 0;
             for (SelectableAssignment other : others) {
-                v+=other.getValue().getAssignment().getValueTD();
+                v += other.getValue().getAssignment().getValueTD();
             }
             return v;
         }
 
         public double getOthersSumTP() {
-            double v=0;
+            double v = 0;
             for (SelectableAssignment other : others) {
-                v+=other.getValue().getAssignment().getValueTP();
+                v += other.getValue().getAssignment().getValueTP();
             }
             return v;
         }
 
         public double getOthersSumPM() {
-            double v=0;
+            double v = 0;
             for (SelectableAssignment other : others) {
-                v+=other.getValue().getAssignment().getValuePM();
+                v += other.getValue().getAssignment().getValuePM();
             }
             return v;
         }

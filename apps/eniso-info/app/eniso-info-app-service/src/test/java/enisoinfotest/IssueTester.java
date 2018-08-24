@@ -25,7 +25,7 @@ public class IssueTester {
     }
 
     public static void main3(String[] args) {
-        UPAImplDefaults.PRODUCTION_MODE=false;
+        UPAImplDefaults.DEBUG_MODE=true;
         List<Object> all = UPA.getPersistenceUnit()
                 .createQuery("Select u from AcademicTeacher u where u.id in ("
                         + " (Select t.id from AcademicTeacher t "
@@ -34,7 +34,7 @@ public class IssueTester {
                         + " union (Select t.id from AcademicTeacher t "
                         + " inner join AcademicCourseAssignment a on a.teacherId=t.id "
                         + " where a.coursePlan.period.id=:periodId) "
-                        + ") order by u.user.contact.fullName")
+                        + ") order by u.user.fullName")
                 .setParameter("periodId",12)
                 .getResultList();
         System.out.println("found = "+all);

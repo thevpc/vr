@@ -731,7 +731,7 @@ public class DefaultCourseAssignmentFilter implements CourseAssignmentFilter {
         AcademicTeacherDegree teacherDegree = null;
         AcademicOfficialDiscipline teacherDiscipline = null;
         if(teacher !=null){
-            teacherDepartment = teacher.getDepartment();
+            teacherDepartment = teacher.getUser().getDepartment();
             teacherSituation = teacher.getSituation();
             teacherDegree = teacher.getDegree();
             teacherDiscipline = teacher.getOfficialDiscipline();

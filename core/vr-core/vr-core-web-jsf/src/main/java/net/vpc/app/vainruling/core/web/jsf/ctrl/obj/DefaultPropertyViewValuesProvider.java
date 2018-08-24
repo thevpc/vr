@@ -14,6 +14,7 @@ import net.vpc.upa.types.EnumType;
 import net.vpc.upa.types.ManyToOneType;
 
 import java.util.List;
+import net.vpc.upa.exceptions.UnsupportedUPAFeatureException;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -35,7 +36,7 @@ public class DefaultPropertyViewValuesProvider implements PropertyViewValuesProv
         if (dt instanceof EnumType) {
             return enumProvider.resolveValues(propertyView, field, dt, viewContext);
         }
-        throw new UnsupportedOperationException("Not supported yet.");
+        throw new UnsupportedUPAFeatureException("Not supported yet.");
     }
 
 }

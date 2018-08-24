@@ -93,7 +93,7 @@ public class DefaultTeacherPeriodFilter implements TeacherPeriodFilter {
         }
         AppDepartment department = t.getDepartment();
         if (department == null) {
-            department = t.getTeacher().getDepartment();
+            department = t.getTeacher().getUser().getDepartment();
         }
         if (!acceptDepartment(department)) {
             return false;

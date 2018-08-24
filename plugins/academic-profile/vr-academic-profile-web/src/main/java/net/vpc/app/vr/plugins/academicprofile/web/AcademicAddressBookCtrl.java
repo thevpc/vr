@@ -77,10 +77,10 @@ public class AcademicAddressBookCtrl {
                     if (t.getSituation() == null) {
                         return false;
                     }
-                    if (t.getDepartment() == null) {
+                    if (t.getUser().getDepartment() == null) {
                         return false;
                     }
-                    return "II".equals(t.getDepartment().getCode()) && "Permanent".equals(t.getSituation().getName());
+                    return "II".equals(t.getUser().getDepartment().getCode()) && "Permanent".equals(t.getSituation().getName());
                 }
                 return false;
             }
@@ -142,8 +142,8 @@ public class AcademicAddressBookCtrl {
                         if (query.accept(t)) {
                             Contact ct = new Contact();
                             ct.setName(t.resolveFullName());
-                            if (t.getDepartment() != null) {
-                                ct.getTitles().add("Dept. " + getValidString(t.getDepartment().getName(), t.getDepartment().getName2(), t.getDepartment().getName3()));
+                            if (t.getUser().getDepartment() != null) {
+                                ct.getTitles().add("Dept. " + getValidString(t.getUser().getDepartment().getName(), t.getUser().getDepartment().getName2(), t.getUser().getDepartment().getName3()));
                             }
                             ct.getTitles().add((t.getDegree() == null ? "?" : getValidString(t.getDegree().getName(), t.getDegree().getName2(), t.getDegree().getName3())) + ", "
                                     + (t.getSituation() == null ? "?" : getValidString(t.getSituation().getName(), t.getSituation().getName2(), t.getSituation().getName3())));
@@ -159,8 +159,8 @@ public class AcademicAddressBookCtrl {
                             if (!StringUtils.isEmpty(t1)) {
                                 ct.getTitles().add(t1);
                             }
-                            if (!StringUtils.isEmpty(t.resolveContact().getEmail())) {
-                                ct.getTitles().add(t.resolveContact().getEmail());
+                            if (!StringUtils.isEmpty(t.getUser().getEmail())) {
+                                ct.getTitles().add(t.getUser().getEmail());
                             }
                             ct.setUrlCommand("teacherCurriculum");
                             ct.setUrlArgs("{teacherId:'" + t.getId() + "'}");
@@ -205,8 +205,8 @@ public class AcademicAddressBookCtrl {
                                                 t.getLastClass3().getName(), t.getLastClass3().getName2(), null
                                         ));
                             }
-                            if (!StringUtils.isEmpty(t.resolveContact().getEmail())) {
-                                ct.getTitles().add(t.resolveContact().getEmail());
+                            if (!StringUtils.isEmpty(t.getUser().getEmail())) {
+                                ct.getTitles().add(t.getUser().getEmail());
                             }
                             ct.setUrlCommand("");
                             cc.add(ct);
@@ -240,8 +240,8 @@ public class AcademicAddressBookCtrl {
                             if (t.getLastJobCompany() != null) {
                                 ct.getTitles().add("@ " + t.getLastJobCompany().getName());
                             }
-                            if (!StringUtils.isEmpty(t.getStudent().resolveContact().getEmail())) {
-                                ct.getTitles().add(t.getStudent().resolveContact().getEmail());
+                            if (!StringUtils.isEmpty(t.getStudent().getUser().getEmail())) {
+                                ct.getTitles().add(t.getStudent().getUser().getEmail());
                             }
                             ct.setUrlCommand("");
                             cc.add(ct);

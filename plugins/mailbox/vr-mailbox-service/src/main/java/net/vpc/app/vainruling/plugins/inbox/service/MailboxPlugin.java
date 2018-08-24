@@ -577,7 +577,7 @@ public class MailboxPlugin {
             m.setCategory("Welcome");
             m.getProperties().setProperty("new_user_login", u.getLogin());
             if (StringUtils.isEmpty(u.getPasswordAuto())) {
-                u.setPasswordAuto(VrPasswordStrategyRandom.INSTANCE.generatePassword(u.getContact()));
+                u.setPasswordAuto(VrPasswordStrategyRandom.INSTANCE.generatePassword(u));
                 u.setPassword(u.getPasswordAuto());
                 UPA.getContext().invokePrivileged(TraceService.makeSilenced(new VoidAction() {
                     @Override

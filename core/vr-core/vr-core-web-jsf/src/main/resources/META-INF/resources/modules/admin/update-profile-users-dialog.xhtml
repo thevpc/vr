@@ -27,7 +27,7 @@ and open the template in the editor.
                     <h:form id="listForm">
                         <p:pickList value="#{updateProfileUsersActionCtrl.model.values}" var="v" effect="bounce"
                                     itemValue="#{v.login}"
-                                    itemLabel="#{v.contact eq null ? v.login : v.contact.fullName} (#{v.contact eq null ? '' : v.contact.positionTitle1})"
+                                    itemLabel="#{v.contact eq null ? v.login : v.fullName} (#{v.contact eq null ? '' : v.positionTitle1})"
                                     showSourceFilter="true" showTargetFilter="true" filterMatchMode="contains"
                                     >
 

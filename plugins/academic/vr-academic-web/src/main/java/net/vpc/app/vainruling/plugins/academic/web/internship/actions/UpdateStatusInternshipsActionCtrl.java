@@ -60,7 +60,7 @@ public class UpdateStatusInternshipsActionCtrl {
         List<SelectItem> internshipBoardsItems = new ArrayList<>();
         AcademicTeacher tt = ap.getCurrentTeacher();
 
-        List<AcademicInternshipBoard> internshipBoards = pi.findEnabledInternshipBoardsByDepartment(-1, tt.getDepartment().getId(), true);
+        List<AcademicInternshipBoard> internshipBoards = pi.findEnabledInternshipBoardsByDepartment(-1, tt.getUser().getDepartment().getId(), true);
         for (AcademicInternshipBoard t : internshipBoards) {
             String n = t.getName();
             internshipBoardsItems.add(FacesUtils.createSelectItem(String.valueOf(t.getId()), n));
@@ -73,7 +73,7 @@ public class UpdateStatusInternshipsActionCtrl {
     public void reloadInternshipGroups() {
         List<SelectItem> internshipGroupsItems = new ArrayList<>();
         AcademicTeacher tt = ap.getCurrentTeacher();
-        List<AcademicInternshipGroup> internshipGroups = pi.findEnabledInternshipGroupsByDepartment(tt.getDepartment().getId());
+        List<AcademicInternshipGroup> internshipGroups = pi.findEnabledInternshipGroupsByDepartment(tt.getUser().getDepartment().getId());
         for (AcademicInternshipGroup t : internshipGroups) {
             String n = t.getName();
             internshipGroupsItems.add(FacesUtils.createSelectItem(String.valueOf(t.getId()), n));

@@ -27,19 +27,21 @@ import net.vpc.upa.VoidAction;
 import java.io.IOException;
 import java.util.*;
 import java.util.logging.Logger;
+import net.vpc.upa.types.DateTime;
 
 public class AcademicPluginBodyAssignments extends AcademicPluginBody {
+
     private static final Logger log = Logger.getLogger(AcademicPluginBodyAssignments.class.getName());
-    public static final Converter<AcademicCourseAssignment,Integer> academicCourseAssignmentIdConverter = new AcademicCourseAssignmentIdConverter();
+    public static final Converter<AcademicCourseAssignment, Integer> academicCourseAssignmentIdConverter = new AcademicCourseAssignmentIdConverter();
 
     private static TeacherGenerationHelper teacherGenerationHelper = new TeacherGenerationHelper();
 
     private CacheService cacheService;
-    CorePlugin core ;
+    CorePlugin core;
 
     @Override
     public void onStart() {
-        cacheService=CacheService.get();
+        cacheService = CacheService.get();
         core = CorePlugin.get();
         core.addProfileRight("Teacher", AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_ASSIGNMENTS);
         core.createRight(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_COURSE_LOAD_UPDATE_INTENTS, "Mettre à jours les voeux de autres");
@@ -48,9 +50,6 @@ public class AcademicPluginBodyAssignments extends AcademicPluginBody {
         core.createRight(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_COURSE_LOAD_UPDATE_ASSIGNMENTS, "Mettre à jours les affectations");
 
     }
-
-
-
 
     public void dupCourseAssignment(int assignmentId) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
@@ -156,6 +155,8 @@ public class AcademicPluginBodyAssignments extends AcademicPluginBody {
     }
 
     public void addIntent(int teacherId, int assignementId) {
+        boolean samePerson = AcademicPlugin.get().isCurrentTeacher(teacherId);
+
         AcademicPluginSecurity.requireTeacherOrManager(teacherId);
         PersistenceUnit pu = UPA.getPersistenceUnit();
         AcademicCourseAssignment assignment = pu.findById(AcademicCourseAssignment.class, assignementId);
@@ -168,14 +169,47 @@ public class AcademicPluginBodyAssignments extends AcademicPluginBody {
             i = new AcademicCourseIntent();
             i.setTeacher(getContext().getPlugin().findTeacher(teacherId));
             i.setAssignment(assignment);
+            if (samePerson) {
+                i.setWish(true);
+                if (i.isProposal()) {
+                    i.setAcceptedWish(true);
+                    i.setWishDate(new DateTime());
+                }
+            } else {
+                i.setProposal(true);
+                if (i.isWish()) {
+                    i.setAcceptedProposal(true);
+                    i.setProposalDate(new DateTime());
+                }
+            }
             if (i.getTeacher() == null || i.getAssignment() == null) {
                 throw new RuntimeException("Error");
             }
             pu.persist(i);
+        } else {
+            if (samePerson) {
+                if (!i.isWish()) {
+                    i.setWish(true);
+                    if (i.isProposal()) {
+                        i.setAcceptedWish(true);
+                        i.setWishDate(new DateTime());
+                    }
+                }
+            } else {
+                if (!i.isProposal()) {
+                    i.setProposal(true);
+                    if (i.isWish()) {
+                        i.setAcceptedProposal(true);
+                        i.setProposalDate(new DateTime());
+                    }
+                }
+            }
+            pu.merge(i);
         }
     }
 
     public void removeIntent(int teacherId, int assignementId) {
+        boolean samePerson = AcademicPlugin.get().isCurrentTeacher(teacherId);
         AcademicPluginSecurity.requireTeacherOrManager(teacherId);
         PersistenceUnit pu = UPA.getPersistenceUnit();
         AcademicCourseAssignment assignment = pu.findById(AcademicCourseAssignment.class, assignementId);
@@ -185,7 +219,24 @@ public class AcademicPluginBodyAssignments extends AcademicPluginBody {
                 .setParameter("assignementId", assignementId)
                 .getFirstResultOrNull();
         if (i != null) {
-            pu.remove(i);
+            if (samePerson) {
+                if (i.isWish()) {
+                    i.setWish(false);
+                    i.setAcceptedWish(false);
+                    i.setWishDate(null);
+                }
+            } else {
+                if (i.isProposal()) {
+                    i.setProposal(false);
+                    i.setAcceptedProposal(false);
+                    i.setProposalDate(null);
+                }
+            }
+            if (!i.isWish() && !i.isProposal()) {
+                pu.remove(i);
+            } else {
+                pu.merge(i);
+            }
         }
     }
 
@@ -200,7 +251,7 @@ public class AcademicPluginBodyAssignments extends AcademicPluginBody {
                     .setParameter("assignementId", assignementId)
                     .getResultList();
             for (AcademicCourseIntent ii : intentList) {
-                pu.remove(ii);
+                removeIntent(ii.getTeacher().getId(), assignementId);
             }
         }
     }
@@ -220,7 +271,7 @@ public class AcademicPluginBodyAssignments extends AcademicPluginBody {
             public List<AcademicCourseAssignment> run() {
                 List<AcademicCourseAssignment> list = UPA.getPersistenceUnit().createQuery("Select a from AcademicCourseAssignment a where a.coursePlan.periodId=:periodId")
                         .setParameter("periodId", periodId)
-//                        .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 5)
+                        //                        .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 5)
                         .getResultList();
                 return list;
             }
@@ -252,7 +303,7 @@ public class AcademicPluginBodyAssignments extends AcademicPluginBody {
         AcademicPluginSecurity.requireTeacherOrManager(-1);
         List<AcademicCourseIntent> intents = null;
         intents = UPA.getPersistenceUnit().createQuery("Select a from AcademicCourseIntent a where a.assignmentId=:assignment")
-//                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 5)
+                //                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 5)
                 .setParameter("assignment", assignment)
                 .getResultList();
         return intents;
@@ -295,7 +346,6 @@ public class AcademicPluginBodyAssignments extends AcademicPluginBody {
         return ret;
     }
 
-
     public List<AcademicCourseAssignment> findCourseAssignments(int periodId, Integer teacher, CourseAssignmentFilter filter) {
         AcademicPluginSecurity.requireTeacherOrManager(-1);
         List<AcademicCourseAssignment> base = null;
@@ -329,7 +379,7 @@ public class AcademicPluginBodyAssignments extends AcademicPluginBody {
                     }
                 } else {
                     if (tt != null && !tp.isEnabled()) {
-                        System.out.println("Found assignments for teacherId=" + teacher + " : " + tt + " but he/she seems to be not enabled in "+core.findPeriod(periodId).getName());
+                        System.out.println("Found assignments for teacherId=" + teacher + " : " + tt + " but he/she seems to be not enabled in " + core.findPeriod(periodId).getName());
                     }
                     for (AcademicCourseAssignment value : list) {
                         if (filter == null || filter.acceptAssignment(new AcademicCourseAssignment1(value))) {
@@ -345,15 +395,15 @@ public class AcademicPluginBodyAssignments extends AcademicPluginBody {
 
     public List<AcademicCourseAssignmentInfo> findCourseAssignmentsAndIntents(int periodId, Integer teacher, CourseAssignmentFilter filter) {
         AcademicPluginSecurity.requireTeacherOrManager(-1);
+        List<AcademicCourseAssignmentInfo> all = new ArrayList<>();
         if (filter != null && !filter.lookupIntents()) {
-            List<AcademicCourseAssignmentInfo> m = new ArrayList<>();
             if (teacher == null) {
                 for (AcademicCourseAssignment value : findAcademicCourseAssignments(periodId)) {
                     if (filter == null || filter.acceptAssignment(new AcademicCourseAssignment1(value))) {
                         AcademicCourseAssignmentInfo b = new AcademicCourseAssignmentInfo();
                         b.setAssigned(value.getTeacher() != null);
                         b.setAssignment(value);
-                        m.add(b);
+                        all.add(b);
                     }
                 }
             } else {
@@ -372,146 +422,183 @@ public class AcademicPluginBodyAssignments extends AcademicPluginBody {
                     }
                 } else {
                     if (tt != null && !tp.isEnabled()) {
-                        System.out.println("Found assignments for teacherId=" + teacher + " : " + tt + " but he/she seems to be not enabled in "+core.findPeriod(periodId).getName());
+                        System.out.println("Found assignments for teacherId=" + teacher + " : " + tt + " but he/she seems to be not enabled in " + core.findPeriod(periodId).getName());
                     }
                     for (AcademicCourseAssignment value : list) {
                         if (filter == null || filter.acceptAssignment(new AcademicCourseAssignment1(value))) {
                             AcademicCourseAssignmentInfo b = new AcademicCourseAssignmentInfo();
                             b.setAssigned(value.getTeacher() != null);
                             b.setAssignment(value);
-                            m.add(b);
+                            all.add(b);
                         }
                     }
                 }
             }
-            return m;
-        }
-        List<AcademicCourseAssignmentInfo> all = new ArrayList<>();
-        HashSet<Integer> visited = new HashSet<>();
-        for (AcademicCourseAssignment a : findCourseAssignments(periodId, teacher, new CourseAssignmentFilterAnd().and(filter).and(new DefaultCourseAssignmentFilter().setAcceptIntents(false)))) {
-            if (!visited.contains(a.getId())) {
-                visited.add(a.getId());
-                AcademicCourseAssignmentInfo b = new AcademicCourseAssignmentInfo();
-                b.setAssigned(a.getTeacher() != null);
-                b.setAssignment(a);
-                all.add(b);
+        } else {
+            HashSet<Integer> visited = new HashSet<>();
+            for (AcademicCourseAssignment a : findCourseAssignments(periodId, teacher, new CourseAssignmentFilterAnd().and(filter).and(new DefaultCourseAssignmentFilter().setAcceptIntents(false)))) {
+                if (!visited.contains(a.getId())) {
+                    visited.add(a.getId());
+                    AcademicCourseAssignmentInfo b = new AcademicCourseAssignmentInfo();
+                    b.setAssigned(a.getTeacher() != null);
+                    b.setAssignment(a);
+                    all.add(b);
+                }
             }
-        }
-        Map<Integer, List<AcademicCourseIntent>> intentsByAssignment = new HashMap<>();
-        for (AcademicCourseIntent a : findCourseIntentsByTeacher(periodId, teacher, filter)) {
-            int assId = a.getAssignment().getId();
-            List<AcademicCourseIntent> other = intentsByAssignment.get(assId);
-            if (other == null) {
-                other = new ArrayList<>();
-                intentsByAssignment.put(assId, other);
+            Map<Integer, List<AcademicCourseIntent>> intentsByAssignment = new HashMap<>();
+            for (AcademicCourseIntent a : findCourseIntentsByTeacher(periodId, teacher, filter)) {
+                int assId = a.getAssignment().getId();
+                List<AcademicCourseIntent> other = intentsByAssignment.get(assId);
+                if (other == null) {
+                    other = new ArrayList<>();
+                    intentsByAssignment.put(assId, other);
+                }
+                other.add(a);
+                if (!visited.contains(assId)) {
+                    visited.add(assId);
+                    AcademicCourseAssignmentInfo b = new AcademicCourseAssignmentInfo();
+                    b.setAssigned(false);
+                    b.setAssignment(a.getAssignment());
+                    b.setCurrentProposal(a.isProposal());
+                    b.setCurrentWish(a.isWish());
+                    TeacherAssignmentChunck c=new TeacherAssignmentChunck(teacher==null?-1:teacher, "");
+                    c.setAcceptedProposal(a.isAcceptedProposal());
+                    c.setAcceptedWish(a.isAcceptedWish());
+                    c.setAssigned(a.getAssignment().getTeacher()!=null);
+                    c.setProposal(a.isProposal());
+                    c.setWish(a.isWish());
+                    b.setCurrentStatusString(c.getStatusString());
+                    b.setCurrentStatusLocalizedString(c.getStatusLocalizedString());
+                    all.add(b);
+                }
             }
-            other.add(a);
-            if (!visited.contains(assId)) {
-                visited.add(assId);
-                AcademicCourseAssignmentInfo b = new AcademicCourseAssignmentInfo();
-                b.setAssigned(false);
-                b.setAssignment(a.getAssignment());
-                all.add(b);
-            }
-        }
-        for (AcademicCourseAssignmentInfo a : all) {
-            List<AcademicCourseIntent> intentObjects = intentsByAssignment.get(a.getAssignment().getId());
+            for (AcademicCourseAssignmentInfo a : all) {
+                List<AcademicCourseIntent> intentObjects = intentsByAssignment.get(a.getAssignment().getId());
 //            TreeSet<String> allIntents = new TreeSet<>();
 //            TreeSet<Integer> allIntentIds = new TreeSet<>();
-            if (intentObjects != null) {
-                for (AcademicCourseIntent b1 : intentObjects) {
+                if (intentObjects != null) {
+                    for (AcademicCourseIntent b1 : intentObjects) {
 //                    if (teacher == null || (teacher.intValue() != b1.getTeacher().getId())) {
-                    String n = getContext().getPlugin().getValidName(b1.getTeacher());
-                    Map<Integer, TeacherAssignmentChunck> chuncks = a.getAssignmentChunck().getChuncks();
-                    TeacherAssignmentChunck c = chuncks.get(b1.getTeacher().getId());
-                    if (c == null) {
-                        c = new TeacherAssignmentChunck(b1.getTeacher().getId(), n);
-                        c.setIntended(true);
-                        chuncks.put(b1.getTeacher().getId(), c);
-                    } else {
-                        c.setIntended(true);
-                    }
+                        String n = getContext().getPlugin().getValidName(b1.getTeacher());
+                        Map<Integer, TeacherAssignmentChunck> chuncks = a.getAssignmentChunck().getChuncks();
+                        TeacherAssignmentChunck c = chuncks.get(b1.getTeacher().getId());
+                        if (c == null) {
+                            c = new TeacherAssignmentChunck(b1.getTeacher().getId(), n);
+                            c.setProposal(b1.isProposal());
+                            c.setWish(b1.isWish());
+                            c.setAcceptedProposal(b1.isAcceptedProposal());
+                            c.setAcceptedWish(b1.isAcceptedWish());
+                            chuncks.put(b1.getTeacher().getId(), c);
+                        } else {
+                            c.setProposal(b1.isProposal());
+                            c.setWish(b1.isWish());
+                            c.setAcceptedProposal(b1.isAcceptedProposal());
+                            c.setAcceptedWish(b1.isAcceptedWish());
+                        }
 //                    }
+                    }
                 }
-            }
-            if (a.getAssignment().getTeacher() != null) {
-                AcademicTeacher teacher1 = a.getAssignment().getTeacher();
-                String n = getContext().getPlugin().getValidName(teacher1);
-                Map<Integer, TeacherAssignmentChunck> chuncks = a.getAssignmentChunck().getChuncks();
-                TeacherAssignmentChunck c = chuncks.get(teacher1.getId());
-                if (c == null) {
-                    c = new TeacherAssignmentChunck(teacher1.getId(), n);
-                    c.setAssigned(true);
-                    chuncks.put(teacher1.getId(), c);
-                } else {
-                    c.setAssigned(true);
+                if (a.getAssignment().getTeacher() != null) {
+                    AcademicTeacher teacher1 = a.getAssignment().getTeacher();
+                    String n = getContext().getPlugin().getValidName(teacher1);
+                    Map<Integer, TeacherAssignmentChunck> chuncks = a.getAssignmentChunck().getChuncks();
+                    TeacherAssignmentChunck c = chuncks.get(teacher1.getId());
+                    if (c == null) {
+                        c = new TeacherAssignmentChunck(teacher1.getId(), n);
+                        c.setAssigned(true);
+                        chuncks.put(teacher1.getId(), c);
+                    } else {
+                        c.setAssigned(true);
+                    }
                 }
-            }
 
-            AcademicCoursePlan coursePlan = a.getAssignment().getCoursePlan();
-            List<AcademicCourseAssignment> other = coursePlan == null ? Collections.EMPTY_LIST : findCourseAssignmentsByCoursePlan(coursePlan.getId());
-            for (AcademicCourseAssignment academicCourseAssignment : other) {
-                AcademicTeacher teacher1 = academicCourseAssignment.getTeacher();
-                if (teacher1 != null) {
-                    String n = getContext().getPlugin().getValidName(teacher1);
-                    if (academicCourseAssignment.getId() != a.getAssignment().getId()) {
-                        Map<Integer, TeacherAssignmentChunck> achuncks = a.getAssignmentChunck().getChuncks();
-                        if (!achuncks.containsKey(teacher1.getId())) {
-                            Map<Integer, TeacherAssignmentChunck> chuncks = a.getCourseChunck().getChuncks();
-                            TeacherAssignmentChunck c = chuncks.get(teacher1.getId());
-                            if (c == null) {
-                                c = new TeacherAssignmentChunck(teacher1.getId(), n);
-                                c.setAssigned(true);
-                                chuncks.put(teacher1.getId(), c);
-                            } else {
-                                c.setAssigned(true);
+                AcademicCoursePlan coursePlan = a.getAssignment().getCoursePlan();
+                List<AcademicCourseAssignment> other = coursePlan == null ? Collections.EMPTY_LIST : findCourseAssignmentsByCoursePlan(coursePlan.getId());
+                for (AcademicCourseAssignment academicCourseAssignment : other) {
+                    AcademicTeacher teacher1 = academicCourseAssignment.getTeacher();
+                    if (teacher1 != null) {
+                        String n = getContext().getPlugin().getValidName(teacher1);
+                        if (academicCourseAssignment.getId() != a.getAssignment().getId()) {
+                            Map<Integer, TeacherAssignmentChunck> achuncks = a.getAssignmentChunck().getChuncks();
+                            if (!achuncks.containsKey(teacher1.getId())) {
+                                Map<Integer, TeacherAssignmentChunck> chuncks = a.getCourseChunck().getChuncks();
+                                TeacherAssignmentChunck c = chuncks.get(teacher1.getId());
+                                if (c == null) {
+                                    c = new TeacherAssignmentChunck(teacher1.getId(), n);
+                                    c.setAssigned(true);
+                                    chuncks.put(teacher1.getId(), c);
+                                } else {
+                                    c.setAssigned(true);
+                                }
                             }
                         }
                     }
                 }
-            }
-            List<AcademicCourseIntent> otherIntents = coursePlan == null ? Collections.EMPTY_LIST : findCourseIntentsByCoursePlan(coursePlan.getId());
-            for (AcademicCourseIntent academicCourseAssignment : otherIntents) {
-                AcademicTeacher teacher1 = academicCourseAssignment.getTeacher();
-                if (teacher1 != null) {
-                    String n = getContext().getPlugin().getValidName(teacher1);
-                    if (academicCourseAssignment.getId() != a.getAssignment().getId()) {
-                        Map<Integer, TeacherAssignmentChunck> achuncks = a.getAssignmentChunck().getChuncks();
-                        if (!achuncks.containsKey(teacher1.getId())) {
-                            Map<Integer, TeacherAssignmentChunck> chuncks = a.getCourseChunck().getChuncks();
-                            TeacherAssignmentChunck c = chuncks.get(teacher1.getId());
-                            if (c == null) {
-                                c = new TeacherAssignmentChunck(teacher1.getId(), n);
-                                c.setIntended(true);
-                                chuncks.put(teacher1.getId(), c);
-                            } else {
-                                c.setIntended(true);
+                List<AcademicCourseIntent> otherIntents = coursePlan == null ? Collections.EMPTY_LIST : findCourseIntentsByCoursePlan(coursePlan.getId());
+                for (AcademicCourseIntent intent : otherIntents) {
+                    AcademicTeacher teacher1 = intent.getTeacher();
+                    if (teacher1 != null) {
+                        String n = getContext().getPlugin().getValidName(teacher1);
+                        if (intent.getId() != a.getAssignment().getId()) {
+                            Map<Integer, TeacherAssignmentChunck> achuncks = a.getAssignmentChunck().getChuncks();
+                            if (!achuncks.containsKey(teacher1.getId())) {
+                                Map<Integer, TeacherAssignmentChunck> chuncks = a.getCourseChunck().getChuncks();
+                                TeacherAssignmentChunck c = chuncks.get(teacher1.getId());
+                                if (c == null) {
+                                    c = new TeacherAssignmentChunck(teacher1.getId(), n);
+                                    c.setProposal(intent.isProposal());
+                                    c.setWish(intent.isWish());
+                                    c.setAcceptedProposal(intent.isAcceptedProposal());
+                                    c.setAcceptedWish(intent.isAcceptedWish());
+                                    chuncks.put(teacher1.getId(), c);
+                                } else {
+                                    c.setProposal(intent.isProposal());
+                                    c.setWish(intent.isWish());
+                                    c.setAcceptedProposal(intent.isAcceptedProposal());
+                                    c.setAcceptedWish(intent.isAcceptedWish());
+                                }
                             }
                         }
                     }
                 }
-            }
 
 //            a.setIntentsSet(allIntents);
 //            a.setIntents(sb.toString());
 //            a.setIntentsTeacherIdsSet(allIntentIds);
-        }
-        Collections.sort(all, new Comparator<AcademicCourseAssignmentInfo>() {
+            }
+            Collections.sort(all, new Comparator<AcademicCourseAssignmentInfo>() {
 
-            @Override
-            public int compare(AcademicCourseAssignmentInfo o1, AcademicCourseAssignmentInfo o2) {
-                AcademicCourseAssignment a1 = o1.getAssignment();
-                AcademicCourseAssignment a2 = o2.getAssignment();
+                @Override
+                public int compare(AcademicCourseAssignmentInfo o1, AcademicCourseAssignmentInfo o2) {
+                    AcademicCourseAssignment a1 = o1.getAssignment();
+                    AcademicCourseAssignment a2 = o2.getAssignment();
 //                String s1 = a1.getCoursePlan().getName();
 //                String s2 = a2.getCoursePlan().getName();
-                String s1 = StringUtils.nonNull(a1.getFullName());
-                String s2 = StringUtils.nonNull(a2.getFullName());
-                return s1.compareTo(s2);
-            }
-        });
+                    String s1 = StringUtils.nonNull(a1.getFullName());
+                    String s2 = StringUtils.nonNull(a2.getFullName());
+                    return s1.compareTo(s2);
+                }
+            });
+        }
+        //apply current teacher info for chunks
+        AcademicTeacher currentTeacher = AcademicPlugin.get().getCurrentTeacher();
+        int currentTeacherId = currentTeacher == null ? -1 : currentTeacher.getId();
+        for (AcademicCourseAssignmentInfo info : all) {
+            TeacherAssignmentChunck r = info.getAssignmentChunck().getForTeacher(currentTeacherId);
+//            if (r != null) {
+//                info.setCurrentWish(r.isWish());
+//                info.setCurrentProposal(r.isProposal());
+//                info.setCurrentStatusString(r.getStatusString());
+//                info.setCurrentStatusLocalizedString(r.getStatusLocalizedString());
+//            } else {
+//                info.setCurrentStatusString("");
+//                info.setCurrentStatusLocalizedString("");
+//                info.setCurrentWish(false);
+//                info.setCurrentProposal(false);
+//            }
+        }
         return all;
     }
-
 
     private void copyDeviationFrom(TeacherSemesterStat one, List<TeacherSemesterStat> list) {
         for (TeacherSemesterStat semesterStat : list) {
@@ -531,27 +618,21 @@ public class AcademicPluginBodyAssignments extends AcademicPluginBody {
         }
     }
 
-
-
     public AcademicCourseAssignment findCourseAssignment(int courseAssignmentId) {
         return (AcademicCourseAssignment) UPA.getPersistenceUnit().findById(AcademicCourseAssignment.class, courseAssignmentId);
     }
 
     public AcademicCourseAssignment findCourseAssignment(int coursePlanId, Integer subClassId, String discriminator) {
-        return UPA.getPersistenceUnit().createQuery("Select a from AcademicCourseAssignment a where " +
-                "a.coursePlanId=:coursePlanId " +
-                "and a.subClassId=:subClassId " +
-                "and a.discriminator=:discriminator "
+        return UPA.getPersistenceUnit().createQuery("Select a from AcademicCourseAssignment a where "
+                + "a.coursePlanId=:coursePlanId "
+                + "and a.subClassId=:subClassId "
+                + "and a.discriminator=:discriminator "
         )
                 .setParameter("coursePlanId", coursePlanId)
                 .setParameter("subClassId", subClassId)
                 .setParameter("discriminator", discriminator)
                 .getSingleResultOrNull();
     }
-
-
-
-
 
     public void generateTeacherAssignmentDocumentsFolder(int periodId) {
         CorePluginSecurity.requireAdmin();
@@ -564,7 +645,7 @@ public class AcademicPluginBodyAssignments extends AcademicPluginBody {
             @Override
             public void run() {
                 for (AcademicCourseAssignment a : findAcademicCourseAssignments(periodId)) {
-                    if (a.getTeacher() != null && a.getTeacher().resolveContact() != null) {
+                    if (a.getTeacher() != null && a.getTeacher().getUser()!= null) {
                         String n = VrUtils.toValidFileName(a.getTeacher().resolveFullName());
                         String c = VrUtils.toValidFileName(a.getFullName());
                         VFile r = CorePlugin.get().getRootFileSystem().get(path + "/" + n + "/" + c);
@@ -574,7 +655,6 @@ public class AcademicPluginBodyAssignments extends AcademicPluginBody {
             }
         });
     }
-
 
     public MapList<Integer, AcademicCourseAssignment> findCourseAssignments(int periodId, CourseAssignmentFilter filter) {
         MapList<Integer, AcademicCourseAssignment> courseAssignments = findCourseAssignments(periodId);
@@ -597,14 +677,13 @@ public class AcademicPluginBodyAssignments extends AcademicPluginBody {
                 .getProperty("findCourseAssignments:" + periodId, new Action<MapList<Integer, AcademicCourseAssignment>>() {
                     @Override
                     public MapList<Integer, AcademicCourseAssignment> run() {
-                        List<AcademicCourseAssignment> assignments = UPA.getPersistenceUnit().createQuery("Select a from AcademicCourseAssignment a where a.coursePlan.periodId=:periodId " +
-                                " order by a.coursePlan.courseLevel.semester.code,a.coursePlan.courseLevel.academicClass.program.name,a.name,a.courseType.name")
+                        List<AcademicCourseAssignment> assignments = UPA.getPersistenceUnit().createQuery("Select a from AcademicCourseAssignment a where a.coursePlan.periodId=:periodId "
+                                + " order by a.coursePlan.courseLevel.semester.code,a.coursePlan.courseLevel.academicClass.program.name,a.name,a.courseType.name")
                                 .setParameter("periodId", periodId)
-//                                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 5)
+                                //                                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 5)
                                 .getResultList();
 
                         return CollectionUtils.unmodifiableMapList(new DefaultMapList<Integer, AcademicCourseAssignment>(
-
                                 assignments,
                                 academicCourseAssignmentIdConverter
                         ));
@@ -618,14 +697,13 @@ public class AcademicPluginBodyAssignments extends AcademicPluginBody {
 //                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 5)
 //                .getResultList();
 //    }
-
     public List<AcademicCourseIntent> findCourseIntents(int periodId) {
         return cacheService.get(AcademicCourseIntent.class)
                 .getProperty("findCourseIntents:" + periodId, new Action<List<AcademicCourseIntent>>() {
                     @Override
                     public List<AcademicCourseIntent> run() {
                         return UPA.getPersistenceUnit().createQuery("Select u from AcademicCourseIntent u where u.assignment.coursePlan.periodId=:periodId")
-//                                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 4)
+                                //                                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 4)
                                 .setParameter("periodId", periodId)
                                 .getResultList();
                     }
@@ -638,7 +716,7 @@ public class AcademicPluginBodyAssignments extends AcademicPluginBody {
                     @Override
                     public List<AcademicCourseIntent> run() {
                         return UPA.getPersistenceUnit().createQuery("Select u from AcademicCourseIntent u where u.assignment.coursePlanId=:coursePlanId")
-//                                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 4)
+                                //                                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 4)
                                 .setParameter("coursePlanId", coursePlanId)
                                 .getResultList();
                     }
@@ -658,8 +736,8 @@ public class AcademicPluginBodyAssignments extends AcademicPluginBody {
     }
 
     public List<AcademicCourseAssignment> findCourseAssignmentsByClass(int periodId, int classId) {
-        return UPA.getPersistenceUnit().createQuery("Select a from AcademicCourseAssignment a where " +
-                "(a.subClassId=:v or a.coursePlan.courseLevel.academicClassId=:v)"
+        return UPA.getPersistenceUnit().createQuery("Select a from AcademicCourseAssignment a where "
+                + "(a.subClassId=:v or a.coursePlan.courseLevel.academicClassId=:v)"
                 + " and a.coursePlan.periodId=:periodId"
         )
                 .setParameter("periodId", periodId)
@@ -708,113 +786,109 @@ public class AcademicPluginBodyAssignments extends AcademicPluginBody {
                 });
     }
 
-
     public List<AcademicCourseIntent> getAcademicCourseIntentByAssignmentAndSemester(int periodId, Integer assignmentId, Integer semester) {
-        return cacheService.get(AcademicCourseIntent.class).getProperty("getAcademicCourseIntentByAssignmentAndSemester:" + periodId + ":" + assignmentId + ":" + semester
-                , new Action<List<AcademicCourseIntent>>() {
-                    @Override
-                    public List<AcademicCourseIntent> run() {
-                        List<AcademicCourseIntent> m = new ArrayList<>();
-                        if (assignmentId == null) {
-                            for (AcademicCourseIntent value : findCourseIntents(periodId)) {
-                                AcademicSemester semester1 = value.resolveSemester();
-                                if (semester == null || (semester1 != null && semester1.getId() == (semester))) {
-                                    m.add(value);
-                                }
-                            }
-                        } else {
-                            List<AcademicCourseIntent> list = getAcademicCourseIntentByAssignmentId(periodId).get(assignmentId);
-                            if (list == null) {
+        return cacheService.get(AcademicCourseIntent.class).getProperty("getAcademicCourseIntentByAssignmentAndSemester:" + periodId + ":" + assignmentId + ":" + semester,
+                new Action<List<AcademicCourseIntent>>() {
+            @Override
+            public List<AcademicCourseIntent> run() {
+                List<AcademicCourseIntent> m = new ArrayList<>();
+                if (assignmentId == null) {
+                    for (AcademicCourseIntent value : findCourseIntents(periodId)) {
+                        AcademicSemester semester1 = value.resolveSemester();
+                        if (semester == null || (semester1 != null && semester1.getId() == (semester))) {
+                            m.add(value);
+                        }
+                    }
+                } else {
+                    List<AcademicCourseIntent> list = getAcademicCourseIntentByAssignmentId(periodId).get(assignmentId);
+                    if (list == null) {
 //                System.out.println("No intents for " + assignmentId + " : assignment=" + assignmentId);
-                            } else {
-                                for (AcademicCourseIntent value : list) {
-                                    AcademicSemester semester1 = value.resolveSemester();
-                                    if (semester == null || (semester1 != null
-                                            && semester1.getId() == (semester))) {
-                                        m.add(value);
-                                    }
-                                }
+                    } else {
+                        for (AcademicCourseIntent value : list) {
+                            AcademicSemester semester1 = value.resolveSemester();
+                            if (semester == null || (semester1 != null
+                                    && semester1.getId() == (semester))) {
+                                m.add(value);
                             }
                         }
-                        return m;
                     }
                 }
+                return m;
+            }
+        }
         );
-
 
     }
 
-
     public Map<Integer, List<AcademicCourseIntent>> getAcademicCourseIntentByTeacherId(int periodId) {
 
-        return cacheService.get(AcademicCourseIntent.class).getProperty("getAcademicCourseIntentByTeacherId:" + periodId
-                , new Action<Map<Integer, List<AcademicCourseIntent>>>() {
-                    @Override
-                    public Map<Integer, List<AcademicCourseIntent>> run() {
-                        Map<Integer, List<AcademicCourseIntent>> m = new HashMap<Integer, List<AcademicCourseIntent>>();
-                        for (AcademicCourseIntent e : findCourseIntents(periodId)) {
-                            int t = e.getTeacher().getId();
-                            List<AcademicCourseIntent> list = m.get(t);
-                            if (list == null) {
-                                list = new ArrayList<AcademicCourseIntent>();
-                                m.put(t, list);
-                            }
-                            list.add(e);
-                        }
-                        return m;
+        return cacheService.get(AcademicCourseIntent.class).getProperty("getAcademicCourseIntentByTeacherId:" + periodId,
+                new Action<Map<Integer, List<AcademicCourseIntent>>>() {
+            @Override
+            public Map<Integer, List<AcademicCourseIntent>> run() {
+                Map<Integer, List<AcademicCourseIntent>> m = new HashMap<Integer, List<AcademicCourseIntent>>();
+                for (AcademicCourseIntent e : findCourseIntents(periodId)) {
+                    int t = e.getTeacher().getId();
+                    List<AcademicCourseIntent> list = m.get(t);
+                    if (list == null) {
+                        list = new ArrayList<AcademicCourseIntent>();
+                        m.put(t, list);
                     }
+                    list.add(e);
                 }
+                return m;
+            }
+        }
         );
     }
 
     public Map<Integer, List<AcademicCourseAssignment>> findAcademicCourseAssignmentListGroupByByTeacherId(int periodId) {
-        return cacheService.get(AcademicCourseAssignment.class).getProperty("findAcademicCourseAssignmentListGroupByTeacherId:" + periodId
-                , new Action<Map<Integer, List<AcademicCourseAssignment>>>() {
-                    @Override
-                    public Map<Integer, List<AcademicCourseAssignment>> run() {
-                        Map<Integer, List<AcademicCourseAssignment>> m = new HashMap<>();
-                        for (AcademicCourseAssignment a : findAcademicCourseAssignments(periodId)) {
-                            if (a.getTeacher() == null) {
-                                //ignore
-                                //System.out.println("No assignment for " + a);
-                            } else {
-                                int t = a.getTeacher().getId();
-                                List<AcademicCourseAssignment> list = m.get(t);
-                                if (list == null) {
-                                    list = new ArrayList<AcademicCourseAssignment>();
-                                    m.put(t, list);
-                                }
-                                list.add(a);
-                            }
+        return cacheService.get(AcademicCourseAssignment.class).getProperty("findAcademicCourseAssignmentListGroupByTeacherId:" + periodId,
+                new Action<Map<Integer, List<AcademicCourseAssignment>>>() {
+            @Override
+            public Map<Integer, List<AcademicCourseAssignment>> run() {
+                Map<Integer, List<AcademicCourseAssignment>> m = new HashMap<>();
+                for (AcademicCourseAssignment a : findAcademicCourseAssignments(periodId)) {
+                    if (a.getTeacher() == null) {
+                        //ignore
+                        //System.out.println("No assignment for " + a);
+                    } else {
+                        int t = a.getTeacher().getId();
+                        List<AcademicCourseAssignment> list = m.get(t);
+                        if (list == null) {
+                            list = new ArrayList<AcademicCourseAssignment>();
+                            m.put(t, list);
                         }
-                        return m;
+                        list.add(a);
                     }
                 }
+                return m;
+            }
+        }
         );
     }
 
     public Map<Integer, List<AcademicCourseIntent>> getAcademicCourseIntentByAssignmentId(int periodId) {
 
-        return cacheService.get(AcademicCourseIntent.class).getProperty("getAcademicCourseIntentByAssignmentId:" + periodId
-                , new Action<Map<Integer, List<AcademicCourseIntent>>>() {
-                    @Override
-                    public Map<Integer, List<AcademicCourseIntent>> run() {
-                        Map<Integer, List<AcademicCourseIntent>> m = new HashMap<Integer, List<AcademicCourseIntent>>();
-                        for (AcademicCourseIntent e : findCourseIntents(periodId)) {
-                            int t = e.getAssignment().getId();
-                            List<AcademicCourseIntent> list = m.get(t);
-                            if (list == null) {
-                                list = new ArrayList<AcademicCourseIntent>();
-                                m.put(t, list);
-                            }
-                            list.add(e);
-                        }
-                        return m;
+        return cacheService.get(AcademicCourseIntent.class).getProperty("getAcademicCourseIntentByAssignmentId:" + periodId,
+                new Action<Map<Integer, List<AcademicCourseIntent>>>() {
+            @Override
+            public Map<Integer, List<AcademicCourseIntent>> run() {
+                Map<Integer, List<AcademicCourseIntent>> m = new HashMap<Integer, List<AcademicCourseIntent>>();
+                for (AcademicCourseIntent e : findCourseIntents(periodId)) {
+                    int t = e.getAssignment().getId();
+                    List<AcademicCourseIntent> list = m.get(t);
+                    if (list == null) {
+                        list = new ArrayList<AcademicCourseIntent>();
+                        m.put(t, list);
                     }
+                    list.add(e);
                 }
+                return m;
+            }
+        }
         );
     }
-
 
     public AcademicConversionTableHelper findConversionTableByPeriodId(int periodId) {
         Integer id = VrApp.getBean(CacheService.class).get(AppPeriod.class)
@@ -857,7 +931,6 @@ public class AcademicPluginBodyAssignments extends AcademicPluginBody {
                     }
                 });
 
-
     }
 
     public void generateTeachingLoad(int periodId, CourseAssignmentFilter courseAssignmentFilter, String version0, String oldVersion, ProgressMonitor monitor) throws IOException {
@@ -868,7 +941,7 @@ public class AcademicPluginBodyAssignments extends AcademicPluginBody {
     public List<AcademicCourseAssignment> findAcademicCourseAssignmentListByCoursePlanId(int coursePlanId) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return pu.createQuery("Select c from AcademicCourseAssignment c where c.coursePlanId=:coursePlanId")
-                .setParameter("coursePlanId",coursePlanId)
+                .setParameter("coursePlanId", coursePlanId)
                 .getResultList();
     }
 }
