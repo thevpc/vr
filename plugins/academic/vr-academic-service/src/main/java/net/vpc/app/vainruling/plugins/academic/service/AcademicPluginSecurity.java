@@ -75,6 +75,16 @@ public class AcademicPluginSecurity {
         }
     }
 
+    public static void requireHeadOfDepartment(AcademicTeacher teacher) {
+        CorePlugin core = CorePlugin.get();
+        if (core.isCurrentSessionAdmin()) {
+            return ;
+        }
+        if (!isHeadOfDepartmentOf(teacher)) {
+            throw new SecurityException("Not Allowed");
+        }
+    }
+
     public static boolean isManageable(AcademicCourseAssignment a) {
         CorePlugin core = CorePlugin.get();
         if (a == null) {
@@ -204,6 +214,52 @@ public class AcademicPluginSecurity {
         return isManagerOf(targetDept);
     }
 
+    public static boolean isHeadOfDepartmentOf(AppUser targetUser) {
+        CorePlugin core = CorePlugin.get();
+        AppUser user = core.getCurrentUser();
+        if(targetUser==null){
+            return false;
+        }
+        if (user != null && targetUser != null && user.getId() == targetUser.getId()) {
+            return true;
+        }
+        AppDepartment targetDept = (targetUser == null) ? null : targetUser.getDepartment();
+        return isHeadOfDepartmentOf(targetDept);
+    }
+
+    public static boolean isHeadOfDepartmentOf(AcademicTeacher teacher) {
+        CorePlugin core = CorePlugin.get();
+        AppUser user = core.getCurrentUser();
+        if(teacher==null){
+            return false;
+        }
+        if (user != null && teacher.getUser() != null && user.getId() == teacher.getUser().getId()) {
+            return true;
+        }
+        AppDepartment targetDept = (teacher == null) ? null : teacher.getUser().getDepartment();
+        if (targetDept == null) {
+            targetDept = (teacher == null || teacher.getUser() == null) ? null : teacher.getUser().getDepartment();
+        }
+        return isHeadOfDepartmentOf(targetDept);
+    }
+
+    public static boolean isHeadOfDepartmentOf(AcademicStudent student) {
+        CorePlugin core = CorePlugin.get();
+        AppUser user = core.getCurrentUser();
+        if(student==null){
+            return false;
+        }
+        if (user != null && student.getUser() != null && user.getId() == student.getUser().getId()) {
+            return true;
+        }
+
+        AppDepartment targetDept = (student == null) ? null : student.getUser().getDepartment();
+        if (targetDept == null) {
+            targetDept = (student == null || student.getUser() == null) ? null : student.getUser().getDepartment();
+        }
+        return isHeadOfDepartmentOf(targetDept);
+    }
+
     public static boolean isManagerOf(AppDepartment department) {
         CorePlugin core = CorePlugin.get();
         AppUser user = core.getCurrentUser();
@@ -226,6 +282,25 @@ public class AcademicPluginSecurity {
             if ("Director".equals(name)) {
                 //check if same department
                 return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean isHeadOfDepartmentOf(AppDepartment department) {
+        CorePlugin core = CorePlugin.get();
+        AppUser user = core.getCurrentUser();
+        if (user == null || user.getDepartment() == null) {
+            return false;
+        }
+        int dept = user == null || user.getDepartment() == null ? -1 : user.getDepartment().getId();
+        for (AppProfile u : core.findProfilesByUser(user.getId())) {
+            String name = u.getName();
+            if ("HeadOfDepartment".equals(name)) {
+                if (dept != -1 && department != null && dept == department.getId()) {
+                    //check if same department
+                    return true;
+                }
             }
         }
         return false;

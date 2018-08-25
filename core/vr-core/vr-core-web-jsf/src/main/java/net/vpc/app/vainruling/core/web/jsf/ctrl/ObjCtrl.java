@@ -1284,48 +1284,6 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
                 for (AutoFilterData autoFilterData : core.getEntityFilters(entity.getName())) {
                     String type = autoFilterData.getFilterType();
                     if (StringUtils.isEmpty(type) || type.equals("single-selection")) {
-                        String expr = autoFilterData.getExpr();
-                        if (!expr.matches("[a-zA-Z0-9.]+")) {
-                            throw new IllegalArgumentException("Invalid Auto Filter Expr " + expr);
-                        }
-                        I18n i18n = VrApp.getBean(I18n.class);
-                        DataType curr = entity.getDataType();
-                        String evalLabel = entity.getTitle();
-                        String[] splitted = expr.split("\\.");
-                        for (int i = 0; i < splitted.length; i++) {
-                            String s = splitted[i];
-                            if (i == 0 && s.equals("this")) {
-                                //ignore
-                            } else if (curr instanceof KeyType) {
-                                Field field = ((KeyType) curr).getEntity().getField(s);
-                                evalLabel = field.getTitle();
-                                if (field.isManyToOne()) {
-                                    Entity targetEntity = field.getManyToOneRelationship().getTargetEntity();
-                                    if (targetEntity.isHierarchical()) {
-                                        //TODO process hierarchical search
-                                    }
-                                    curr = (KeyType) targetEntity.getDataType();
-                                } else if (field.getDataType() instanceof EnumType) {
-                                    curr = field.getDataType();
-                                } else {
-                                    curr = field.getDataType();
-                                }
-                            } else {
-                                throw new IllegalArgumentException("Unsupported Filter Type " + expr);
-                            }
-                        }
-                        if (StringUtils.isEmpty(autoFilterData.getLabel())) {
-                            String label = i18n.getOrNull("UI.Entity." + entity.getName() + ".ui.auto-filter.class");
-                            autoFilterData.setLabel(evalLabel);
-//                        if(StringUtils.isEmpty(label)){
-//                            if(curr instanceof KeyType){
-//                                autoFilterData.setLabel(i18n.get(((KeyType) curr).getEntity()));
-//                            }else {
-//                                autoFilterData.setLabel(autoFilterData.getName());
-//                            }
-//                        }
-                        }
-                        PropertyViewManager manager = VrApp.getBean(PropertyViewManager.class);
                         AutoFilter autoFilter0 = null;
                         for (AutoFilter autoFilter : autoFilters) {
                             if (autoFilter.getData().equals(autoFilterData)) {
@@ -1336,47 +1294,9 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
                         if (autoFilter0 != null) {
                             newAutoFilters.add(autoFilter0);
                         } else {
-                            SingleSelectionAutoFilter f = new SingleSelectionAutoFilter(curr, autoFilterData);
-                            f.getValues().add(FacesUtils.createSelectItem(String.valueOf(""), "-------", ""));
-                            if ((curr instanceof KeyType) || (curr instanceof EnumType)) {
-                                List<NamedId> namedIds = manager.getPropertyViewValuesProvider(null, curr).resolveValues(null, null, curr, viewContext);
-                                for (NamedId namedId : namedIds) {
-                                    f.getValues().add(FacesUtils.createSelectItem(namedId.getStringId(), namedId.getStringName(), ""));
-                                }
-                                newAutoFilters.add(f);
-                                if (curr instanceof KeyType) {
-                                    Entity ee = ((KeyType) curr).getEntity();
-                                    Object defaultSelection = getDefaultFilterSelectedObject(autoFilterData, curr);
-                                    if (defaultSelection != null) {
-                                        Object theId = ee.getBuilder().objectToId(defaultSelection);
-                                        f.setSelectedString(String.valueOf(theId));
-                                    }
-                                } else if (curr instanceof EnumType) {
-                                    Object defaultSelection = getDefaultFilterSelectedObject(autoFilterData, curr);
-                                    if (defaultSelection != null) {
-                                        f.setSelectedString(String.valueOf(defaultSelection));
-                                    }
-                                }
-                            } else if (curr instanceof StringType) {
-                                List<String> values = UPA.getPersistenceUnit().createQuery("Select distinct " + autoFilterData.getExpr() + " from " + getEntityName())
-                                        .getResultList();
-                                Collections.sort(values, VrUtils.NULL_AS_EMPTY_STRING_COMPARATOR);
-                                for (String value : values) {
-                                    if (value != null) {
-                                        f.getValues().add(FacesUtils.createSelectItem(value, value, ""));
-                                    }
-                                }
-                                newAutoFilters.add(f);
-                                Object defaultSelection = getDefaultFilterSelectedObject(autoFilterData, curr);
-                                if (defaultSelection != null) {
-                                    f.setSelectedString(String.valueOf(defaultSelection));
-                                }
-                            } else if (curr instanceof BooleanType) {
-                                f.getValues().add(FacesUtils.createSelectItem(String.valueOf(true), StringUtils.nonNull(true), ""));
-                                f.getValues().add(FacesUtils.createSelectItem(String.valueOf(false), StringUtils.nonNull(false), ""));
-                            } else {
-                                throw new IllegalArgumentException("Unsupported");
-                            }
+                            ObjConfig config = getModel().getConfig();
+                            boolean autoSelect = (config == null || !config.ignoreAutoFilter);
+                            newAutoFilters.add(new SingleSelectionAutoFilter(autoFilterData, autoSelect));
                         }
                     } else {
                         throw new IllegalArgumentException("Unsupported Auto Filter Type " + type);
@@ -1470,37 +1390,12 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
 
     }
 
-    public Object getDefaultFilterSelectedObject(AutoFilterData autoFilterData, DataType filterType) {
-        String initial = autoFilterData.getInitial();
-        if (initial != null) {
-            if ("".equals(initial)) {
-                return null;
-            }
-            throw new IllegalArgumentException("Not Supported yet intial value " + initial + " for auto-filter : " + autoFilterData.getBaseEntityName() + "." + autoFilterData.getName());
-        }
+    public NamedId getEntityAutoFilterDefaultSelectedValue(AutoFilterData autoFilterData, DataType filterType) {
         ObjConfig config = getModel().getConfig();
         if (config != null && config.ignoreAutoFilter) {
             return null;
         }
-        if (filterType instanceof KeyType) {
-            Entity ee = ((KeyType) filterType).getEntity();
-            if (ee.getEntityType().equals(AppPeriod.class)) {
-                return core.getCurrentPeriod();
-            } else if (ee.getEntityType().equals(AppDepartment.class)) {
-                AppUser u = core.getCurrentUser();
-                return u == null ? null : u.getDepartment();
-            } else if (ee.getEntityType().equals(AppUser.class)) {
-                AppUser u = core.getCurrentUser();
-                return u == null ? null : u;
-            }
-        }
-        if (autoFilterData.getBaseEntityName().equals("AppTrace")) {
-            if (autoFilterData.getName().equals("user")) {
-                AppUser u = core.getCurrentUser();
-                return u == null ? null : u.getLogin();
-            }
-        }
-        return null;
+        return core.getEntityAutoFilterDefaultSelectedValue(autoFilterData.getBaseEntityName(), autoFilterData.getName());
     }
 
     public void onAutoFilterChange() {

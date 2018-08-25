@@ -41,6 +41,7 @@ import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
+import net.vpc.upa.types.Year;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -49,6 +50,13 @@ public class VrUtils {
 
     public static SimpleDateFormat UNIVERSAL_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     public static NullAsEmptyStringComparator NULL_AS_EMPTY_STRING_COMPARATOR = new NullAsEmptyStringComparator();
+    public static Comparator<Date> DATE_COMPARATOR = new NullComparator<Date>(){
+        @Override
+        public int compareNonNull(Date o1, Date o2) {
+            return o1.compareTo(o2);
+        }
+    };
+    
     public static String STRING_SEP = ", ;";
 
     public static final Gson GSON = new Gson();
@@ -586,30 +594,11 @@ public class VrUtils {
     }
 
     public static <T> List<T> sortPreserveIndex(List<T> list, Comparator<T> comp) {
-        class IndexedItem<T> {
-
-            T item;
-            int index;
-
-            public IndexedItem(T item, int index) {
-                this.item = item;
-                this.index = index;
-            }
-        }
         IndexedItem<T>[] items = new IndexedItem[list.size()];
         for (int i = 0; i < items.length; i++) {
             items[i] = new IndexedItem<>(list.get(i), i);
         }
-        Arrays.sort(items, new Comparator<IndexedItem<T>>() {
-            @Override
-            public int compare(IndexedItem<T> o1, IndexedItem<T> o2) {
-                int i = comp.compare(o1.item, o2.item);
-                if (i == 0) {
-                    i = o1.index - o2.index;
-                }
-                return i;
-            }
-        });
+        Arrays.sort(items, new IndexedItemComparator(comp));
         for (int i = 0; i < items.length; i++) {
             list.set(i, items[i].item);
         }
@@ -1204,6 +1193,40 @@ public class VrUtils {
             return -1;
         }
         return 1;
+    }
+
+    private static class IndexedItem<T> {
+
+        T item;
+        int index;
+
+        public IndexedItem(T item, int index) {
+            this.item = item;
+            this.index = index;
+        }
+    }
+
+    private static class IndexedItemComparator<T> implements Comparator<IndexedItem<T>> {
+
+        private final Comparator<T> comp;
+
+        public IndexedItemComparator(Comparator<T> comp) {
+            this.comp = comp;
+        }
+
+        @Override
+        public int compare(IndexedItem<T> o1, IndexedItem<T> o2) {
+            int i = 0;
+            if (comp != null) {
+                i = comp.compare(o1.item, o2.item);
+            } else {
+                i = ((Comparable) o1.item).compareTo(o2.item);
+            }
+            if (i == 0) {
+                i = o1.index - o2.index;
+            }
+            return i;
+        }
     }
 
 }

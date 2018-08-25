@@ -400,6 +400,22 @@ public abstract class AbstractCourseLoadCtrl {
             onRefresh();
         }
     }
+    
+    public void removeWhishFromMineSelected() {
+        AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
+        AcademicTeacher t = getModel().getCurrentTeacher();
+        if (t != null) {
+            for (TeacherSemesterStatExt teacherSemesterStatExt : getModel().getStat().getSemesters()) {
+                for (SelectableAssignment s : teacherSemesterStatExt.getAssignments()) {
+                    if (s.isSelected()) {
+                        int assignementId = s.getValue().getAssignment().getId();
+                        a.removeWish(t.getId(), assignementId);
+                    }
+                }
+            }
+            onRefresh();
+        }
+    }
 
     public void removeFromMine(Integer assignementId) {
         AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);

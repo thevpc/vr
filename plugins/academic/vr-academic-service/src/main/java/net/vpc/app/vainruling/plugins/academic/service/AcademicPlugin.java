@@ -44,7 +44,6 @@ import java.io.IOException;
 import java.util.*;
 import java.util.logging.Logger;
 import net.vpc.app.vainruling.core.service.plugins.VrPlugin;
-import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.UPA;
 
@@ -246,9 +245,17 @@ public class AcademicPlugin {
     public void removeIntent(int teacherId, int assignementId) {
         assignments.removeIntent(teacherId, assignementId);
     }
+    
+    public void removeWish(int teacherId, int assignementId) {
+        assignments.removeIntent(teacherId, assignementId);
+    }
 
     public void removeAllIntents(int assignementId) {
         assignments.removeAllIntents(assignementId);
+    }
+    
+    public void removeAllWishes(int assignementId) {
+        assignments.removeAllWishes(assignementId);
     }
 
     public AcademicCourseAssignment findAcademicCourseAssignment(int assignmentId) {

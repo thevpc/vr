@@ -40,6 +40,7 @@ import net.vpc.app.vainruling.core.service.model.content.ArticlesDispositionGrou
 import net.vpc.app.vainruling.core.service.model.content.ArticlesFile;
 import net.vpc.app.vainruling.core.service.model.content.ArticlesItem;
 import net.vpc.app.vainruling.core.service.model.content.FullArticle;
+import net.vpc.upa.types.DataType;
 import org.springframework.context.annotation.DependsOn;
 
 /**
@@ -615,6 +616,14 @@ public class CorePlugin {
         bodyFileSystem.markDownloaded(file);
     }
 
+    public long getDownloadsCount(final String file) {
+        return bodyFileSystem.getDownloadsCount(getRootFileSystem().get(file));
+    }
+
+    public void markDownloaded(final String file) {
+        bodyFileSystem.markDownloaded(getRootFileSystem().get(file));
+    }
+
     public VFile uploadFile(VFile baseFile, UploadedFileHandler event) throws IOException {
         return bodyFileSystem.uploadFile(baseFile, event);
     }
@@ -836,7 +845,11 @@ public class CorePlugin {
         return i18n.getResourceBundleSuite().getMap();
     }
 
-    public List<AutoFilterData> getEntityFilters(String entityName) {
+    public AutoFilterData getEntityAutoFilter(String entityName, String autoFilterName) {
+        return bodyDaoManager.getEntityAutoFilter(entityName, autoFilterName);
+    }
+
+    public AutoFilterData[] getEntityFilters(String entityName) {
         return bodyDaoManager.getEntityFilters(entityName);
     }
 
@@ -1051,5 +1064,29 @@ public class CorePlugin {
             domain = "main";
         }
         return new String[]{domain, login};
+    }
+
+    public NamedId getEntityAutoFilterDefaultSelectedValue(String entityName, String autoFilterName) {
+        return bodyDaoManager.getEntityAutoFilterDefaultSelectedValue(entityName, autoFilterName);
+    }
+
+    public List<NamedId> getEntityAutoFilterValues(String entityName, String autoFilterName) {
+        return bodyDaoManager.getEntityAutoFilterValues(entityName, autoFilterName);
+    }
+
+    public List<NamedId> getFieldValues(String entityName, String fieldName) {
+        return bodyDaoManager.getFieldValues(entityName, fieldName);
+    }
+
+    public List<NamedId> getDataTypeValues(DataType type) {
+        return bodyDaoManager.getDataTypeValues(type);
+    }
+
+    public String createEntityAutoFilterExpression(String entityName, String autoFilterName, Map<String, Object> parameters, String paramPrefix, String selectedString) {
+        return bodyDaoManager.createEntityAutoFilterExpression(entityName, autoFilterName, parameters, paramPrefix, selectedString);
+    }
+
+    public DataType getEntityAutoFilterDataType(String entityName, String autoFilterName) {
+        return bodyDaoManager.getEntityAutoFilterDataType(entityName, autoFilterName);
     }
 }

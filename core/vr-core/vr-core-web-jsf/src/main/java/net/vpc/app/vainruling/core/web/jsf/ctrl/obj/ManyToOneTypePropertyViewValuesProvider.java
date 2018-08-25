@@ -29,7 +29,6 @@ public class ManyToOneTypePropertyViewValuesProvider implements PropertyViewValu
         ManyToOneTypePropertyView ev = (ManyToOneTypePropertyView) propertyView;
         List<PropertyView> updatablePropertyViews = propertyView.getUpdatablePropertyViews();
         List<PropertyView> dependentPropertyViews = propertyView.getDependentPropertyViews();
-//        PersistenceUnit pu = field.getEntity().getPersistenceUnit();
 
         CorePlugin core = VrApp.getBean(CorePlugin.class);
         final ObjCtrl objCtrl = VrApp.getBean(ObjCtrl.class);

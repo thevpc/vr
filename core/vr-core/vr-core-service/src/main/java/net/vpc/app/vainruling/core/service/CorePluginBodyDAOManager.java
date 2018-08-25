@@ -21,6 +21,8 @@ import net.vpc.upa.types.*;
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.logging.Level;
+import net.vpc.app.vainruling.core.service.model.AppDepartment;
+import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.util.JsonUtils;
 import net.vpc.common.util.MapUtils;
 
@@ -45,22 +47,54 @@ class CorePluginBodyDAOManager extends CorePluginBody {
         return t;
     }
 
-    public List<AutoFilterData> getEntityFilters(String entityName) {
+    public AutoFilterData getEntityAutoFilter(String entityName, String autoFilterName) {
+        return getEntityFiltersMap(entityName).get(autoFilterName);
+    }
+
+    public Map<String, AutoFilterData> getEntityFiltersMap(String entityName) {
         Entity entity = UPA.getPersistenceUnit().getEntity(entityName);
+        Map<String, AutoFilterData> cache = (Map<String, AutoFilterData>) entity.getProperties().getObject("cache.ui.auto-filters.map");
+        if (cache != null) {
+            return cache;
+        }
+        Map<String, AutoFilterData> m = new HashMap<>();
+        for (AutoFilterData d : getEntityFilters(entityName)) {
+            m.put(d.getName(), d);
+        }
+        cache = Collections.unmodifiableMap(m);
+        entity.getProperties().setObject("cache.ui.auto-filters.map", cache);
+        return cache;
+    }
+
+    public AutoFilterData[] getEntityFilters(String entityName) {
+        Entity entity = UPA.getPersistenceUnit().getEntity(entityName);
+        AutoFilterData[] cache = (AutoFilterData[]) entity.getProperties().getObject("cache.ui.auto-filters.list");
+        if (cache != null) {
+            return Arrays.copyOf(cache, cache.length);
+        }
         List<AutoFilterData> autoFilterDatasAll = new ArrayList<>();
-        List<AutoFilterData> autoFilterDatas = new ArrayList<>();
         String all = StringUtils.trim(entity.getProperties().getString("ui.auto-filters"));
         if (!all.isEmpty()) {
             //this is a single value
             if (all.startsWith("{")) {
-                //VrUtils.parseJSONObject(all, AutoFilterData[].class)
-                autoFilterDatasAll.add(VrUtils.parseJSONObject(all, AutoFilterData.class));
+                AutoFilterData d = VrUtils.parseJSONObject(all, AutoFilterData.class);
+                if (d != null) {
+                    d.setBaseEntityName(entityName);
+                    d.setFilterType(getEntityAutoFilterType(d));
+                    autoFilterDatasAll.add(d);
+                }
             } else {
-                autoFilterDatasAll.addAll(Arrays.asList(VrUtils.parseJSONObject(all, AutoFilterData[].class)));
+                AutoFilterData[] all2 = VrUtils.parseJSONObject(all, AutoFilterData[].class);
+                if (all2 != null) {
+                    for (AutoFilterData d : all2) {
+                        if (d != null) {
+                            d.setBaseEntityName(entityName);
+                            d.setFilterType(getEntityAutoFilterType(d));
+                            autoFilterDatasAll.add(d);
+                        }
+                    }
+                }
             }
-        }
-        for (int i = 0; i < autoFilterDatasAll.size(); i++) {
-            autoFilterDatasAll.get(i).setBaseEntityName(entityName);
         }
         //
         for (Map.Entry<String, Object> entry : entity.getProperties().toMap().entrySet()) {
@@ -69,13 +103,96 @@ class CorePluginBodyDAOManager extends CorePluginBody {
                 AutoFilterData d = VrUtils.parseJSONObject((String) entry.getValue(), AutoFilterData.class);
                 d.setName(name);
                 d.setBaseEntityName(entity.getName());
-                autoFilterDatas.add(d);
+                d.setFilterType(getEntityAutoFilterType(d));
+                autoFilterDatasAll.add(d);
             }
         }
-        Collections.sort(autoFilterDatas);
 
-        autoFilterDatasAll.addAll(autoFilterDatas);
-        return autoFilterDatasAll;
+        VrUtils.sortPreserveIndex(autoFilterDatasAll, null);
+        cache = autoFilterDatasAll.toArray(new AutoFilterData[autoFilterDatasAll.size()]);
+        entity.getProperties().setObject("cache.ui.auto-filters.list", cache);
+        return Arrays.copyOf(cache, cache.length);
+    }
+
+    public String getEntityAutoFilterType(String entityName, String autoFilterName) {
+        AutoFilterData a = getEntityAutoFilter(entityName, autoFilterName);
+        return getEntityAutoFilterType(a);
+    }
+
+    public String getEntityAutoFilterType(AutoFilterData a) {
+        DataType curr = getEntityAutoFilterDataType(a);
+        if (curr instanceof KeyType) {
+            return "key";
+        } else if (curr instanceof EnumType) {
+            return "enum";
+        } else if (curr instanceof StringType) {
+            return "string";
+        } else if (curr instanceof BooleanType) {
+            return "boolean";
+        } else if (curr instanceof YearType || (curr instanceof TemporalType && "year".equalsIgnoreCase(a.getFilterType()))) {
+            return "year";
+        } else if (curr instanceof MonthType || (curr instanceof TemporalType && "month".equalsIgnoreCase(a.getFilterType()))) {
+            return "month";
+        } else if (curr instanceof DateType || (curr instanceof TemporalType && "date".equalsIgnoreCase(a.getFilterType()))) {
+            return "date";
+        } else if (curr instanceof TimeType || (curr instanceof TemporalType && "time".equalsIgnoreCase(a.getFilterType()))) {
+            return "time";
+        } else if (curr instanceof TemporalType) {
+            return "temporal";
+        } else {
+            throw new IllegalArgumentException("Unsupported");
+        }
+    }
+
+    public DataType getEntityAutoFilterDataType(String entityName, String autoFilterName) {
+        AutoFilterData a = getEntityAutoFilter(entityName, autoFilterName);
+        return getEntityAutoFilterDataType(a);
+    }
+
+    public DataType getEntityAutoFilterDataType(AutoFilterData a) {
+        String expr = a.getExpr();
+        if (!expr.matches("[a-zA-Z0-9.]+")) {
+            throw new IllegalArgumentException("Invalid Auto Filter Expr " + expr);
+        }
+        Entity entity = UPA.getPersistenceUnit().getEntity(a.getBaseEntityName());
+        I18n i18n = VrApp.getBean(I18n.class);
+        DataType curr = entity.getDataType();
+        String evalLabel = entity.getTitle();
+        String[] splitted = expr.split("\\.");
+        for (int i = 0; i < splitted.length; i++) {
+            String s = splitted[i];
+            if (i == 0 && s.equals("this")) {
+                //ignore
+            } else if (curr instanceof KeyType) {
+                Field field = ((KeyType) curr).getEntity().getField(s);
+                evalLabel = field.getTitle();
+                if (field.isManyToOne()) {
+                    Entity targetEntity = field.getManyToOneRelationship().getTargetEntity();
+                    if (targetEntity.isHierarchical()) {
+                        //TODO process hierarchical search
+                    }
+                    curr = (KeyType) targetEntity.getDataType();
+                } else if (field.getDataType() instanceof EnumType) {
+                    curr = field.getDataType();
+                } else {
+                    curr = field.getDataType();
+                }
+            } else {
+                throw new IllegalArgumentException("Unsupported Filter Type " + expr);
+            }
+        }
+        if (StringUtils.isEmpty(a.getLabel())) {
+            String label = i18n.getOrNull("UI.Entity." + entity.getName() + ".ui.auto-filter.class");
+            a.setLabel(evalLabel);
+//                        if(StringUtils.isEmpty(label)){
+//                            if(curr instanceof KeyType){
+//                                autoFilterData.setLabel(i18n.get(((KeyType) curr).getEntity()));
+//                            }else {
+//                                autoFilterData.setLabel(autoFilterData.getName());
+//                            }
+//                        }
+        }
+        return curr;
     }
 
     public List<NamedId> getFieldValues(String entityName, String fieldName, Map<String, Object> constraints, Object currentInstance) {
@@ -613,7 +730,7 @@ class CorePluginBodyDAOManager extends CorePluginBody {
         } catch (RuntimeException ex) {
             msg = MapUtils.map("name", entityName, "title", entity.getTitle(), "error", ex.getMessage());
             data = JsonUtils.jsonMap("name", entityName, "error", ex.getMessage());
-            TraceService.get().trace("System.update-entity-formulas", "error",msg, data, entity.getParent().getPath(), Level.WARNING);
+            TraceService.get().trace("System.update-entity-formulas", "error", msg, data, entity.getParent().getPath(), Level.WARNING);
             throw ex;
         }
     }
@@ -649,5 +766,291 @@ class CorePluginBodyDAOManager extends CorePluginBody {
         if (!pu.getSecurityManager().isAllowedLoad(e)) {
             throw new SecurityException("Not Allowed");
         }
+    }
+
+    public String createEntityAutoFilterExpression(String entityName, String autoFilterName, Map<String, Object> parameters, String paramPrefix, String selectedString) {
+        AutoFilterData a = getEntityAutoFilter(entityName, autoFilterName);
+        if (a == null) {
+            return null;
+        }
+        DataType dataType = getEntityAutoFilterDataType(entityName, autoFilterName);
+        if (!StringUtils.isEmpty(selectedString)) {
+            if (dataType instanceof KeyType) {
+                int id = Convert.toInt(selectedString, IntegerParserConfig.LENIENT_F);
+                Entity entity = ((KeyType) dataType).getEntity();
+                Object entityInstance = entity.findById(id);
+                parameters.put(paramPrefix, entityInstance);
+                //IsHierarchyDescendant(:p,a,Node)
+                if (entity.isHierarchical()) {
+                    return "IsHierarchyDescendant(:" + paramPrefix + " , " + a.getExpr() + "," + entity.getName() + ")";
+                } else {
+                    return a.getExpr() + "=:" + paramPrefix;
+                }
+            } else if (dataType instanceof EnumType) {
+                if (selectedString.startsWith("\"") && selectedString.endsWith("\"") && selectedString.length() >= 2) {
+                    selectedString = selectedString.substring(1, selectedString.length() - 1);
+                }
+                parameters.put(paramPrefix, ((Enum) ((EnumType) dataType).parse(selectedString)));
+                return a.getExpr() + "=:" + paramPrefix;
+            } else if (dataType instanceof StringType) {
+                parameters.put(paramPrefix, selectedString);
+                return a.getExpr() + "=:" + paramPrefix;
+            } else {
+                throw new IllegalArgumentException("Unsupported");
+            }
+        }
+        return null;
+    }
+
+    public NamedId getEntityAutoFilterDefaultSelectedValue(String entityName, String autoFilterName) {
+        AutoFilterData autoFilterData = getEntityAutoFilter(entityName, autoFilterName);
+        String initial = autoFilterData.getInitial();
+        if (initial != null) {
+            if ("".equals(initial)) {
+                return null;
+            }
+            throw new IllegalArgumentException("Not Supported yet intial value " + initial + " for auto-filter : " + autoFilterData.getBaseEntityName() + "." + autoFilterData.getName());
+        }
+        DataType filterType = getEntityAutoFilterDataType(autoFilterData);
+        if (filterType instanceof KeyType) {
+            Entity ee = ((KeyType) filterType).getEntity();
+            Object defaultSelection = null;
+            if (ee.getEntityType().equals(AppPeriod.class)) {
+                defaultSelection = getContext().getCorePlugin().getCurrentPeriod();
+            } else if (ee.getEntityType().equals(AppDepartment.class)) {
+                AppUser u = getContext().getCorePlugin().getCurrentUser();
+                defaultSelection = u == null ? null : u.getDepartment();
+            } else if (ee.getEntityType().equals(AppUser.class)) {
+                AppUser u = getContext().getCorePlugin().getCurrentUser();
+                defaultSelection = u == null ? null : u;
+            }
+            if (defaultSelection != null) {
+                Object theId = ee.getBuilder().objectToId(defaultSelection);
+                return new NamedId(theId, String.valueOf(theId));
+            }
+        }
+        if (autoFilterData.getBaseEntityName().equals("AppTrace")) {
+            if (autoFilterData.getName().equals("user")) {
+                AppUser u = getContext().getCorePlugin().getCurrentUser();
+                String n = u == null ? null : u.getLogin();
+                return new NamedId(n, n);
+            }
+        }
+        return null;
+    }
+
+    public List<NamedId> getEntityAutoFilterValues(String entityName, String autoFilterName) {
+        AutoFilterData a = getEntityAutoFilter(entityName, autoFilterName);
+        DataType curr = getEntityAutoFilterDataType(entityName, autoFilterName);
+        List<NamedId> f = new ArrayList<>();
+        f.add(new NamedId(String.valueOf(""), "-------"));
+        switch (a.getFilterType()) {
+            case "key": {
+                f.addAll(getDataTypeValues(curr));
+                break;
+            }
+            case "string": {
+                List<String> values = UPA.getPersistenceUnit().createQuery("Select distinct " + a.getExpr() + " from " + a.getBaseEntityName())
+                        .getResultList();
+                Collections.sort(values, VrUtils.NULL_AS_EMPTY_STRING_COMPARATOR);
+                for (String value : values) {
+                    if (value != null) {
+                        f.add(new NamedId(value, value));
+                    }
+                }
+                break;
+            }
+            case "boolean": {
+                f.add(new NamedId(true, "true"));
+                f.add(new NamedId(false, "false"));
+                break;
+            }
+            case "year": {
+                List<java.util.Date> values = UPA.getPersistenceUnit().createQuery("Select distinct " + a.getExpr() + " from " + a.getBaseEntityName())
+                        .getResultList();
+                SortedSet<net.vpc.upa.types.Year> values2 = new TreeSet<net.vpc.upa.types.Year>();
+                for (java.util.Date value : values) {
+                    if (value != null) {
+                        values2.add(new net.vpc.upa.types.Year(value));
+                    } else {
+                        values2.add(null);
+                    }
+                }
+                for (net.vpc.upa.types.Year value : values2) {
+                    if (value != null) {
+                        f.add(new NamedId(value, value.toString()));
+                    }
+                }
+                break;
+            }
+            case "month": {
+                List<java.util.Date> values = UPA.getPersistenceUnit().createQuery("Select distinct " + a.getExpr() + " from " + a.getBaseEntityName())
+                        .getResultList();
+                SortedSet<net.vpc.upa.types.Month> values2 = new TreeSet<net.vpc.upa.types.Month>();
+                for (java.util.Date value : values) {
+                    if (value != null) {
+                        values2.add(new net.vpc.upa.types.Month(value));
+                    } else {
+                        values2.add(null);
+                    }
+                }
+                for (net.vpc.upa.types.Month value : values2) {
+                    if (value != null) {
+                        f.add(new NamedId(value, value.toString()));
+                    }
+                }
+                break;
+            }
+            case "date": {
+                List<java.util.Date> values = UPA.getPersistenceUnit().createQuery("Select distinct " + a.getExpr() + " from " + a.getBaseEntityName())
+                        .getResultList();
+                SortedSet<net.vpc.upa.types.Date> values2 = new TreeSet<net.vpc.upa.types.Date>();
+                for (java.util.Date value : values) {
+                    if (value != null) {
+                        values2.add(new net.vpc.upa.types.Date(value));
+                    } else {
+                        values2.add(null);
+                    }
+                }
+                for (net.vpc.upa.types.Date value : values2) {
+                    if (value != null) {
+                        f.add(new NamedId(value, value.toString()));
+                    }
+                }
+                break;
+            }
+            case "time": {
+                List<java.util.Date> values = UPA.getPersistenceUnit().createQuery("Select distinct " + a.getExpr() + " from " + a.getBaseEntityName())
+                        .getResultList();
+                SortedSet<net.vpc.upa.types.Time> values2 = new TreeSet<net.vpc.upa.types.Time>();
+                for (java.util.Date value : values) {
+                    if (value != null) {
+                        values2.add(new net.vpc.upa.types.Time(value));
+                    } else {
+                        values2.add(null);
+                    }
+                }
+                for (net.vpc.upa.types.Time value : values2) {
+                    if (value != null) {
+                        f.add(new NamedId(value, value.toString()));
+                    }
+                }
+                break;
+            }
+            case "temporal": {
+                List<java.util.Date> values = UPA.getPersistenceUnit().createQuery("Select distinct " + a.getExpr() + " from " + a.getBaseEntityName())
+                        .getResultList();
+                SortedSet<net.vpc.upa.types.Date> values2 = new TreeSet<net.vpc.upa.types.Date>();
+                for (java.util.Date value : values) {
+                    if (value != null) {
+                        values2.add(new net.vpc.upa.types.Date(value));
+                    } else {
+                        values2.add(null);
+                    }
+                }
+                for (net.vpc.upa.types.Date value : values2) {
+                    if (value != null) {
+                        f.add(new NamedId(value, value.toString()));
+                    }
+                }
+                break;
+            }
+            default: {
+                throw new IllegalArgumentException("Unsupported");
+            }
+        }
+        return f;
+    }
+
+    public List<NamedId> getFieldValues(String entityName, String fieldName) {
+        return getDataTypeValues(UPA.getPersistenceUnit().getEntity(entityName).getField(fieldName).getDataType());
+    }
+
+    public List<NamedId> getDataTypeValues(DataType type) {
+        if (type instanceof EnumType) {
+            EnumType t = (EnumType) type;
+            I18n i18n = VrApp.getBean(I18n.class);
+            List<NamedId> list = new ArrayList<>();
+            for (Object value : t.getValues()) {
+                list.add(new NamedId(VrUPAUtils.objToJson(value, type).toString(), i18n.getEnum(value)));
+            }
+            return list;
+        }
+        if (type instanceof KeyType) {
+//            List<PropertyView> updatablePropertyViews = new ArrayList<>();
+//            List<PropertyView> dependentPropertyViews = new ArrayList<>();
+//            String componentId = "unknown";
+
+//            if (propertyView != null) {
+//                updatablePropertyViews = propertyView.getUpdatablePropertyViews();
+//                dependentPropertyViews = propertyView.getDependentPropertyViews();
+//                componentId = propertyView.getComponentId();
+//            }
+//            final ObjCtrl objCtrl = VrApp.getBean(ObjCtrl.class);
+            Document currentDoc = null;//objCtrl.getModel().getCurrentDocument();
+
+            final Map<String, Object> constraints = new HashMap<>();
+//            Map<String, Object> currentValues = null;//objCtrl.currentViewToMap();
+//            for (PropertyView dependentPropertyView : dependentPropertyViews) {
+//                Object v = currentValues.get(dependentPropertyView.getComponentId());
+//                if (v != null) {
+//                    ManyToOneTypePropertyView etpv = (ManyToOneTypePropertyView) dependentPropertyView;
+//                    Entity me = etpv.getTargetEntity();
+//                    Object mid = (v instanceof NamedId) ? ((NamedId) v).getId() : me.getBuilder().objectToId(v);
+//                    String expr = etpv.getComponentId().substring(componentId.length() + 1);
+//                    constraints.put(expr + "." + me.getIdFields().get(0).getName(), mid);
+//                }
+//            }
+            final KeyType mtype = (KeyType) type;
+            final Entity me = mtype.getEntity();
+//            return viewContext.getCacheItem("EntityPropertyViewValuesProvider." + me.getName() + ":" + constraints, new Action<List<NamedId>>() {
+//                @Override
+//                public List<NamedId> run() {
+            return findAllNamedIds(mtype.getEntity().getName(), constraints, currentDoc);
+//                }
+//            });
+        }
+        if (type instanceof ManyToOneType) {
+//            ManyToOneTypePropertyView ev = (ManyToOneTypePropertyView) propertyView;
+//            List<PropertyView> updatablePropertyViews = propertyView.getUpdatablePropertyViews();
+//            List<PropertyView> dependentPropertyViews = propertyView.getDependentPropertyViews();
+
+//            CorePlugin core = VrApp.getBean(CorePlugin.class);
+//            final ObjCtrl objCtrl = VrApp.getBean(ObjCtrl.class);
+//            Map<String, Object> currentValues = objCtrl.currentViewToMap();
+            Document currentDoc = null;//objCtrl.getModel().getCurrentDocument();
+            final Map<String, Object> constraints = new HashMap<>();
+//            for (PropertyView dependentPropertyView : dependentPropertyViews) {
+//                Object v = currentValues.get(dependentPropertyView.getComponentId());
+//                if (v != null) {
+//                    ManyToOneTypePropertyView etpv = (ManyToOneTypePropertyView) dependentPropertyView;
+//                    Entity me = etpv.getTargetEntity();
+//                    Object mid = (v instanceof NamedId) ? ((NamedId) v).getId() : me.getBuilder().objectToId(v);
+//                    String expr = etpv.getComponentId().substring(propertyView.getComponentId().length() + 1);
+//                    constraints.put(expr + "." + me.getIdFields().get(0).getName(), mid);
+//                }
+//            }
+            final ManyToOneType mtype = (ManyToOneType) type;
+            PersistenceUnit pu = UPA.getPersistenceUnit();
+            final Entity me = pu.getEntity(mtype.getTargetEntityName());
+            if (!(mtype.getRelationship() instanceof ManyToOneRelationship && ((ManyToOneRelationship) mtype.getRelationship()).getFilter() != null)) {
+//                List<NamedId> cacheItem = viewContext.getCacheItem("EntityPropertyViewValuesProvider." + me.getName() + ":" + constraints, new Action<List<NamedId>>() {
+//                    @Override
+//                    public List<NamedId> run() {
+                List<NamedId> cacheItem = findAllNamedIdsByRelationship(mtype.getRelationship().getName(), constraints, currentDoc);
+//                    }
+//                });
+                List<NamedId> cacheItem2 = new ArrayList<>(cacheItem.size());
+                for (NamedId namedId : cacheItem) {
+                    Object id = namedId.getId();
+                    Object id2 = VrUPAUtils.objToJson(id, me.getDataType()).toString();
+                    cacheItem2.add(new NamedId(id2, namedId.getName()));
+                }
+                return cacheItem2;
+            }
+            return findAllNamedIdsByRelationship(mtype.getRelationship().getName(), constraints, currentDoc);
+
+        }
+        return null;
     }
 }

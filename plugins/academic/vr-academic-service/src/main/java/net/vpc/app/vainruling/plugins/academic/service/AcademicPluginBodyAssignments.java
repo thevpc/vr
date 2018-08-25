@@ -156,11 +156,9 @@ public class AcademicPluginBodyAssignments extends AcademicPluginBody {
 
     public void addIntent(int teacherId, int assignementId) {
         boolean samePerson = AcademicPlugin.get().isCurrentTeacher(teacherId);
-
         AcademicPluginSecurity.requireTeacherOrManager(teacherId);
         PersistenceUnit pu = UPA.getPersistenceUnit();
         AcademicCourseAssignment assignment = pu.findById(AcademicCourseAssignment.class, assignementId);
-        AcademicPluginSecurity.requireUpdatableCourseAssignment(assignment);
         AcademicCourseIntent i = pu.createQuery("Select a from AcademicCourseIntent a where a.teacherId=:teacherId and a.assignmentId=:assignementId")
                 .setParameter("teacherId", teacherId)
                 .setParameter("assignementId", assignementId)
@@ -208,12 +206,35 @@ public class AcademicPluginBodyAssignments extends AcademicPluginBody {
         }
     }
 
-    public void removeIntent(int teacherId, int assignementId) {
-        boolean samePerson = AcademicPlugin.get().isCurrentTeacher(teacherId);
-        AcademicPluginSecurity.requireTeacherOrManager(teacherId);
+    public void removeWish(int teacherId, int assignementId) {
+        AcademicPluginSecurity.requireHeadOfDepartment(getContext().getPlugin().findTeacher(teacherId));
         PersistenceUnit pu = UPA.getPersistenceUnit();
         AcademicCourseAssignment assignment = pu.findById(AcademicCourseAssignment.class, assignementId);
-        AcademicPluginSecurity.requireUpdatableCourseAssignment(assignment);
+        AcademicCourseIntent i = pu.createQuery("Select a from AcademicCourseIntent a where a.teacherId=:teacherId and a.assignmentId=:assignementId")
+                .setParameter("teacherId", teacherId)
+                .setParameter("assignementId", assignementId)
+                .getFirstResultOrNull();
+        if (i != null) {
+            if (i.isWish()) {
+                i.setWish(false);
+                i.setAcceptedWish(false);
+                i.setWishDate(null);
+                if (!i.isWish() && !i.isProposal()) {
+                    pu.remove(i);
+                } else {
+                    pu.merge(i);
+                }
+            }
+        }
+    }
+
+    public void removeIntent(int teacherId, int assignementId) {
+        boolean samePerson = AcademicPlugin.get().isCurrentTeacher(teacherId);
+        if(!samePerson){
+            AcademicPluginSecurity.requireTeacherOrManager(teacherId);
+        }
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        AcademicCourseAssignment assignment = pu.findById(AcademicCourseAssignment.class, assignementId);
         AcademicCourseIntent i = pu.createQuery("Select a from AcademicCourseIntent a where a.teacherId=:teacherId and a.assignmentId=:assignementId")
                 .setParameter("teacherId", teacherId)
                 .setParameter("assignementId", assignementId)
@@ -244,7 +265,6 @@ public class AcademicPluginBodyAssignments extends AcademicPluginBody {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         AcademicCourseAssignment assignment = pu.findById(AcademicCourseAssignment.class, assignementId);
         if (assignment != null) {
-            AcademicPluginSecurity.requireUpdatableCourseAssignment(assignment);
             AcademicTeacher t = assignment.getTeacher();
             AcademicPluginSecurity.requireTeacherOrManager(t == null ? -1 : t.getId());
             List<AcademicCourseIntent> intentList = pu.createQuery("Select a from AcademicCourseIntent a where a.assignmentId=:assignementId")
@@ -256,10 +276,25 @@ public class AcademicPluginBodyAssignments extends AcademicPluginBody {
         }
     }
 
+    public void removeAllWishes(int assignementId) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        AcademicCourseAssignment assignment = pu.findById(AcademicCourseAssignment.class, assignementId);
+        if (assignment != null) {
+            AcademicTeacher t = assignment.getTeacher();
+            AcademicPluginSecurity.requireTeacherOrManager(t == null ? -1 : t.getId());
+            List<AcademicCourseIntent> intentList = pu.createQuery("Select a from AcademicCourseIntent a where a.assignmentId=:assignementId")
+                    .setParameter("assignementId", assignementId)
+                    .getResultList();
+            for (AcademicCourseIntent ii : intentList) {
+                removeWish(ii.getTeacher().getId(), assignementId);
+            }
+        }
+    }
+
     public AcademicCourseAssignment findAcademicCourseAssignment(int assignmentId) {
         AcademicPluginSecurity.requireTeacherOrManager(-1);
         AcademicCourseAssignment assignment = UPA.getPersistenceUnit().findById(AcademicCourseAssignment.class, assignmentId);
-        AcademicPluginSecurity.requireUpdatableCourseAssignment(assignment);
+//        AcademicPluginSecurity.requireUpdatableCourseAssignment(assignment);
         return assignment;
     }
 
@@ -461,10 +496,10 @@ public class AcademicPluginBodyAssignments extends AcademicPluginBody {
                     b.setAssignment(a.getAssignment());
                     b.setCurrentProposal(a.isProposal());
                     b.setCurrentWish(a.isWish());
-                    TeacherAssignmentChunck c=new TeacherAssignmentChunck(teacher==null?-1:teacher, "");
+                    TeacherAssignmentChunck c = new TeacherAssignmentChunck(teacher == null ? -1 : teacher, "");
                     c.setAcceptedProposal(a.isAcceptedProposal());
                     c.setAcceptedWish(a.isAcceptedWish());
-                    c.setAssigned(a.getAssignment().getTeacher()!=null);
+                    c.setAssigned(a.getAssignment().getTeacher() != null);
                     c.setProposal(a.isProposal());
                     c.setWish(a.isWish());
                     b.setCurrentStatusString(c.getStatusString());
@@ -645,7 +680,7 @@ public class AcademicPluginBodyAssignments extends AcademicPluginBody {
             @Override
             public void run() {
                 for (AcademicCourseAssignment a : findAcademicCourseAssignments(periodId)) {
-                    if (a.getTeacher() != null && a.getTeacher().getUser()!= null) {
+                    if (a.getTeacher() != null && a.getTeacher().getUser() != null) {
                         String n = VrUtils.toValidFileName(a.getTeacher().resolveFullName());
                         String c = VrUtils.toValidFileName(a.getFullName());
                         VFile r = CorePlugin.get().getRootFileSystem().get(path + "/" + n + "/" + c);

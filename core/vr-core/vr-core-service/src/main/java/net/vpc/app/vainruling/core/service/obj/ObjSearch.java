@@ -5,8 +5,6 @@
  */
 package net.vpc.app.vainruling.core.service.obj;
 
-import net.vpc.app.vainruling.core.service.CorePlugin;
-import net.vpc.app.vainruling.core.service.VrApp;
 
 import java.util.List;
 import java.util.Map;
