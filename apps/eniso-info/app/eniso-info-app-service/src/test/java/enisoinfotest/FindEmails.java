@@ -21,7 +21,7 @@ import java.util.List;
 public class FindEmails {
     public static void main(String[] args) {
         Chronometer ch = new Chronometer();
-        VrApp.runStandalone("taha.bensalah", "canard77");
+        VrApp.runStandalone("test", "test");
         try {
             StringBuilder emails=new StringBuilder();
             List<String> notfound=new ArrayList<>();
@@ -29,11 +29,11 @@ public class FindEmails {
                 name=name.trim();
                 if(!name.isEmpty()){
                     for (AppUser appUser : CorePlugin.get().findUsersByFullTitle(name)) {
-                        if(!StringUtils.isEmpty(appUser.getContact().getEmail())){
+                        if(!StringUtils.isEmpty(appUser.getEmail())){
                             if(emails.length()>0){
                                 emails.append(",");
                             }
-                            emails.append(appUser.getContact().getEmail());
+                            emails.append(appUser.getEmail());
                         }else{
                             notfound.add(name);
                         }

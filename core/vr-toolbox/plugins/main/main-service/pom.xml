@@ -19,7 +19,7 @@
         <vr-plugin.component-type>service</vr-plugin.component-type>
         <vr-plugin.name>my-project main Plugin</vr-plugin.name>
         <vr-plugin.description>my-project main Plugin</vr-plugin.description>
-        <version.vr>1.13.9</version.vr>
+        <version.vr>1.13.10</version.vr>
     </properties>
 
     <dependencies>

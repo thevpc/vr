@@ -89,7 +89,7 @@ public class Main {
         config.setProperty("vrConfigAuthor", System.getProperty("user.name"), ValidatorFactory.STRING);
         config.setProperty("vrConfigAuthorUrl", "http://" + System.getProperty("user.name") + "-company.com", ValidatorFactory.URL);
         config.setProperty("vrConfigAuthorCompany", System.getProperty("user.name") + " company", ValidatorFactory.LABEL);
-        config.setProperty("vrFwkCoreVersion", "1.13.8", ValidatorFactory.VERSION);
+        config.setProperty("vrFwkCoreVersion", "1.13.10", ValidatorFactory.VERSION);
         config.setProperty("vrPageMenuPath", "/MyMenu", ValidatorFactory.FOLDER);
         config.setProperty("vrPageName", "my-page", ValidatorFactory.NAME);
         config.setProperty("vrConfigPublicTheme", "crew", ValidatorFactory.NAME);

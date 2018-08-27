@@ -1,9 +1,9 @@
 package net.vpc.app.vr.plugins.academicprofile.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppContact;
+import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.plugins.Install;
 import net.vpc.app.vainruling.core.service.plugins.Start;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
@@ -18,6 +18,8 @@ import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.UPA;
 import net.vpc.upa.VoidAction;
 import net.vpc.app.vainruling.core.service.plugins.VrPlugin;
+import net.vpc.upa.Document;
+import net.vpc.upa.Entity;
 
 /**
  * Created by vpc on 7/19/17.
@@ -112,8 +114,8 @@ public class AcademicProfilePlugin {
         }
         return null;
     }
-    
-    public List<AcademicTeacherCVItem> findTeacherCvItemsBySection(int teacherCVId, int sectionId){
+
+    public List<AcademicTeacherCVItem> findTeacherCvItemsBySection(int teacherCVId, int sectionId) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         List<AcademicTeacherCVItem> itemList = pu.createQuery("Select u from AcademicTeacherCVItem u where u.teacherCVId=:teacherCVId and u.sectionId=:sectionId")
                 .setParameter("teacherCVId", teacherCVId)
@@ -121,31 +123,43 @@ public class AcademicProfilePlugin {
                 .getResultList();
 //        List<AcademicTeacherCVItem> itemList = pu.findAll(AcademicTeacherCVItem.class);
         return itemList;
-    } 
-    
-    public void removeTeacherCvItem(int itemId){
+    }
+
+    public void removeTeacherCvItem(int itemId) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         AcademicTeacherCVItem item = pu.findById(AcademicTeacherCVItem.class, itemId);
-        if(item != null){
+        if (item != null) {
             pu.remove(item);
         }
     }
-    
+
     public void updateTeacherCVItem(AcademicTeacherCVItem item) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         pu.merge(item);
     }
-  
-    public void updateContactInformations(AppContact contact) {
+
+    public void updateContactInformations(AppUser contact) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
+        //only contact information is update!!
+        Entity cc = pu.getEntity(AppContact.class);
+        Entity u = pu.getEntity(AppUser.class);
+        Document d = u.createDocument();
+        d.setAll(u.getBuilder().objectToDocument(contact));
+        for (String k : d.keySet().toArray(new String[d.size()])) {
+            if(cc.containsField(k)){
+                //okkay
+            }else{
+                d.remove(k);
+            }
+        }
         pu.merge(contact);
     }
-    
+
     public void updateCvItem(AcademicTeacherCVItem item) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         pu.merge(item);
     }
-    
+
     public void updateStudentInformations(AcademicStudent student) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         pu.merge(student);
@@ -170,19 +184,19 @@ public class AcademicProfilePlugin {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         pu.persist(academicTeacherCVItem);
     }
-    
-    public AcademicCVSection findAcademicCVSectionByName(String title){
+
+    public AcademicCVSection findAcademicCVSectionByName(String title) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         AcademicCVSection s = pu.createQuery("Select u from AcademicCVSection u where u.title=:title")
-                        .setParameter("title", title).getFirstResultOrNull();
+                .setParameter("title", title).getFirstResultOrNull();
         return s;
     }
 
-    public AcademicCVSection findOrCreateAcademicCVSection(String title){
+    public AcademicCVSection findOrCreateAcademicCVSection(String title) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         AcademicCVSection s = pu.createQuery("Select u from AcademicCVSection u where u.title=:title")
-                        .setParameter("title", title).getFirstResultOrNull();
-        if(s == null){
+                .setParameter("title", title).getFirstResultOrNull();
+        if (s == null) {
             s = new AcademicCVSection();
             s.setTitle(title);
             pu.persist(s);

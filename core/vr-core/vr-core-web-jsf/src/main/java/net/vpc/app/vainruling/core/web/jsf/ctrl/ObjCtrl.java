@@ -8,14 +8,10 @@ package net.vpc.app.vainruling.core.web.jsf.ctrl;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.CorePluginSecurity;
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.model.AppDepartment;
-import net.vpc.app.vainruling.core.service.model.AppPeriod;
-import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.obj.*;
 import net.vpc.app.vainruling.core.service.util.*;
 import net.vpc.app.vainruling.core.web.*;
 import net.vpc.app.vainruling.core.web.jsf.DialogBuilder;
-import net.vpc.app.vainruling.core.web.jsf.Vr;
 import net.vpc.app.vainruling.core.web.jsf.ctrl.obj.*;
 import net.vpc.app.vainruling.core.web.menu.BreadcrumbItem;
 import net.vpc.app.vainruling.core.web.menu.VrMenuManager;
@@ -76,7 +72,6 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
     @Autowired
     private I18n i18n;
     private DynaFormModel dynModel = new DynaFormModel();
-    private MainPhotoProvider mainPhotoProvider = null;
 
     public ObjCtrl() {
         super(null);
@@ -358,26 +353,8 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
             getModel().setSearchTextHelper(core.createSearchHelperString(null, entityName));
             getModel().setList(new ArrayList<ObjRow>());
             getModel().setCurrent(delegated_newInstance());
-            mainPhotoProvider = null;
-            String p = getEntity().getProperties().getString("ui.main-photo-property");
-            String d = getEntity().getProperties().getString("ui.main-photo-property.default");
-            if (!StringUtils.isEmpty(p)) {
-                mainPhotoProvider = new PropertyMainPhotoProvider(p, d);
-            } else {
-                p = Vr.get().trim(getEntity().getProperties().getString("ui.main-photo-provider"));
-                if (!StringUtils.isEmpty(p)) {
-                    try {
-                        mainPhotoProvider = (MainPhotoProvider) Class.forName(p).newInstance();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-//            updateMode(AccessMode.READ);
-//            currentModelToView();
         } catch (RuntimeException ex) {
             log.log(Level.SEVERE, "Error", ex);
-//            throw ex;
         }
     }
 
@@ -696,7 +673,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
     }
 
     public boolean isEnabledMainPhoto() {
-        return mainPhotoProvider != null;
+        return core.isEnabledMainPhoto(getEntityName());
     }
 
     public String getMainName(ObjRow row) {
@@ -708,11 +685,11 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
     }
 
     public String getMainPhoto(ObjRow row) {
-        return mainPhotoProvider.getMainPhotoPath(getEntity().getBuilder().documentToId(row.getDocument()), row.getDocument());
+        return core.getMainPhotoPath(getEntityName(), getEntity().getBuilder().documentToId(row.getDocument()), row.getDocument());
     }
 
     public String getMainIcon(ObjRow row) {
-        return mainPhotoProvider.getMainIconPath(getEntity().getBuilder().documentToId(row.getDocument()), row.getDocument());
+        return core.getMainIconPath(getEntityName(),getEntity().getBuilder().documentToId(row.getDocument()), row.getDocument());
     }
 
     public void loadList() {
@@ -1395,7 +1372,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
         if (config != null && config.ignoreAutoFilter) {
             return null;
         }
-        return core.getEntityAutoFilterDefaultSelectedValue(autoFilterData.getBaseEntityName(), autoFilterData.getName());
+        return core.getEntityAutoFilterDefaultSelectedValue(autoFilterData.getEntityName(), autoFilterData.getName());
     }
 
     public void onAutoFilterChange() {
@@ -1502,6 +1479,18 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
             if (getModel().getSearch() != null) {
                 if (getModel().getSearch() instanceof ObjSimpleSearch) {
                     cfg.searchExpr = ((ObjSimpleSearch) getModel().getSearch()).getExpression();
+                }
+            }
+            
+            //will no more add to history the same entity editor (for the same entity name)
+            PageInfo pi = menu.peekHistory();
+            if(pi!=null && ("obj".equals(pi.getCommand()) || "objCtrl".equals(pi.getCommand()))){
+                ObjConfig c = VrUtils.parseJSONObject(pi.getArguments(), ObjConfig.class);
+                if(c!=null){
+                    if(c.entity!=null && c.entity.equals(cfg.entity)
+                            ){
+                        menu.popHistory();
+                    }
                 }
             }
             menu.pushHistory("obj", cfg);

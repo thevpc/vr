@@ -6,13 +6,22 @@ package net.vpc.app.vainruling.core.service.obj;
 public class AutoFilterData implements Comparable<AutoFilterData> {
 
     private String filterType;
-    private String baseEntityName;
+    private String formatType;
+    private String entityName;
     private String name;
     private String label;
     private String expr;
     private String type;
     private String initial;
     private int order;
+
+    public String getFormatType() {
+        return formatType;
+    }
+
+    public void setFormatType(String formatType) {
+        this.formatType = formatType;
+    }
 
     public String getInitial() {
         return initial;
@@ -70,12 +79,12 @@ public class AutoFilterData implements Comparable<AutoFilterData> {
         this.label = label;
     }
 
-    public String getBaseEntityName() {
-        return baseEntityName;
+    public String getEntityName() {
+        return entityName;
     }
 
-    public void setBaseEntityName(String baseEntityName) {
-        this.baseEntityName = baseEntityName;
+    public void setEntityName(String entityName) {
+        this.entityName = entityName;
     }
 
     @Override
@@ -108,7 +117,7 @@ public class AutoFilterData implements Comparable<AutoFilterData> {
         if (filterType != null ? !filterType.equals(that.filterType) : that.filterType != null) {
             return false;
         }
-        if (baseEntityName != null ? !baseEntityName.equals(that.baseEntityName) : that.baseEntityName != null) {
+        if (entityName != null ? !entityName.equals(that.entityName) : that.entityName != null) {
             return false;
         }
         if (name != null ? !name.equals(that.name) : that.name != null) {
@@ -127,7 +136,7 @@ public class AutoFilterData implements Comparable<AutoFilterData> {
     @Override
     public int hashCode() {
         int result = filterType != null ? filterType.hashCode() : 0;
-        result = 31 * result + (baseEntityName != null ? baseEntityName.hashCode() : 0);
+        result = 31 * result + (entityName != null ? entityName.hashCode() : 0);
         result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + (label != null ? label.hashCode() : 0);
         result = 31 * result + (expr != null ? expr.hashCode() : 0);

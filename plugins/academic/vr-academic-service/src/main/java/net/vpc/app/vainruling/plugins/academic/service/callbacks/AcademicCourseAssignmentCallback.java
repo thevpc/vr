@@ -18,7 +18,7 @@ import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.CustomFormulaContext;
 import net.vpc.upa.Document;
 import net.vpc.upa.Entity;
-import net.vpc.upa.callbacks.PersistEvent;
+import net.vpc.upa.events.PersistEvent;
 import net.vpc.upa.config.Callback;
 import net.vpc.upa.config.NamedFormula;
 import net.vpc.upa.config.OnPrePersist;

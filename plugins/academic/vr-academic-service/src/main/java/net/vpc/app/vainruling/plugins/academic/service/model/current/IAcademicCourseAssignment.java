@@ -5,6 +5,7 @@ import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSeme
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 
 public interface IAcademicCourseAssignment {
+
     AcademicCoursePlan getCoursePlan();
 
     String getDiscriminator();
@@ -24,4 +25,10 @@ public interface IAcademicCourseAssignment {
     AcademicCourseType getCourseType();
 
     AcademicClass resolveAcademicClass();
+
+    boolean isWish();
+
+    boolean isProposal();
+    
+    boolean isAssigned();
 }

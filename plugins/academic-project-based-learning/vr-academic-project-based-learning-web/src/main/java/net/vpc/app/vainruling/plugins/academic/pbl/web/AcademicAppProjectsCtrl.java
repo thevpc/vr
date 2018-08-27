@@ -1129,13 +1129,13 @@ public class AcademicAppProjectsCtrl {
                                 "project", "", i)
                         : new NodeItem(
                                 "["+i.getProject().getCode()+"] "+i.getProject().getName(), i.getTeams().size(),
-                                "project", (i.getProject().getOwner() == null ? null : i.getProject().getOwner().resolveFullTitle()), i);
+                                "project", (i.getProject().getOwner() == null ? null : i.getProject().getOwner().getFullTitle()), i);
                 DefaultTreeNode n = new DefaultTreeNode(project, this.root);
                 n.setExpanded(defaultExpand);
                 HashSet<Integer> teachersByProject = new HashSet<>();
                 HashSet<Integer> studentsByProject = new HashSet<>();
                 for (TeamNode teamNode : i.getTeams()) {
-                    NodeItem team = new NodeItem("["+teamNode.getTeam().getCode()+"] "+ teamNode.getTeam().getName(), -1, "team", (teamNode.getTeam().getOwner() == null ? "" : teamNode.getTeam().getOwner().resolveFullTitle()), teamNode);
+                    NodeItem team = new NodeItem("["+teamNode.getTeam().getCode()+"] "+ teamNode.getTeam().getName(), -1, "team", (teamNode.getTeam().getOwner() == null ? "" : teamNode.getTeam().getOwner().getFullTitle()), teamNode);
                     HashSet<Integer> teachersByTeam = new HashSet<>();
                     HashSet<Integer> studentsByTeam = new HashSet<>();
                     DefaultTreeNode t = new DefaultTreeNode(team, n);

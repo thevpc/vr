@@ -79,8 +79,8 @@ class CorePluginBodyDAOManager extends CorePluginBody {
             if (all.startsWith("{")) {
                 AutoFilterData d = VrUtils.parseJSONObject(all, AutoFilterData.class);
                 if (d != null) {
-                    d.setBaseEntityName(entityName);
-                    d.setFilterType(getEntityAutoFilterType(d));
+                    d.setEntityName(entityName);
+                    d.setFormatType(getEntityAutoFilterFormatType(d));
                     autoFilterDatasAll.add(d);
                 }
             } else {
@@ -88,8 +88,8 @@ class CorePluginBodyDAOManager extends CorePluginBody {
                 if (all2 != null) {
                     for (AutoFilterData d : all2) {
                         if (d != null) {
-                            d.setBaseEntityName(entityName);
-                            d.setFilterType(getEntityAutoFilterType(d));
+                            d.setEntityName(entityName);
+                            d.setFormatType(getEntityAutoFilterFormatType(d));
                             autoFilterDatasAll.add(d);
                         }
                     }
@@ -102,8 +102,8 @@ class CorePluginBodyDAOManager extends CorePluginBody {
                 String name = entry.getKey().substring("ui.auto-filter.".length());
                 AutoFilterData d = VrUtils.parseJSONObject((String) entry.getValue(), AutoFilterData.class);
                 d.setName(name);
-                d.setBaseEntityName(entity.getName());
-                d.setFilterType(getEntityAutoFilterType(d));
+                d.setEntityName(entity.getName());
+                d.setFormatType(getEntityAutoFilterFormatType(d));
                 autoFilterDatasAll.add(d);
             }
         }
@@ -114,12 +114,12 @@ class CorePluginBodyDAOManager extends CorePluginBody {
         return Arrays.copyOf(cache, cache.length);
     }
 
-    public String getEntityAutoFilterType(String entityName, String autoFilterName) {
+    public String getEntityAutoFilterFormatType(String entityName, String autoFilterName) {
         AutoFilterData a = getEntityAutoFilter(entityName, autoFilterName);
-        return getEntityAutoFilterType(a);
+        return CorePluginBodyDAOManager.this.getEntityAutoFilterFormatType(a);
     }
 
-    public String getEntityAutoFilterType(AutoFilterData a) {
+    public String getEntityAutoFilterFormatType(AutoFilterData a) {
         DataType curr = getEntityAutoFilterDataType(a);
         if (curr instanceof KeyType) {
             return "key";
@@ -129,18 +129,18 @@ class CorePluginBodyDAOManager extends CorePluginBody {
             return "string";
         } else if (curr instanceof BooleanType) {
             return "boolean";
-        } else if (curr instanceof YearType || (curr instanceof TemporalType && "year".equalsIgnoreCase(a.getFilterType()))) {
+        } else if (curr instanceof YearType || (curr instanceof TemporalType && "year".equalsIgnoreCase(a.getFormatType()))) {
             return "year";
-        } else if (curr instanceof MonthType || (curr instanceof TemporalType && "month".equalsIgnoreCase(a.getFilterType()))) {
+        } else if (curr instanceof MonthType || (curr instanceof TemporalType && "month".equalsIgnoreCase(a.getFormatType()))) {
             return "month";
-        } else if (curr instanceof DateType || (curr instanceof TemporalType && "date".equalsIgnoreCase(a.getFilterType()))) {
+        } else if (curr instanceof DateType || (curr instanceof TemporalType && "date".equalsIgnoreCase(a.getFormatType()))) {
             return "date";
-        } else if (curr instanceof TimeType || (curr instanceof TemporalType && "time".equalsIgnoreCase(a.getFilterType()))) {
+        } else if (curr instanceof TimeType || (curr instanceof TemporalType && "time".equalsIgnoreCase(a.getFormatType()))) {
             return "time";
         } else if (curr instanceof TemporalType) {
             return "temporal";
         } else {
-            throw new IllegalArgumentException("Unsupported");
+            throw new IllegalArgumentException("Unsupported DataType " + (curr == null ? "null" : curr.getClass().getSimpleName()) + " for entity auto filter " + a.getEntityName() + "." + a.getName());
         }
     }
 
@@ -154,7 +154,7 @@ class CorePluginBodyDAOManager extends CorePluginBody {
         if (!expr.matches("[a-zA-Z0-9.]+")) {
             throw new IllegalArgumentException("Invalid Auto Filter Expr " + expr);
         }
-        Entity entity = UPA.getPersistenceUnit().getEntity(a.getBaseEntityName());
+        Entity entity = UPA.getPersistenceUnit().getEntity(a.getEntityName());
         I18n i18n = VrApp.getBean(I18n.class);
         DataType curr = entity.getDataType();
         String evalLabel = entity.getTitle();
@@ -178,11 +178,11 @@ class CorePluginBodyDAOManager extends CorePluginBody {
                     curr = field.getDataType();
                 }
             } else {
-                throw new IllegalArgumentException("Unsupported Filter Type " + expr);
+                throw new IllegalArgumentException("Unsupported entity auto filter expression " + expr + " for entity auto filter " + a.getEntityName() + "." + a.getName());
             }
         }
         if (StringUtils.isEmpty(a.getLabel())) {
-            String label = i18n.getOrNull("UI.Entity." + entity.getName() + ".ui.auto-filter.class");
+//            String label = i18n.getOrNull("UI.Entity." + entity.getName() + ".ui.auto-filter.class");
             a.setLabel(evalLabel);
 //                        if(StringUtils.isEmpty(label)){
 //                            if(curr instanceof KeyType){
@@ -775,28 +775,68 @@ class CorePluginBodyDAOManager extends CorePluginBody {
         }
         DataType dataType = getEntityAutoFilterDataType(entityName, autoFilterName);
         if (!StringUtils.isEmpty(selectedString)) {
-            if (dataType instanceof KeyType) {
-                int id = Convert.toInt(selectedString, IntegerParserConfig.LENIENT_F);
-                Entity entity = ((KeyType) dataType).getEntity();
-                Object entityInstance = entity.findById(id);
-                parameters.put(paramPrefix, entityInstance);
-                //IsHierarchyDescendant(:p,a,Node)
-                if (entity.isHierarchical()) {
-                    return "IsHierarchyDescendant(:" + paramPrefix + " , " + a.getExpr() + "," + entity.getName() + ")";
-                } else {
+            switch (a.getFormatType()) {
+                case "key": {
+                    int id = Convert.toInt(selectedString, IntegerParserConfig.LENIENT_F);
+                    Entity entity = ((KeyType) dataType).getEntity();
+                    Object entityInstance = entity.findById(id);
+                    parameters.put(paramPrefix, entityInstance);
+                    //IsHierarchyDescendant(:p,a,Node)
+                    if (entity.isHierarchical()) {
+                        return "IsHierarchyDescendant(:" + paramPrefix + " , " + a.getExpr() + "," + entity.getName() + ")";
+                    } else {
+                        return a.getExpr() + "=:" + paramPrefix;
+                    }
+                }
+                case "enum": {
+                    if (selectedString.startsWith("\"") && selectedString.endsWith("\"") && selectedString.length() >= 2) {
+                        selectedString = selectedString.substring(1, selectedString.length() - 1);
+                    }
+                    parameters.put(paramPrefix, ((EnumType) dataType).parse(selectedString));
                     return a.getExpr() + "=:" + paramPrefix;
                 }
-            } else if (dataType instanceof EnumType) {
-                if (selectedString.startsWith("\"") && selectedString.endsWith("\"") && selectedString.length() >= 2) {
-                    selectedString = selectedString.substring(1, selectedString.length() - 1);
+                case "string": {
+                    parameters.put(paramPrefix, selectedString);
+                    return a.getExpr() + "=:" + paramPrefix;
                 }
-                parameters.put(paramPrefix, ((Enum) ((EnumType) dataType).parse(selectedString)));
-                return a.getExpr() + "=:" + paramPrefix;
-            } else if (dataType instanceof StringType) {
-                parameters.put(paramPrefix, selectedString);
-                return a.getExpr() + "=:" + paramPrefix;
-            } else {
-                throw new IllegalArgumentException("Unsupported");
+                case "boolean": {
+                    parameters.put(paramPrefix, Boolean.valueOf(selectedString));
+                    return a.getExpr() + "=:" + paramPrefix;
+                }
+                case "year": {
+                    parameters.put(paramPrefix, Integer.valueOf(selectedString));
+                    return "year(" + a.getExpr() + ")=:" + paramPrefix;
+                }
+                case "month": {
+                    net.vpc.upa.types.Month m = net.vpc.upa.types.Month.valueOf(selectedString);
+                    parameters.put(paramPrefix + "_a", m.getYearValue());
+                    parameters.put(paramPrefix + "_b", m.getMonthValue());
+                    return "( (year(" + a.getExpr() + ")=:" + paramPrefix + "_a) and (month(" + a.getExpr() + ")=:" + paramPrefix + "_b)";
+                }
+                case "date": {
+                    net.vpc.upa.types.Date m = net.vpc.upa.types.Date.valueOf(selectedString);
+                    parameters.put(paramPrefix + "_a", m.getYearValue());
+                    parameters.put(paramPrefix + "_b", m.getMonthValue());
+                    parameters.put(paramPrefix + "_c", m.getDateValue());
+                    return "( (year(" + a.getExpr() + ")=:" + paramPrefix + "_a) and (month(" + a.getExpr() + ")=:" + paramPrefix + "_b)  and (day(" + a.getExpr() + ")=:" + paramPrefix + "_c)";
+                }
+                case "time": {
+                    net.vpc.upa.types.Time m = net.vpc.upa.types.Time.valueOf(selectedString);
+                    parameters.put(paramPrefix + "_a", m.getHourValue());
+                    parameters.put(paramPrefix + "_b", m.getMinuteValue());
+                    parameters.put(paramPrefix + "_c", m.getSecondValue());
+                    return "( (hour(" + a.getExpr() + ")=:" + paramPrefix + "_a) and (minute(" + a.getExpr() + ")=:" + paramPrefix + "_b)  and (second(" + a.getExpr() + ")=:" + paramPrefix + "_c)";
+                }
+                case "temporal": {
+                    net.vpc.upa.types.Date m = net.vpc.upa.types.Date.valueOf(selectedString);
+                    parameters.put(paramPrefix + "_a", m.getYearValue());
+                    parameters.put(paramPrefix + "_b", m.getMonthValue());
+                    parameters.put(paramPrefix + "_c", m.getDateValue());
+                    return "( (year(" + a.getExpr() + ")=:" + paramPrefix + "_a) and (month(" + a.getExpr() + ")=:" + paramPrefix + "_b)  and (day(" + a.getExpr() + ")=:" + paramPrefix + "_c)";
+                }
+                default: {
+                    throw new IllegalArgumentException("Unsupported entity auto filter Format Type " + a.getFormatType() + " for entity auto filter " + a.getEntityName() + "." + a.getName());
+                }
             }
         }
         return null;
@@ -805,13 +845,24 @@ class CorePluginBodyDAOManager extends CorePluginBody {
     public NamedId getEntityAutoFilterDefaultSelectedValue(String entityName, String autoFilterName) {
         AutoFilterData autoFilterData = getEntityAutoFilter(entityName, autoFilterName);
         String initial = autoFilterData.getInitial();
+        DataType filterType = getEntityAutoFilterDataType(autoFilterData);
         if (initial != null) {
             if ("".equals(initial)) {
                 return null;
             }
-            throw new IllegalArgumentException("Not Supported yet intial value " + initial + " for auto-filter : " + autoFilterData.getBaseEntityName() + "." + autoFilterData.getName());
+            switch (autoFilterData.getFormatType()) {
+                case "enum": {
+                    EnumType t = (EnumType) filterType;
+                    Object value = t.parse(initial);
+                    I18n i18n = I18n.get();
+                    return (new NamedId(VrUPAUtils.objToJson(value, t).toString(), i18n.getEnum(value)));
+                }
+                case "string": {
+                    return (new NamedId(initial, initial));
+                }
+            }
+            throw new IllegalArgumentException("Not Supported yet intial value " + initial + " for auto-filter : " + autoFilterData.getEntityName() + "." + autoFilterData.getName());
         }
-        DataType filterType = getEntityAutoFilterDataType(autoFilterData);
         if (filterType instanceof KeyType) {
             Entity ee = ((KeyType) filterType).getEntity();
             Object defaultSelection = null;
@@ -829,7 +880,7 @@ class CorePluginBodyDAOManager extends CorePluginBody {
                 return new NamedId(theId, String.valueOf(theId));
             }
         }
-        if (autoFilterData.getBaseEntityName().equals("AppTrace")) {
+        if (autoFilterData.getEntityName().equals("AppTrace")) {
             if (autoFilterData.getName().equals("user")) {
                 AppUser u = getContext().getCorePlugin().getCurrentUser();
                 String n = u == null ? null : u.getLogin();
@@ -844,13 +895,17 @@ class CorePluginBodyDAOManager extends CorePluginBody {
         DataType curr = getEntityAutoFilterDataType(entityName, autoFilterName);
         List<NamedId> f = new ArrayList<>();
         f.add(new NamedId(String.valueOf(""), "-------"));
-        switch (a.getFilterType()) {
+        switch (a.getFormatType()) {
             case "key": {
                 f.addAll(getDataTypeValues(curr));
                 break;
             }
+            case "enum": {
+                f.addAll(getDataTypeValues(curr));
+                break;
+            }
             case "string": {
-                List<String> values = UPA.getPersistenceUnit().createQuery("Select distinct " + a.getExpr() + " from " + a.getBaseEntityName())
+                List<String> values = UPA.getPersistenceUnit().createQuery("Select distinct " + a.getExpr() + " from " + a.getEntityName())
                         .getResultList();
                 Collections.sort(values, VrUtils.NULL_AS_EMPTY_STRING_COMPARATOR);
                 for (String value : values) {
@@ -866,7 +921,7 @@ class CorePluginBodyDAOManager extends CorePluginBody {
                 break;
             }
             case "year": {
-                List<java.util.Date> values = UPA.getPersistenceUnit().createQuery("Select distinct " + a.getExpr() + " from " + a.getBaseEntityName())
+                List<java.util.Date> values = UPA.getPersistenceUnit().createQuery("Select distinct " + a.getExpr() + " from " + a.getEntityName())
                         .getResultList();
                 SortedSet<net.vpc.upa.types.Year> values2 = new TreeSet<net.vpc.upa.types.Year>();
                 for (java.util.Date value : values) {
@@ -884,7 +939,7 @@ class CorePluginBodyDAOManager extends CorePluginBody {
                 break;
             }
             case "month": {
-                List<java.util.Date> values = UPA.getPersistenceUnit().createQuery("Select distinct " + a.getExpr() + " from " + a.getBaseEntityName())
+                List<java.util.Date> values = UPA.getPersistenceUnit().createQuery("Select distinct " + a.getExpr() + " from " + a.getEntityName())
                         .getResultList();
                 SortedSet<net.vpc.upa.types.Month> values2 = new TreeSet<net.vpc.upa.types.Month>();
                 for (java.util.Date value : values) {
@@ -902,7 +957,7 @@ class CorePluginBodyDAOManager extends CorePluginBody {
                 break;
             }
             case "date": {
-                List<java.util.Date> values = UPA.getPersistenceUnit().createQuery("Select distinct " + a.getExpr() + " from " + a.getBaseEntityName())
+                List<java.util.Date> values = UPA.getPersistenceUnit().createQuery("Select distinct " + a.getExpr() + " from " + a.getEntityName())
                         .getResultList();
                 SortedSet<net.vpc.upa.types.Date> values2 = new TreeSet<net.vpc.upa.types.Date>();
                 for (java.util.Date value : values) {
@@ -920,7 +975,7 @@ class CorePluginBodyDAOManager extends CorePluginBody {
                 break;
             }
             case "time": {
-                List<java.util.Date> values = UPA.getPersistenceUnit().createQuery("Select distinct " + a.getExpr() + " from " + a.getBaseEntityName())
+                List<java.util.Date> values = UPA.getPersistenceUnit().createQuery("Select distinct " + a.getExpr() + " from " + a.getEntityName())
                         .getResultList();
                 SortedSet<net.vpc.upa.types.Time> values2 = new TreeSet<net.vpc.upa.types.Time>();
                 for (java.util.Date value : values) {
@@ -938,7 +993,7 @@ class CorePluginBodyDAOManager extends CorePluginBody {
                 break;
             }
             case "temporal": {
-                List<java.util.Date> values = UPA.getPersistenceUnit().createQuery("Select distinct " + a.getExpr() + " from " + a.getBaseEntityName())
+                List<java.util.Date> values = UPA.getPersistenceUnit().createQuery("Select distinct " + a.getExpr() + " from " + a.getEntityName())
                         .getResultList();
                 SortedSet<net.vpc.upa.types.Date> values2 = new TreeSet<net.vpc.upa.types.Date>();
                 for (java.util.Date value : values) {
@@ -956,7 +1011,7 @@ class CorePluginBodyDAOManager extends CorePluginBody {
                 break;
             }
             default: {
-                throw new IllegalArgumentException("Unsupported");
+                throw new IllegalArgumentException("Unsupported Format Type " + a.getFormatType() + " for entity auto filter " + a.getEntityName() + "." + a.getName());
             }
         }
         return f;

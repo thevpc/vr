@@ -59,11 +59,11 @@ public class CorePluginSecurity {
         }
     }
 
-    public static void requireContact(int contactId) {
-        if (!CorePlugin.get().isCurrentSessionAdminOrContact(contactId)) {
-            throw new SecurityException("Not Allowed");
-        }
-    }
+//    public static void requireContact(int contactId) {
+//        if (!CorePlugin.get().isCurrentSessionAdminOrContact(contactId)) {
+//            throw new SecurityException("Not Allowed");
+//        }
+//    }
 
     public static String[] getEntityRights(Entity entity) {
         return new String[]{

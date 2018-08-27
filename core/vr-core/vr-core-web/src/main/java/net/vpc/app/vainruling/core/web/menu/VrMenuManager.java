@@ -455,6 +455,20 @@ public class VrMenuManager {
         return path(url);
     }
 
+    public PageInfo peekHistory() {
+        if (pageHistory.size() > 0) {
+            return pageHistory.getLast();
+        }
+        return null;
+    }
+    
+    public PageInfo popHistory() {
+        if (pageHistory.size() > 0) {
+            return pageHistory.removeLast();
+        }
+        return null;
+    }
+    
     public void pushHistory(String command, Object arguments) {
         if (arguments == null) {
             arguments = "";
@@ -464,8 +478,10 @@ public class VrMenuManager {
             arguments = VrUtils.formatJSONObject(arguments);
         }
         PageInfo pi = new PageInfo(command, String.valueOf(arguments));
-        if (pageHistory.size() > 0 && pageHistory.getLast().equals(pi)) {
-            return;
+        if (pageHistory.size() > 0) {
+            if(pageHistory.getLast().equals(pi)){
+                return;
+            }
         }
         pageHistory.add(pi);
         if (pageHistory.size() > 20) {

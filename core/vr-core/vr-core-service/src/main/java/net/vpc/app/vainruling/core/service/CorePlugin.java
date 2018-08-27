@@ -40,6 +40,8 @@ import net.vpc.app.vainruling.core.service.model.content.ArticlesDispositionGrou
 import net.vpc.app.vainruling.core.service.model.content.ArticlesFile;
 import net.vpc.app.vainruling.core.service.model.content.ArticlesItem;
 import net.vpc.app.vainruling.core.service.model.content.FullArticle;
+import net.vpc.app.vainruling.core.service.obj.MainPhotoProvider;
+import net.vpc.app.vainruling.core.service.obj.PropertyMainPhotoProvider;
 import net.vpc.upa.types.DataType;
 import org.springframework.context.annotation.DependsOn;
 
@@ -405,10 +407,9 @@ public class CorePlugin {
         return bodySecurityManager.filterUsersBysContacts(users);
     }
 
-    public List<AppContact> filterContactsByProfileFilter(List<AppContact> contacts, String profilePattern) {
-        return bodySecurityManager.filterContactsByProfileFilter(contacts, profilePattern);
-    }
-
+//    public List<AppContact> filterContactsByProfileFilter(List<AppContact> contacts, String profilePattern) {
+//        return bodySecurityManager.filterContactsByProfileFilter(contacts, profilePattern);
+//    }
     public List<AppUser> findUsersByProfileFilter(String profilePattern, Integer userType) {
         return bodySecurityManager.findUsersByProfileFilter(profilePattern, userType);
     }
@@ -904,10 +905,9 @@ public class CorePlugin {
         return bodySecurityAuth.isCurrentSessionAdminOrUser(userId);
     }
 
-    public boolean isCurrentSessionAdminOrContact(int userId) {
-        return bodySecurityAuth.isCurrentSessionAdminOrContact(userId);
-    }
-
+//    public boolean isCurrentSessionAdminOrContact(int userId) {
+//        return bodySecurityAuth.isCurrentSessionAdminOrContact(userId);
+//    }
     public boolean isCurrentSessionAdminOrUser(String login) {
         return bodySecurityAuth.isCurrentSessionAdminOrUser(login);
     }
@@ -1089,4 +1089,83 @@ public class CorePlugin {
     public DataType getEntityAutoFilterDataType(String entityName, String autoFilterName) {
         return bodyDaoManager.getEntityAutoFilterDataType(entityName, autoFilterName);
     }
+
+    public MainPhotoProvider getEntityMainPhotoProvider(String entityName) {
+        Entity entity = UPA.getPersistenceUnit().getEntity(entityName);
+        MainPhotoProvider oldProvider = entity.getProperties().getObject("cache.ui.main-photo-provider");
+        if (oldProvider != null) {
+            return oldProvider;
+        }
+        boolean noProvider = entity.getProperties().getBoolean("cache.ui.main-photo-provider.null", false);
+        if (noProvider) {
+            return null;
+        }
+        MainPhotoProvider mainPhotoProvider = null;
+        mainPhotoProvider = null;
+        String p = entity.getProperties().getString("ui.main-photo-property");
+        String d = entity.getProperties().getString("ui.main-photo-property.default");
+        if (!StringUtils.isEmpty(p)) {
+            mainPhotoProvider = new PropertyMainPhotoProvider(p, d);
+        } else {
+            p = StringUtils.trimToNull(entity.getProperties().getString("ui.main-photo-provider"));
+            if (!StringUtils.isEmpty(p)) {
+                try {
+                    mainPhotoProvider = (MainPhotoProvider) Class.forName(p).newInstance();
+                } catch (Exception e) {
+                    log.log(Level.SEVERE, " Unable to create Main Photo provider for entity " + entityName + " as type " + p, e);
+                }
+            }
+        }
+        if (mainPhotoProvider == null) {
+            entity.getProperties().setBoolean("cache.ui.main-photo-provider.null", true);
+        } else {
+            entity.getProperties().setObject("cache.ui.main-photo-provider", mainPhotoProvider);
+        }
+        return mainPhotoProvider;
+    }
+
+    public boolean isEnabledMainPhoto(String entityName) {
+        return getEntityMainPhotoProvider(entityName) != null;
+    }
+
+    public String[] getMainPhotoPathList(String entityName, Object[] ids) {
+        MainPhotoProvider p = getEntityMainPhotoProvider(entityName);
+        if (p == null) {
+            return null;
+        }
+        String[] r = new String[ids.length];
+        for (int i = 0; i < r.length; i++) {
+            r[i] = p.getMainPhotoPath(ids[i], null);
+        }
+        return r;
+    }
+
+    public String[] getMainIconPathList(String entityName, Object[] ids) {
+        MainPhotoProvider p = getEntityMainPhotoProvider(entityName);
+        if (p == null) {
+            return null;
+        }
+        String[] r = new String[ids.length];
+        for (int i = 0; i < r.length; i++) {
+            r[i] = p.getMainIconPath(ids[i], null);
+        }
+        return r;
+    }
+
+    public String getMainPhotoPath(String entityName, Object id, Object valueOrNull) {
+        MainPhotoProvider p = getEntityMainPhotoProvider(entityName);
+        if (p == null) {
+            return null;
+        }
+        return p.getMainPhotoPath(id, valueOrNull);
+    }
+
+    public String getMainIconPath(String entityName, Object id, Object valueOrNull) {
+        MainPhotoProvider p = getEntityMainPhotoProvider(entityName);
+        if (p == null) {
+            return null;
+        }
+        return p.getMainIconPath(id, valueOrNull);
+    }
+
 }

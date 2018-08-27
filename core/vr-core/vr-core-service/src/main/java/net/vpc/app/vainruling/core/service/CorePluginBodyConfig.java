@@ -375,10 +375,9 @@ class CorePluginBodyConfig extends CorePluginBody {
             @Override
             public String run() {
                 AppUser t = getContext().getCorePlugin().findUser(id);
-                AppContact c = t == null ? null : t.getContact();
                 boolean female = false;
-                if (c != null) {
-                    AppGender g = c.getGender();
+                if (t != null) {
+                    AppGender g = t.getGender();
                     if (g != null) {
                         if ("F".equals(g.getCode())) {
                             female = true;

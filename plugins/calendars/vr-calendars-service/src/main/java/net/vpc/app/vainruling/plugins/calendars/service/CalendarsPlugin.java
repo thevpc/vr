@@ -30,46 +30,52 @@ public class CalendarsPlugin {
     @Autowired
     CorePlugin core;
     Map<String, VrCalendarProvider> providers;
+
     @Start
-    public void onStart(){
+    public void onStart() {
         providers = VrApp.getContext().getBeansOfType(VrCalendarProvider.class);
-        if(core==null){
-            core=CorePlugin.get();
+        if (core == null) {
+            core = CorePlugin.get();
         }
         core.createRight(CalendarsPluginSecurity.RIGHT_CUSTOM_EDUCATION_MY_PLANNING, "MyPlanning");
     }
+
     public CalendarWeek findMergedUserPublicCalendar(int userId) {
-        return findMergedUserPublicCalendar(userId,null);
+        return findMergedUserPublicCalendar(userId, null);
     }
 
     public CalendarWeek findMergedUserPublicCalendar(int userId, String newName) {
-        if(StringUtils.isEmpty(newName)){
+        if (StringUtils.isEmpty(newName)) {
             AppUser user = core.findUser(userId);
-            newName="noname";
-            if(user!=null){
-                if(user.getContact()!=null){
-                    newName=user.resolveFullTitle();
-                }else{
-                    newName=user.getLogin();
+            newName = "noname";
+            if (user != null) {
+                newName = user.getFullName();
+                if (StringUtils.isEmpty(newName)) {
+                    newName = user.getLogin();
+                    if (StringUtils.isEmpty(newName)) {
+                        newName = "noname";
+                    }
                 }
             }
         }
-        return mergeCalendars(findPlainUserPublicCalendars(userId),newName);
+        return mergeCalendars(findPlainUserPublicCalendars(userId), newName);
     }
 
     public List<CalendarWeek> findUserPublicCalendars(int userId, boolean merge) {
-        List<CalendarWeek> all= findPlainUserPublicCalendars(userId);
-        if(merge){
+        List<CalendarWeek> all = findPlainUserPublicCalendars(userId);
+        if (merge) {
             AppUser user = core.findUser(userId);
-            String name="noname";
-            if(user!=null){
-                if(user.getContact()!=null){
-                    name=user.resolveFullTitle();
-                }else{
-                    name=user.getLogin();
+            String name = "noname";
+            if (user != null) {
+                 name = user.getFullName();
+                if (StringUtils.isEmpty(name)) {
+                    name = user.getLogin();
+                    if (StringUtils.isEmpty(name)) {
+                        name = "noname";
+                    }
                 }
             }
-            if(all.size()>1) {
+            if (all.size() > 1) {
                 all.add(0, mergeCalendars(all, name + " (*)"));
             }
         }
@@ -174,7 +180,7 @@ public class CalendarsPlugin {
                 }
             }
             return fusion;
-        }else if(planningsMap.size()==1){
+        } else if (planningsMap.size() == 1) {
             for (CalendarWeek calendarWeek : planningsMap.values()) {
                 return calendarWeek;
             }
@@ -182,10 +188,9 @@ public class CalendarsPlugin {
         return null;
     }
 
-
     public Set<Integer> findUsersWithPublicCalendars() {
-        Set<Integer> all=new HashSet<>();
-        Set<Integer> good=new HashSet<>();
+        Set<Integer> all = new HashSet<>();
+        Set<Integer> good = new HashSet<>();
         for (AppUser appUser : core.findUsers()) {
             all.add(appUser.getId());
         }
@@ -198,11 +203,11 @@ public class CalendarsPlugin {
     }
 
     public Set<Integer> findUsersWithPublicCalendars(Set<Integer> userIds) {
-        Set<Integer> all=new HashSet<>();
-        if(userIds!=null){
+        Set<Integer> all = new HashSet<>();
+        if (userIds != null) {
             all.addAll(userIds);
         }
-        Set<Integer> good=new HashSet<>();
+        Set<Integer> good = new HashSet<>();
         for (Map.Entry<String, VrCalendarProvider> o : providers.entrySet()) {
             Set<Integer> ok = o.getValue().retainUsersWithPublicCalendars(all);
             good.addAll(ok);
@@ -225,7 +230,6 @@ public class CalendarsPlugin {
         }
         return all;
     }
-
 
     public CalendarWeek parsePlanningDataXML(Node planningNode, String sourceName) {
 //                    System.out.println("\nCurrent Element :" + nNode.getNodeName());
@@ -332,7 +336,6 @@ public class CalendarsPlugin {
         return null;
     }
 
-
 //    private Set<String> splitOtherNames(String value) {
 //        Set<String> all = new HashSet<>();
 //        if (value != null) {
@@ -344,8 +347,6 @@ public class CalendarsPlugin {
 //        }
 //        return all;
 //    }
-
-
     public List<CalendarWeek> findMyCalenders() {
         return loadCalendars("my-calendars", "");
     }

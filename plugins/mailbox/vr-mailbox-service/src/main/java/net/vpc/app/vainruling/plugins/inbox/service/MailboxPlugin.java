@@ -536,7 +536,7 @@ public class MailboxPlugin {
                     try {
                         sendWelcomeEmail(u, null, notifPusher);
                     } catch (Exception exc) {
-                        String email = u.getContact() == null ? null : u.getContact().getEmail();
+                        String email = u.getEmail();
                         VrApp.getBean(VrNotificationSession.class).publish(new VrNotificationEvent(SEND_WELCOME_MAIL_QUEUE, 60, null, "touser:" + u.getLogin() + " ; email=" + email + " : " + exc, null, Level.SEVERE));
                     }
                 }
@@ -795,7 +795,7 @@ public class MailboxPlugin {
         Set<String> rows = new HashSet<>();
         CorePlugin core = VrApp.getBean(CorePlugin.class);
         for (AppUser p : core.findUsersByProfileFilter(recipientProfiles, null)) {
-            String email = p.getContact() == null ? null : p.getContact().getEmail();
+            String email = p.getEmail();
             if (!StringUtils.isEmpty(email)) {
                 rows.add(email);
             }
@@ -832,7 +832,7 @@ public class MailboxPlugin {
         CorePlugin core = VrApp.getBean(CorePlugin.class);
         List<String[]> rows = new ArrayList<>();
         for (AppUser p : core.findUsersByProfileFilter(recipientProfiles, null)) {
-            String email = p.getContact().getEmail();
+            String email = p.getEmail();
             if (!StringUtils.isEmpty(email)) {
                 Map<String, Object> allValues = new HashMap<>();
 
@@ -843,14 +843,14 @@ public class MailboxPlugin {
                 profilesString.append(";");
                 allValues.put("index", (rows.size() + 1));
                 allValues.put("id", (p.getId()));
-                allValues.put("email", p.getContact().getEmail());
+                allValues.put("email", p.getEmail());
                 allValues.put("login", p.getLogin());
-                allValues.put("firstName", p.getContact().getFirstName());
-                allValues.put("lastName", p.getContact().getLastName());
-                allValues.put("fullName", p.resolveFullName());
-                allValues.put("civility", p.getContact().getCivility() == null ? "" : p.getContact().getCivility().getName());
+                allValues.put("firstName", p.getFirstName());
+                allValues.put("lastName", p.getLastName());
+                allValues.put("fullName", p.getFullName());
+                allValues.put("civility", p.getCivility() == null ? "" : p.getCivility().getName());
                 allValues.put("department", p.getDepartment() == null ? "" : p.getDepartment().getName());
-                allValues.put("gender", p.getContact().getGender() == null ? "" : p.getContact().getGender().getName());
+                allValues.put("gender", p.getGender() == null ? "" : p.getGender().getName());
                 allValues.put("type", p.getType() == null ? "" : p.getType().getName());
                 allValues.put("properties", profilesString.toString());
 
@@ -961,13 +961,13 @@ public class MailboxPlugin {
         if (u != null) {
             m.getProperties().setProperty("from_login", StringUtils.nonNull(u.getLogin()));
             m.getProperties().setProperty("from_type", StringUtils.nonNull(u.getType().getName()));
-            m.getProperties().setProperty("from_fullName", StringUtils.nonNull(u.resolveFullName()));
-            m.getProperties().setProperty("from_firstName", StringUtils.nonNull(u.getContact().getFirstName()));
-            m.getProperties().setProperty("from_lastName", StringUtils.nonNull(u.getContact().getLastName()));
-            m.getProperties().setProperty("from_positionTitle1", StringUtils.nonNull(u.getContact().getPositionTitle1()));
-            m.getProperties().setProperty("from_positionTitle2", StringUtils.nonNull(u.getContact().getPositionTitle2()));
-            m.getProperties().setProperty("from_positionTitle3", StringUtils.nonNull(u.getContact().getPositionTitle3()));
-            m.getProperties().setProperty("from_gender", StringUtils.nonNull(u.getContact().getGender() == null ? null : u.getContact().getGender().getName()));
+            m.getProperties().setProperty("from_fullName", StringUtils.nonNull(u.getFullName()));
+            m.getProperties().setProperty("from_firstName", StringUtils.nonNull(u.getFirstName()));
+            m.getProperties().setProperty("from_lastName", StringUtils.nonNull(u.getLastName()));
+            m.getProperties().setProperty("from_positionTitle1", StringUtils.nonNull(u.getPositionTitle1()));
+            m.getProperties().setProperty("from_positionTitle2", StringUtils.nonNull(u.getPositionTitle2()));
+            m.getProperties().setProperty("from_positionTitle3", StringUtils.nonNull(u.getPositionTitle3()));
+            m.getProperties().setProperty("from_gender", StringUtils.nonNull(u.getGender() == null ? null : u.getGender().getName()));
             m.getProperties().setProperty("from_department", StringUtils.nonNull(u.getDepartment() == null ? null : u.getDepartment().getName()));
         }
         m.subject(emailSubject);

@@ -4,7 +4,8 @@ import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSemester;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 
-public class AcademicCourseAssignment2 implements IAcademicCourseAssignment{
+public class AcademicCourseAssignment2 implements IAcademicCourseAssignment {
+
     private AcademicCourseIntent a;
 
     public AcademicCourseAssignment2(AcademicCourseIntent a) {
@@ -60,4 +61,20 @@ public class AcademicCourseAssignment2 implements IAcademicCourseAssignment{
     public AcademicClass resolveAcademicClass() {
         return a.resolveAcademicClass();
     }
+
+    @Override
+    public boolean isWish() {
+        return a.isWish();
+    }
+
+    @Override
+    public boolean isProposal() {
+        return a.isProposal();
+    }
+
+    @Override
+    public boolean isAssigned() {
+        return a.getAssignment() != null && a.getAssignment().getTeacher() != null;
+    }
+
 }

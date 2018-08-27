@@ -931,7 +931,7 @@ public class ApblPlugin {
 
                     (
                             comparator.matches(project.getProject().getName())
-                                    || (project.getProject().getOwner() != null && comparator.matches(project.getProject().getOwner().resolveFullTitle()))
+                                    || (project.getProject().getOwner() != null && comparator.matches(project.getProject().getOwner().getFullTitle()))
                     )
                     )
             );
@@ -946,7 +946,7 @@ public class ApblPlugin {
                         tnode.setSelectionMatch(
                                 (
                                         comparator.matches(team.getTeam().getName())
-                                                || (team.getTeam().getOwner() != null && comparator.matches(team.getTeam().getOwner().resolveFullTitle()))
+                                                || (team.getTeam().getOwner() != null && comparator.matches(team.getTeam().getOwner().getFullTitle()))
                                 )
                         );
                         boolean someCoach = false;

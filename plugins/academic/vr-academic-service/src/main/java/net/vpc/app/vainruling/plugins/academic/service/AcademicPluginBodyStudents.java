@@ -69,12 +69,12 @@ public class AcademicPluginBodyStudents extends AcademicPluginBody {
 //                .getFirstResultOrNull();
     }
 
-    public AcademicStudent findStudentByContact(int contactId) {
-        CorePluginSecurity.requireContact(contactId);
-        return UPA.getPersistenceUnit().createQuery("Select u from AcademicStudent u where u.user.contactId=:contactId")
-                .setParameter("contactId", contactId)
-                .getFirstResultOrNull();
-    }
+//    public AcademicStudent findStudentByContact(int contactId) {
+//        CorePluginSecurity.requireContact(contactId);
+//        return UPA.getPersistenceUnit().createQuery("Select u from AcademicStudent u where u.user.contactId=:contactId")
+//                .setParameter("contactId", contactId)
+//                .getFirstResultOrNull();
+//    }
 
     public List<AcademicStudent> findStudents(Integer department, AcademicStudentStage stage) {
         CorePluginSecurity.requireRight(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_STUDENTS);

@@ -1,0 +1,18 @@
+Version 1.13.10 :
+-----------------
+## New Features
+    [Academic] Added Icons for Teacher Load
+
+## Features removed
+    [Core] Removed relation between AppUser and AppContact (user is contact now)
+    [Core] Removed relation between AcademicStudent and Department
+    [Core] Removed relation between AcademicTeacher and Department
+    [Core] Removed Maven Project Artifact, replaced permanently with vr-toolbox
+
+## Other Changes
+    [Core] Upgraded to UPA 1.2.48
+    [Core] Moved AutoFilter support to core-service (from core-web)
+    [Core] Moved Icon/Image support to core-service (from core-web)
+    [Academic] Moved Load bundeling support to academic-service (from Web)
+
+## Bug Fixes

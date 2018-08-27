@@ -44,6 +44,10 @@ import java.io.IOException;
 import java.util.*;
 import java.util.logging.Logger;
 import net.vpc.app.vainruling.core.service.plugins.VrPlugin;
+import net.vpc.app.vainruling.plugins.academic.service.dto.TeacherLoadInfoFilter;
+import net.vpc.app.vainruling.plugins.academic.service.dto.TeacherLoadInfo;
+import net.vpc.app.vainruling.plugins.academic.service.dto.TeacherPeriodStatExt;
+import net.vpc.app.vainruling.plugins.academic.service.util.DefaultCourseAssignmentFilter;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.UPA;
 
@@ -242,18 +246,34 @@ public class AcademicPlugin {
         assignments.addIntent(teacherId, assignementId);
     }
 
+    public void addProposal(int teacherId, int assignementId) {
+        assignments.addProposal(teacherId, assignementId);
+    }
+
     public void removeIntent(int teacherId, int assignementId) {
         assignments.removeIntent(teacherId, assignementId);
     }
-    
+
+    public void removeProposal(int teacherId, int assignementId) {
+        assignments.removeProposal(teacherId, assignementId);
+    }
+
+    public void addWish(int teacherId, int assignementId) {
+        assignments.addWish(teacherId, assignementId);
+    }
+
     public void removeWish(int teacherId, int assignementId) {
-        assignments.removeIntent(teacherId, assignementId);
+        assignments.removeWish(teacherId, assignementId);
     }
 
     public void removeAllIntents(int assignementId) {
         assignments.removeAllIntents(assignementId);
     }
-    
+
+    public void removeAllProposal(int assignementId) {
+        assignments.removeAllProposals(assignementId);
+    }
+
     public void removeAllWishes(int assignementId) {
         assignments.removeAllWishes(assignementId);
     }
@@ -305,7 +325,6 @@ public class AcademicPlugin {
 //    public AcademicTeacher findTeacherByContact(int contactId) {
 //        return teachers.findTeacherByContact(contactId);
 //    }
-    
     public AcademicTeacher findTeacher(StringComparator t) {
         return teachers.findTeacher(t);
     }
@@ -364,7 +383,6 @@ public class AcademicPlugin {
 //    public AcademicStudent findStudentByContact(int contactId) {
 //        return students.findStudentByContact(contactId);
 //    }
-
     public List<AcademicStudent> findStudents(Integer department, AcademicStudentStage stage) {
         return students.findStudents(department, stage);
     }
@@ -1255,6 +1273,119 @@ public class AcademicPlugin {
             return false;
         }
         return uid.equals(tid);
+    }
+
+    public TeacherLoadInfo getTeacherLoadInfo(TeacherLoadInfoFilter f) {
+        TeacherLoadInfo result = new TeacherLoadInfo();
+        Map<Integer, AcademicCourseAssignmentInfoByVisitor> all = new HashMap<>();
+        DefaultCourseAssignmentFilter otherCourseAssignmentsFilter = f.getOtherCourseAssignmentFilter();
+        otherCourseAssignmentsFilter.setAcceptAssignments(true).setAcceptIntents(true).setAcceptNoTeacher(true);
+//        boolean includeIntents = !isFiltered("no-current-intents");
+        List<AcademicCourseAssignmentInfo> othersAssignmentsAndIntents = findCourseAssignmentsAndIntents(f.getPeriodId(), null, otherCourseAssignmentsFilter);
+        for (AcademicCourseAssignmentInfo b : othersAssignmentsAndIntents) {
+            all.put(b.getAssignment().getId(), new AcademicCourseAssignmentInfoByVisitor(b, f.getTeacherId()));
+        }
+        result.setAll(all);
+        HashSet<Integer> visitedAssignmentId = new HashSet<Integer>();
+        if (f.getTeacherId() != -1) {
+            DefaultCourseAssignmentFilter courseAssignmentFilter = f.getTeacherCourseAssignmentFilter();
+            DeviationConfig deviationConfig = f.getDeviationConfig();
+            List<AcademicCourseAssignmentInfo> teacherAssignmentsAndIntents = findCourseAssignmentsAndIntents(f.getPeriodId(), f.getTeacherId(), courseAssignmentFilter);
+            for (AcademicCourseAssignmentInfo b : teacherAssignmentsAndIntents) {
+                if (!all.containsKey(b.getAssignment().getId())) {
+                    all.put(b.getAssignment().getId(), new AcademicCourseAssignmentInfoByVisitor(b, f.getTeacherId()));
+                }
+            }
+
+            TeacherPeriodStat stat = evalTeacherStat(f.getPeriodId(), f.getTeacherId(), courseAssignmentFilter, deviationConfig, null);
+            for (TeacherSemesterStat teacherSemesterStat : stat.getSemesters()) {
+                for (AcademicCourseAssignmentInfo m : teacherSemesterStat.getAssignments()) {
+                    visitedAssignmentId.add(m.getAssignment().getId());
+                }
+            }
+            result.setStat(new TeacherPeriodStatExt(stat, all));
+        }
+
+        boolean conflict = f.isFilterConflict();
+        List<AcademicCourseAssignmentInfo> others = new ArrayList<>();
+
+        boolean filterAssigned = f.isFilterAssigned();
+        boolean filterNonassigned = f.isFilterNonAssigned();
+        boolean filterIntended = f.isFilterIntended();
+        boolean filterNonintended = f.isFilterNonIntended();
+        boolean filterLocked = f.isFilterLocked();
+        boolean filterUnlocked = f.isFilterUnlocked();
+
+        if (!filterAssigned && !filterNonassigned) {
+            filterAssigned = true;
+            filterNonassigned = true;
+        }
+        if (!filterIntended && !filterNonintended) {
+            filterIntended = true;
+            filterNonintended = true;
+        }
+        if (!filterLocked && !filterUnlocked) {
+            filterLocked = true;
+            filterUnlocked = true;
+        }
+
+
+        for (AcademicCourseAssignmentInfo c : othersAssignmentsAndIntents) {
+            if (!visitedAssignmentId.contains(c.getAssignment().getId())) {
+                boolean _assigned = c.isAssigned();
+                boolean _locked = c.getAssignment().isLocked();
+                Map<Integer, TeacherAssignmentChunck> chuncks = c.getAssignmentChunck().getChuncks();
+                int chunk_size = chuncks.size();
+                boolean _intended = chunk_size > 0;
+                boolean accepted = true;
+                if (((filterAssigned && _assigned) || (filterNonassigned && !_assigned))
+                        && ((filterIntended && _intended) || (filterNonintended && !_intended))
+                        && ((filterLocked && _locked) || (filterUnlocked && !_locked))) {
+                    //ok
+                } else {
+                    accepted = false;
+                }
+                if (accepted && conflict) {
+                    //show only with conflicts
+                    if (chuncks.isEmpty()) {
+                        accepted = false;
+                    } else if (c.getAssignment().getTeacher() != null) {
+                        if (chunk_size > 1) {
+                            accepted = true;
+                        } else if (chunk_size == 1) {
+                            TeacherAssignmentChunck first = (TeacherAssignmentChunck) chuncks.values().toArray()[0];
+                            accepted = c.getAssignment().getTeacher().getId() != first.getTeacherId();
+                        }
+                    } else {
+                        accepted = chunk_size > 1;
+                    }
+                }
+                if (accepted) {
+                    boolean powerUser = CorePlugin.get().isCurrentSessionAdminOrManager();
+                    if ((c.getAssignment().isLocked() || c.getAssignment().getCoursePlan().isLocked()) && !powerUser) {
+                        //dont add
+                    } else {
+                        others.add(c);
+                    }
+                }
+            }
+        }
+
+        result.setNonFilteredOthers(wrap(others, all));
+        return result;
+    }
+
+    public static List<AcademicCourseAssignmentInfoByVisitor> wrap(List<AcademicCourseAssignmentInfo> val, Map<Integer, AcademicCourseAssignmentInfoByVisitor> all) {
+        List<AcademicCourseAssignmentInfoByVisitor> assignments;
+        assignments = new ArrayList<>();
+        for (AcademicCourseAssignmentInfo a : val) {
+            AcademicCourseAssignmentInfoByVisitor e = all.get(a.getAssignment().getId());
+            if (e == null) {
+                throw new RuntimeException();
+            }
+            assignments.add(e);
+        }
+        return assignments;
     }
 
 }

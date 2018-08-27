@@ -18,7 +18,6 @@ import net.vpc.app.vainruling.plugins.inbox.service.MailboxPluginSecurity;
 import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxFolder;
 import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxReceived;
 
-import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -65,7 +64,7 @@ public class MailboxPreviewCtrl implements PollAware,MessageTextService {
                 previews.add(new MessagePreview(
                         lo,
                         lo.getSender(),
-                        lo.getSender() == null ? null : lo.getSender().resolveFullName(),
+                        lo.getSender() == null ? null : lo.getSender().getFullName(),
                         VrUtils.strcut(cat, 36),
                         VrUtils.strcut(subject, 36),
                         VrUtils.strcut(content, 36),

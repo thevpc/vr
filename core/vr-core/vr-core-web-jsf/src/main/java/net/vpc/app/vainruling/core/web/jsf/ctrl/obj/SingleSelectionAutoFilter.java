@@ -19,11 +19,11 @@ public class SingleSelectionAutoFilter extends AutoFilter {
     public SingleSelectionAutoFilter(AutoFilterData autoFilterData, boolean autoSelect) {
         super("single-selection", autoFilterData);
         CorePlugin core = CorePlugin.get();
-        for (NamedId namedId : core.getEntityAutoFilterValues(autoFilterData.getBaseEntityName(), autoFilterData.getName())) {
+        for (NamedId namedId : core.getEntityAutoFilterValues(autoFilterData.getEntityName(), autoFilterData.getName())) {
             values.add(FacesUtils.createSelectItem(namedId.getStringId(), namedId.getStringName(), ""));
         }
         if (autoSelect) {
-            NamedId defaultSelection = core.getEntityAutoFilterDefaultSelectedValue(autoFilterData.getBaseEntityName(), autoFilterData.getName());
+            NamedId defaultSelection = core.getEntityAutoFilterDefaultSelectedValue(autoFilterData.getEntityName(), autoFilterData.getName());
             if (defaultSelection != null) {
                 this.selectedString = defaultSelection.getStringId();
             }
@@ -47,6 +47,6 @@ public class SingleSelectionAutoFilter extends AutoFilter {
     }
 
     public String createFilterExpression(Map<String, Object> parameters, String paramPrefix) {
-        return CorePlugin.get().createEntityAutoFilterExpression(getData().getBaseEntityName(), getData().getName(), parameters, paramPrefix, selectedString);
+        return CorePlugin.get().createEntityAutoFilterExpression(getData().getEntityName(), getData().getName(), parameters, paramPrefix, selectedString);
     }
 }

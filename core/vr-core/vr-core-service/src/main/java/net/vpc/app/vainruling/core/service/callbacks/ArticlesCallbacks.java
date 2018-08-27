@@ -11,7 +11,7 @@ import net.vpc.app.vainruling.core.service.model.content.ArticlesItem;
 import net.vpc.upa.CustomDefaultObject;
 import net.vpc.upa.Entity;
 import net.vpc.upa.Field;
-import net.vpc.upa.callbacks.FieldEvent;
+import net.vpc.upa.events.FieldEvent;
 import net.vpc.upa.config.Callback;
 import net.vpc.upa.config.OnCreate;
 import net.vpc.upa.config.OnPreCreate;

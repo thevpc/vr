@@ -16,6 +16,7 @@ import java.util.Set;
  * Created by vpc on 6/30/16.
  */
 public class DefaultCourseAssignmentFilter implements CourseAssignmentFilter {
+
     private Set<Integer> acceptedTeacherSituations = new HashSet<>();
     private Set<Integer> rejectedTeacherSituations = new HashSet<>();
     private Set<Integer> acceptedTeachers = new HashSet<>();
@@ -42,6 +43,8 @@ public class DefaultCourseAssignmentFilter implements CourseAssignmentFilter {
     private Set<Integer> rejectedClasses = new HashSet<>();
     private Set<String> acceptedLabels = new HashSet<>();
     private Set<String> rejectedLabels = new HashSet<>();
+    private Boolean acceptWish = null;
+    private Boolean acceptProposal = null;
     private boolean acceptIntents = true;
     private boolean acceptAssignments = true;
     private boolean acceptNoTeacher = true;
@@ -160,7 +163,9 @@ public class DefaultCourseAssignmentFilter implements CourseAssignmentFilter {
 
     @Override
     public boolean lookupIntents() {
-        return isAcceptIntents();
+        return isAcceptIntents()
+                || getAcceptWish() != null
+                || getAcceptProposal() != null;
     }
 
     public Set<Integer> getAcceptedProgramTypes() {
@@ -283,8 +288,6 @@ public class DefaultCourseAssignmentFilter implements CourseAssignmentFilter {
 //                .setRejectedProgramTypes(new HashSet<Integer>(rejectedProgramTypes))
 //                ;
 //    }
-
-
     public Set<String> buildCoursePlanLabelsFromString(String string) {
         HashSet<String> labels = new HashSet<>();
         if (string != null) {
@@ -306,6 +309,7 @@ public class DefaultCourseAssignmentFilter implements CourseAssignmentFilter {
         acceptedTeacherSituations.remove(id);
         return this;
     }
+
     public DefaultCourseAssignmentFilter addRejectedTeacherSituation(Integer id) {
         rejectedTeacherSituations.add(id);
         return this;
@@ -326,6 +330,7 @@ public class DefaultCourseAssignmentFilter implements CourseAssignmentFilter {
         acceptedTeachers.remove(id);
         return this;
     }
+
     public DefaultCourseAssignmentFilter addRejectedTeacher(Integer id) {
         rejectedTeachers.add(id);
         return this;
@@ -346,6 +351,7 @@ public class DefaultCourseAssignmentFilter implements CourseAssignmentFilter {
         acceptedTeacherDepartments.remove(id);
         return this;
     }
+
     public DefaultCourseAssignmentFilter addRejectedTeacherDepartment(Integer id) {
         rejectedTeacherDepartments.add(id);
         return this;
@@ -366,6 +372,7 @@ public class DefaultCourseAssignmentFilter implements CourseAssignmentFilter {
         acceptedTeacherDegrees.remove(id);
         return this;
     }
+
     public DefaultCourseAssignmentFilter addRejectedTeacherDegree(Integer id) {
         rejectedTeacherDegrees.add(id);
         return this;
@@ -386,6 +393,7 @@ public class DefaultCourseAssignmentFilter implements CourseAssignmentFilter {
         acceptedTeacherDisciplines.remove(id);
         return this;
     }
+
     public DefaultCourseAssignmentFilter addRejectedTeacherDiscipline(Integer id) {
         rejectedTeacherDisciplines.add(id);
         return this;
@@ -406,6 +414,7 @@ public class DefaultCourseAssignmentFilter implements CourseAssignmentFilter {
         acceptedCourseDisciplines.remove(id);
         return this;
     }
+
     public DefaultCourseAssignmentFilter addRejectedCourseDiscipline(Integer id) {
         rejectedCourseDisciplines.add(id);
         return this;
@@ -468,7 +477,7 @@ public class DefaultCourseAssignmentFilter implements CourseAssignmentFilter {
     }
 
     public DefaultCourseAssignmentFilter addAcceptedSemester(Integer id) {
-        if(id!=null) {
+        if (id != null) {
             acceptedSemesters.add(id);
         }
         return this;
@@ -723,14 +732,14 @@ public class DefaultCourseAssignmentFilter implements CourseAssignmentFilter {
 //        }
         AcademicTeacher teacher = a.getTeacher();
 
-        if(!isAcceptNoTeacher() && teacher !=null){
+        if (!isAcceptNoTeacher() && teacher != null) {
             return false;
         }
         AppDepartment teacherDepartment = null;
         AcademicTeacherSituation teacherSituation = null;
         AcademicTeacherDegree teacherDegree = null;
         AcademicOfficialDiscipline teacherDiscipline = null;
-        if(teacher !=null){
+        if (teacher != null) {
             teacherDepartment = teacher.getUser().getDepartment();
             teacherSituation = teacher.getSituation();
             teacherDegree = teacher.getDegree();
@@ -870,6 +879,16 @@ public class DefaultCourseAssignmentFilter implements CourseAssignmentFilter {
                 return false;
             }
         }
+        if (this.getAcceptWish() != null && !a.isAssigned()) {
+            if (this.getAcceptWish() != a.isWish()) {
+                return false;
+            }
+        }
+        if (this.getAcceptProposal() != null && !a.isAssigned()) {
+            if (this.getAcceptProposal() != a.isProposal()) {
+                return false;
+            }
+        }
 
 //        boolean _assigned = a.isAssigned();
 //        HashSet<String> s = new HashSet<>(c.getIntentsSet());
@@ -911,7 +930,23 @@ public class DefaultCourseAssignmentFilter implements CourseAssignmentFilter {
 //        if (accepted) {
 //            others.add(c);
 //        }
-
         return (true);
     }
+
+    public Boolean getAcceptWish() {
+        return acceptWish;
+    }
+
+    public void setAcceptWish(Boolean acceptWish) {
+        this.acceptWish = acceptWish;
+    }
+
+    public Boolean getAcceptProposal() {
+        return acceptProposal;
+    }
+
+    public void setAcceptProposal(Boolean acceptProposal) {
+        this.acceptProposal = acceptProposal;
+    }
+
 }

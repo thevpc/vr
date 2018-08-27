@@ -6,13 +6,13 @@
 package net.vpc.app.vainruling.core.service.callbacks;
 
 import net.vpc.upa.*;
-import net.vpc.upa.callbacks.FieldEvent;
-import net.vpc.upa.callbacks.PersistenceUnitEvent;
+import net.vpc.upa.events.FieldEvent;
+import net.vpc.upa.events.PersistenceUnitEvent;
 import net.vpc.upa.config.Callback;
 import net.vpc.upa.config.OnPreCreate;
 import net.vpc.upa.config.OnUpdateFormula;
 import net.vpc.upa.exceptions.UPAException;
-import net.vpc.upa.extensions.HierarchyExtension;
+import net.vpc.upa.HierarchyExtension;
 
 /**
  * @author taha.bensalah@gmail.com

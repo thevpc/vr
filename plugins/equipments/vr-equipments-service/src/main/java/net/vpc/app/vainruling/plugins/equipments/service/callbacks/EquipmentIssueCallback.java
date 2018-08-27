@@ -7,7 +7,7 @@ package net.vpc.app.vainruling.plugins.equipments.service.callbacks;
 
 import net.vpc.app.vainruling.plugins.equipments.service.model.*;
 import net.vpc.upa.Entity;
-import net.vpc.upa.callbacks.PersistEvent;
+import net.vpc.upa.events.PersistEvent;
 import net.vpc.upa.config.*;
 
 

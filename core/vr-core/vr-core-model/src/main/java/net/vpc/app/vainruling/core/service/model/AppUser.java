@@ -31,7 +31,7 @@ import net.vpc.upa.types.DateTime;
             ,
                 @Property(name = "ui.auto-filter.company", value = "{expr='this.company',order=5}")
             ,
-                @Property(name = "ui.main-photo-provider", value = "net.vpc.app.vainruling.core.web.obj.photo.AppUserMainPhotoProvider")
+                @Property(name = "ui.main-photo-provider", value = "net.vpc.app.vainruling.core.service.obj.AppUserMainPhotoProvider")
             ,
                 @Property(name = UIConstants.ENTITY_TEXT_SEARCH_FACTORY, value = "net.vpc.app.vainruling.core.service.obj.AppUserObjSearchFactory")
         })
@@ -52,10 +52,6 @@ public class AppUser extends AppContactBase implements Cloneable {
     )
 
     private String password;
-
-    @Deprecated
-//    @Summary
-    private AppContact contact;
 
     @Summary
     private AppDepartment department;
@@ -139,16 +135,6 @@ public class AppUser extends AppContactBase implements Cloneable {
         this.connexionCount = connexionCount;
     }
 
-    @Deprecated
-    public AppContact getContact() {
-        return contact;
-    }
-
-    @Deprecated
-    public void setContact(AppContact contact) {
-        this.contact = contact;
-    }
-
     public String getPasswordAuto() {
         return passwordAuto;
     }
@@ -170,25 +156,24 @@ public class AppUser extends AppContactBase implements Cloneable {
         return String.valueOf(login);
     }
 
-    public String resolveFullName() {
-        AppContact c = getContact();
-        return c == null ? String.valueOf(getId()) : c.getFullName();
-    }
-
-    public String resolveFirstName() {
-        AppContact c = getContact();
-        return c == null ? String.valueOf(getId()) : c.getFirstName();
-    }
-
-    public String resolveLastName() {
-        AppContact c = getContact();
-        return c == null ? String.valueOf(getId()) : c.getLastName();
-    }
-
-    public String resolveFullTitle() {
-        AppContact c = getContact();
-        return c == null ? String.valueOf(getId()) : c.getFullTitle();
-    }
+//    public String resolveFullName() {
+//        return getFullName();
+//    }
+//
+//    public String resolveFirstName() {
+//        AppContact c = getContact();
+//        return c == null ? String.valueOf(getId()) : c.getFirstName();
+//    }
+//
+//    public String resolveLastName() {
+//        AppContact c = getContact();
+//        return c == null ? String.valueOf(getId()) : c.getLastName();
+//    }
+//
+//    public String resolveFullTitle() {
+//        AppContact c = getContact();
+//        return c == null ? String.valueOf(getId()) : c.getFullTitle();
+//    }
 
     public AppUser copy() {
         AppUser appUser = null;

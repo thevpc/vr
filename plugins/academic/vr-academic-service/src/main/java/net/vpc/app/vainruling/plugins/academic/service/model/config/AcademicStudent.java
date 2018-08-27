@@ -24,10 +24,10 @@ import java.util.Objects;
         {
                 @Property(name = "ui.auto-filter.department", value = "{expr='this.user.department',order=1}"),
                 @Property(name = "ui.auto-filter.lastClass1", value = "{expr='this.lastClass1',order=2}"),
-                @Property(name = "ui.auto-filter.stage", value = "{expr='this.stage',order=3}"),
-                @Property(name = "ui.auto-filter.firstSubscription", value = "{expr='this.firstSubscription',order=4}"),
-                @Property(name = "ui.auto-filter.lastSubscription", value = "{expr='this.lastSubscription',order=5}"),
-                @Property(name = "ui.main-photo-provider", value = "net.vpc.app.vainruling.plugins.academic.web.photo.AcademicStudentMainPhotoProvider"),
+                @Property(name = "ui.auto-filter.stage", value = "{expr='this.stage',order=3,initial='ATTENDING'}"),
+                @Property(name = "ui.auto-filter.firstSubscription", value = "{expr='this.firstSubscription',order=4,initial=''}"),
+                @Property(name = "ui.auto-filter.lastSubscription", value = "{expr='this.lastSubscription',order=5,initial=''}"),
+                @Property(name = "ui.main-photo-provider", value = "net.vpc.app.vainruling.plugins.academic.service.obj.AcademicStudentMainPhotoProvider"),
                 @Property(name = UIConstants.ENTITY_TEXT_SEARCH_FACTORY, value = "net.vpc.app.vainruling.plugins.academic.service.util.AcademicStudentObjSearchFactory")
         }
 )
@@ -38,8 +38,6 @@ public class AcademicStudent {
     @Sequence
     private int id;
     private String subscriptionNumber;
-    @Deprecated
-    private AppDepartment department;
     @Main
     private AppUser user;
     private AppPeriod firstSubscription;
@@ -177,16 +175,6 @@ public class AcademicStudent {
         this.deletedOn = deletedOn;
     }
 
-    @Deprecated
-    public AppDepartment getDepartment() {
-        return department;
-    }
-
-    @Deprecated
-    public void setDepartment(AppDepartment department) {
-        this.department = department;
-    }
-
     public String getSubscriptionNumber() {
         return subscriptionNumber;
     }
@@ -200,7 +188,6 @@ public class AcademicStudent {
         int hash = 3;
         hash = 41 * hash + this.id;
         hash = 41 * hash + Objects.hashCode(this.subscriptionNumber);
-        hash = 41 * hash + Objects.hashCode(this.department);
         hash = 41 * hash + Objects.hashCode(this.firstSubscription);
         hash = 41 * hash + Objects.hashCode(this.lastClass1);
         hash = 41 * hash + Objects.hashCode(this.lastClass2);
@@ -225,9 +212,6 @@ public class AcademicStudent {
             return false;
         }
         if (!Objects.equals(this.subscriptionNumber, other.subscriptionNumber)) {
-            return false;
-        }
-        if (!Objects.equals(this.department, other.department)) {
             return false;
         }
         if (!Objects.equals(this.firstSubscription, other.firstSubscription)) {
@@ -259,7 +243,7 @@ public class AcademicStudent {
         if (user != null) {
             return user.toString();
         }
-        return "AcademicStudent{" + "id=" + id + ", user=" + user + ", subscriptionNumber=" + subscriptionNumber + ", department=" + department + ", firstSubscription=" + firstSubscription + ", lastClass1=" + lastClass1 + ", lastClass2=" + lastClass2 + ", lastClass3=" + lastClass3 + ", user=" + user + ", deleted=" + deleted + ", deletedBy=" + deletedBy + ", deletedOn=" + deletedOn + '}';
+        return "AcademicStudent{" + "id=" + id + ", user=" + user + ", subscriptionNumber=" + subscriptionNumber  + ", firstSubscription=" + firstSubscription + ", lastClass1=" + lastClass1 + ", lastClass2=" + lastClass2 + ", lastClass3=" + lastClass3 + ", user=" + user + ", deleted=" + deleted + ", deletedBy=" + deletedBy + ", deletedOn=" + deletedOn + '}';
     }
 
     public AcademicStudentStage getStage() {

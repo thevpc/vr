@@ -111,12 +111,12 @@ public class AcademicPluginBodyTeachers extends AcademicPluginBody {
 //                .getFirstResultOrNull();
     }
 
-    public AcademicTeacher findTeacherByContact(int contactId) {
-        CorePluginSecurity.requireContact(contactId);
-        return UPA.getPersistenceUnit().createQuery("Select u from AcademicTeacher u where u.user.contactId=:contacId")
-                .setParameter("contacId", contactId)
-                .getFirstResultOrNull();
-    }
+//    public AcademicTeacher findTeacherByContact(int contactId) {
+//        CorePluginSecurity.requireContact(contactId);
+//        return UPA.getPersistenceUnit().createQuery("Select u from AcademicTeacher u where u.user.contactId=:contacId")
+//                .setParameter("contacId", contactId)
+//                .getFirstResultOrNull();
+//    }
 
     public AcademicTeacher findTeacher(StringComparator t) {
         CorePluginSecurity.requireRight(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_TEACHER);

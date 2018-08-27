@@ -173,17 +173,28 @@ public class AcademicPluginBodyAssignments extends AcademicPluginBody {
                     i.setAcceptedWish(true);
                     i.setWishDate(new DateTime());
                 }
+                if (i.getTeacher() == null || i.getAssignment() == null) {
+                    throw new RuntimeException("Error");
+                }
+                AcademicCourseIntent i2 = i;
+                pu.invokePrivileged(new VoidAction() {
+                    @Override
+                    public void run() {
+                        pu.persist(i2);
+                    }
+                });
             } else {
                 i.setProposal(true);
                 if (i.isWish()) {
                     i.setAcceptedProposal(true);
                     i.setProposalDate(new DateTime());
                 }
+                if (i.getTeacher() == null || i.getAssignment() == null) {
+                    throw new RuntimeException("Error");
+                }
+                pu.persist(i);
             }
-            if (i.getTeacher() == null || i.getAssignment() == null) {
-                throw new RuntimeException("Error");
-            }
-            pu.persist(i);
+
         } else {
             if (samePerson) {
                 if (!i.isWish()) {
@@ -192,6 +203,13 @@ public class AcademicPluginBodyAssignments extends AcademicPluginBody {
                         i.setAcceptedWish(true);
                         i.setWishDate(new DateTime());
                     }
+                    AcademicCourseIntent i2=i;
+                    pu.invokePrivileged(new VoidAction() {
+                        @Override
+                        public void run() {
+                            pu.merge(i2);
+                        }
+                    });
                 }
             } else {
                 if (!i.isProposal()) {
@@ -200,13 +218,13 @@ public class AcademicPluginBodyAssignments extends AcademicPluginBody {
                         i.setAcceptedProposal(true);
                         i.setProposalDate(new DateTime());
                     }
+                    pu.merge(i);
                 }
             }
-            pu.merge(i);
         }
     }
 
-    public void removeWish(int teacherId, int assignementId) {
+    public void addProposal(int teacherId, int assignementId) {
         AcademicPluginSecurity.requireHeadOfDepartment(getContext().getPlugin().findTeacher(teacherId));
         PersistenceUnit pu = UPA.getPersistenceUnit();
         AcademicCourseAssignment assignment = pu.findById(AcademicCourseAssignment.class, assignementId);
@@ -214,27 +232,99 @@ public class AcademicPluginBodyAssignments extends AcademicPluginBody {
                 .setParameter("teacherId", teacherId)
                 .setParameter("assignementId", assignementId)
                 .getFirstResultOrNull();
-        if (i != null) {
-            if (i.isWish()) {
-                i.setWish(false);
-                i.setAcceptedWish(false);
-                i.setWishDate(null);
-                if (!i.isWish() && !i.isProposal()) {
-                    pu.remove(i);
+        if (i == null) {
+            i = new AcademicCourseIntent();
+            i.setTeacher(getContext().getPlugin().findTeacher(teacherId));
+            i.setAssignment(assignment);
+            i.setProposal(true);
+            if (i.getTeacher() == null || i.getAssignment() == null) {
+                throw new RuntimeException("Error");
+            }
+            pu.persist(i);
+        } else {
+            if (!i.isProposal()) {
+                i.setProposal(true);
+                if (i.isWish()) {
+                    i.setAcceptedProposal(true);
+                    i.setProposalDate(new DateTime());
+                }
+                pu.merge(i);
+            }
+        }
+    }
+
+    public void addWish(int teacherId, int assignementId) {
+        AcademicPluginSecurity.requireTeacherOrManager(teacherId);
+//        AcademicPluginSecurity.requireHeadOfDepartment(getContext().getPlugin().findTeacher(teacherId));
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        AcademicCourseAssignment assignment = pu.findById(AcademicCourseAssignment.class, assignementId);
+        AcademicCourseIntent i = pu.createQuery("Select a from AcademicCourseIntent a where a.teacherId=:teacherId and a.assignmentId=:assignementId")
+                .setParameter("teacherId", teacherId)
+                .setParameter("assignementId", assignementId)
+                .getFirstResultOrNull();
+
+        pu.invokePrivileged(new VoidAction() {
+            @Override
+            public void run() {
+                if (i == null) {
+                    AcademicCourseIntent i2 = new AcademicCourseIntent();
+                    i2.setTeacher(getContext().getPlugin().findTeacher(teacherId));
+                    i2.setAssignment(assignment);
+                    i2.setWish(true);
+                    if (i2.isProposal()) {
+                        i2.setAcceptedWish(true);
+                        i2.setWishDate(new DateTime());
+                    }
+                    if (i2.getTeacher() == null || i.getAssignment() == null) {
+                        throw new RuntimeException("Error");
+                    }
+                    pu.persist(i2);
                 } else {
-                    pu.merge(i);
+                    if (!i.isWish()) {
+                        i.setWish(true);
+                        if (i.isProposal()) {
+                            i.setAcceptedWish(true);
+                            i.setWishDate(new DateTime());
+                        }
+                        pu.merge(i);
+                    }
                 }
             }
+        });
+    }
+
+    public void removeWish(int teacherId, int assignementId) {
+        AcademicPluginSecurity.requireHeadOfDepartment(getContext().getPlugin().findTeacher(teacherId));
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        AcademicCourseIntent i = pu.createQuery("Select a from AcademicCourseIntent a where a.teacherId=:teacherId and a.assignmentId=:assignementId")
+                .setParameter("teacherId", teacherId)
+                .setParameter("assignementId", assignementId)
+                .getFirstResultOrNull();
+        if (i != null) {
+            pu.invokePrivileged(new VoidAction() {
+                @Override
+                public void run() {
+                    if (i.isWish()) {
+                        i.setWish(false);
+                        i.setAcceptedWish(false);
+                        i.setWishDate(null);
+                        if (!i.isWish() && !i.isProposal()) {
+                            pu.remove(i);
+                        } else {
+                            pu.merge(i);
+                        }
+                    }
+                }
+            });
         }
     }
 
     public void removeIntent(int teacherId, int assignementId) {
         boolean samePerson = AcademicPlugin.get().isCurrentTeacher(teacherId);
-        if(!samePerson){
+        if (!samePerson) {
             AcademicPluginSecurity.requireTeacherOrManager(teacherId);
         }
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        AcademicCourseAssignment assignment = pu.findById(AcademicCourseAssignment.class, assignementId);
         AcademicCourseIntent i = pu.createQuery("Select a from AcademicCourseIntent a where a.teacherId=:teacherId and a.assignmentId=:assignementId")
                 .setParameter("teacherId", teacherId)
                 .setParameter("assignementId", assignementId)
@@ -245,18 +335,49 @@ public class AcademicPluginBodyAssignments extends AcademicPluginBody {
                     i.setWish(false);
                     i.setAcceptedWish(false);
                     i.setWishDate(null);
+                    pu.invokePrivileged(new VoidAction() {
+                        @Override
+                        public void run() {
+                            if (!i.isWish() && !i.isProposal()) {
+                                pu.remove(i);
+                            } else {
+                                pu.merge(i);
+                            }
+                        }
+                    });
                 }
             } else {
                 if (i.isProposal()) {
                     i.setProposal(false);
                     i.setAcceptedProposal(false);
                     i.setProposalDate(null);
+                    if (!i.isWish() && !i.isProposal()) {
+                        pu.remove(i);
+                    } else {
+                        pu.merge(i);
+                    }
                 }
             }
-            if (!i.isWish() && !i.isProposal()) {
-                pu.remove(i);
-            } else {
-                pu.merge(i);
+        }
+    }
+
+    public void removeProposal(int teacherId, int assignementId) {
+        AcademicPluginSecurity.requireTeacherOrManager(teacherId);
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        AcademicCourseIntent i = pu.createQuery("Select a from AcademicCourseIntent a where a.teacherId=:teacherId and a.assignmentId=:assignementId")
+                .setParameter("teacherId", teacherId)
+                .setParameter("assignementId", assignementId)
+                .getFirstResultOrNull();
+        if (i != null) {
+            if (i.isProposal()) {
+                i.setProposal(false);
+                i.setAcceptedProposal(false);
+                i.setProposalDate(null);
+                if (!i.isWish() && !i.isProposal()) {
+                    pu.remove(i);
+                } else {
+                    pu.merge(i);
+                }
             }
         }
     }
@@ -272,6 +393,21 @@ public class AcademicPluginBodyAssignments extends AcademicPluginBody {
                     .getResultList();
             for (AcademicCourseIntent ii : intentList) {
                 removeIntent(ii.getTeacher().getId(), assignementId);
+            }
+        }
+    }
+
+    public void removeAllProposals(int assignementId) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        AcademicCourseAssignment assignment = pu.findById(AcademicCourseAssignment.class, assignementId);
+        if (assignment != null) {
+            AcademicTeacher t = assignment.getTeacher();
+            AcademicPluginSecurity.requireTeacherOrManager(t == null ? -1 : t.getId());
+            List<AcademicCourseIntent> intentList = pu.createQuery("Select a from AcademicCourseIntent a where a.assignmentId=:assignementId")
+                    .setParameter("assignementId", assignementId)
+                    .getResultList();
+            for (AcademicCourseIntent ii : intentList) {
+                removeProposal(ii.getTeacher().getId(), assignementId);
             }
         }
     }
@@ -494,16 +630,16 @@ public class AcademicPluginBodyAssignments extends AcademicPluginBody {
                     AcademicCourseAssignmentInfo b = new AcademicCourseAssignmentInfo();
                     b.setAssigned(false);
                     b.setAssignment(a.getAssignment());
-                    b.setCurrentProposal(a.isProposal());
-                    b.setCurrentWish(a.isWish());
-                    TeacherAssignmentChunck c = new TeacherAssignmentChunck(teacher == null ? -1 : teacher, "");
-                    c.setAcceptedProposal(a.isAcceptedProposal());
-                    c.setAcceptedWish(a.isAcceptedWish());
-                    c.setAssigned(a.getAssignment().getTeacher() != null);
-                    c.setProposal(a.isProposal());
-                    c.setWish(a.isWish());
-                    b.setCurrentStatusString(c.getStatusString());
-                    b.setCurrentStatusLocalizedString(c.getStatusLocalizedString());
+//                    b.setCurrentProposal(a.isProposal());
+//                    b.setCurrentWish(a.isWish());
+//                    TeacherAssignmentChunck c = new TeacherAssignmentChunck(teacher == null ? -1 : teacher, "");
+//                    c.setAcceptedProposal(a.isAcceptedProposal());
+//                    c.setAcceptedWish(a.isAcceptedWish());
+//                    c.setAssigned(a.getAssignment().getTeacher() != null);
+//                    c.setProposal(a.isProposal());
+//                    c.setWish(a.isWish());
+//                    b.setCurrentStatusString(c.getStatusString());
+//                    b.setCurrentStatusLocalizedString(c.getStatusLocalizedString());
                     all.add(b);
                 }
             }

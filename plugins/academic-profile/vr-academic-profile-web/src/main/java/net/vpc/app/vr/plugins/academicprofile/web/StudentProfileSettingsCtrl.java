@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.vpc.app.vainruling.core.service.model.AppUser;
 
 @VrController(
         breadcrumb = {
@@ -58,7 +59,7 @@ public class StudentProfileSettingsCtrl implements DocumentUploadListener, VrAct
     @OnPageLoad
     private void onPageReload() {
         Vr vr = Vr.get();
-        getModel().setContact(core.getCurrentUser().getContact());
+        getModel().setContact(core.getCurrentUser());
         AcademicPlugin ap = VrApp.getBean(AcademicPlugin.class);
         getModel().setStudent(ap.findStudentByUser(core.getCurrentUserId()));
         getModel().setStudentCV(app.findOrCreateAcademicStudentCV(getModel().getStudent().getId()));
@@ -275,7 +276,7 @@ public class StudentProfileSettingsCtrl implements DocumentUploadListener, VrAct
         private boolean uploadingPhoto;
         private boolean uploadingCV;
         private AcademicStudent student;
-        private AppContact contact;
+        private AppUser contact;
         private AcademicStudentCV studentCV;
 
         private String privateTheme;
@@ -299,11 +300,11 @@ public class StudentProfileSettingsCtrl implements DocumentUploadListener, VrAct
             this.studentCV = studentCV;
         }
 
-        public AppContact getContact() {
+        public AppUser getContact() {
             return contact;
         }
 
-        public void setContact(AppContact contact) {
+        public void setContact(AppUser contact) {
             this.contact = contact;
         }
 

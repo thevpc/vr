@@ -12,9 +12,9 @@ import net.vpc.upa.CustomDefaultObject;
 import net.vpc.upa.Document;
 import net.vpc.upa.Entity;
 import net.vpc.upa.PersistenceUnit;
-import net.vpc.upa.callbacks.FieldEvent;
-import net.vpc.upa.callbacks.PersistEvent;
-import net.vpc.upa.callbacks.UpdateEvent;
+import net.vpc.upa.events.FieldEvent;
+import net.vpc.upa.events.PersistEvent;
+import net.vpc.upa.events.UpdateEvent;
 import net.vpc.upa.config.*;
 
 import java.util.ArrayList;
@@ -22,7 +22,7 @@ import java.util.List;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.plugins.equipments.service.EquipmentPlugin;
 import net.vpc.upa.UPA;
-import net.vpc.upa.callbacks.PersistenceUnitEvent;
+import net.vpc.upa.events.PersistenceUnitEvent;
 
 /**
  * @author taha.bensalah@gmail.com

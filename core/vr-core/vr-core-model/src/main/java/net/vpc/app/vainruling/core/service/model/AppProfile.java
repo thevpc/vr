@@ -16,7 +16,7 @@ import java.sql.Timestamp;
  * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "this.name")
-@Path("Admin/Security")
+@Path("/Contact")
 public class AppProfile {
 
     @Path("Main")
@@ -31,6 +31,8 @@ public class AppProfile {
     private String name2;
     private String name3;
     @Summary
+    private String shortDescription;
+    @Summary
     private String inherited;
     /**
      * admin user(s)
@@ -38,6 +40,8 @@ public class AppProfile {
     @Summary
     @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.PROFILE_EXPRESSION)
     private String admin;
+
+    
 
     @Field(max = "4000")
     @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
@@ -207,4 +211,13 @@ public class AppProfile {
     public void setAdmin(String admin) {
         this.admin = admin;
     }
+
+    public String getShortDescription() {
+        return shortDescription;
+    }
+
+    public void setShortDescription(String shortDescription) {
+        this.shortDescription = shortDescription;
+    }
+    
 }

@@ -5,9 +5,9 @@
  */
 package net.vpc.app.vainruling.core.service.callbacks;
 
-import net.vpc.upa.callbacks.EntityEvent;
-import net.vpc.upa.callbacks.PersistenceGroupEvent;
-import net.vpc.upa.callbacks.PersistenceUnitEvent;
+import net.vpc.upa.events.EntityEvent;
+import net.vpc.upa.events.PersistenceGroupEvent;
+import net.vpc.upa.events.PersistenceUnitEvent;
 import net.vpc.upa.config.Callback;
 import net.vpc.upa.config.OnCreate;
 import net.vpc.upa.exceptions.UPAException;

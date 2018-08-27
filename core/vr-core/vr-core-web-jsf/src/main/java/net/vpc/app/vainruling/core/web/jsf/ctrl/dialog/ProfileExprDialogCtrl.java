@@ -121,14 +121,14 @@ public class ProfileExprDialogCtrl {
         String e = getModel().getExpression();
         List<AppUser> usersByProfileFilter = core.findUsersByProfileFilter(e, null);
         getModel().setUsers(usersByProfileFilter);
-        StringBuilder sb=new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         for (int i = 0; i < usersByProfileFilter.size(); i++) {
-            if(i>0){
+            if (i > 0) {
                 sb.append(",");
             }
             AppUser appUser = usersByProfileFilter.get(i);
-            if(appUser.getContact()!=null && appUser.getContact().getEmail()!=null) {
-                sb.append(appUser.getContact().getEmail());
+            if (appUser.getEmail() != null) {
+                sb.append(appUser.getEmail());
             }
         }
         getModel().setEmailListText(sb.toString());

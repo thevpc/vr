@@ -3,6 +3,7 @@ package net.vpc.app.vainruling.core.service.model.strict;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 
 public class AppUserStrict {
+
     private int id;
     private String login;
     private String fullName;
@@ -16,16 +17,13 @@ public class AppUserStrict {
         if (u != null) {
             id = u.getId();
             login = u.getLogin();
-            if (u.getContact() != null) {
-                fullName = u.getContact().getFullName();
-                fullTitle = u.getContact().getFullTitle();
-                if (u.getContact().getGender() != null) {
-                    genderCode = u.getContact().getGender().getCode();
-                }
+            fullName = u.getFullName();
+            fullTitle = u.getFullTitle();
+            if (u.getGender() != null) {
+                genderCode = u.getGender().getCode();
             }
         }
     }
-
 
     public int getId() {
         return id;

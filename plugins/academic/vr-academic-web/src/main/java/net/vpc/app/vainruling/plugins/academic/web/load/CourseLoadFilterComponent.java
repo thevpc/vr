@@ -27,6 +27,7 @@ import java.util.HashSet;
 import java.util.List;
 
 public class CourseLoadFilterComponent {
+
     private Model model = new Model();
 
     public Model getModel() {
@@ -60,7 +61,6 @@ public class CourseLoadFilterComponent {
             }
         }
 
-
         getModel().getTeacherDisciplineItems().clear();
         for (AcademicOfficialDiscipline item : academicPlugin.findOfficialDisciplines()) {
             getModel().getTeacherDisciplineItems().add(FacesUtils.createSelectItem(String.valueOf(item.getId()), item.getName(), "vr-checkbox"));
@@ -77,6 +77,11 @@ public class CourseLoadFilterComponent {
             getModel().getDepartmentItems().add(FacesUtils.createSelectItem(String.valueOf(item.getId()), item.getName(), "vr-checkbox"));
         }
 
+        getModel().getInitiatorStatusItems().clear();
+        getModel().getInitiatorStatusItems().add(FacesUtils.createSelectItem("proposalOnly", "Propositions uniquement", ""));
+        getModel().getInitiatorStatusItems().add(FacesUtils.createSelectItem("wishOnly", "Voeux uniquement", ""));
+        getModel().getInitiatorStatusItems().add(FacesUtils.createSelectItem("assignmentOnly", "Affectations uniquement", ""));
+        getModel().getInitiatorStatusItems().add(FacesUtils.createSelectItem("all", "Tout", ""));
 //        getModel().getSituationItems().clear();
 //        for (AcademicTeacherSituation item : academicPlugin.findTeacherSituations()) {
 //            getModel().getSituationItems().add(FacesUtils.createSelectItem(String.valueOf(item.getId()), item.getName(), "vr-checkbox"));
@@ -127,7 +132,7 @@ public class CourseLoadFilterComponent {
         }
 
         getModel().getTeacherItems().clear();
-        for (AcademicTeacher item : a.findTeachersWithAssignmentsOrIntents(getPeriodId(),-1,true,true,-1,-1)) {
+        for (AcademicTeacher item : a.findTeachersWithAssignmentsOrIntents(getPeriodId(), -1, true, true, -1, -1)) {
             getModel().getTeacherItems().add(FacesUtils.createSelectItem(String.valueOf(item.getId()), item.resolveFullName(), "vr-checkbox"));
         }
 
@@ -136,7 +141,6 @@ public class CourseLoadFilterComponent {
 
     public void onChangePeriod() {
         AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
-
 
         getModel().getLabelItems().clear();
 
@@ -204,14 +208,35 @@ public class CourseLoadFilterComponent {
         for (String s : getModel().getSelectedCourseDisciplines()) {
             c.addAcceptedCourseDiscipline(StringUtils.isEmpty(s) ? null : Integer.parseInt(s));
         }
+        if ("proposalOnly".equals(getModel().getSelectedInitiatorStatus())) {
+            c.setAcceptProposal(true);
+            c.setAcceptWish(null);
+            c.setAcceptIntents(true);
+        } else if ("wishOnly".equals(getModel().getSelectedInitiatorStatus())) {
+            c.setAcceptProposal(null);
+            c.setAcceptWish(true);
+            c.setAcceptIntents(true);
+        } else if ("assignmentOnly".equals(getModel().getSelectedInitiatorStatus())) {
+            c.setAcceptProposal(null);
+            c.setAcceptWish(null);
+            c.setAcceptIntents(false);
+        } else if ("all".equals(getModel().getSelectedInitiatorStatus())) {
+            c.setAcceptProposal(null);
+            c.setAcceptWish(null);
+            c.setAcceptIntents(true);
+        } else {
+            c.setAcceptProposal(null);
+            c.setAcceptWish(null);
+            c.setAcceptIntents(true);
+        }
 //        for (String s : getModel().getSelectedTeacherDisciplines()) {
 //            c.addAcceptedOfficialDisciplines(StringUtils.isEmpty(s)?null:Integer.parseInt(s));
 //        }
 //        for (String s : getModel().getSelectedSituations()) {
 //            c.addAcceptedSituation(StringUtils.isEmpty(s)?null:Integer.parseInt(s));
 //        }
-        c.setAcceptAssignments(true);
-        c.setAcceptIntents(isIncludeIntents());
+//        c.setAcceptAssignments(true);
+//        c.setAcceptIntents(isIncludeIntents());
         return c;
     }
 
@@ -229,6 +254,7 @@ public class CourseLoadFilterComponent {
     }
 
     public static class Model {
+
         private List<SelectItem> refreshFilterItems;
         private String[] refreshFilterSelected = {};
 
@@ -241,7 +267,6 @@ public class CourseLoadFilterComponent {
 //
 //        private List<SelectItem> situationItems=new ArrayList<>();
 //        private List<String> selectedSituations=new ArrayList<>();
-
         private List<SelectItem> departmentItems = new ArrayList<>();
         private List<String> selectedDepartments = new ArrayList<>();
         private List<String> selectedOwnerDepartments = new ArrayList<>();
@@ -258,6 +283,9 @@ public class CourseLoadFilterComponent {
 
         private List<SelectItem> deviationGroupItems = new ArrayList<>();
         private List<String> selectedDeviationGroups = new ArrayList<>();
+
+        private List<SelectItem> initiatorStatusItems = new ArrayList<>();
+        private String selectedInitiatorStatus = "all";
 
         private List<SelectItem> semesterItems = new ArrayList<>();
         private List<String> selectedSemesters = new ArrayList<>();
@@ -276,6 +304,22 @@ public class CourseLoadFilterComponent {
 
         private List<SelectItem> teacherSituationItems = new ArrayList<>();
         private List<String> selectedTeacherSituations = new ArrayList<>();
+
+        public List<SelectItem> getInitiatorStatusItems() {
+            return initiatorStatusItems;
+        }
+
+        public void setInitiatorStatusItems(List<SelectItem> initiatorStatusItems) {
+            this.initiatorStatusItems = initiatorStatusItems;
+        }
+
+        public String getSelectedInitiatorStatus() {
+            return selectedInitiatorStatus;
+        }
+
+        public void setSelectedInitiatorStatus(String selectedInitiatorStatus) {
+            this.selectedInitiatorStatus = selectedInitiatorStatus;
+        }
 
         public List<String> getSelectedCourseDisciplines() {
             return selectedCourseDisciplines;
@@ -411,7 +455,6 @@ public class CourseLoadFilterComponent {
 //        public void setSelectedSituations(List<String> selectedSituations) {
 //            this.selectedSituations = selectedSituations;
 //        }
-
         public List<String> getSelectedDepartments() {
             return selectedDepartments;
         }

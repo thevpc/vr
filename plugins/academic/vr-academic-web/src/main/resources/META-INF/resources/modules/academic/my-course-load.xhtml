@@ -124,6 +124,14 @@ and open the template in the editor.
                                         <p:ajax listener="#{myCourseLoadCtrl.onRefreshFiltersChanged}" update=":listForm :buttonsForm"/>
                                         <f:selectItems value="#{myCourseLoadCtrl.courseFilter.model.deviationGroupItems}"/>
                                     </p:selectCheckboxMenu>
+                                    <p:selectOneMenu
+                                        styleClass="vr-form-field #{myCourseLoadCtrl.courseFilter.model.selectedInitiatorStatus == '' ?'':'vr-form-selected-many-selected'}"
+                                        value="#{myCourseLoadCtrl.courseFilter.model.selectedInitiatorStatus}"
+                                        label="Proposition/Voeu"
+                                        filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
+                                        <p:ajax listener="#{myCourseLoadCtrl.onRefreshFiltersChanged}" update=":listForm :buttonsForm"/>
+                                        <f:selectItems value="#{myCourseLoadCtrl.courseFilter.model.initiatorStatusItems}"/>
+                                    </p:selectOneMenu>
                                 </div>
                                 <div class="vr-form-sub-row">
                                     <div class="table-responsive">
@@ -154,9 +162,11 @@ and open the template in the editor.
 
                     <div >
                         <div class="table-responsive">
-                            <h1><p:outputLabel style="font-weight: bold"
-                                               rendered="#{myCourseLoadCtrl.model.currentTeacher ne null}"
-                                               value="#{myCourseLoadCtrl.model.currentTeacher.user.fullName} - #{myCourseLoadCtrl.model.stat.val.teacher.degree.name} - #{myCourseLoadCtrl.model.stat.val.teacher.situation.name} (#{myCourseLoadCtrl.teacherFilter.periodName}) "/>
+                            <h1>
+                                <ui:fragment rendered="#{myCourseLoadCtrl.model.currentTeacher ne null}">
+                                    #{myCourseLoadCtrl.model.currentTeacher.user.fullName} - #{myCourseLoadCtrl.model.stat.val.teacher.degree.name} - #{myCourseLoadCtrl.model.stat.val.teacher.situation.name} (#{myCourseLoadCtrl.teacherFilter.periodName})                            
+                                </ui:fragment>
+
                             </h1>
                             <p:panelGrid rendered="#{myCourseLoadCtrl.model.currentTeacher ne null}">
                                 <p:row>
@@ -167,6 +177,7 @@ and open the template in the editor.
                                     <p:column styleClass="ui-widget-header"><p:outputLabel value="TP+PM"/></p:column>
                                     <p:column styleClass="ui-widget-header"><p:outputLabel value="Total Charge"/></p:column>
                                     <p:column styleClass="ui-widget-header"><p:outputLabel value="Total Charge / Sem"/></p:column>
+                                    <p:column styleClass="ui-widget-header"><p:outputLabel value="Bilan H.Supp. Equiv"/></p:column>
                                     <p:column styleClass="ui-widget-header"><p:outputLabel value="Bilan H.Supp. C"/></p:column>
                                     <p:column styleClass="ui-widget-header"><p:outputLabel value="Bilan H.Supp. TD"/></p:column>
                                     <p:column styleClass="ui-widget-header"><p:outputLabel value="Bilan H.Supp. TP"/></p:column>
@@ -192,6 +203,7 @@ and open the template in the editor.
                                     <p:column><p:outputLabel
                                             value="#{myCourseLoadCtrl.model.stat.val.valueWeek.equiv}"><f:convertNumber
                                                 pattern="#0.000"/></p:outputLabel></p:column>
+                                    <p:column><p:outputLabel value="#{myCourseLoadCtrl.model.stat.val.extraWeek.equiv}" style="font-weight: bolder;color: #{(myCourseLoadCtrl.model.stat.val.extraWeek.equiv ge 0)?'blue':'red'}"><f:convertNumber pattern="#0.000"/></p:outputLabel></p:column>
                                     <p:column><p:outputLabel value="#{myCourseLoadCtrl.model.stat.val.extraWeekEff.c}"><f:convertNumber pattern="#0.000"/></p:outputLabel></p:column>
                                     <p:column><p:outputLabel value="#{myCourseLoadCtrl.model.stat.val.extraWeekEff.td}"><f:convertNumber pattern="#0.000"/></p:outputLabel></p:column>
                                     <p:column><p:outputLabel value="#{myCourseLoadCtrl.model.stat.val.extraWeekEff.tppm}"><f:convertNumber pattern="#0.000"/></p:outputLabel></p:column>
@@ -231,6 +243,7 @@ and open the template in the editor.
                                         <p:column><p:outputLabel
                                                 value="#{sem.val.valueWeek.equiv}"><f:convertNumber
                                                     pattern="#0.000"/></p:outputLabel></p:column>
+                                        <p:column><p:outputLabel value="#{sem.val.extraWeek.equiv}"><f:convertNumber pattern="#0.000"/></p:outputLabel></p:column>
                                         <p:column><p:outputLabel value="#{sem.val.extraWeekEff.c}"><f:convertNumber pattern="#0.000"/></p:outputLabel></p:column>
                                         <p:column><p:outputLabel value="#{sem.val.extraWeekEff.td}"><f:convertNumber pattern="#0.000"/></p:outputLabel></p:column>
                                         <p:column><p:outputLabel value="#{sem.val.extraWeekEff.tppm}"><f:convertNumber pattern="#0.000"/></p:outputLabel></p:column>
@@ -273,64 +286,85 @@ and open the template in the editor.
                                         <f:facet name="header">
                                             <p:commandButton
                                                 rendered="#{myCourseLoadCtrl.model.enableLoadEditing and myCourseLoadCtrl.model.multipleSelection}"
-                                                value="-"
-                                                actionListener="#{myCourseLoadCtrl.removeFromMineSelected()}"
-                                                update=":listForm" title="Clickez ici pour supprimer les voeux sélectionnés"/>
+                                                actionListener="#{myCourseLoadCtrl.removeFromMineCurrSelected()}"
+                                                update=":listForm" title="Clickez ici pour supprimer les voeux sélectionnés"
+                                                icon="fa fa-trash"
+                                                />
+                                            <p:commandButton
+                                                rendered="#{myCourseLoadCtrl.model.enableLoadEditing and myCourseLoadCtrl.model.multipleSelection}"
+                                                actionListener="#{myCourseLoadCtrl.addToMineCurrSelected()}"
+                                                update=":listForm" title="Clickez ici pour confirmer les propositions sélectionnées"
+                                                icon="fa fa-heart"
+                                                />
                                         </f:facet>
                                         <p:selectBooleanCheckbox
-                                            rendered="#{myCourseLoadCtrl.model.enableLoadEditing and myCourseLoadCtrl.model.multipleSelection and !i.value.assigned}"
+                                            rendered="#{myCourseLoadCtrl.model.enableLoadEditing and myCourseLoadCtrl.model.multipleSelection and !i.assigned}"
                                             value="#{i.selected}"
                                             update=":listForm" title="Clickez ici pour supprimer le voeux"/>
                                         <p:commandButton
                                             rendered="#{myCourseLoadCtrl.model.enableLoadEditing and !myCourseLoadCtrl.model.multipleSelection}"
-                                            disabled="#{i.value.assigned}"
+                                            disabled="#{i.assigned}"
                                             value="-"
-                                            actionListener="#{myCourseLoadCtrl.removeFromMine(i.value.assignment.id)}"
+                                            actionListener="#{myCourseLoadCtrl.removeFromMine(i.assignment.id)}"
                                             update=":listForm" title="Clickez ici pour supprimer le voeux"/>
-                                        <ui:fragment rendered="#{i.value.assignment.locked or i.value.assignment.coursePlan.locked}"><i class="fa  fa-lock"></i></ui:fragment>
+                                        <ui:fragment rendered="#{i.assignment.locked or i.assignment.coursePlan.locked}"><i class="fa  fa-lock"></i></ui:fragment>
                                     </p:column>
-                                    <p:column headerText="" width="8%">
+                                    <p:column headerText="Etat" width="3%">
+                                        <ui:fragment rendered="#{i.currentAssigned}">
+                                            <span class="fa fa-check" style="color:forestgreen" title="Assigné"></span>
+                                        </ui:fragment>
+                                        <ui:fragment rendered="#{i.currentProposal}">
+                                            <span class="fa fa-gift" style="color:darkorange" title="Proposition"></span>
+                                        </ui:fragment>
+                                        <ui:fragment rendered="#{i.currentWish}">
+                                            <span class="fa fa-heart" style="color:deeppink" title="Voeu"></span>
+                                        </ui:fragment>
+                                        <ui:fragment rendered="#{i.assignment.locked or i.assignment.coursePlan.locked}">
+                                            <span class="fa fa-lock" style="color:goldenrod" title="Voeu"></span>
+                                        </ui:fragment>
+                                    </p:column>
+                                    <p:column headerText="Classe" width="8%">
                                         <h:outputText value="#{i.academicClass.name}"/>
                                     </p:column>
                                     <p:column headerText="Module">
-                                        <h:outputText action="#{myCourseLoadCtrl.gotoCourseAssignment(i.value.assignment)}"
-                                                      value="#{i.value.assignment.coursePlan.name} - #{i.value.assignment.courseType.name}"
+                                        <h:outputText action="#{myCourseLoadCtrl.gotoCourseAssignment(i.assignment)}"
+                                                      value="#{i.assignment.coursePlan.name} - #{i.assignment.courseType.name}"
                                                       styleClass="#{i.currentAssigned?'vr-assigned-course':''}"/>
                                     </p:column>
                                     <p:column headerText="C" width="5%">
                                         <h:outputText
-                                            value="#{i.value.assignment.valueC != 0 ? i.value.assignment.valueC : ''}"/>
+                                            value="#{i.assignment.valueC != 0 ? i.assignment.valueC : ''}"/>
                                     </p:column>
                                     <p:column headerText="TD" width="5%">
                                         <h:outputText
-                                            value="#{i.value.assignment.valueTD != 0 ? i.value.assignment.valueTD : ''}"/>
+                                            value="#{i.assignment.valueTD != 0 ? i.assignment.valueTD : ''}"/>
                                     </p:column>
                                     <p:column headerText="TP" width="5%">
                                         <h:outputText
-                                            value="#{i.value.assignment.valueTP != 0 ? i.value.assignment.valueTP : ''}"/>
+                                            value="#{i.assignment.valueTP != 0 ? i.assignment.valueTP : ''}"/>
                                     </p:column>
                                     <p:column headerText="PM" width="5%">
                                         <h:outputText
-                                            value="#{i.value.assignment.valuePM != 0 ? i.value.assignment.valuePM : ''}"/>
+                                            value="#{i.assignment.valuePM != 0 ? i.assignment.valuePM : ''}"/>
                                     </p:column>
                                     <p:column headerText="Grp" width="3%">
-                                        <h:outputText value="#{i.value.assignment.groupCount}"><f:convertNumber
+                                        <h:outputText value="#{i.assignment.groupCount}"><f:convertNumber
                                                 pattern="#0.#"/></h:outputText>
-                                    </p:column>
-                                    <p:column headerText="Mon Voeux" width="3%">
-                                        <h:selectBooleanCheckbox disabled="true" value="#{i.currentWish}"  title="#{i.currentStatusLocalizedString}"></h:selectBooleanCheckbox>
-                                    </p:column>
-                                    <p:column headerText="Proposé" width="3%">
-                                        <h:selectBooleanCheckbox disabled="true" value="#{i.currentProposal}" title="#{i.currentStatusLocalizedString}"></h:selectBooleanCheckbox>
                                     </p:column>
                                     <p:column headerText="Voeux des autres" width="20%">
                                         <ui:repeat value="#{i.intents}" var="ci">
-                                            <h:outputText value=" #{ci}" styleClass="#{ci.assigned?'vr-label-valid':ci.wish ?'vr-label-warn':ci.proposal?'vr-label-info':'vr-label-invalid'}"/>
+                                            <h:outputText value=" #{ci}" 
+                                                          styleClass="#{ci.assigned?'vr-label-valid fa fa-check':ci.wish ?'vr-label-warn fa fa-heart':ci.proposal?'vr-label-info fa fa-heart':'vr-label-invalid'}"
+                                                          style="margin-right: 3px; #{ci.assigned?'color:forestgreen':ci.wish ?'color:deeppink':ci.proposal?'color:darkorange':''}"
+                                                          />
                                         </ui:repeat>
                                     </p:column>
                                     <p:column headerText="Collaborateurs" width="10%" rendered="#{myCourseLoadCtrl.model.isCurrentTeacherFilter('collaborators')}">
                                         <ui:repeat value="#{i.courseIntents}" var="ci">
-                                            <h:outputText value=" #{ci}" styleClass="#{ci.assigned?'vr-label-valid':ci.wish ?'vr-label-warn':ci.proposal?'vr-label-info':'vr-label-invalid'}"/>
+                                            <h:outputText value=" #{ci}" 
+                                                          styleClass="#{ci.assigned?'vr-label-valid fa fa-check':ci.wish ?'vr-label-warn fa fa-heart':ci.proposal?'vr-label-info fa fa-heart':'vr-label-invalid'}"
+                                                          style="margin-right: 3px; #{ci.assigned?'color:forestgreen':ci.wish ?'color:deeppink':ci.proposal?'color:darkorange':''}"
+                                                          />
                                         </ui:repeat>
                                     </p:column>
                                     <p:column headerText="Salles" width="5%" rendered="#{myCourseLoadCtrl.model.isCurrentTeacherFilter('rooms')}">
@@ -376,60 +410,80 @@ and open the template in the editor.
                                         <p:commandButton
                                             rendered="#{myCourseLoadCtrl.model.enableLoadEditing and myCourseLoadCtrl.model.multipleSelection}"
                                             value="+"
-                                            actionListener="#{myCourseLoadCtrl.addToMineSelected()}"
+                                            actionListener="#{myCourseLoadCtrl.addToMineOtherSelected()}"
                                             update=":listForm" title="Clickez ici pour ajouter les lignes sélectionnée à vos voeux"/>
                                     </f:facet>
                                     <p:selectBooleanCheckbox
                                         rendered="#{myCourseLoadCtrl.model.enableLoadEditing and myCourseLoadCtrl.model.multipleSelection}"
                                         value="#{i.selected}"/>
                                     <p:commandButton
-                                        rendered="#{myCourseLoadCtrl.model.enableLoadEditing and !myCourseLoadCtrl.model.multipleSelection and !i.value.assigned}"
+                                        rendered="#{myCourseLoadCtrl.model.enableLoadEditing and !myCourseLoadCtrl.model.multipleSelection and !i.assigned}"
                                         value="+"
-                                        actionListener="#{myCourseLoadCtrl.addToMine(i.value.assignment.id)}"
+                                        actionListener="#{myCourseLoadCtrl.addToMine(i.assignment.id)}"
                                         update=":listForm" title="Clickez ici pour exprimez votre voeux"/>
-                                    <ui:fragment rendered="#{i.value.assignment.locked or i.value.assignment.coursePlan.locked}"><i class="fa  fa-lock"></i></ui:fragment>
+                                    <ui:fragment rendered="#{i.assignment.locked or i.assignment.coursePlan.locked}"><i class="fa  fa-lock"></i></ui:fragment>
                                 </p:column>
 
-                                <p:column headerText="" width="5%">
-                                    <h:outputText value="#{i.value.assignment.coursePlan.courseLevel.semester.name}"/>
+                                <p:column headerText="Etat" width="3%">
+                                    <ui:fragment rendered="#{i.assigned}">
+                                        <span class="fa fa-check" style="color:forestgreen" title="Assigné"></span>
+                                    </ui:fragment>
+                                    <ui:fragment rendered="#{i.anyProposal}">
+                                        <span class="fa fa-gift"  style="color:darkorange" title="Proposition"></span>
+                                    </ui:fragment>
+                                    <ui:fragment rendered="#{i.anyWish}">
+                                        <span class="fa fa-heart"  style="color:deeppink" title="Voeu"></span>
+                                    </ui:fragment>
+                                    <ui:fragment rendered="#{i.assignment.locked or i.assignment.coursePlan.locked}">
+                                        <span class="fa fa-lock"  style="color:goldenrod" title="Vérouillé"></span>
+                                    </ui:fragment>
                                 </p:column>
-                                <p:column headerText="" width="8%">
+                                <p:column headerText="Semestre" width="5%">
+                                    <h:outputText value="#{i.assignment.coursePlan.courseLevel.semester.name}"/>
+                                </p:column>
+                                <p:column headerText="Classe" width="8%">
                                     <h:outputText
                                         value="#{i.academicClass.name}"/>
                                 </p:column>
                                 <p:column headerText="Module" >
-                                    <h:outputText styleClass="#{i.value.assigned?'vr-assigned-course':''}"
-                                                  value="#{i.value.assignment.coursePlan.name} - #{i.value.assignment.courseType.name}"/>
+                                    <h:outputText styleClass="#{i.assigned?'vr-assigned-course':''}"
+                                                  value="#{i.assignment.coursePlan.name} - #{i.assignment.courseType.name}"/>
                                 </p:column>
                                 <p:column headerText="C" width="5%">
                                     <h:outputText
-                                        value="#{i.value.assignment.valueC != 0 ? i.value.assignment.valueC : ''}"/>
+                                        value="#{i.assignment.valueC != 0 ? i.assignment.valueC : ''}"/>
                                 </p:column>
                                 <p:column headerText="TD" width="5%">
                                     <h:outputText
-                                        value="#{i.value.assignment.valueTD !=0 ? i.value.assignment.valueTD : ''}"/>
+                                        value="#{i.assignment.valueTD !=0 ? i.assignment.valueTD : ''}"/>
                                 </p:column>
                                 <p:column headerText="TP" width="5%">
                                     <h:outputText
-                                        value="#{i.value.assignment.valueTP !=0 ? i.value.assignment.valueTP : ''}"/>
+                                        value="#{i.assignment.valueTP !=0 ? i.assignment.valueTP : ''}"/>
                                 </p:column>
                                 <p:column headerText="PM" width="5%">
                                     <h:outputText
-                                        value="#{i.value.assignment.valuePM != 0 ? i.value.assignment.valuePM : ''}"/>
+                                        value="#{i.assignment.valuePM != 0 ? i.assignment.valuePM : ''}"/>
                                 </p:column>
                                 <p:column headerText="Grp" width="5%">
-                                    <h:outputText value="#{i.value.assignment.groupCount}"><f:convertNumber
+                                    <h:outputText value="#{i.assignment.groupCount}"><f:convertNumber
                                             pattern="#0.#"/></h:outputText>
                                 </p:column>
 
                                 <p:column headerText="Voeux" width="20%">
                                     <ui:repeat value="#{i.intents}" var="ci">
-                                        <h:outputText value=" #{ci}" styleClass="#{ci.assigned?'vr-label-valid':ci.wish ?'vr-label-warn':ci.proposal?'vr-label-info':'vr-label-invalid'}"/>
+                                        <h:outputText value=" #{ci}" 
+                                                      styleClass="#{ci.assigned?'vr-label-valid fa fa-check':ci.wish ?'vr-label-warn fa fa-heart':ci.proposal?'vr-label-info fa fa-heart':'vr-label-invalid'}"
+                                                      style="margin-right: 3px; #{ci.assigned?'color:forestgreen':ci.wish ?'color:deeppink':ci.proposal?'color:darkorange':''}"
+                                                      />
                                     </ui:repeat>
                                 </p:column>
                                 <p:column headerText="Collaborateurs" width="10%" rendered="#{myCourseLoadCtrl.model.isOthersFilterSelected('collaborators')}">
                                     <ui:repeat value="#{i.courseIntents}" var="ci">
-                                        <h:outputText value=" #{ci}" styleClass="#{ci.assigned?'vr-label-valid':ci.wish ?'vr-label-warn':ci.proposal?'vr-label-info':'vr-label-invalid'}"/>
+                                        <h:outputText value=" #{ci}" 
+                                                      styleClass="#{ci.assigned?'vr-label-valid fa fa-check':ci.wish ?'vr-label-warn fa fa-heart':ci.proposal?'vr-label-info fa fa-heart':'vr-label-invalid'}"
+                                                      style="margin-right: 3px; #{ci.assigned?'color:forestgreen':ci.wish ?'color:deeppink':ci.proposal?'color:darkorange':''}"
+                                                      />
                                     </ui:repeat>
                                 </p:column>
                                 <p:column headerText="Salles" width="5%" rendered="#{myCourseLoadCtrl.model.isOthersFilterSelected('rooms')}">

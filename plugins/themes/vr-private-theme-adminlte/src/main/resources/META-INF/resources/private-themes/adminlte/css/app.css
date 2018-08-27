@@ -332,7 +332,29 @@ table.NoPaddingTableClass td {
 
 .vr-assigned-course {
 
-    color: var(--vr-color-main18);
+    /*color: var(--vr-color-main18);*/
+    color: forestgreen;
+    font-weight: bold;
+}
+
+.vr-whish-course {
+
+    /*color: var(--vr-color-main18);*/
+    color: deeppink;
+    font-weight: bold;
+}
+
+.vr-proposal-course {
+
+    /*color: var(--vr-color-main18);*/
+    color: darkorange;
+    font-weight: bold;
+}
+
+.vr-lock-course {
+
+    /*color: var(--vr-color-main18);*/
+    color: goldenrod;
     font-weight: bold;
 }
 
@@ -566,15 +588,15 @@ button.ui-button > span.ui-icon {
 
 .vr-navbar2 {
     background: radial-gradient(hsl(0, 100%, 27%) 4%, hsl(0, 100%, 18%) 9%, hsla(0, 100%, 20%, 0) 9%) 0 0,
-    radial-gradient(hsl(0, 100%, 27%) 4%, hsl(0, 100%, 18%) 8%, hsla(0, 100%, 20%, 0) 10%) 50px 50px,
-    radial-gradient(hsla(0, 100%, 30%, 0.8) 20%, hsla(0, 100%, 20%, 0)) 50px 0,
-    radial-gradient(hsla(0, 100%, 30%, 0.8) 20%, hsla(0, 100%, 20%, 0)) 0 50px,
-    radial-gradient(hsla(0, 100%, 20%, 1) 35%, hsla(0, 100%, 20%, 0) 60%) 50px 0,
-    radial-gradient(hsla(0, 100%, 20%, 1) 35%, hsla(0, 100%, 20%, 0) 60%) 100px 50px,
-    radial-gradient(hsla(0, 100%, 15%, 0.7), hsla(0, 100%, 20%, 0)) 0 0,
-    radial-gradient(hsla(0, 100%, 15%, 0.7), hsla(0, 100%, 20%, 0)) 50px 50px,
-    linear-gradient(45deg, hsla(0, 100%, 20%, 0) 49%, hsla(0, 100%, 0%, 1) 50%, hsla(0, 100%, 20%, 0) 70%) 0 0,
-    linear-gradient(-45deg, hsla(0, 100%, 20%, 0) 49%, hsla(0, 100%, 0%, 1) 50%, hsla(0, 100%, 20%, 0) 70%) 0 0;
+        radial-gradient(hsl(0, 100%, 27%) 4%, hsl(0, 100%, 18%) 8%, hsla(0, 100%, 20%, 0) 10%) 50px 50px,
+        radial-gradient(hsla(0, 100%, 30%, 0.8) 20%, hsla(0, 100%, 20%, 0)) 50px 0,
+        radial-gradient(hsla(0, 100%, 30%, 0.8) 20%, hsla(0, 100%, 20%, 0)) 0 50px,
+        radial-gradient(hsla(0, 100%, 20%, 1) 35%, hsla(0, 100%, 20%, 0) 60%) 50px 0,
+        radial-gradient(hsla(0, 100%, 20%, 1) 35%, hsla(0, 100%, 20%, 0) 60%) 100px 50px,
+        radial-gradient(hsla(0, 100%, 15%, 0.7), hsla(0, 100%, 20%, 0)) 0 0,
+        radial-gradient(hsla(0, 100%, 15%, 0.7), hsla(0, 100%, 20%, 0)) 50px 50px,
+        linear-gradient(45deg, hsla(0, 100%, 20%, 0) 49%, hsla(0, 100%, 0%, 1) 50%, hsla(0, 100%, 20%, 0) 70%) 0 0,
+        linear-gradient(-45deg, hsla(0, 100%, 20%, 0) 49%, hsla(0, 100%, 0%, 1) 50%, hsla(0, 100%, 20%, 0) 70%) 0 0;
 
     background-color: var(--vr-color-main12);
     background-size: 100px 100px;
@@ -935,6 +957,17 @@ div.vr-progress-container > div.invalid3 {
     margin-left: 10px;
 }
 
+.vr-toolbox-label-for-checkbox {
+    margin-left: 10px;
+    height: 40px;
+    margin-bottom: 10px;
+    display: inline-block;
+    vertical-align: middle;
+    line-height: 40px;
+    text-align: right;
+    margin-right: 8px;
+}
+
 legend.ui-fieldset-legend {
     font-size: 13px;
 }
@@ -1162,8 +1195,8 @@ td.vr-mailbox-name label {
 
 
 .vr-form-control{
- max-width: 800px;
- vertical-align: top;
+    max-width: 800px;
+    vertical-align: top;
 }
 
 .vr-form-calendar-text{

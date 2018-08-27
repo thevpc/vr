@@ -11,7 +11,6 @@ import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSemester;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 
-
 /**
  * @author taha.bensalah@gmail.com
  */
@@ -19,33 +18,31 @@ public class AcademicCourseAssignmentInfo {
 
     private AcademicCourseAssignment assignment;
     private boolean assigned;
-    private boolean currentWish;
-    private String currentStatusLocalizedString;
-    private String currentStatusString;
-    private boolean currentProposal;
+//    private boolean currentWish;
+//    private String currentStatusLocalizedString;
+//    private String currentStatusString;
+//    private boolean currentProposal;
 //    private String intents;
     private AssignmentChuck assignmentChunck = new AssignmentChuck();
     private AssignmentChuck courseChunck = new AssignmentChuck();
 //    private Set<String> intentsSet = Collections.EMPTY_SET;
 //    private Set<Integer> intentsTeacherIdsSet = Collections.EMPTY_SET;
 
-    public String getCurrentStatusLocalizedString() {
-        return currentStatusLocalizedString;
-    }
-
-    public void setCurrentStatusLocalizedString(String currentStatusLocalizedString) {
-        this.currentStatusLocalizedString = currentStatusLocalizedString;
-    }
-
-    public String getCurrentStatusString() {
-        return currentStatusString;
-    }
-
-    public void setCurrentStatusString(String currentStatusString) {
-        this.currentStatusString = currentStatusString;
-    }
-
-    
+//    public String getCurrentStatusLocalizedString() {
+//        return currentStatusLocalizedString;
+//    }
+//
+//    public void setCurrentStatusLocalizedString(String currentStatusLocalizedString) {
+//        this.currentStatusLocalizedString = currentStatusLocalizedString;
+//    }
+//
+//    public String getCurrentStatusString() {
+//        return currentStatusString;
+//    }
+//
+//    public void setCurrentStatusString(String currentStatusString) {
+//        this.currentStatusString = currentStatusString;
+//    }
     public AcademicCourseAssignment getAssignment() {
         return assignment;
     }
@@ -54,18 +51,17 @@ public class AcademicCourseAssignmentInfo {
         this.assignment = assignment;
     }
 
-    public boolean isCurrentWish() {
-        return currentWish;
-    }
-
-    public void setCurrentWish(boolean currentWish) {
-        this.currentWish = currentWish;
-    }
-
-    public boolean isCurrentProposal() {
-        return currentProposal;
-    }
-
+//    public boolean isCurrentWish() {
+//        return currentWish;
+//    }
+//
+//    public void setCurrentWish(boolean currentWish) {
+//        this.currentWish = currentWish;
+//    }
+//
+//    public boolean isCurrentProposal() {
+//        return currentProposal;
+//    }
 //    public String getIntents() {
 //        return intents;
 //    }
@@ -73,10 +69,9 @@ public class AcademicCourseAssignmentInfo {
 //    public void setIntents(String intents) {
 //        this.intents = intents;
 //    }
-    public void setCurrentProposal(boolean currentProposal) {
-        this.currentProposal = currentProposal;
-    }
-
+//    public void setCurrentProposal(boolean currentProposal) {
+//        this.currentProposal = currentProposal;
+//    }
     public boolean isAssigned() {
         return assigned;
     }
@@ -92,7 +87,6 @@ public class AcademicCourseAssignmentInfo {
     public AssignmentChuck getCourseChunck() {
         return courseChunck;
     }
-
 
     public AcademicProgram resolveProgram() {
         return getAssignment().resolveProgram();
@@ -113,6 +107,7 @@ public class AcademicCourseAssignmentInfo {
     public AcademicSemester resolveSemester() {
         return getAssignment().resolveSemester();
     }
+
     public AcademicCourseLevel resolveCourseLevel() {
         return getAssignment().resolveCourseLevel();
     }
@@ -120,6 +115,7 @@ public class AcademicCourseAssignmentInfo {
     public AcademicCourseGroup resolveCourseGroup() {
         return getAssignment().resolveCourseGroup();
     }
+
     public AppPeriod resolvePeriod() {
         return getAssignment().resolvePeriod();
     }

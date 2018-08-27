@@ -29,7 +29,7 @@ import java.sql.Timestamp;
                 @Property(name = "ui.auto-filter.officialDiscipline", value = "{expr='this.officialDiscipline',order=2}"),
                 @Property(name = "ui.auto-filter.degree", value = "{expr='this.degree',order=3}"),
                 @Property(name = "ui.auto-filter.situation", value = "{expr='this.situation',order=3}"),
-                @Property(name = "ui.main-photo-provider", value = "net.vpc.app.vainruling.plugins.academic.web.photo.AcademicTeacherMainPhotoProvider"),
+                @Property(name = "ui.main-photo-provider", value = "net.vpc.app.vainruling.plugins.academic.service.obj.AcademicTeacherMainPhotoProvider"),
                 @Property(name = UIConstants.ENTITY_TEXT_SEARCH_FACTORY, value = "net.vpc.app.vainruling.plugins.academic.service.util.AcademicTeacherObjSearchFactory")
         }
 )
@@ -51,13 +51,7 @@ public class AcademicTeacher {
     @Summary
     @Field(protectionLevel = ProtectionLevel.PROTECTED)
     private AcademicTeacherSituation situation;
-    @Deprecated
-    @Summary
-    private AppDepartment department;
 
-//    @Summary
-//    @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:40px")
-//    private boolean enabled = true;
     private AppPeriod startPeriod;
     private AppPeriod lastPeriod;
     private String uniqueCode;
@@ -132,24 +126,6 @@ public class AcademicTeacher {
     public void setSituation(AcademicTeacherSituation situation) {
         this.situation = situation;
     }
-
-    @Deprecated
-    public AppDepartment getDepartment() {
-        return department;
-    }
-
-    @Deprecated
-    public void setDepartment(AppDepartment department) {
-        this.department = department;
-    }
-
-//    public boolean isEnabled() {
-//        return enabled;
-//    }
-//
-//    public void setEnabled(boolean enabled) {
-//        this.enabled = enabled;
-//    }
 
     public AppPeriod getStartPeriod() {
         return startPeriod;

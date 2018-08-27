@@ -12,7 +12,7 @@ import net.vpc.upa.DefaultFieldBuilder;
 import net.vpc.upa.Entity;
 import net.vpc.upa.MissingStrategy;
 import net.vpc.upa.Section;
-import net.vpc.upa.callbacks.EntityEvent;
+import net.vpc.upa.events.EntityEvent;
 import net.vpc.upa.config.Callback;
 import net.vpc.upa.config.OnPreInit;
 import net.vpc.upa.config.OnPrePrepare;

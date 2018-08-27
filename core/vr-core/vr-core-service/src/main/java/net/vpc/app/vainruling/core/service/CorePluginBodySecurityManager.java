@@ -11,6 +11,7 @@ import net.vpc.upa.*;
 import java.util.*;
 import java.util.logging.Level;
 import net.vpc.common.util.Chronometer;
+import net.vpc.upa.types.I18NString;
 
 class CorePluginBodySecurityManager extends CorePluginBody {
 
@@ -414,11 +415,19 @@ class CorePluginBodySecurityManager extends CorePluginBody {
             p.setCode(profileCode);
             p.setCustom(true);
             p.setCustomType(customType);
+            p.setShortDescription(I18n.get().get(new I18NString("Profile",p.getCustomType(),p.getCode())
+                    , new Arg("code", p.getCode())
+                    , new Arg("name", p.getName())
+            ));
             UPA.getPersistenceUnit().persist(p);
         } else if (!p.isCustom()) {
             //force to custom
             p.setCustom(true);
             p.setCustomType(customType);
+            p.setShortDescription(I18n.get().get(new I18NString("Profile",p.getCustomType(),p.getCode())
+                    , new Arg("code", p.getCode())
+                    , new Arg("name", p.getName())
+            ));
             UPA.getPersistenceUnit().merge(p);
         }
         if (StringUtils.isEmpty(p.getCode())) {
@@ -1056,18 +1065,18 @@ class CorePluginBodySecurityManager extends CorePluginBody {
         return ret;
     }
 
-    public List<AppContact> filterContactsByProfileFilter(List<AppContact> contacts, String profilePattern) {
-        List<AppContact> ret = new ArrayList<>();
-        Set<Integer> visited = new HashSet<>();
-        for (AppUser user : filterUsersByProfileFilter(filterUsersBysContacts(contacts), profilePattern, null)) {
-            AppContact c = user.getContact();
-            if (c != null && !visited.contains(c.getId())) {
-                visited.add(c.getId());
-                ret.add(c);
-            }
-        }
-        return ret;
-    }
+//    public List<AppContact> filterContactsByProfileFilter(List<AppContact> contacts, String profilePattern) {
+//        List<AppContact> ret = new ArrayList<>();
+//        Set<Integer> visited = new HashSet<>();
+//        for (AppUser user : filterUsersByProfileFilter(filterUsersBysContacts(contacts), profilePattern, null)) {
+//            AppContact c = user.getContact();
+//            if (c != null && !visited.contains(c.getId())) {
+//                visited.add(c.getId());
+//                ret.add(c);
+//            }
+//        }
+//        return ret;
+//    }
 
     public List<AppUser> findUsersByProfileFilter(String profilePattern, Integer userType) {
         return filterUsersByProfileFilter(findEnabledUsers(), profilePattern, userType);
@@ -1111,25 +1120,25 @@ class CorePluginBodySecurityManager extends CorePluginBody {
                 .getResultList();
     }
 
-    public AppUser createUser(AppUser contact, int userTypeId, int departmentId, boolean attachToExistingUser, String[] defaultProfiles, VrPasswordStrategy passwordStrategy) {
-        AppUser u = findUser(contact.getId());
+    public AppUser createUser(AppUser newUser, int userTypeId, int departmentId, boolean attachToExistingUser, String[] defaultProfiles, VrPasswordStrategy passwordStrategy) {
+        AppUser u = findUser(newUser.getId());
         if (u == null) {
             if (passwordStrategy == null) {
                 passwordStrategy = VrPasswordStrategyRandom.INSTANCE;
             }
-            String login = resolveLoginProposal(contact);
+            String login = resolveLoginProposal(newUser);
             if (StringUtils.isEmpty(login)) {
                 login = "user";
             }
-            String password = passwordStrategy.generatePassword(contact);
+            String password = passwordStrategy.generatePassword(newUser);
             u = findUser(login);
-            if (u != null && u.getContact() != null) {
-                if (u.getContact().getId() == contact.getId()) {
+            if (u != null) {
+                if (u.getId() == newUser.getId()) {
                     //this is the same user !! ok
                     return u;
                 }
             }
-            if (!attachToExistingUser || (u != null && u.getContact() != null)) {
+            if (!attachToExistingUser || (u != null)) {
                 String y = String.valueOf(Calendar.getInstance().get(Calendar.YEAR) - 2000);
                 if (u != null) {
                     u = findUser(login + y);

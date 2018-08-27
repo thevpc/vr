@@ -60,7 +60,7 @@ public class UserCalendarsCtrl extends AbstractPlanningCtrl {
         Set<Integer> userIds = new HashSet<>();
         if(userTypeId>=0 && userDeptId>=0) {
             for (AppUser user : userTypeId < 0 ? core.findUsers() : core.findUsersByTypeAndDepartment(userTypeId,userDeptId)) {
-                if (user.isEnabled() && user.getContact() != null) {
+                if (user.isEnabled()) {
                     userIds.add(user.getId());
                 }
             }
@@ -73,7 +73,7 @@ public class UserCalendarsCtrl extends AbstractPlanningCtrl {
         Collections.sort(users, new Comparator<AppUser>() {
             @Override
             public int compare(AppUser o1, AppUser o2) {
-                return StringUtils.nonNull((o1==null?"":o1.resolveFullTitle())).compareTo(StringUtils.nonNull((o2==null?"":o2.resolveFullTitle())));
+                return StringUtils.nonNull((o1==null?"":o1.getFullTitle())).compareTo(StringUtils.nonNull((o2==null?"":o2.getFullTitle())));
             }
         });
         getModel().setUsers(VrJsf.toSelectItemList(users));

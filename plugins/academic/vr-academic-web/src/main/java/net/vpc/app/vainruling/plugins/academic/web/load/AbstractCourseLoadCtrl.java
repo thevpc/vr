@@ -5,6 +5,8 @@
  */
 package net.vpc.app.vainruling.plugins.academic.web.load;
 
+import net.vpc.app.vainruling.plugins.academic.service.dto.TeacherPeriodStatExt;
+import net.vpc.app.vainruling.plugins.academic.service.dto.TeacherSemesterStatExt;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppDepartment;
@@ -27,6 +29,8 @@ import net.vpc.common.util.Chronometer;
 import javax.faces.model.SelectItem;
 import java.util.*;
 import net.vpc.app.vainruling.core.web.jsf.Vr;
+import net.vpc.app.vainruling.plugins.academic.service.dto.TeacherLoadInfoFilter;
+import net.vpc.app.vainruling.plugins.academic.service.dto.TeacherLoadInfo;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -56,8 +60,8 @@ public abstract class AbstractCourseLoadCtrl {
     private void reset() {
 //        getModel().setMineS1(new ArrayList<AcademicCourseAssignmentInfo>());
 //        getModel().setMineS2(new ArrayList<AcademicCourseAssignmentInfo>());
-        getModel().setOthers(new ArrayList<SelectableAssignment>());
-        getModel().setAll(new HashMap<Integer, SelectableAssignment>());
+        getModel().setOthers(new ArrayList<AcademicCourseAssignmentInfoByVisitor>());
+        getModel().setAll(new HashMap<Integer, AcademicCourseAssignmentInfoByVisitor>());
         TeacherPeriodStat teacherStat = new TeacherPeriodStat();
         teacherStat.setTeacher(new AcademicTeacher());
 
@@ -173,102 +177,25 @@ public abstract class AbstractCourseLoadCtrl {
 
         AcademicTeacher teacher = getCurrentTeacher();
         getModel().setCurrentTeacher(teacher);
-        boolean assigned = isFiltered("assigned");
-        boolean nonassigned = isFiltered("non-assigned");
-        boolean intended = isFiltered("intended");
-        boolean nonintended = isFiltered("non-intended");
-        boolean locked = isFiltered("locked");
-        boolean unlocked = isFiltered("unlocked");
-
-        if (!assigned && !nonassigned) {
-            assigned = true;
-            nonassigned = true;
-        }
-        if (!intended && !nonintended) {
-            intended = true;
-            nonintended = true;
-        }
-        if (!locked && !unlocked) {
-            locked = true;
-            unlocked = true;
-        }
-
         reset();
 
-        Map<Integer, SelectableAssignment> all = new HashMap<>();
-        DefaultCourseAssignmentFilter otherCourseAssignmentsFilter = getOthersCourseFilter().getCourseAssignmentFilter();
-        otherCourseAssignmentsFilter.setAcceptAssignments(true).setAcceptIntents(true).setAcceptNoTeacher(true);
-//        boolean includeIntents = !isFiltered("no-current-intents");
-        List<AcademicCourseAssignmentInfo> othersAssignmentsAndIntents = a.findCourseAssignmentsAndIntents(periodId, null, otherCourseAssignmentsFilter);
-        int teacherId = teacher == null ? -1 : teacher.getId();
-        for (AcademicCourseAssignmentInfo b : othersAssignmentsAndIntents) {
-            all.put(b.getAssignment().getId(), new SelectableAssignment(b, teacherId));
-        }
-        getModel().setAll(all);
-        HashSet<Integer> visitedAssignmentId = new HashSet<Integer>();
-        if (teacher != null) {
-            DefaultCourseAssignmentFilter courseAssignmentFilter = getCourseFilter().getCourseAssignmentFilter();
-            DeviationConfig deviationConfig = getCourseFilter().getDeviationConfig();
-            List<AcademicCourseAssignmentInfo> teacherAssignmentsAndIntents = a.findCourseAssignmentsAndIntents(periodId, teacherId, courseAssignmentFilter);
-            for (AcademicCourseAssignmentInfo b : teacherAssignmentsAndIntents) {
-                if (!all.containsKey(b.getAssignment().getId())) {
-                    all.put(b.getAssignment().getId(), new SelectableAssignment(b, teacherId));
-                }
-            }
-
-            TeacherPeriodStat stat = a.evalTeacherStat(periodId, teacherId, courseAssignmentFilter, deviationConfig, null);
-            for (TeacherSemesterStat teacherSemesterStat : stat.getSemesters()) {
-                for (AcademicCourseAssignmentInfo m : teacherSemesterStat.getAssignments()) {
-                    visitedAssignmentId.add(m.getAssignment().getId());
-                }
-            }
-            getModel().setStat(new TeacherPeriodStatExt(stat, all));
-        }
-
-        boolean conflict = isFiltered("conflict");
-        List<AcademicCourseAssignmentInfo> others = new ArrayList<>();
-        for (AcademicCourseAssignmentInfo c : othersAssignmentsAndIntents) {
-            if (!visitedAssignmentId.contains(c.getAssignment().getId())) {
-                boolean _assigned = c.isAssigned();
-                boolean _locked = c.getAssignment().isLocked();
-                Map<Integer, TeacherAssignmentChunck> chuncks = c.getAssignmentChunck().getChuncks();
-                int chunk_size = chuncks.size();
-                boolean _intended = chunk_size > 0;
-                boolean accepted = true;
-                if (((assigned && _assigned) || (nonassigned && !_assigned))
-                        && ((intended && _intended) || (nonintended && !_intended))
-                        && ((locked && _locked) || (unlocked && !_locked))) {
-                    //ok
-                } else {
-                    accepted = false;
-                }
-                if (accepted && conflict) {
-                    //show only with conflicts
-                    if (chuncks.isEmpty()) {
-                        accepted = false;
-                    } else if (c.getAssignment().getTeacher() != null) {
-                        if (chunk_size > 1) {
-                            accepted = true;
-                        } else if (chunk_size == 1) {
-                            TeacherAssignmentChunck first = (TeacherAssignmentChunck) chuncks.values().toArray()[0];
-                            accepted = c.getAssignment().getTeacher().getId() != first.getTeacherId();
-                        }
-                    } else {
-                        accepted = chunk_size > 1;
-                    }
-                }
-                if (accepted) {
-                    boolean powerUser = CorePlugin.get().isCurrentSessionAdminOrManager();
-                    if ((c.getAssignment().isLocked() || c.getAssignment().getCoursePlan().isLocked()) && !powerUser) {
-                        //dont add
-                    } else {
-                        others.add(c);
-                    }
-                }
-            }
-        }
-
-        getModel().setNonFilteredOthers(wrap(others, all));
+        TeacherLoadInfoFilter ff = new TeacherLoadInfoFilter();
+        ff.setOtherCourseAssignmentFilter(getOthersCourseFilter().getCourseAssignmentFilter());
+        ff.setTeacherCourseAssignmentFilter(getCourseFilter().getCourseAssignmentFilter());
+        ff.setDeviationConfig(getCourseFilter().getDeviationConfig());
+        ff.setTeacherId(teacher == null ? -1 : teacher.getId());
+        ff.setPeriodId(periodId);
+        ff.setFilterConflict(isFiltered("conflict"));
+        ff.setFilterAssigned(isFiltered("assigned"));
+        ff.setFilterNonAssigned(isFiltered("non-assigned"));
+        ff.setFilterIntended(isFiltered("intended"));
+        ff.setFilterNonIntended(isFiltered("non-intended"));
+        ff.setFilterLocked(isFiltered("locked"));
+        ff.setFilterUnlocked(isFiltered("unlocked"));
+        TeacherLoadInfo result = a.getTeacherLoadInfo(ff);
+        getModel().setAll(result.getAll());
+        getModel().setStat(result.getStat());
+        getModel().setNonFilteredOthers(result.getNonFilteredOthers());
         applyOthersTextFilter();
         chronometer.stop();
         System.out.println(chronometer);
@@ -281,7 +208,7 @@ public abstract class AbstractCourseLoadCtrl {
             public Map<String, Object> convert(Object o) {
                 Map<String, Object> m = new HashMap();
 //                        m.putAll(DefaultObjectToMapConverter.INSTANCE.convert(o));
-                SelectableAssignment sa = (SelectableAssignment) o;
+                AcademicCourseAssignmentInfoByVisitor sa = (AcademicCourseAssignmentInfoByVisitor) o;
                 m.putAll(DefaultObjectToMapConverter.INSTANCE.convert(sa.getValue().getAssignment()));
                 int keyIndex = 1;
                 for (TeacherAssignmentChunck chunck : sa.getValue().getAssignmentChunck().getChuncks().values()) {
@@ -300,11 +227,11 @@ public abstract class AbstractCourseLoadCtrl {
 
     public void assignmentsToIntentsAll() {
         if (getModel().isEnableLoadEditing()) {
-            ArrayList<SelectableAssignment> assignmentInfos = new ArrayList<>();
+            ArrayList<AcademicCourseAssignmentInfoByVisitor> assignmentInfos = new ArrayList<>();
             assignmentInfos.addAll(getModel().getStat().getAssignments());
             assignmentInfos.addAll(getModel().getOthers());
             AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
-            for (SelectableAssignment aa : assignmentInfos) {
+            for (AcademicCourseAssignmentInfoByVisitor aa : assignmentInfos) {
                 AcademicCourseAssignment assignment = aa.getValue().getAssignment();
                 AcademicTeacher t = assignment.getTeacher();
                 if (t != null) {
@@ -319,16 +246,15 @@ public abstract class AbstractCourseLoadCtrl {
 
     public void intentsToAssignmentsAll() {
         if (getModel().isEnableLoadEditing()) {
-            ArrayList<SelectableAssignment> assignmentInfos = new ArrayList<>();
+            ArrayList<AcademicCourseAssignmentInfoByVisitor> assignmentInfos = new ArrayList<>();
             assignmentInfos.addAll(getModel().getStat().getAssignments());
             assignmentInfos.addAll(getModel().getOthers());
             AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
-            for (SelectableAssignment aa : assignmentInfos) {
-                AcademicCourseAssignmentInfo assignement = aa.getValue();
-                AcademicTeacher t = assignement.getAssignment().getTeacher();
+            for (AcademicCourseAssignmentInfoByVisitor aa : assignmentInfos) {
+                AcademicTeacher t = aa.getAssignment().getTeacher();
                 if (t == null) {
-                    for (Integer uid : assignement.getAssignmentChunck().getChuncks().keySet()) {
-                        a.addCourseAssignment(uid, assignement.getAssignment().getId());
+                    for (Integer uid : aa.getAssignmentChunck().getChuncks().keySet()) {
+                        a.addCourseAssignment(uid, aa.getAssignment().getId());
                         break;
                     }
                 }
@@ -337,35 +263,35 @@ public abstract class AbstractCourseLoadCtrl {
     }
 
     public void assignmentsToIntentsMine() {
-        for (SelectableAssignment aa : getModel().getStat().getAssignments()) {
+        for (AcademicCourseAssignmentInfoByVisitor aa : getModel().getStat().getAssignments()) {
             addToMine(aa.getValue().getAssignment().getId());
             doUnAssign(aa.getValue().getAssignment().getId());
         }
     }
 
     public void intentsToAssignmentsMine() {
-        for (SelectableAssignment aa : getModel().getStat().getAssignments()) {
+        for (AcademicCourseAssignmentInfoByVisitor aa : getModel().getStat().getAssignments()) {
             doAssign(aa.getValue().getAssignment().getId());
         }
     }
 
     public void removeAllIntentsMine() {
-        for (SelectableAssignment aa : getModel().getStat().getAssignments()) {
+        for (AcademicCourseAssignmentInfoByVisitor aa : getModel().getStat().getAssignments()) {
             removeFromMine(aa.getValue().getAssignment().getId());
         }
     }
 
     public void removeAllAssignmentsMine() {
-        for (SelectableAssignment aa : getModel().getStat().getAssignments()) {
+        for (AcademicCourseAssignmentInfoByVisitor aa : getModel().getStat().getAssignments()) {
             doUnAssign(aa.getValue().getAssignment().getId());
         }
     }
 
-    public void addToMineSelected() {
+    public void addToMineOtherSelected() {
         AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
         AcademicTeacher t = getModel().getCurrentTeacher();
         if (t != null) {
-            for (SelectableAssignment s : getModel().getOthers()) {
+            for (AcademicCourseAssignmentInfoByVisitor s : getModel().getOthers()) {
                 if (s.isSelected()) {
                     int assignementId = s.getValue().getAssignment().getId();
                     a.addIntent(t.getId(), assignementId);
@@ -373,7 +299,68 @@ public abstract class AbstractCourseLoadCtrl {
             }
             onRefresh();
         }
+    }
 
+    public void addProposalToMineOtherSelected() {
+        AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
+        AcademicTeacher t = getModel().getCurrentTeacher();
+        if (t != null) {
+            for (AcademicCourseAssignmentInfoByVisitor s : getModel().getOthers()) {
+                if (s.isSelected()) {
+                    int assignementId = s.getValue().getAssignment().getId();
+                    a.addProposal(t.getId(), assignementId);
+                }
+            }
+            onRefresh();
+        }
+    }
+
+    public void addToMineCurrSelected() {
+        AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
+        AcademicTeacher t = getModel().getCurrentTeacher();
+        if (t != null) {
+            for (TeacherSemesterStatExt teacherSemesterStatExt : getModel().getStat().getSemesters()) {
+                for (AcademicCourseAssignmentInfoByVisitor s : teacherSemesterStatExt.getAssignments()) {
+                    if (s.isSelected()) {
+                        int assignementId = s.getValue().getAssignment().getId();
+                        a.addIntent(t.getId(), assignementId);
+                    }
+                }
+            }
+            onRefresh();
+        }
+    }
+
+    public void addProposalToMineCurrSelected() {
+        AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
+        AcademicTeacher t = getModel().getCurrentTeacher();
+        if (t != null) {
+            for (TeacherSemesterStatExt teacherSemesterStatExt : getModel().getStat().getSemesters()) {
+                for (AcademicCourseAssignmentInfoByVisitor s : teacherSemesterStatExt.getAssignments()) {
+                    if (s.isSelected()) {
+                        int assignementId = s.getValue().getAssignment().getId();
+                        a.addProposal(t.getId(), assignementId);
+                    }
+                }
+            }
+            onRefresh();
+        }
+    }
+
+    public void addWishToMineCurrSelected() {
+        AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
+        AcademicTeacher t = getModel().getCurrentTeacher();
+        if (t != null) {
+            for (TeacherSemesterStatExt teacherSemesterStatExt : getModel().getStat().getSemesters()) {
+                for (AcademicCourseAssignmentInfoByVisitor s : teacherSemesterStatExt.getAssignments()) {
+                    if (s.isSelected()) {
+                        int assignementId = s.getValue().getAssignment().getId();
+                        a.addWish(t.getId(), assignementId);
+                    }
+                }
+            }
+            onRefresh();
+        }
     }
 
     public void addToMine(Integer assignementId) {
@@ -385,12 +372,21 @@ public abstract class AbstractCourseLoadCtrl {
         onRefresh();
     }
 
-    public void removeFromMineSelected() {
+    public void addWishToMine(Integer assignementId) {
+        AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
+        AcademicTeacher t = getModel().getCurrentTeacher();
+        if (t != null && assignementId != null) {
+            a.addWish(t.getId(), assignementId);
+        }
+        onRefresh();
+    }
+
+    public void removeFromMineCurrSelected() {
         AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
         AcademicTeacher t = getModel().getCurrentTeacher();
         if (t != null) {
             for (TeacherSemesterStatExt teacherSemesterStatExt : getModel().getStat().getSemesters()) {
-                for (SelectableAssignment s : teacherSemesterStatExt.getAssignments()) {
+                for (AcademicCourseAssignmentInfoByVisitor s : teacherSemesterStatExt.getAssignments()) {
                     if (s.isSelected()) {
                         int assignementId = s.getValue().getAssignment().getId();
                         a.removeIntent(t.getId(), assignementId);
@@ -400,13 +396,29 @@ public abstract class AbstractCourseLoadCtrl {
             onRefresh();
         }
     }
-    
-    public void removeWhishFromMineSelected() {
+
+    public void removeProposalFromMineCurrSelected() {
         AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
         AcademicTeacher t = getModel().getCurrentTeacher();
         if (t != null) {
             for (TeacherSemesterStatExt teacherSemesterStatExt : getModel().getStat().getSemesters()) {
-                for (SelectableAssignment s : teacherSemesterStatExt.getAssignments()) {
+                for (AcademicCourseAssignmentInfoByVisitor s : teacherSemesterStatExt.getAssignments()) {
+                    if (s.isSelected()) {
+                        int assignementId = s.getValue().getAssignment().getId();
+                        a.removeProposal(t.getId(), assignementId);
+                    }
+                }
+            }
+            onRefresh();
+        }
+    }
+
+    public void removeWhishFromMineCurrSelected() {
+        AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
+        AcademicTeacher t = getModel().getCurrentTeacher();
+        if (t != null) {
+            for (TeacherSemesterStatExt teacherSemesterStatExt : getModel().getStat().getSemesters()) {
+                for (AcademicCourseAssignmentInfoByVisitor s : teacherSemesterStatExt.getAssignments()) {
                     if (s.isSelected()) {
                         int assignementId = s.getValue().getAssignment().getId();
                         a.removeWish(t.getId(), assignementId);
@@ -436,9 +448,29 @@ public abstract class AbstractCourseLoadCtrl {
 
     public void removeAllIntentsSelected() {
         AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
-        for (SelectableAssignment s : getModel().getAll().values()) {
+        for (AcademicCourseAssignmentInfoByVisitor s : getModel().getAll().values()) {
             if (s.isSelected()) {
                 a.removeAllIntents(s.getValue().getAssignment().getId());
+            }
+        }
+        onRefresh();
+    }
+
+    public void removeAllProposalsSelected() {
+        AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
+        for (AcademicCourseAssignmentInfoByVisitor s : getModel().getAll().values()) {
+            if (s.isSelected()) {
+                a.removeAllProposal(s.getValue().getAssignment().getId());
+            }
+        }
+        onRefresh();
+    }
+
+    public void removeAllWishesSelected() {
+        AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
+        for (AcademicCourseAssignmentInfoByVisitor s : getModel().getAll().values()) {
+            if (s.isSelected()) {
+                a.removeAllWishes(s.getValue().getAssignment().getId());
             }
         }
         onRefresh();
@@ -473,7 +505,7 @@ public abstract class AbstractCourseLoadCtrl {
         AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
         AcademicTeacher t = getModel().getCurrentTeacher();
         if (t != null) {
-            for (SelectableAssignment s : getModel().getAll().values()) {
+            for (AcademicCourseAssignmentInfoByVisitor s : getModel().getAll().values()) {
                 if (s.isSelected()) {
                     int assignementId = s.getValue().getAssignment().getId();
                     a.addCourseAssignment(t.getId(), assignementId);
@@ -500,7 +532,7 @@ public abstract class AbstractCourseLoadCtrl {
     public void doSwitchLockAssignmentSelected() {
         AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
         if (CorePlugin.get().isCurrentSessionAdminOrManager()) {
-            for (SelectableAssignment s : getModel().getAll().values()) {
+            for (AcademicCourseAssignmentInfoByVisitor s : getModel().getAll().values()) {
                 if (s.isSelected()) {
                     AcademicCourseAssignment assignment = s.getValue().getAssignment();
                     assignment.setLocked(!assignment.isLocked());
@@ -515,7 +547,7 @@ public abstract class AbstractCourseLoadCtrl {
         AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
 //        AcademicTeacher t = getModel().getCurrentTeacher();
 //        if (t != null) {
-        for (SelectableAssignment s : getModel().getAll().values()) {
+        for (AcademicCourseAssignmentInfoByVisitor s : getModel().getAll().values()) {
             if (s.isSelected()) {
                 int assignementId = s.getValue().getAssignment().getId();
                 a.removeCourseAssignment(assignementId, false, true);
@@ -530,7 +562,7 @@ public abstract class AbstractCourseLoadCtrl {
         if (CorePlugin.get().isCurrentSessionAdminOrManager()) {
 //        AcademicTeacher t = getModel().getCurrentTeacher();
 //        if (t != null) {
-            for (SelectableAssignment s : getModel().getAll().values()) {
+            for (AcademicCourseAssignmentInfoByVisitor s : getModel().getAll().values()) {
                 if (s.isSelected()) {
                     int assignementId = s.getValue().getAssignment().getId();
                     a.removeCourseAssignment(assignementId, true, false);
@@ -582,7 +614,7 @@ public abstract class AbstractCourseLoadCtrl {
             return false;
         }
         if (assignmentId != null) {
-            SelectableAssignment t0 = getModel().getAll().get(assignmentId);
+            AcademicCourseAssignmentInfoByVisitor t0 = getModel().getAll().get(assignmentId);
             AcademicCourseAssignment t = t0 == null ? null : t0.getValue().getAssignment();
             if (t != null) {
                 AppUser user = core.findUser(userId);
@@ -628,7 +660,7 @@ public abstract class AbstractCourseLoadCtrl {
         }
 
         if (assignementId != null) {
-            SelectableAssignment t0 = getModel().getAll().get(assignementId);
+            AcademicCourseAssignmentInfoByVisitor t0 = getModel().getAll().get(assignementId);
             AcademicCourseAssignment t = t0 == null ? null : t0.getValue().getAssignment();
             AppUser u = core.findUser(userId);
             if (u != null && t != null) {
@@ -656,26 +688,13 @@ public abstract class AbstractCourseLoadCtrl {
         return false;
     }
 
-    private static List<SelectableAssignment> wrap(List<AcademicCourseAssignmentInfo> val, Map<Integer, SelectableAssignment> all) {
-        List<SelectableAssignment> assignments;
-        assignments = new ArrayList<>();
-        for (AcademicCourseAssignmentInfo a : val) {
-            SelectableAssignment e = all.get(a.getAssignment().getId());
-            if (e == null) {
-                throw new RuntimeException();
-            }
-            assignments.add(e);
-        }
-        return assignments;
-    }
-
     public void doAssignByIntentSelected() {
-        for (SelectableAssignment s : getModel().getAll().values()) {
+        for (AcademicCourseAssignmentInfoByVisitor s : getModel().getAll().values()) {
             if (s.isSelected()) {
                 int assignementId = s.getValue().getAssignment().getId();
                 AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
 
-                SelectableAssignment rr = getModel().getAll().get(assignementId);
+                AcademicCourseAssignmentInfoByVisitor rr = getModel().getAll().get(assignementId);
                 if (rr != null) {
                     final Set<Integer> s0 = rr.getValue().getAssignmentChunck().getChuncks().keySet();
                     if (s0.size() > 0) {
@@ -704,7 +723,7 @@ public abstract class AbstractCourseLoadCtrl {
     public void doAssignByIntent(Integer assignementId) {
         AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
         if (assignementId != null) {
-            SelectableAssignment rr = getModel().getAll().get(assignementId);
+            AcademicCourseAssignmentInfoByVisitor rr = getModel().getAll().get(assignementId);
             if (rr != null) {
                 final Set<Integer> s0 = rr.getValue().getAssignmentChunck().getChuncks().keySet();
                 if (s0.size() > 0) {
@@ -770,182 +789,13 @@ public abstract class AbstractCourseLoadCtrl {
         getModel().setDisplayOtherModules(!getModel().isDisplayOtherModules());
     }
 
-    public static class SelectableAssignment extends SelectableObject<AcademicCourseAssignmentInfo> {
-
-        private TeacherAssignmentChunck currentIntent;
-        private List<TeacherAssignmentChunck> intents;
-        private String rooms;
-        private List<TeacherAssignmentChunck> courseIntents;
-        private AcademicClass academicClass;
-        private boolean currentAssigned;
-        private boolean currentWish;
-        private boolean currentProposal;
-        private boolean currentAcceptedProposal;
-        private boolean currentAcceptedWish;
-        private boolean otherAssigned;
-        private boolean noneAssigned;
-        private String currentStatusLocalizedString;
-        private String currentStatusString;
-
-        public SelectableAssignment(AcademicCourseAssignmentInfo value, int visitor) {
-            super(value, false);
-            this.currentIntent = value.getAssignmentChunck().getForTeacher(visitor);
-            this.intents = value.getAssignmentChunck().getAllButTeacher(visitor);
-            this.courseIntents = value.getCourseChunck().getAllButTeacher(visitor);
-            this.currentWish = this.currentIntent != null && this.currentIntent.isWish();
-            this.currentProposal = this.currentIntent != null && this.currentIntent.isProposal();
-            this.currentAcceptedWish = this.currentIntent != null && this.currentIntent.isAcceptedWish();
-            this.currentAcceptedProposal = this.currentIntent != null && this.currentIntent.isAcceptedProposal();
-            this.currentStatusString=this.currentIntent == null ?"?":this.currentIntent.getStatusString();
-            this.currentStatusLocalizedString=this.currentIntent == null ?"?":this.currentIntent.getStatusLocalizedString();
-            academicClass = value.resolveAcademicClass();
-            AcademicCourseType courseType = value.getAssignment().getCourseType();
-            if (courseType != null && courseType.getName().equalsIgnoreCase("C")) {
-                rooms = value.getAssignment().getCoursePlan().getRoomConstraintsC();
-            } else if (courseType != null && courseType.getName().equalsIgnoreCase("TP")) {
-                rooms = value.getAssignment().getCoursePlan().getRoomConstraintsTP();
-            }
-            if (value.isAssigned() && value.getAssignment().getTeacher() != null) {
-                if (value.getAssignment().getTeacher().getId() == visitor) {
-                    currentAssigned = true;
-                } else {
-                    otherAssigned = true;
-                }
-            } else {
-                noneAssigned = true;
-            }
-        }
-
-        public TeacherAssignmentChunck getCurrentIntent() {
-            return currentIntent;
-        }
-
-        public boolean isCurrentAcceptedProposal() {
-            return currentAcceptedProposal;
-        }
-
-        public boolean isCurrentAcceptedWish() {
-            return currentAcceptedWish;
-        }
-
-        public String getCurrentStatusLocalizedString() {
-            return currentStatusLocalizedString;
-        }
-
-        public String getCurrentStatusString() {
-            return currentStatusString;
-        }
-        
-
-        public boolean isCurrentWish() {
-            return currentWish;
-        }
-
-        public void setCurrentWish(boolean currentWish) {
-            this.currentWish = currentWish;
-        }
-
-        public boolean isCurrentProposal() {
-            return currentProposal;
-        }
-
-        public void setCurrentProposal(boolean currentProposal) {
-            this.currentProposal = currentProposal;
-        }
-
-        public String getRooms() {
-            return rooms;
-        }
-
-        public AcademicClass getAcademicClass() {
-            return academicClass;
-        }
-
-        public List<TeacherAssignmentChunck> getIntents() {
-            return intents;
-        }
-
-        public List<TeacherAssignmentChunck> getCourseIntents() {
-            return courseIntents;
-        }
-
-        public SelectableAssignment setCourseIntents(List<TeacherAssignmentChunck> courseIntents) {
-            this.courseIntents = courseIntents;
-            return this;
-        }
-
-        public void setSelected(boolean selected) {
-            super.setSelected(selected);
-        }
-
-        public boolean isCurrentAssigned() {
-            return currentAssigned;
-        }
-
-        public boolean isOtherAssigned() {
-            return otherAssigned;
-        }
-
-        public boolean isNoneAssigned() {
-            return noneAssigned;
-        }
-    }
-
-    public static class TeacherPeriodStatExt {
-
-        private TeacherPeriodStat val;
-        private TeacherSemesterStatExt[] semesters;
-        private List<SelectableAssignment> assignments;
-
-        public TeacherPeriodStatExt(TeacherPeriodStat val, Map<Integer, SelectableAssignment> all) {
-            this.val = val;
-            TeacherSemesterStat[] sems = val.getSemesters();
-            this.semesters = new TeacherSemesterStatExt[sems.length];
-            for (int i = 0; i < this.semesters.length; i++) {
-                this.semesters[i] = new TeacherSemesterStatExt(sems[i], all);
-            }
-            assignments = wrap(val.getAssignments(), all);
-        }
-
-        public TeacherPeriodStat getVal() {
-            return val;
-        }
-
-        public TeacherSemesterStatExt[] getSemesters() {
-            return semesters;
-        }
-
-        public List<SelectableAssignment> getAssignments() {
-            return assignments;
-        }
-    }
-
-    public static class TeacherSemesterStatExt {
-
-        private TeacherSemesterStat val;
-        private List<SelectableAssignment> assignments;
-
-        public TeacherSemesterStatExt(TeacherSemesterStat val, Map<Integer, SelectableAssignment> all) {
-            this.val = val;
-            assignments = wrap(val.getAssignments(), all);
-        }
-
-        public TeacherSemesterStat getVal() {
-            return val;
-        }
-
-        public List<SelectableAssignment> getAssignments() {
-            return assignments;
-        }
-    }
-
     public static class Model {
 
         //        List<AcademicCourseAssignmentInfo> mineS1 = new ArrayList<>();
 //        List<AcademicCourseAssignmentInfo> mineS2 = new ArrayList<>();
-        List<SelectableAssignment> others = new ArrayList<>();
-        List<SelectableAssignment> nonFilteredOthers = new ArrayList<>();
-        Map<Integer, SelectableAssignment> all = new HashMap<>();
+        List<AcademicCourseAssignmentInfoByVisitor> others = new ArrayList<>();
+        List<AcademicCourseAssignmentInfoByVisitor> nonFilteredOthers = new ArrayList<>();
+        Map<Integer, AcademicCourseAssignmentInfoByVisitor> all = new HashMap<>();
         TeacherPeriodStatExt stat;
         boolean nonIntentedOnly = false;
         boolean multipleSelection = true;
@@ -1019,26 +869,26 @@ public abstract class AbstractCourseLoadCtrl {
 //            this.mineS2 = mineS2;
 //        }
 
-        public Map<Integer, SelectableAssignment> getAll() {
+        public Map<Integer, AcademicCourseAssignmentInfoByVisitor> getAll() {
             return all;
         }
 
-        public void setAll(Map<Integer, SelectableAssignment> all) {
+        public void setAll(Map<Integer, AcademicCourseAssignmentInfoByVisitor> all) {
             this.all = all;
         }
 
-        public List<SelectableAssignment> getNonFilteredOthers() {
+        public List<AcademicCourseAssignmentInfoByVisitor> getNonFilteredOthers() {
             return nonFilteredOthers;
         }
 
-        public Model setNonFilteredOthers(List<SelectableAssignment> nonFilteredOthers) {
+        public Model setNonFilteredOthers(List<AcademicCourseAssignmentInfoByVisitor> nonFilteredOthers) {
             this.nonFilteredOthers = nonFilteredOthers;
             return this;
         }
 
         public double getOthersSumC() {
             double v = 0;
-            for (SelectableAssignment other : others) {
+            for (AcademicCourseAssignmentInfoByVisitor other : others) {
                 v += other.getValue().getAssignment().getValueC();
             }
             return v;
@@ -1046,7 +896,7 @@ public abstract class AbstractCourseLoadCtrl {
 
         public double getOthersSumTD() {
             double v = 0;
-            for (SelectableAssignment other : others) {
+            for (AcademicCourseAssignmentInfoByVisitor other : others) {
                 v += other.getValue().getAssignment().getValueTD();
             }
             return v;
@@ -1054,7 +904,7 @@ public abstract class AbstractCourseLoadCtrl {
 
         public double getOthersSumTP() {
             double v = 0;
-            for (SelectableAssignment other : others) {
+            for (AcademicCourseAssignmentInfoByVisitor other : others) {
                 v += other.getValue().getAssignment().getValueTP();
             }
             return v;
@@ -1062,17 +912,17 @@ public abstract class AbstractCourseLoadCtrl {
 
         public double getOthersSumPM() {
             double v = 0;
-            for (SelectableAssignment other : others) {
+            for (AcademicCourseAssignmentInfoByVisitor other : others) {
                 v += other.getValue().getAssignment().getValuePM();
             }
             return v;
         }
 
-        public List<SelectableAssignment> getOthers() {
+        public List<AcademicCourseAssignmentInfoByVisitor> getOthers() {
             return others;
         }
 
-        public void setOthers(List<SelectableAssignment> others) {
+        public void setOthers(List<AcademicCourseAssignmentInfoByVisitor> others) {
             this.others = others;
         }
 

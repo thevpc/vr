@@ -18,6 +18,7 @@ import net.vpc.upa.UPA;
 
 import java.util.*;
 import net.vpc.common.util.MutableDate;
+import net.vpc.upa.VoidAction;
 
 public class AcademicPluginBodyConfig extends AcademicPluginBody {
     public static final int DEFAULT_SEMESTER_MAX_WEEKS = 14;
@@ -784,7 +785,14 @@ public class AcademicPluginBodyConfig extends AcademicPluginBody {
             if (d.getDepartment() == null || d.getPeriod() == null) {
                 throw new RuntimeException("Invalid");
             }
-            pu.persist(d);
+            AppDepartmentPeriod fd=d;
+            pu.invokePrivileged(new VoidAction() {
+                @Override
+                public void run() {
+                    pu.persist(fd);
+                }
+            });
+            
         }
         return d;
     }
