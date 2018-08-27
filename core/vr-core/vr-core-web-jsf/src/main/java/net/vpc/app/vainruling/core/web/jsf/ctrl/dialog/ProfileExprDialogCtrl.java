@@ -69,7 +69,7 @@ public class ProfileExprDialogCtrl {
         List<SelectItem> tgroups = new ArrayList<>();
         List<SelectItem> tusers = new ArrayList<>();
         for (AppProfile p : core.findProfiles()) {
-            ProfileExprItem i = new ProfileExprItem(p.getName(), p.getName(), "profile", p.getName());
+            ProfileExprItem i = new ProfileExprItem(p.getCode(), p.getName(), "profile", p.getCode());
             if (!getModel().getMap().containsKey(i.getExpr())) {
                 getModel().getMap().put(i.getExpr(), i);
                 tgroups.add(FacesUtils.createSelectItem(i.getExpr(), i.getName()));

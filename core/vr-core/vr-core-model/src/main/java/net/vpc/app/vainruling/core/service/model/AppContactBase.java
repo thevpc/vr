@@ -108,6 +108,12 @@ public class AppContactBase {
 
 
     @Path("AdminInfo")
+    
+    @Field(max = "4000")
+    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
+    private String address;
+    
+    private AppGovernorate addressGovernorate;
     private Date birthDate;
 
     private String birthLocation;
@@ -451,6 +457,23 @@ public class AppContactBase {
     public void setBirthGovernorate(AppGovernorate birthGovernorate) {
         this.birthGovernorate = birthGovernorate;
     }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public AppGovernorate getAddressGovernorate() {
+        return addressGovernorate;
+    }
+
+    public void setAddressGovernorate(AppGovernorate addressGovernorate) {
+        this.addressGovernorate = addressGovernorate;
+    }
+    
 
     @Override
     public boolean equals(Object o) {

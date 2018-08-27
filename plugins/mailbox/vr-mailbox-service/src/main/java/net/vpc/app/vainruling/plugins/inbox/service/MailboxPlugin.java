@@ -103,7 +103,7 @@ public class MailboxPlugin {
         ));
         PersistenceUnit pu = UPA.getPersistenceUnit();
         for (AppProfile prof : core.findProfiles()) {
-            if (goodProfiles.contains(prof.getName())) {
+            if (goodProfiles.contains(prof.getCode())) {
                 core.addProfileRight(prof.getId(), MailboxPluginSecurity.RIGHT_CUSTOM_SITE_MAILBOX);
                 for (String entityName : new String[]{"MailboxReceived","MailboxSent"}) {
                     Entity entity=pu.getEntity(entityName);
@@ -838,7 +838,7 @@ public class MailboxPlugin {
 
                 StringBuilder profilesString = new StringBuilder();
                 for (AppProfile pp : core.findProfilesByUser(p.getId())) {
-                    profilesString.append(";").append(pp.getName());
+                    profilesString.append(";").append(pp.getCode());
                 }
                 profilesString.append(";");
                 allValues.put("index", (rows.size() + 1));

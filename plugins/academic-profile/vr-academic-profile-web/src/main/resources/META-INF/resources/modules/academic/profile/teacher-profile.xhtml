@@ -5,7 +5,7 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
       >
 
-<!--@elvariable id="corePlugin" type="net.vpc.app.vainruling.core.service.CorePlugin"-->
+    <!--@elvariable id="corePlugin" type="net.vpc.app.vainruling.core.service.CorePlugin"-->
     <h:head>
     </h:head>
 
@@ -72,8 +72,8 @@
                                                                 <hr/>
                                                                 <strong class="text-blue"><i class="fa fa-users margin-r-5"></i>Groupes</strong>
                                                                 <p>
-                                                                    <ui:repeat value="#{corePlugin.currentToken.profileNames.toArray()}" var="prName">
-                                                                        <span class="label label-#{vr.hashToArr(prName,'danger','success','info','warning','primary','default')}">#{prName}</span>
+                                                                    <ui:repeat value="#{corePlugin.currentToken.profileCodes.toArray()}" var="prCode">
+                                                                        <span class="label label-#{vr.hashToArr(prCode,'danger','success','info','warning','primary','default')}" title="#{corePlugin.findProfileByCode(prCode).name}">#{prCode}</span>
                                                                     </ui:repeat>
                                                                 </p>
                                                                 <hr/>

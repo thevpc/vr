@@ -907,6 +907,33 @@ a:focus {
     width: 100% !important;
 }
 
+div.vr-progress-container2 {
+    border: 1px solid #ccc;
+    /*width: 100px;*/
+    margin: 2px 5px 2px 0;
+    padding: 1px;
+    float: left;
+    background: white;
+}
+div.vr-progress-container2 > div{
+    float: left;
+    width: 50%;
+}
+
+div.vr-progress-container2 > div > div.vr-progress-left{
+    /*background-color: var(--vr-color-valid);*/
+    height: 12px;
+    float: right ; 
+    background-color:darkseagreen;
+}
+div.vr-progress-container2 > div > div.vr-progress-right{
+    /*background-color: var(--vr-color-valid);*/
+    height: 12px;
+    float: left; 
+    background-color: lightcoral;
+}
+
+
 div.vr-progress-container {
     border: 1px solid #ccc;
     width: 100px;

@@ -19,10 +19,7 @@ import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPluginSecurity;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.*;
-import net.vpc.app.vainruling.plugins.academic.service.stat.DeviationConfig;
 import net.vpc.app.vainruling.plugins.academic.service.stat.TeacherPeriodStat;
-import net.vpc.app.vainruling.plugins.academic.service.stat.TeacherSemesterStat;
-import net.vpc.app.vainruling.plugins.academic.service.util.DefaultCourseAssignmentFilter;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.util.Chronometer;
 
@@ -413,7 +410,7 @@ public abstract class AbstractCourseLoadCtrl {
         }
     }
 
-    public void removeWhishFromMineCurrSelected() {
+    public void removeWishFromMineCurrSelected() {
         AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
         AcademicTeacher t = getModel().getCurrentTeacher();
         if (t != null) {

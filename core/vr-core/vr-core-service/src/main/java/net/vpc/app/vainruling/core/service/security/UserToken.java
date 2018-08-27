@@ -86,7 +86,7 @@ public interface UserToken {
 
     void setRights(Set<String> rights);
 
-    Set<String> getProfileNames();
+    Set<String> getProfileCodes();
 
-    void setProfileNames(Set<String> profileNames);
+    void setProfileCodes(Set<String> profileCodes);
 }

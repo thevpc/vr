@@ -230,7 +230,7 @@ public class DefaultUserToken implements UserToken {
         setAdmin(false);
         setManager(false);
         setRights(new HashSet<String>());
-        setProfileNames(new HashSet<String>());
+        setProfileCodes(new HashSet<String>());
         setClientApp(null);
         setClientApp(null);
         setClientAppId(null);
@@ -254,12 +254,12 @@ public class DefaultUserToken implements UserToken {
     }
 
     @Override
-    public Set<String> getProfileNames() {
+    public Set<String> getProfileCodes() {
         return profileNames;
     }
 
     @Override
-    public void setProfileNames(Set<String> profileNames) {
+    public void setProfileCodes(Set<String> profileNames) {
         this.profileNames = profileNames;
     }
 }

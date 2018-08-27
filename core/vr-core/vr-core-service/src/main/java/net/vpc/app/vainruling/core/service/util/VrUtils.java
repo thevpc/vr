@@ -884,6 +884,33 @@ public class VrUtils {
         }
         return new String(chars);
     }
+    public static String normalizeFileName(String name) {
+        char[] chars = StringUtils.normalize(name).toCharArray();
+        for (int i = 0; i < chars.length; i++) {
+            switch (chars[i]) {
+                case '°': {
+                    chars[i] = 'o';
+                    break;
+                }
+                case '"':
+                case '\'':
+                case '?':
+                case '*':
+                case ':':
+                case '%':
+                case '|':
+                case '<':
+                case '>': 
+                case '/': 
+                case '\\': 
+                {
+                    chars[i] = ' ';
+                    break;
+                }
+            }
+        }
+        return new String(chars);
+    }
 
     public static Object convertDataObject(Object t, Class toType) {
         if (t == null) {

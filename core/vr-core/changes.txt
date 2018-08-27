@@ -1,0 +1,13 @@
+Version 1.3.11 alpha1:
+-----------------
+## New Features
+
+## Features removed
+
+## Other Changes
+
+## Bug Fixes
+    [Core    ] AppProfile search against name failed. From Now on will always 
+            use AppProfile.code
+    [Academic] Fixed load view issue in all-teachers-cours-load
+    [Toolbox ] Fixed name generation issue

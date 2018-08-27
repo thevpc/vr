@@ -1137,7 +1137,7 @@ public class Vr {
     }
 
     public boolean hasProfile(String key) {
-        return core.getCurrentToken().getProfileNames().contains(key);
+        return core.getCurrentToken().getProfileCodes().contains(key);
     }
 
     public String gotoPublicSubSite(String siteFilter) {

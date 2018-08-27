@@ -30,7 +30,7 @@ public class AppProfile {
     private String name;
     private String name2;
     private String name3;
-    @Summary
+//    @Summary
     private String shortDescription;
     @Summary
     private String inherited;
@@ -156,18 +156,18 @@ public class AppProfile {
         return String.valueOf(name);
     }
 
-    public static String getCodeOrName(AppProfile u) {
-        if (u == null) {
-            return null;
-        }
-        if (u.getCode()!=null && u.getCode().length()>0) {
-            return u.getCode();
-        }
-        if (u.getName()!=null && u.getName().length()>0) {
-            return u.getName();
-        }
-        return null;
-    }
+//    public static String getCodeOrName(AppProfile u) {
+//        if (u == null) {
+//            return null;
+//        }
+//        if (u.getCode()!=null && u.getCode().length()>0) {
+//            return u.getCode();
+//        }
+//        if (u.getName()!=null && u.getName().length()>0) {
+//            return u.getName();
+//        }
+//        return null;
+//    }
 
     @Override
     public boolean equals(Object o) {

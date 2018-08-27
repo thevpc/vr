@@ -485,7 +485,7 @@ public class AcademicPluginBodyTeachers extends AcademicPluginBody {
             boolean perm = false;
             List<AppProfile> oldProfiles = u == null ? new ArrayList<AppProfile>() : core.findProfilesByUser(u.getId());
             for (AppProfile op : oldProfiles) {
-                if ("Permanent".equals(op.getName())) {
+                if ("Permanent".equals(op.getCode())) {
                     perm = true;
                     break;
                 }

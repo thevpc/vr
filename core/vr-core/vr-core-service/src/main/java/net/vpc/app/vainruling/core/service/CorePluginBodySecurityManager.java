@@ -320,9 +320,10 @@ class CorePluginBodySecurityManager extends CorePluginBody {
     public boolean userAddProfile(int userId, String profileCode) {
         CorePluginSecurity.requireAdmin();
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        if (pu.createQuery("Select u.profile from AppUserProfileBinding  u where u.userId=:userId and u.profile.name=:name")
+        
+        if (pu.createQuery("Select u.profile from AppUserProfileBinding  u where u.userId=:userId and u.profile.code=:code")
                 .setParameter("userId", userId)
-                .setParameter("name", profileCode)
+                .setParameter("code", profileCode)
                 .isEmpty()) {
             //should not call findUser because cache is not yet invalidated!
             AppUser u = pu.findById(AppUser.class, userId);
@@ -330,9 +331,9 @@ class CorePluginBodySecurityManager extends CorePluginBody {
                 throw new IllegalArgumentException("Unknown User " + userId);
             }
             AppProfile p = findProfileByCode(profileCode);
-            if (p == null) {
-                p = findProfileByName(profileCode);
-            }
+//            if (p == null) {
+//                p = findProfileByName(profileCode);
+//            }
             if (p == null) {
                 p = new AppProfile();
                 p.setName(profileCode);
@@ -406,28 +407,23 @@ class CorePluginBodySecurityManager extends CorePluginBody {
     public AppProfile findOrCreateCustomProfile(String profileCode, String customType) {
         profileCode = validateProfileName(profileCode);//must validate name first!
         AppProfile p = findProfileByCode(profileCode);
-        if (p == null) {
-            p = findProfileByName(profileCode);
-        }
+//        if (p == null) {
+//            p = findProfileByCode(profileCode);
+//        }
         if (p == null) {
             p = new AppProfile();
-            p.setName(profileCode);
             p.setCode(profileCode);
+            p.setName(I18n.get().get(new I18NString("Profile", p.getCustomType(), p.getCode()),
+                     new Arg("code", p.getCode()),
+                     new Arg("name", p.getName())
+            ));
             p.setCustom(true);
             p.setCustomType(customType);
-            p.setShortDescription(I18n.get().get(new I18NString("Profile",p.getCustomType(),p.getCode())
-                    , new Arg("code", p.getCode())
-                    , new Arg("name", p.getName())
-            ));
             UPA.getPersistenceUnit().persist(p);
         } else if (!p.isCustom()) {
             //force to custom
             p.setCustom(true);
             p.setCustomType(customType);
-            p.setShortDescription(I18n.get().get(new I18NString("Profile",p.getCustomType(),p.getCode())
-                    , new Arg("code", p.getCode())
-                    , new Arg("name", p.getName())
-            ));
             UPA.getPersistenceUnit().merge(p);
         }
         if (StringUtils.isEmpty(p.getCode())) {
@@ -435,7 +431,7 @@ class CorePluginBodySecurityManager extends CorePluginBody {
             UPA.getPersistenceUnit().merge(p);
         }
         if (StringUtils.isEmpty(p.getName())) {
-            p.setCode(p.getCode());
+            p.setName(p.getCode());
             UPA.getPersistenceUnit().merge(p);
         }
         return p;
@@ -458,12 +454,12 @@ class CorePluginBodySecurityManager extends CorePluginBody {
 //            globalCache.remove(name);
 //        }
 //    }
-    public AppProfile findOrCreateProfile(String profileName) {
-        AppProfile p = findProfileByName(profileName);
+    public AppProfile findOrCreateProfile(String profileCode) {
+        AppProfile p = findProfileByCode(profileCode);
         if (p == null) {
             p = new AppProfile();
-            p.setCode(profileName);
-            p.setName(profileName);
+            p.setCode(profileCode);
+            p.setName(profileCode);
             UPA.getPersistenceUnit().persist(p);
         }
         return p;
@@ -514,7 +510,7 @@ class CorePluginBodySecurityManager extends CorePluginBody {
         if (admin) {
             return findProfiles();
         }
-        for (String profileName : this.getContext().getCorePlugin().getCurrentToken().getProfileNames()) {
+        for (String profileName : this.getContext().getCorePlugin().getCurrentToken().getProfileCodes()) {
             AppProfile p = findProfileByCode(profileName);
             String adminProfiles = p.getAdmin();
             if (!StringUtils.isEmpty(adminProfiles)) {
@@ -549,16 +545,16 @@ class CorePluginBodySecurityManager extends CorePluginBody {
 
     }
 
-    protected Set<String> findUniformProfileNamesMapByUserId(int userId, boolean includeLogin) {
-        Map<Integer, Set<String>> uniformProfileNamesMapByUserId = findUniformProfileNamesMapByUserId(includeLogin);
-        Set<String> profiles = uniformProfileNamesMapByUserId.get(userId);
+    protected Set<String> findUniformProfileCodesMapByUserId(int userId, boolean includeLogin) {
+        Map<Integer, Set<String>> uniformProfileCodesMapByUserId = findUniformProfileCodesMapByUserId(includeLogin);
+        Set<String> profiles = uniformProfileCodesMapByUserId.get(userId);
         if (profiles == null) {
             AppUser u = findUser(userId);
             if (u == null) {
                 return null;
             }
             profiles = new HashSet<>();
-            uniformProfileNamesMapByUserId.put(userId, profiles);
+            uniformProfileCodesMapByUserId.put(userId, profiles);
             if (includeLogin) {
                 profiles.add(u.getLogin().toLowerCase());
             }
@@ -566,8 +562,8 @@ class CorePluginBodySecurityManager extends CorePluginBody {
         return profiles;
     }
 
-    protected Map<Integer, Set<String>> findUniformProfileNamesMapByUserId(final boolean includeLogin) {
-        String cacheKey = "findUniformProfileNamesMapByUserId:" + includeLogin;
+    protected Map<Integer, Set<String>> findUniformProfileCodesMapByUserId(final boolean includeLogin) {
+        String cacheKey = "findUniformProfileCodesMapByUserId:" + includeLogin;
         final EntityCache entityCache = getContext().getCacheService().get(AppUserProfileBinding.class);
         return entityCache
                 .getProperty(cacheKey, new Action<Map<Integer, Set<String>>>() {
@@ -585,7 +581,7 @@ class CorePluginBodySecurityManager extends CorePluginBody {
                                     }
                                     all.put(o.getUser().getId(), list);
                                 }
-                                list.add(o.getProfile().getName().toLowerCase());
+                                list.add(o.getProfile().getCode().toLowerCase());
                             }
                         }
                         return all;
@@ -886,7 +882,7 @@ class CorePluginBodySecurityManager extends CorePluginBody {
         if (userId == null) {
             userId = findUserIdByLogin(login);
         }
-        Set<String> foundProfileNames = (userId == null) ? (new HashSet<String>()) : findUniformProfileNamesMapByUserId(userId, true);
+        Set<String> foundProfileNames = (userId == null) ? (new HashSet<String>()) : findUniformProfileCodesMapByUserId(userId, true);
         if (foundProfileNames == null) {
             foundProfileNames = new HashSet<>();
         }
@@ -949,8 +945,8 @@ class CorePluginBodySecurityManager extends CorePluginBody {
         userOrProfile = userOrProfile.trim().toLowerCase();
         List<String> all = new ArrayList<>();
         for (AppProfile appProfile : findProfiles()) {
-            if (appProfile.getName() != null && appProfile.getName().toLowerCase().contains(userOrProfile)) {
-                all.add(appProfile.getName().trim());
+            if (appProfile.getCode()!= null && appProfile.getCode().toLowerCase().contains(userOrProfile)) {
+                all.add(appProfile.getCode().trim());
             }
         }
         for (AppUser appUser : findUsers()) {
@@ -1077,7 +1073,6 @@ class CorePluginBodySecurityManager extends CorePluginBody {
 //        }
 //        return ret;
 //    }
-
     public List<AppUser> findUsersByProfileFilter(String profilePattern, Integer userType) {
         return filterUsersByProfileFilter(findEnabledUsers(), profilePattern, userType);
     }

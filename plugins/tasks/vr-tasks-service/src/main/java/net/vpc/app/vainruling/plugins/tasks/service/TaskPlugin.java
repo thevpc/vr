@@ -474,7 +474,7 @@ public class TaskPlugin {
         d.laboActions = new TodoList();
         d.laboActions.setName(TodoList.LABO_ACTION);
         d.laboActions.setSystemList(true);
-        d.laboActions.setRespProfile(core.findProfileByName("Technician"));
+        d.laboActions.setRespProfile(core.findProfileByCode("Technician"));
         d.laboActions = core.findOrCreate(d.laboActions);
         PersistenceUnit pu = UPA.getPersistenceUnit();
         {
@@ -505,7 +505,7 @@ public class TaskPlugin {
         d.laboTickets = new TodoList();
         d.laboTickets.setName(TodoList.LABO_TICKET);
         d.laboTickets.setSystemList(true);
-        d.laboTickets.setRespProfile(core.findProfileByName("Technician"));
+        d.laboTickets.setRespProfile(core.findProfileByCode("Technician"));
         d.laboTickets = core.findOrCreate(d.laboTickets);
         {
             TodoCategory s = new TodoCategory();

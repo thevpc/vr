@@ -26,7 +26,7 @@ public class ValidatorFactory {
         }
         @Override
         public String getHints() {
-            return "consider lower case '-' sepearated name, like my-name";
+            return "consider lower case '-' separated name, like my-name";
         }
     };
     
@@ -58,7 +58,7 @@ public class ValidatorFactory {
         }
         @Override
         public String getHints() {
-            return "consider capitalized ' ' sepearated name, like My Name";
+            return "consider capitalized ' ' separated name, like My Name";
         }
     };
     

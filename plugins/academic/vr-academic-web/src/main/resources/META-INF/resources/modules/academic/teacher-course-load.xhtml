@@ -331,7 +331,7 @@ and open the template in the editor.
                                     <p:column styleClass="ui-widget-header"><p:outputLabel
                                             value="H.Supp. TD / Sem"/></p:column>
                                     <p:column styleClass="ui-widget-header"><p:outputLabel
-                                            value="H.Supp. TP / Sem"/></p:column>
+                                            value="H.Supp. TPPM / Sem"/></p:column>
                                     <p:column styleClass="ui-widget-header"><p:outputLabel value="Balance"/></p:column>
                                     <p:column styleClass="ui-widget-header" style="width: 60px;"><p:outputLabel
                                             value=""/></p:column>
@@ -401,7 +401,7 @@ and open the template in the editor.
                                     <!-- H.Supp. TD / Sem --> <p:column><p:outputLabel
                                             value="#{teacherCourseLoadCtrl.model.stat.val.extraWeekEff.td}" style="#{(teacherCourseLoadCtrl.model.stat.val.extraWeekEff.td ne 0.0)?'font-weight: bolder;color: lightcoral':''}"><f:convertNumber
                                                 pattern="#0.000"/></p:outputLabel></p:column>
-                                    <!-- H.Supp. TP / Sem --> <p:column><p:outputLabel
+                                    <!-- H.Supp. TPPM / Sem --> <p:column><p:outputLabel
                                             value="#{teacherCourseLoadCtrl.model.stat.val.extraWeekEff.tppm}" style="#{(teacherCourseLoadCtrl.model.stat.val.extraWeekEff.tppm ne 0.0)?'font-weight: bolder;color: lightcoral':''}"><f:convertNumber
                                                 pattern="#0.000"/></p:outputLabel></p:column>
                                     <!-- Balance --> <p:column>
@@ -479,7 +479,7 @@ and open the template in the editor.
                                         <!-- H.Supp. TD / Sem --><p:column><p:outputLabel
                                                 value="#{sem.val.extraWeekEff.td}"><f:convertNumber
                                                     pattern="#0.000"/></p:outputLabel></p:column>
-                                        <!-- H.Supp. TP / Sem --><p:column><p:outputLabel
+                                        <!-- H.Supp. TPPM / Sem --><p:column><p:outputLabel
                                                 value="#{sem.val.extraWeekEff.tppm}"><f:convertNumber
                                                     pattern="#0.000"/></p:outputLabel></p:column>
                                         <!-- Balance --><p:column>
@@ -532,7 +532,7 @@ and open the template in the editor.
                                                             actionListener="#{teacherCourseLoadCtrl.addWishToMineCurrSelected()}"
                                                             update=":listForm" icon="ui-icon-close"/>
                                                 <p:menuitem value="Supp. Voeu"
-                                                            actionListener="#{teacherCourseLoadCtrl.removeWhishFromMineSelected()}"
+                                                            actionListener="#{teacherCourseLoadCtrl.removeWishFromMineCurrSelected()}"
                                                             update=":listForm" icon="ui-icon-close"/>
                                                 <p:separator/>
                                                 <p:menuitem value="Affecter"

@@ -1,6 +1,8 @@
 package net.vpc.app.vr.plugins.academicprofile.service;
 
 import java.util.List;
+import net.vpc.app.vainruling.core.service.CorePlugin;
+import net.vpc.app.vainruling.core.service.CorePluginSecurity;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppContact;
 import net.vpc.app.vainruling.core.service.model.AppUser;
@@ -18,6 +20,7 @@ import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.UPA;
 import net.vpc.upa.VoidAction;
 import net.vpc.app.vainruling.core.service.plugins.VrPlugin;
+import net.vpc.app.vainruling.plugins.academic.service.AcademicPluginSecurity;
 import net.vpc.upa.Document;
 import net.vpc.upa.Entity;
 
@@ -49,19 +52,19 @@ public class AcademicProfilePlugin {
         }
     }
 
-    public AcademicTeacherCV findOrCreateAcademicTeacherCV(final int t) {
+    public AcademicTeacherCV findOrCreateAcademicTeacherCV(final int teacherId) {
         return UPA.getContext().invokePrivileged(new Action<AcademicTeacherCV>() {
 
             @Override
             public AcademicTeacherCV run() {
                 PersistenceUnit pu = UPA.getPersistenceUnit();
                 AcademicTeacherCV a = pu.createQuery("Select u from AcademicTeacherCV u where u.teacherId=:id")
-                        .setParameter("id", t).getFirstResultOrNull();
+                        .setParameter("id", teacherId).getFirstResultOrNull();
                 if (a != null) {
                     return a;
                 }
                 //check teacher
-                AcademicTeacher teacher = VrApp.getBean(AcademicPlugin.class).findTeacher(t);
+                AcademicTeacher teacher = VrApp.getBean(AcademicPlugin.class).findTeacher(teacherId);
                 if (teacher != null) {
                     final AcademicTeacherCV cv = new AcademicTeacherCV();
                     cv.setTeacher(teacher);
@@ -73,27 +76,36 @@ public class AcademicProfilePlugin {
         }, null);
     }
 
-    public void updateViewsCounterFoStudentCV(int t) {
-        AcademicStudentCV cv = findOrCreateAcademicStudentCV(t);
-        if (cv != null) {
-            cv.setViewsCounter(cv.getViewsCounter() + 1);
-            UPA.getPersistenceUnit().merge(cv);
-        }
+    public void updateViewsCounterFoStudentCV(int studentId) {
+        CorePluginSecurity.requireUser(AcademicPlugin.get().findStudent(studentId).getUser().getId());
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        pu.invokePrivileged(new VoidAction() {
+            @Override
+            public void run() {
+                AcademicStudentCV cv = findOrCreateAcademicStudentCV(studentId);
+                if (cv != null) {
+                    cv.setViewsCounter(cv.getViewsCounter() + 1);
+                    UPA.getPersistenceUnit().merge(cv);
+                }
+            }
+        });
     }
 
-    public AcademicStudentCV findOrCreateAcademicStudentCV(final int t) {
+    public AcademicStudentCV findOrCreateAcademicStudentCV(final int studentId) {
+        AcademicPluginSecurity.requireStudentOrManager(studentId);
+        PersistenceUnit pu = UPA.getPersistenceUnit();
         return UPA.getContext().invokePrivileged(new Action<AcademicStudentCV>() {
 
             @Override
             public AcademicStudentCV run() {
                 PersistenceUnit pu = UPA.getPersistenceUnit();
                 AcademicStudentCV a = pu.createQuery("Select u from AcademicStudentCV u where u.studentId=:id")
-                        .setParameter("id", t).getFirstResultOrNull();
+                        .setParameter("id", studentId).getFirstResultOrNull();
                 if (a != null) {
                     return a;
                 }
                 //check student
-                AcademicStudent student = VrApp.getBean(AcademicPlugin.class).findStudent(t);
+                AcademicStudent student = VrApp.getBean(AcademicPlugin.class).findStudent(studentId);
                 if (student != null) {
                     final AcademicStudentCV cv = new AcademicStudentCV();
                     cv.setStudent(student);
@@ -105,10 +117,10 @@ public class AcademicProfilePlugin {
         }, null);
     }
 
-    public AcademicTeacherCVItem findTeacherCVItem(int t) {
+    public AcademicTeacherCVItem findTeacherCVItem(int teacherId) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         AcademicTeacherCVItem a = pu.createQuery("Select u from AcademicTeacherCVItem u where u.academicTeacherCVId=:id")
-                .setParameter("id", t).getFirstResultOrNull();
+                .setParameter("id", teacherId).getFirstResultOrNull();
         if (a != null) {
             return a;
         }
@@ -129,49 +141,90 @@ public class AcademicProfilePlugin {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         AcademicTeacherCVItem item = pu.findById(AcademicTeacherCVItem.class, itemId);
         if (item != null) {
-            pu.remove(item);
+            AcademicPluginSecurity.requireTeacherOrManager(item.getTeacherCV().getTeacher().getId());
+            pu.invokePrivileged(new VoidAction() {
+                @Override
+                public void run() {
+                    pu.remove(item);
+                }
+            });
         }
     }
 
     public void updateTeacherCVItem(AcademicTeacherCVItem item) {
+        AcademicPluginSecurity.requireTeacherOrManager(item.getTeacherCV().getTeacher().getId());
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        pu.merge(item);
+        pu.invokePrivileged(new VoidAction() {
+            @Override
+            public void run() {
+                pu.merge(item);
+            }
+        });
     }
 
-    public void updateContactInformations(AppUser contact) {
+    public void updateContactInformations(AppUser user) {
+        CorePluginSecurity.requireUser(user.getId());
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        //only contact information is update!!
-        Entity cc = pu.getEntity(AppContact.class);
-        Entity u = pu.getEntity(AppUser.class);
-        Document d = u.createDocument();
-        d.setAll(u.getBuilder().objectToDocument(contact));
-        for (String k : d.keySet().toArray(new String[d.size()])) {
-            if(cc.containsField(k)){
-                //okkay
-            }else{
-                d.remove(k);
+        pu.invokePrivileged(new VoidAction() {
+            @Override
+            public void run() {
+                //only contact information is update!!
+                Entity appContactEntity = pu.getEntity(AppContact.class);
+                Entity u = pu.getEntity(AppUser.class);
+                Document d = u.createDocument();
+                d.setAll(u.getBuilder().objectToDocument(user));
+                for (String fieldName : d.keySet().toArray(new String[d.size()])) {
+                    if (appContactEntity.containsField(fieldName)) {
+                        //okkay
+                    } else {
+                        d.remove(fieldName);
+                    }
+                }
+                pu.merge(user);
             }
-        }
-        pu.merge(contact);
+        });
     }
 
     public void updateCvItem(AcademicTeacherCVItem item) {
+        AcademicPluginSecurity.requireTeacherOrManager(item.getTeacherCV().getTeacher().getId());
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        pu.merge(item);
+        pu.invokePrivileged(new VoidAction() {
+            @Override
+            public void run() {
+                pu.merge(item);
+            }
+        });
     }
 
     public void updateStudentInformations(AcademicStudent student) {
+        AcademicPluginSecurity.requireStudentOrManager(student.getId());
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        pu.merge(student);
+        pu.invokePrivileged(new VoidAction() {
+            @Override
+            public void run() {
+
+                PersistenceUnit pu = UPA.getPersistenceUnit();
+                pu.merge(student);
+            }
+        });
     }
 
     public void updateTeacherCVInformations(AcademicTeacherCV teacherCV) {
+        AcademicPluginSecurity.requireTeacherOrManager(teacherCV.getTeacher().getId());
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        pu.merge(teacherCV);
+        pu.invokePrivileged(new VoidAction() {
+            @Override
+            public void run() {
+                PersistenceUnit pu = UPA.getPersistenceUnit();
+                pu.merge(teacherCV);
+            }
+        });
     }
 
     public void updateStudentCVInformations(AcademicStudentCV studentCV) {
-        UPA.getContext().invokePrivileged(new VoidAction() {
+        AcademicPluginSecurity.requireStudentOrManager(studentCV.getStudent().getId());
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        pu.invokePrivileged(new VoidAction() {
             @Override
             public void run() {
                 PersistenceUnit pu = UPA.getPersistenceUnit();
@@ -181,8 +234,14 @@ public class AcademicProfilePlugin {
     }
 
     public void createAcademicTeacherCVItem(AcademicTeacherCVItem academicTeacherCVItem) {
+        AcademicPluginSecurity.requireTeacherOrManager(academicTeacherCVItem.getTeacherCV().getTeacher().getId());
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        pu.persist(academicTeacherCVItem);
+        pu.invokePrivileged(new VoidAction() {
+            @Override
+            public void run() {
+                pu.persist(academicTeacherCVItem);
+            }
+        });
     }
 
     public AcademicCVSection findAcademicCVSectionByName(String title) {

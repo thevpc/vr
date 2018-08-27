@@ -50,7 +50,7 @@ public class VRSecurityManager implements PersistenceGroupSecurityManager {
         if (s == null) {
             return false;
         }
-        return s.getProfileNames().contains(CorePlugin.PROFILE_ADMIN);
+        return s.getProfileCodes().contains(CorePlugin.PROFILE_ADMIN);
 //        PersistenceUnit pu = UPA.getPersistenceUnit();
 //        return "admin".equals(s)
 //                || pu.createQuery("Select u from AppUserProfileBinding u where u.user.login=:login and u.profile.name=:profile")

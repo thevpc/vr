@@ -38,8 +38,26 @@ public class AcademicPluginSecurity {
 
     public static final String[] RIGHTS_ACADEMIC = VrPlatformUtils.getStringArrayConstantsValues(AcademicPluginSecurity.class, "RIGHT_*");
 
+    public static void requireStudentOrManager(int studentId) {
+        if (!isStudentOrManager(studentId)) {
+            throw new SecurityException("Not Allowed");
+        }
+    }
+    
+    public static void requireStudentOrAdmin(int studentId) {
+        if (!isStudentOrAdmin(studentId)) {
+            throw new SecurityException("Not Allowed");
+        }
+    }
+
     public static void requireTeacherOrManager(int teacher) {
         if (!isTeacherOrManager(teacher)) {
+            throw new SecurityException("Not Allowed");
+        }
+    }
+    
+    public static void requireTeacherOrAdmin(int teacher) {
+        if (!isTeacherOrAdmin(teacher)) {
             throw new SecurityException("Not Allowed");
         }
     }
@@ -58,6 +76,55 @@ public class AcademicPluginSecurity {
             AppDepartment d = r.getUser().getDepartment();
             if (d != null) {
                 return core.isCurrentSessionAdminOrManagerOf(d.getId());
+            }
+        }
+        return false;
+    }
+
+    public static boolean isTeacherOrAdmin(int teacher) {
+        CorePlugin core = CorePlugin.get();
+        if (core.isCurrentSessionAdmin()) {
+            return true;
+        }
+        AcademicPlugin academic = AcademicPlugin.get();
+        AcademicTeacher r = academic.getCurrentTeacher();
+        if (r != null) {
+            if (teacher <= 0 || r.getId() == teacher) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean isStudentOrManager(int studentId) {
+        CorePlugin core = CorePlugin.get();
+        if (core.isCurrentSessionAdmin()) {
+            return true;
+        }
+        AcademicPlugin academic = AcademicPlugin.get();
+        AcademicStudent r = academic.getCurrentStudent();
+        if (r != null) {
+            if (studentId <= 0 || r.getId() == studentId) {
+                return true;
+            }
+            AppDepartment d = r.getUser().getDepartment();
+            if (d != null) {
+                return core.isCurrentSessionAdminOrManagerOf(d.getId());
+            }
+        }
+        return false;
+    }
+
+    public static boolean isStudentOrAdmin(int studentId) {
+        CorePlugin core = CorePlugin.get();
+        if (core.isCurrentSessionAdmin()) {
+            return true;
+        }
+        AcademicPlugin academic = AcademicPlugin.get();
+        AcademicStudent r = academic.getCurrentStudent();
+        if (r != null) {
+            if (studentId <= 0 || r.getId() == studentId) {
+                return true;
             }
         }
         return false;
@@ -160,16 +227,16 @@ public class AcademicPluginSecurity {
             return false;
         }
         for (AppProfile u : core.findProfilesByUser(user.getId())) {
-            String name = u.getName();
-            if ("HeadOfDepartment".equals(name)) {
+            String code = u.getCode();
+            if ("HeadOfDepartment".equals(code)) {
                 //check if same department
                 return true;
             }
-            if ("DirectorOfStudies".equals(name)) {
+            if ("DirectorOfStudies".equals(code)) {
                 //check if same department
                 return true;
             }
-            if ("Director".equals(name)) {
+            if ("Director".equals(code)) {
                 //check if same department
                 return true;
             }
@@ -268,18 +335,18 @@ public class AcademicPluginSecurity {
         }
         int dept = user == null || user.getDepartment() == null ? -1 : user.getDepartment().getId();
         for (AppProfile u : core.findProfilesByUser(user.getId())) {
-            String name = u.getName();
-            if ("HeadOfDepartment".equals(name)) {
+            String code = u.getCode();
+            if ("HeadOfDepartment".equals(code)) {
                 if (dept != -1 && department != null && dept == department.getId()) {
                     //check if same department
                     return true;
                 }
             }
-            if ("DirectorOfStudies".equals(name)) {
+            if ("DirectorOfStudies".equals(code)) {
                 //check if same department
                 return true;
             }
-            if ("Director".equals(name)) {
+            if ("Director".equals(code)) {
                 //check if same department
                 return true;
             }
@@ -295,8 +362,8 @@ public class AcademicPluginSecurity {
         }
         int dept = user == null || user.getDepartment() == null ? -1 : user.getDepartment().getId();
         for (AppProfile u : core.findProfilesByUser(user.getId())) {
-            String name = u.getName();
-            if ("HeadOfDepartment".equals(name)) {
+            String code = u.getCode();
+            if ("HeadOfDepartment".equals(code)) {
                 if (dept != -1 && department != null && dept == department.getId()) {
                     //check if same department
                     return true;

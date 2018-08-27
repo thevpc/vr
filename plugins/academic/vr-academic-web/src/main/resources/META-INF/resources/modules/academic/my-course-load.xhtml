@@ -175,7 +175,7 @@ and open the template in the editor.
                                     <p:column styleClass="ui-widget-header"><p:outputLabel value="C"/></p:column>
                                     <p:column styleClass="ui-widget-header"><p:outputLabel value="TD"/></p:column>
                                     <p:column styleClass="ui-widget-header"><p:outputLabel value="TP+PM"/></p:column>
-                                    <p:column styleClass="ui-widget-header"><p:outputLabel value="Total Charge"/></p:column>
+                                    <!--<p:column styleClass="ui-widget-header"><p:outputLabel value="Total Charge"/></p:column>-->
                                     <p:column styleClass="ui-widget-header"><p:outputLabel value="Total Charge / Sem"/></p:column>
                                     <p:column styleClass="ui-widget-header"><p:outputLabel value="Bilan H.Supp. Equiv"/></p:column>
                                     <p:column styleClass="ui-widget-header"><p:outputLabel value="Bilan H.Supp. C"/></p:column>
@@ -197,9 +197,9 @@ and open the template in the editor.
                                     <p:column><p:outputLabel
                                             value="#{myCourseLoadCtrl.model.stat.val.value.tppm}"><f:convertNumber
                                                 pattern="#0.000"/></p:outputLabel></p:column>
-                                    <p:column><p:outputLabel
-                                            value="#{myCourseLoadCtrl.model.stat.val.value.equiv}"><f:convertNumber
-                                                pattern="#0.000"/></p:outputLabel></p:column>
+<!--                                    <p:column><p:outputLabel
+                                            value="#_{myCourseLoadCtrl.model.stat.val.value.equiv}"><f:convertNumber
+                                                pattern="#0.000"/></p:outputLabel></p:column>-->
                                     <p:column><p:outputLabel
                                             value="#{myCourseLoadCtrl.model.stat.val.valueWeek.equiv}"><f:convertNumber
                                                 pattern="#0.000"/></p:outputLabel></p:column>
@@ -237,9 +237,9 @@ and open the template in the editor.
                                                     pattern="#0.000"/></p:outputLabel></p:column>
                                         <p:column><p:outputLabel value="#{sem.val.value.tppm}"><f:convertNumber
                                                     pattern="#0.000"/></p:outputLabel></p:column>
-                                        <p:column><p:outputLabel
-                                                value="#{sem.val.value.equiv}"><f:convertNumber
-                                                    pattern="#0.000"/></p:outputLabel></p:column>
+<!--                                        <p:column><p:outputLabel
+                                                value="#_{sem.val.value.equiv}"><f:convertNumber
+                                                    pattern="#0.000"/></p:outputLabel></p:column>-->
                                         <p:column><p:outputLabel
                                                 value="#{sem.val.valueWeek.equiv}"><f:convertNumber
                                                     pattern="#0.000"/></p:outputLabel></p:column>

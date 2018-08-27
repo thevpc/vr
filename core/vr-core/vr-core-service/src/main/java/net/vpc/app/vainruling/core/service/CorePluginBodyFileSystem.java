@@ -122,10 +122,10 @@ class CorePluginBodyFileSystem extends CorePluginBody {
         return getRootFileSystem0().get(path);
     }
 
-    public VFile getProfileFolder(final String profile) {
-        AppProfile u = getContext().getCorePlugin().findProfileByName(profile);
+    public VFile getProfileFolder(final String profileCode) {
+        AppProfile u = getContext().getCorePlugin().findProfileByCode(profileCode);
         if (u != null) {
-            final String path = "/Documents/ByProfile/" + VrUtils.normalizeFilePath(profile);
+            final String path = "/Documents/ByProfile/" + VrUtils.normalizeFilePath(profileCode);
 
             UPA.getContext().invokePrivileged(new Action<Object>() {
 
@@ -134,7 +134,7 @@ class CorePluginBodyFileSystem extends CorePluginBody {
                     getRootFileSystem0().mkdirs(path);
                     VirtualFileACL v = getRootFileSystem0().getACL(path);
                     if (!v.isReadOnly()) {
-                        v.setPermissionListDirectory(profile);
+                        v.setPermissionListDirectory(profileCode);
                     }
                     return null;
                 }
@@ -208,7 +208,7 @@ class CorePluginBodyFileSystem extends CorePluginBody {
                         mfs.mount("/" + CorePlugin.FOLDER_MY_DOCUMENTS, me);
                         List<AppProfile> profiles = getContext().getCorePlugin().findProfilesByUser(u.getId());
                         for (AppProfile p : profiles) {
-                            if (CorePlugin.PROFILE_ADMIN.equals(p.getName())) {
+                            if (CorePlugin.PROFILE_ADMIN.equals(p.getCode())) {
                                 //this is admin
                                 mfs.mount("/" + CorePlugin.FOLDER_ALL_DOCUMENTS, getRootFileSystem0());
                                 break;
@@ -221,8 +221,8 @@ class CorePluginBodyFileSystem extends CorePluginBody {
                         all.addAll(usersVrFSTable.values());
 
                         for (AppProfile p : profiles) {
-                            String profileMountPoint = "/" + VrUtils.normalizeFilePath(p.getName()) + " Documents";
-                            VirtualFileSystem profileFileSystem = getProfileFileSystem(p.getName(), t0);
+                            String profileMountPoint = "/" + I18n.get().get("document.profileFolderName", new Arg("name", VrUtils.normalizeFileName(p.getName())));
+                            VirtualFileSystem profileFileSystem = getProfileFileSystem(p.getCode(), t0);
                             if (profileFileSystem.get("/").listFiles().length > 0) {
                                 mfs.mount(profileMountPoint, profileFileSystem);
                             }
@@ -279,15 +279,15 @@ class CorePluginBodyFileSystem extends CorePluginBody {
         return getProfileFileSystem(profileName, null);
     }
 
-    protected VirtualFileSystem getProfileFileSystem(String profileName, final VrFSTable t) {
-        CorePluginSecurity.requireProfile(profileName);
-        AppProfile u = getContext().getCorePlugin().findProfileByName(profileName);
+    protected VirtualFileSystem getProfileFileSystem(String profileCode, final VrFSTable t) {
+        CorePluginSecurity.requireProfile(profileCode);
+        AppProfile u = getContext().getCorePlugin().findProfileByCode(profileCode);
         if (u != null) {
             return UPA.getContext().invokePrivileged(new Action<VirtualFileSystem>() {
 
                 @Override
                 public VirtualFileSystem run() {
-                    final String path = "/Documents/ByProfile/" + VrUtils.normalizeFilePath(profileName);
+                    final String path = "/Documents/ByProfile/" + VrUtils.normalizeFilePath(profileCode);
 
                     getRootFileSystem0().mkdirs(path);
 //
@@ -298,9 +298,9 @@ class CorePluginBodyFileSystem extends CorePluginBody {
                         if (t2 == null) {
                             t2 = getVrFSTable();
                         }
-                        mfs = VFS.createMountableFS("profile:" + profileName);
+                        mfs = VFS.createMountableFS("profile:" + profileCode);
                         mfs.mount("/", pfs);
-                        for (VrFSEntry e : t2.getEntries(profileName, "Profile")) {
+                        for (VrFSEntry e : t2.getEntries(profileCode, "Profile")) {
                             MountableFS finalMfs = mfs;
                             UPA.getContext().invokePrivileged(new VoidAction() {
 
@@ -431,7 +431,7 @@ class CorePluginBodyFileSystem extends CorePluginBody {
                     return pathname.getName().endsWith(".fstab");
                 }
             })) {
-                String login = userfstab.getName().substring(0, userfstab.getName().length() - ".fstab".length());//PathInfo.create(userfstab.getName()).getNamePart();
+                String login = userfstab.getName().substring(0, userfstab.getName().length() - ".fstab".length());
                 AppUser u = getContext().getCorePlugin().findUser(login);
                 if (u != null) {
                     VrFSTable t = new VrFSTable();

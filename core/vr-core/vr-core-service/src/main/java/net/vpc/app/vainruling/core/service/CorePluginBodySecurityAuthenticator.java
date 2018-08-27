@@ -241,11 +241,11 @@ class CorePluginBodySecurityAuthenticator extends CorePluginBody {
             token.setFemale("F".equals(user.getGender().getName()));
         }
         final List<AppProfile> userProfiles = getContext().getCorePlugin().findProfilesByUser(user.getId());
-        Set<String> userProfilesNames = new HashSet<>();
+        Set<String> userProfilesCodes = new HashSet<>();
         for (AppProfile u : userProfiles) {
-            userProfilesNames.add(u.getName());
+            userProfilesCodes.add(u.getCode());
         }
-        token.setProfileNames(userProfilesNames);
+        token.setProfileCodes(userProfilesCodes);
 //        s.setProfiles(userProfiles);
 //        StringBuilder ps = new StringBuilder();
 //        for (AppProfile up : userProfiles) {
@@ -259,10 +259,10 @@ class CorePluginBodySecurityAuthenticator extends CorePluginBody {
         token.setManagedDepartments(new int[0]);
         token.setManager(false);
         token.setRights(UPA.getContext().invokePrivileged(() -> getContext().getCorePlugin().findUserRightsAll(user.getId())));
-        if (user.getLogin().equalsIgnoreCase(CorePlugin.USER_ADMIN) || userProfilesNames.contains(CorePlugin.PROFILE_ADMIN)) {
+        if (user.getLogin().equalsIgnoreCase(CorePlugin.USER_ADMIN) || userProfilesCodes.contains(CorePlugin.PROFILE_ADMIN)) {
             token.setAdmin(true);
         }
-        if (userProfilesNames.contains(CorePlugin.PROFILE_HEAD_OF_DEPARTMENT)) {
+        if (userProfilesCodes.contains(CorePlugin.PROFILE_HEAD_OF_DEPARTMENT)) {
             if (user.getDepartment() != null) {
                 AppUser d = getContext().getCorePlugin().findHeadOfDepartment(user.getDepartment().getId());
                 if (d != null && d.getId() == user.getId()) {
@@ -276,7 +276,7 @@ class CorePluginBodySecurityAuthenticator extends CorePluginBody {
             }
         }
         for (String mp : getContext().getCorePlugin().getManagerProfiles()) {
-            if (userProfilesNames.contains(mp)) {
+            if (userProfilesCodes.contains(mp)) {
                 token.setManager(true);
             }
         }
@@ -443,7 +443,7 @@ class CorePluginBodySecurityAuthenticator extends CorePluginBody {
                 i.setPublicTheme(t.getPublicTheme());
                 i.setPrivateTheme(t.getPrivateTheme());
                 i.setDestroyed(t.isDestroyed());
-                i.setProfileNames(new HashSet<>(t.getProfileNames()));
+                i.setProfileNames(new HashSet<>(t.getProfileCodes()));
             }
         }
         if (i.getLastAccessTime() == null || i.getLastAccessTime().compareTo(lastAccessedTime) < 0) {
@@ -785,7 +785,7 @@ class CorePluginBodySecurityAuthenticator extends CorePluginBody {
                         return us.isAdmin();
                     }
                 }
-                if (us.getProfileNames().contains(profileName)) {
+                if (us.getProfileCodes().contains(profileName)) {
                     return true;
                 }
                 List<AppProfile> profiles = getContext().getCorePlugin().findProfilesByUser(u.getId());

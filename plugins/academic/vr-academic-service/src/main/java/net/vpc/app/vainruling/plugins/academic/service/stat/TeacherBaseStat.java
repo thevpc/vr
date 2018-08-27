@@ -163,7 +163,7 @@ public abstract class TeacherBaseStat {
             if(average==0){
                 return equiv;
             }
-            return (equiv- average)/average;
+            return (equiv/*- average*/)/Math.abs(average);
         }
         return equiv;
     }

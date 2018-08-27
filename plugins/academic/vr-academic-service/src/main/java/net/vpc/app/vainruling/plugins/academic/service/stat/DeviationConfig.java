@@ -9,7 +9,7 @@ import java.util.Set;
 public class DeviationConfig {
     private Set<DeviationGroup> groups=new HashSet<>();
     private boolean weekBased=true;
-    private boolean extraBased =true;
+    private boolean extraBased =false;
 
     public Set<DeviationGroup> getGroups() {
         return groups;

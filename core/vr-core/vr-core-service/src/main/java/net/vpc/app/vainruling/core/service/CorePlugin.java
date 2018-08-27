@@ -1049,7 +1049,7 @@ public class CorePlugin {
     }
 
     public boolean hasProfile(String key) {
-        return getCurrentToken().getProfileNames().contains(key);
+        return getCurrentToken().getProfileCodes().contains(key);
     }
 
     public String[] resolveLogin(String login0) {

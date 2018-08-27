@@ -14,7 +14,7 @@ import java.util.logging.Logger;
  */
 @VrPlugin
 public class ${{className(vrProjectName)}}${{className(vrModuleName)}}Plugin {
-    private static final Logger log = Logger.getLogger(${{className(vrProjectName)}}Plugin.class.getName());
+    private static final Logger log = Logger.getLogger(${{className(vrProjectName)}}${{className(vrModuleName)}}Plugin.class.getName());
 
     @Autowired
     private CorePlugin core;

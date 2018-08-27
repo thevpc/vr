@@ -136,7 +136,9 @@ public class CourseLoadFilterComponent {
             getModel().getTeacherItems().add(FacesUtils.createSelectItem(String.valueOf(item.getId()), item.resolveFullName(), "vr-checkbox"));
         }
 
-        getModel().setRefreshFilterSelected(new String[]{"intents", "deviation-extra", "deviation-week"});
+        getModel().setRefreshFilterSelected(new String[]{"intents"
+                //, "deviation-extra"
+                , "deviation-week"});
     }
 
     public void onChangePeriod() {

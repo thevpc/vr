@@ -565,7 +565,7 @@ and open the template in the editor.
                                         style="background: #{vrColorTable.getBgColor('extraWeek')};"
                                         sortBy="#{i.extraWeekEff.tppm}"
                                 >
-                                    <h:outputText value="#{i.extraWeekEff.tp != 0 ? i.extraWeekEff.tppm : ''}"><f:convertNumber
+                                    <h:outputText value="#{i.extraWeekEff.tppm != 0 ? i.extraWeekEff.tppm : ''}"><f:convertNumber
                                             pattern="#0.000"/></h:outputText>
                                 </p:column>
                                 <p:column
