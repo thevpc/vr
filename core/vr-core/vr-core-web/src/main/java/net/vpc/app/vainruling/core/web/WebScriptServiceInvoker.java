@@ -72,9 +72,17 @@ public class WebScriptServiceInvoker {
         try {
             try {
                 String firstLineOfScript = new BufferedReader(new StringReader(script)).readLine();
-                TraceService.get().trace("System.web-script", null,MapUtils.map("script", firstLineOfScript), script, "web-script", Level.WARNING);
+                TraceService.get().trace("System.actions.web-script", null,MapUtils.map("script", firstLineOfScript), script, "web-script", Level.WARNING);
                 scriptEngine.eval(script);
-                return (Map) scriptEngine.get("out");
+                Map m = (Map) scriptEngine.get("out");
+                for (Object k : m.keySet().toArray(new Object[m.size()])) {
+                    Object v = m.get(k);
+                    if(v instanceof List){
+                        v=new ArrayList<Object>((List)v);
+                        m.put(k, v);
+                    }
+                }
+                return m;
             } catch (Exception e) {
                 Map out = (Map) scriptEngine.get("out");
                 return buildError(e, out);

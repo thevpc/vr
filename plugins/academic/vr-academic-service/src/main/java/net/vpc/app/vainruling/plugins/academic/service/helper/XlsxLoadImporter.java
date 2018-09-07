@@ -146,7 +146,7 @@ public class XlsxLoadImporter {
         }
         TraceService trace = TraceService.get();
         ch.stop();
-        trace.trace("import-teacher-degrees", "success", MapUtils.map("path", file.getPath(), "time", ch.toString(), "rows", count), JsonUtils.jsonMap("path", file.getPath(), "time", ch.toString(), "rows", count), getClass().getSimpleName(), Level.INFO);
+        trace.trace("Academic.import-teacher-degrees", "success", MapUtils.map("path", file.getPath(), "time", ch.toString(), "rows", count), JsonUtils.jsonMap("path", file.getPath(), "time", ch.toString(), "rows", count), getClass().getSimpleName(), Level.INFO);
     }
 
     public void importLoadConversionTable(VFile file) throws IOException {

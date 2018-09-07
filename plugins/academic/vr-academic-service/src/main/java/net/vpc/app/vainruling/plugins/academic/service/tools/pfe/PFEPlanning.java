@@ -1,4 +1,4 @@
-package net.vpc.app.vainruling.plugins.academic.test;
+package net.vpc.app.vainruling.plugins.academic.service.tools.pfe;
 
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
@@ -17,7 +17,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -38,18 +37,26 @@ public class PFEPlanning {
 //        }
 //        VrApp.stopStandalone();
 //    }
-
     public static void main(String[] args) {
 //        VrApp.runStandaloneNoLog();
         PFEPlanning p = new PFEPlanning();
         try {
-            File file = new File("/data/vpc/Data/eniso/pfe-stages-projets/2017-2018/PFE-2017-2018-Session01-input.xlsx");
+            File file = new File("/data/vpc/Data/eniso/pfe-stages-projets/2017-2018/PFE-2017-2018-Session02-v1.4-input.xlsx");
             PlanningActivityTable t = p.loadPlanningXlsFile(file);
-            System.out.println("Loaded "+t.getActivities().size()+" Activities");
+            System.out.println("Loaded " + t.getActivities().size() + " Activities");
             ResourceAllocationList resourceAllocationList = p.generateResourceAllocationList(t);
-            ResourceAllocationListWriter w=new ResourceAllocationListWriter(resourceAllocationList);
-            w.writeTeacherHtml(new File(file.getPath() + ".teachers.html"));
-            w.writeStudentsHtml(new File(file.getPath() + ".students.html"));
+            ResourceAllocationListWriter w = new ResourceAllocationListWriter(resourceAllocationList,
+                    "PFE Info Appliquee 2017-2018, Session (2) - Sept 2018",
+                    "1.4"
+            );
+            String name = file.getPath();
+            for (String suffix : new String[]{".xlsx", ".xls", ".input", "-input"}) {
+                if (name.toLowerCase().endsWith(suffix.toLowerCase())) {
+                    name = name.substring(0, name.length() - suffix.length());
+                }
+            }
+            w.writeTeachersHtml(new File(name + ".teachers.html"));
+            w.writeStudentsHtml(new File(name + ".students.html"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -97,42 +104,47 @@ public class PFEPlanning {
             });
         }
 
-
         return resourceAllocationsTable;
     }
 
+    private int parseInt(Object o, int rowNumber, int col) {
+        try {
+            return Integer.parseInt(StringUtils.trimObject(o));
+        } catch (Exception ex) {
+            throw new IllegalArgumentException(ex.getMessage() + " . Row " + rowNumber + " Colum " + col, ex);
+        }
+    }
 
-
-    private Date parseDate(Object o){
-        if(o==null){
+    private Date parseDate(Object o, int rowNumber, int col) {
+        if (o == null) {
             return null;
         }
-        if( o instanceof Date){
+        if (o instanceof Date) {
             return (Date) o;
         }
-        if( o instanceof String){
-            String s=o.toString().trim();
-            if(s.length()>0) {
+        if (o instanceof String) {
+            String s = o.toString().trim();
+            if (s.length() > 0) {
                 if (s.contains("/")) {
                     try {
                         return new SimpleDateFormat("MM/dd/yyyy HH:mm").parse(s);
                     } catch (ParseException e) {
-                        throw new IllegalArgumentException(e);
+                        throw new IllegalArgumentException(e.getMessage() + " . Row " + rowNumber + " Colum " + col, e);
                     }
                 } else if (s.contains("-")) {
                     try {
                         return new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(s);
                     } catch (ParseException e) {
-                        throw new IllegalArgumentException(e);
+                        throw new IllegalArgumentException(e.getMessage() + " . Row " + rowNumber + " Colum " + col, e);
                     }
                 } else {
-                    throw new IllegalArgumentException("Unsupported format for date " + o);
+                    throw new IllegalArgumentException("Unsupported format for date " + o + " . Row " + rowNumber + " Colum " + col);
                 }
-            }else{
+            } else {
                 return null;
             }
         }
-        throw new IllegalArgumentException("Unsupported format for date " + o);
+        throw new IllegalArgumentException("Unsupported format for date " + o + " . Row " + rowNumber + " Colum " + col);
     }
 
     public PlanningActivityTable loadPlanningXlsFile(File file) throws IOException {
@@ -144,19 +156,21 @@ public class PFEPlanning {
         p.setContainsHeader(true);
         DataReader reader = p.parse();
         int window = 5;
+        int rowNumber = 0;
         while (reader.hasNext()) {
+            rowNumber++;
             DataRow dataRow = reader.readRow();
             int roomsCount = (dataRow.getColumns().length - 3) / window;
             Object[] values = dataRow.getValues();
-            Date timeObj = parseDate(values[0]);
-            int d = Integer.parseInt(StringUtils.trimObject(values[1]));
-            int h = Integer.parseInt(StringUtils.trimObject(values[2]));
+            Date timeObj = parseDate(values[0], rowNumber, 1);
+            int d = parseInt(values[1], rowNumber, 2);
+            int h = parseInt(values[2], rowNumber, 3);
             //String time = String.valueOf(timeObj);
             if (timeObj != null) {
                 for (int r = 0; r < roomsCount; r++) {
                     String code = StringUtils.trimObject(values[r * window + 3]);
                     boolean enabled = true;
-                    if (code.endsWith("(disabled)")) {
+                    if (code.toLowerCase().endsWith("(disabled)")) {
                         code = code.substring(0, code.length() - "(disabled)".length());
                         enabled = false;
                     }
@@ -210,7 +224,6 @@ public class PFEPlanning {
         }
         table.add(new ResourceAllocation("R:" + a.getSpaceTime(), "Room", a, a.getRoom().getName() + " is allocated to " + a.getInternship().getCode() + " at " + a.getTime()));
     }
-
 
     public static void generate(int maxActivities, int days, File file) throws IOException {
         VrApp.runStandaloneNoLog();

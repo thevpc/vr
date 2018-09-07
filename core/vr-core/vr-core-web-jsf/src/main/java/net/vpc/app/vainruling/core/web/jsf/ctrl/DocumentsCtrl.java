@@ -175,7 +175,7 @@ public class DocumentsCtrl implements VRMenuProvider, VrControllerInfoResolver, 
         } else {
             getModel().setCurrent(DocumentsUtils.createFileInfo("/", VFileKind.ROOT, getModel().getFileSystem().get("/")));
         }
-        TraceService.get().trace("System.visit-document", null,MapUtils.map("path",getModel().getCurrent().getFile().getPath()), getModel().getCurrent().getFile().getPath(), "/System/Access", Level.FINE);
+        TraceService.get().trace("System.actions.visit-document", null,MapUtils.map("path",getModel().getCurrent().getFile().getPath()), getModel().getCurrent().getFile().getPath(), "/System/Access", Level.FINE);
         onRefresh();
     }
 
@@ -187,7 +187,7 @@ public class DocumentsCtrl implements VRMenuProvider, VrControllerInfoResolver, 
 //    }
     public void updateCurrent(VFile file) {
         getModel().setCurrent(DocumentsUtils.createFileInfo(file));
-        TraceService.get().trace("System.visit-document", null,MapUtils.map("path",getModel().getCurrent().getFile().getPath()), getModel().getCurrent().getFile().getPath(), "/System/Access", Level.FINE);
+        TraceService.get().trace("System.actions.visit-document", null,MapUtils.map("path",getModel().getCurrent().getFile().getPath()), getModel().getCurrent().getFile().getPath(), "/System/Access", Level.FINE);
         onRefresh();
     }
 

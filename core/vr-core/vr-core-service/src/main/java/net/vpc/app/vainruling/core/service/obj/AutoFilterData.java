@@ -1,5 +1,7 @@
 package net.vpc.app.vainruling.core.service.obj;
 
+import net.vpc.upa.NamedId;
+
 /**
  * Created by vpc on 8/20/16.
  */
@@ -13,6 +15,7 @@ public class AutoFilterData implements Comparable<AutoFilterData> {
     private String expr;
     private String type;
     private String initial;
+    private NamedId defaultSelectedValue;
     private int order;
 
     public String getFormatType() {
@@ -85,6 +88,14 @@ public class AutoFilterData implements Comparable<AutoFilterData> {
 
     public void setEntityName(String entityName) {
         this.entityName = entityName;
+    }
+
+    public NamedId getDefaultSelectedValue() {
+        return defaultSelectedValue;
+    }
+
+    public void setDefaultSelectedValue(NamedId defaultSelectedValue) {
+        this.defaultSelectedValue = defaultSelectedValue;
     }
 
     @Override

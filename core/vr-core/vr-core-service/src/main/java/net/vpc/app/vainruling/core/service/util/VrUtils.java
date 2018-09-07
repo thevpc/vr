@@ -6,6 +6,7 @@
 package net.vpc.app.vainruling.core.service.util;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import jdk.nashorn.api.scripting.JSObject;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
@@ -41,7 +42,6 @@ import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
-import net.vpc.upa.types.Year;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -59,7 +59,9 @@ public class VrUtils {
     
     public static String STRING_SEP = ", ;";
 
-    public static final Gson GSON = new Gson();
+    public static final Gson GSON = new GsonBuilder()
+                .registerTypeHierarchyAdapter(net.vpc.upa.Document.class, new DocumentSerializer())
+            .create();
     public static final CustomDefaultObject DEFAULT_OBJECT_CURRENT_USER = new CustomDefaultObject() {
 
         @Override

@@ -23,6 +23,7 @@ import java.util.*;
 import java.util.logging.Level;
 import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.app.vainruling.core.service.model.AppUser;
+import net.vpc.app.vainruling.core.service.obj.AutoFilter;
 import net.vpc.app.vainruling.core.service.util.JsonUtils;
 import net.vpc.common.util.MapUtils;
 
@@ -55,10 +56,13 @@ class CorePluginBodyDAOManager extends CorePluginBody {
         Entity entity = UPA.getPersistenceUnit().getEntity(entityName);
         Map<String, AutoFilterData> cache = (Map<String, AutoFilterData>) entity.getProperties().getObject("cache.ui.auto-filters.map");
         if (cache != null) {
+            for (AutoFilterData autoFilterData : cache.values()) {
+                autoFilterData.setDefaultSelectedValue(getEntityAutoFilterDefaultSelectedValue(autoFilterData));
+            }
             return cache;
         }
         Map<String, AutoFilterData> m = new HashMap<>();
-        for (AutoFilterData d : getEntityFilters(entityName)) {
+        for (AutoFilterData d : getEntityAutoFilters(entityName)) {
             m.put(d.getName(), d);
         }
         cache = Collections.unmodifiableMap(m);
@@ -66,10 +70,13 @@ class CorePluginBodyDAOManager extends CorePluginBody {
         return cache;
     }
 
-    public AutoFilterData[] getEntityFilters(String entityName) {
+    public AutoFilterData[] getEntityAutoFilters(String entityName) {
         Entity entity = UPA.getPersistenceUnit().getEntity(entityName);
         AutoFilterData[] cache = (AutoFilterData[]) entity.getProperties().getObject("cache.ui.auto-filters.list");
         if (cache != null) {
+            for (AutoFilterData autoFilterData : cache) {
+                autoFilterData.setDefaultSelectedValue(getEntityAutoFilterDefaultSelectedValue(autoFilterData));
+            }
             return Arrays.copyOf(cache, cache.length);
         }
         List<AutoFilterData> autoFilterDatasAll = new ArrayList<>();
@@ -107,7 +114,9 @@ class CorePluginBodyDAOManager extends CorePluginBody {
                 autoFilterDatasAll.add(d);
             }
         }
-
+        for (AutoFilterData autoFilterData : autoFilterDatasAll) {
+            autoFilterData.setDefaultSelectedValue(getEntityAutoFilterDefaultSelectedValue(autoFilterData));
+        }
         VrUtils.sortPreserveIndex(autoFilterDatasAll, null);
         cache = autoFilterDatasAll.toArray(new AutoFilterData[autoFilterDatasAll.size()]);
         entity.getProperties().setObject("cache.ui.auto-filters.list", cache);
@@ -605,6 +614,30 @@ class CorePluginBodyDAOManager extends CorePluginBody {
         return list;
     }
 
+    public List<Document> findDocumentsByAutoFilter(String entityName, Map<String, String> autoFilterValues, String textSearch, String exprFilter) {
+        String _listFilter = exprFilter;
+        if (!StringUtils.isEmpty(_listFilter)) {
+            _listFilter = "(" + _listFilter + ")";
+        } else {
+            _listFilter = "";
+        }
+        HashMap<String, Object> parameters = new HashMap<>();
+        int autoFilterIndex = 1;
+        if (autoFilterValues != null) {
+            for (AutoFilterData o : getEntityAutoFilters(entityName)) {
+                String filterExpression = createEntityAutoFilterExpression(entityName, o.getName(), parameters, "af" + autoFilterIndex, autoFilterValues.get(o.getName()));
+                if (!StringUtils.isEmpty(filterExpression)) {
+                    if (!StringUtils.isEmpty(_listFilter)) {
+                        _listFilter += " and ";
+                    }
+                    _listFilter += "(" + filterExpression + ")";
+                }
+                autoFilterIndex++;
+            }
+        }
+        return findDocumentsByFilter(entityName, _listFilter, null, textSearch, parameters);
+    }
+
     public List<Document> findDocumentsByFilter(String entityName, String criteria, ObjSearch objSearch, String textSearch, Map<String, Object> parameters) {
         checkFindMany(entityName);
         PersistenceUnit pu = UPA.getPersistenceUnit();
@@ -722,15 +755,15 @@ class CorePluginBodyDAOManager extends CorePluginBody {
         Entity entity = persistenceUnit.getEntity(entityName);
         Map<String, Object> msg = MapUtils.map("name", entityName, "title", entity.getTitle());
         String data = JsonUtils.jsonMap("name", entityName);
-        TraceService.get().trace("System.update-entity-formulas", "start", msg, data,
+        TraceService.get().trace("System.entities.entity-updated-formulas", "start", msg, data,
                 entity.getParent().getPath(), Level.INFO);
         try {
             persistenceUnit.updateFormulas(EntityFilters.byName(entityName), null);
-            TraceService.get().trace("System.update-entity-formulas", "success", msg, data, entity.getParent().getPath(), Level.INFO);
+            TraceService.get().trace("System.entities.entity-updated-formulas", "success", msg, data, entity.getParent().getPath(), Level.INFO);
         } catch (RuntimeException ex) {
             msg = MapUtils.map("name", entityName, "title", entity.getTitle(), "error", ex.getMessage());
             data = JsonUtils.jsonMap("name", entityName, "error", ex.getMessage());
-            TraceService.get().trace("System.update-entity-formulas", "error", msg, data, entity.getParent().getPath(), Level.WARNING);
+            TraceService.get().trace("System.entities.entity-updated-formulas", "error", msg, data, entity.getParent().getPath(), Level.WARNING);
             throw ex;
         }
     }
@@ -844,6 +877,10 @@ class CorePluginBodyDAOManager extends CorePluginBody {
 
     public NamedId getEntityAutoFilterDefaultSelectedValue(String entityName, String autoFilterName) {
         AutoFilterData autoFilterData = getEntityAutoFilter(entityName, autoFilterName);
+        return getEntityAutoFilterDefaultSelectedValue(autoFilterData);
+    }
+
+    public NamedId getEntityAutoFilterDefaultSelectedValue(AutoFilterData autoFilterData) {
         String initial = autoFilterData.getInitial();
         DataType filterType = getEntityAutoFilterDataType(autoFilterData);
         if (initial != null) {

@@ -1258,7 +1258,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
                 }
 
                 List<AutoFilter> newAutoFilters = new ArrayList<>();
-                for (AutoFilterData autoFilterData : core.getEntityFilters(entity.getName())) {
+                for (AutoFilterData autoFilterData : core.getEntityAutoFilters(entity.getName())) {
                     String type = autoFilterData.getFilterType();
                     if (StringUtils.isEmpty(type) || type.equals("single-selection")) {
                         AutoFilter autoFilter0 = null;
@@ -1372,7 +1372,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
         if (config != null && config.ignoreAutoFilter) {
             return null;
         }
-        return core.getEntityAutoFilterDefaultSelectedValue(autoFilterData.getEntityName(), autoFilterData.getName());
+        return autoFilterData.getDefaultSelectedValue();
     }
 
     public void onAutoFilterChange() {

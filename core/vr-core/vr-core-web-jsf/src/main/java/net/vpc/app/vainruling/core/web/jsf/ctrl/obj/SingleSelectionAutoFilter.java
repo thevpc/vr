@@ -23,7 +23,7 @@ public class SingleSelectionAutoFilter extends AutoFilter {
             values.add(FacesUtils.createSelectItem(namedId.getStringId(), namedId.getStringName(), ""));
         }
         if (autoSelect) {
-            NamedId defaultSelection = core.getEntityAutoFilterDefaultSelectedValue(autoFilterData.getEntityName(), autoFilterData.getName());
+            NamedId defaultSelection = autoFilterData.getDefaultSelectedValue();
             if (defaultSelection != null) {
                 this.selectedString = defaultSelection.getStringId();
             }

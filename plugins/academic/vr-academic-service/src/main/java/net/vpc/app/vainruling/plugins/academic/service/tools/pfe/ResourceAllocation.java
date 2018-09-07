@@ -1,10 +1,10 @@
-package net.vpc.app.vainruling.plugins.academic.test;
+package net.vpc.app.vainruling.plugins.academic.service.tools.pfe;
 
 import net.vpc.app.vainruling.plugins.academic.service.model.internship.planning.PlanningActivity;
 
 import java.util.Objects;
 
-class ResourceAllocation {
+public class ResourceAllocation {
     String allocationId;
     String type;
     String desc;

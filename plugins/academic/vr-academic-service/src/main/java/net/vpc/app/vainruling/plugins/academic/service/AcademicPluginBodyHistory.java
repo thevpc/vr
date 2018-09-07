@@ -276,7 +276,7 @@ public class AcademicPluginBodyHistory extends AcademicPluginBody {
 //        UPA.getPersistenceUnit().createQuery("delete from AcademicSemester").executeNonQuery();
 //        UPA.getPersistenceUnit().createQuery("delete from AcademicTeacherSituation").executeNonQuery();
 //        UPA.getPersistenceUnit().createQuery("delete from AcademicTeacherDegree").executeNonQuery();
-//        trace.trace("Academic-hsitory-reset-current-year", "success","reset Module Academic", null, "/Education", Level.FINE);
+//        trace.trace("Academic.hsitory-reset-current-year", "success","reset Module Academic", null, "/Education", Level.FINE);
     }
 
 }

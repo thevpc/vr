@@ -1,4 +1,4 @@
-package net.vpc.app.vainruling.plugins.academic.test;
+package net.vpc.app.vainruling.plugins.academic.service.tools.pfe;
 
 import net.vpc.app.vainruling.plugins.academic.service.model.internship.planning.PlanningActivityTable;
 

@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.vpc.app.vain-ruling.plugins.tasks</groupId>
     <artifactId>vr-tasks-web</artifactId>
-    <version>1.13.10</version>
+    <version>1.13.11</version>
     <packaging>jar</packaging>
     <name>net.vpc.app.vain-ruling.plugins.tasks.vr-tasks-web</name>
     <url>https://github.com/thevpc/vr/wiki</url>
@@ -18,7 +18,7 @@
 
     <properties>
         <vr-plugin.component-type>web</vr-plugin.component-type>
-        <version.vr-core-web-jsf>1.13.10</version.vr-core-web-jsf>
+        <version.vr-core-web-jsf>1.13.11</version.vr-core-web-jsf>
     </properties>
 
     <dependencies>
@@ -30,7 +30,7 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>vr-tasks-service</artifactId>
-            <version>1.13.10</version>
+            <version>1.13.11</version>
         </dependency>
     </dependencies>
 

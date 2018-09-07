@@ -221,7 +221,7 @@ class CorePluginBodyFileSystem extends CorePluginBody {
                         all.addAll(usersVrFSTable.values());
 
                         for (AppProfile p : profiles) {
-                            String profileMountPoint = "/" + I18n.get().get("document.profileFolderName", new Arg("name", VrUtils.normalizeFileName(p.getName())));
+                            String profileMountPoint = "/" + I18n.get().get("System.documents.profile-folder-name", new Arg("name", VrUtils.normalizeFileName(p.getName())));
                             VirtualFileSystem profileFileSystem = getProfileFileSystem(p.getCode(), t0);
                             if (profileFileSystem.get("/").listFiles().length > 0) {
                                 mfs.mount(profileMountPoint, profileFileSystem);

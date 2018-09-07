@@ -1,4 +1,4 @@
-package net.vpc.app.vainruling.plugins.academic.test;
+package net.vpc.app.vainruling.plugins.academic.service.tools.pfe;
 
 class ResourceCounter {
     private String person;

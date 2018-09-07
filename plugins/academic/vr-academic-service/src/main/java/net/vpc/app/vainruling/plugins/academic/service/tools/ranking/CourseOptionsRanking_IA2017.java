@@ -3,7 +3,7 @@
  *
  * and open the template in the editor.
  */
-package net.vpc.app.vainruling.plugins.academic.service.tools;
+package net.vpc.app.vainruling.plugins.academic.service.tools.ranking;
 
 import net.vpc.upa.UPA;
 import net.vpc.upa.bulk.*;

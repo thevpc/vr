@@ -142,8 +142,12 @@ public class TraceService {
     }
 
     public void trace(String action, String extraKey, Map<String, Object> messageParams, String data, String module, Level level) {
-        String msgKey = (extraKey == null) ? ("trace." + action + ".message") : ("trace." + action + "." + extraKey + ".message");
-        trace(action, I18n.get().get("trace." + msgKey + ".message", messageParams), data, module, level);
+        String msgKey = (extraKey == null) ? (action + ".trace.message") : (action + "." + extraKey + ".trace.message");
+        trace(action, I18n.get().get(msgKey, messageParams), data, module, level);
+    }
+    public void trace(String action, String extraKey, Map<String, Object> messageParams, String data, String module, String objectName, Object objectId, Level level) {
+        String msgKey = (extraKey == null) ? (action + ".trace.message") : (action + "." + extraKey + ".trace.message");
+        trace(action, I18n.get().get("trace." + msgKey + ".message", messageParams), data, module, objectName, objectId, level);
     }
 
     @Deprecated
@@ -162,7 +166,7 @@ public class TraceService {
         Entity e = pu.getEntity(entityName);
         Object id = e.getBuilder().objectToId(o);
         String name = e.getBuilder().objectToName(o);
-        trace("System.entity-added", "success", MapUtils.map("name", e.getName(), "title", e.getTitle(), "value", name, "id", id), dump(o), module, e.getName(), e.getBuilder().objectToId(o), level);
+        trace("System.entities.entity-added", "success", MapUtils.map("name", e.getName(), "title", e.getTitle(), "value", name, "id", id), dump(o), module, e.getName(), e.getBuilder().objectToId(o), level);
     }
 
     public void updated(String entityName, Object o, Object old, String module, Level level) {
@@ -173,7 +177,7 @@ public class TraceService {
         Entity e = pu.getEntity(entityName);
         Object id = e.getBuilder().objectToId(o);
         String name = e.getBuilder().objectToName(o);
-        trace("System.entity-updated", "success",
+        trace("System.entities.entity-updated", "success",
                 MapUtils.map("name", e.getName(), "title", e.getTitle(), "value", name, "id", id, "fields", buildUpdatedFieldsString(old, o, e)),
                  dumpDiff(old, o, e), module, e.getName(), e.getBuilder().objectToId(o), level);
     }
@@ -187,7 +191,7 @@ public class TraceService {
             Entity e = pu.getEntity(entityName);
             Object id = e.getBuilder().objectToId(o);
             String name = e.getBuilder().objectToName(o);
-            trace("System.entity-removed", "success",MapUtils.map("name", e.getName(), "title", e.getTitle(), "value", name, "id", id), dump(o), module, e.getName(), e.getBuilder().objectToId(o), level);
+            trace("System.entities.entity-removed", "success",MapUtils.map("name", e.getName(), "title", e.getTitle(), "value", name, "id", id), dump(o), module, e.getName(), e.getBuilder().objectToId(o), level);
         }
     }
 
@@ -199,7 +203,7 @@ public class TraceService {
         Entity e = pu.getEntity(entityName);
         Object id = e.getBuilder().objectToId(o);
         String name = e.getBuilder().objectToName(o);
-        trace("System.entity-soft-removed", "success",MapUtils.map("name", e.getName(), "title", e.getTitle(), "value", name, "id", id), dump(o), module, e.getName(), e.getBuilder().objectToId(o), level);
+        trace("System.entities.entity-soft-removed", "success",MapUtils.map("name", e.getName(), "title", e.getTitle(), "value", name, "id", id), dump(o), module, e.getName(), e.getBuilder().objectToId(o), level);
     }
 
     public void archived(String entityName, Object o, String module, Level level) {
@@ -210,13 +214,9 @@ public class TraceService {
         Entity e = pu.getEntity(entityName);
         Object id = e.getBuilder().objectToId(o);
         String name = e.getBuilder().objectToName(o);
-        trace("System.entity-archived", "success",MapUtils.map("name", e.getName(), "title", e.getTitle(), "value", name, "id", id), dump(o), module, e.getName(), e.getBuilder().objectToId(o), level);
+        trace("System.entities.entity-archived", "success",MapUtils.map("name", e.getName(), "title", e.getTitle(), "value", name, "id", id), dump(o), module, e.getName(), e.getBuilder().objectToId(o), level);
     }
 
-    public void trace(String action, String extraKey, Map<String, Object> messageParams, String data, String module, String objectName, Object objectId, Level level) {
-        String msgKey = (extraKey == null) ? ("trace." + action + ".message") : ("trace." + action + "." + extraKey + ".message");
-        trace(action, I18n.get().get("trace." + msgKey + ".message", messageParams), data, module, objectName, objectId, level);
-    }
 
     @Deprecated
     public void trace(String action, String message, String data, String module, String objectName, Object objectId, Level level) {

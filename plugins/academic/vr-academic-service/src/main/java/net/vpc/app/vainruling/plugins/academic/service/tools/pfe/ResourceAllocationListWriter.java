@@ -1,4 +1,4 @@
-package net.vpc.app.vainruling.plugins.academic.test;
+package net.vpc.app.vainruling.plugins.academic.service.tools.pfe;
 
 import net.vpc.app.vainruling.plugins.academic.service.model.internship.planning.PlanningActivity;
 import net.vpc.app.vainruling.plugins.academic.service.model.internship.planning.PlanningTime;
@@ -10,17 +10,24 @@ import java.io.PrintStream;
 import java.util.List;
 
 public class ResourceAllocationListWriter {
-    public static final String STYLE="th, td {border-bottom: 1px solid #ddd;padding: 15px;text-align: left;}";
-    private ResourceAllocationList resourceAllocationsTable;
 
-    public ResourceAllocationListWriter(ResourceAllocationList resourceAllocationsTable) {
+    public static final String STYLE = "th, td {border-bottom: 1px solid #ddd;padding: 15px;text-align: left;}";
+    private ResourceAllocationList resourceAllocationsTable;
+    private String title;
+    private String version;
+
+    public ResourceAllocationListWriter(ResourceAllocationList resourceAllocationsTable, String title, String version) {
         this.resourceAllocationsTable = resourceAllocationsTable;
+        this.title = title;
+        this.version = version;
     }
-    public void writeTeacherHtml(File out) throws IOException {
+
+    public void writeTeachersHtml(File out) throws IOException {
         try (PrintStream ps = new PrintStream(out)) {
             writeTeacherHtml(ps);
         }
     }
+
     public void writeStudentsHtml(File out) throws IOException {
         try (PrintStream ps = new PrintStream(out)) {
             writeStudentsHtml(ps);
@@ -36,7 +43,7 @@ public class ResourceAllocationListWriter {
         out.println("</style>");
         out.println("</header>");
         out.println("<body>");
-        out.println("<h1>PFE Info Appliquee 2017-2018, Session 1, version 1.1</h1>");
+        out.println("<h1>" + title + ", version " + version + "</h1>");
         for (TeacherInfo teacherInfo : resourceAllocationsTable.getTeacherInfos()) {
             List<PlanningActivity> enabledActivities = teacherInfo.getEnabledActivities();
             if (!enabledActivities.isEmpty()) {
@@ -63,12 +70,19 @@ public class ResourceAllocationListWriter {
                     if (supervisors.size() == 0) {
                         out.println("<td>" + "" + "</td>");
                     } else if (supervisors.size() == 1) {
-                        out.println("<td>" + supervisors.get(0) + "</td>");
+                        out.println("<td>" + boldify(supervisors.get(0),teacherInfo.getTeacher()) + "</td>");
                     } else {
-                        out.println("<td>" + supervisors + "</td>");
+                        out.print("<td>");
+                        for (int i = 0; i < supervisors.size(); i++) {
+                            if(i>0){
+                                out.print(", ");
+                            }
+                            out.print(boldify(supervisors.get(i), teacherInfo.getTeacher()));
+                        }
+                        out.print("</td>");
                     }
-                    out.println("<td>" + planningActivity.getChair() + "</td>");
-                    out.println("<td>" + planningActivity.getExaminer() + "</td>");
+                    out.println("<td>" + boldify(planningActivity.getChair(),teacherInfo.getTeacher()) + "</td>");
+                    out.println("<td>" + boldify(planningActivity.getExaminer(),teacherInfo.getTeacher()) + "</td>");
                     out.println("</tr>");
                 }
                 out.println("</table>");
@@ -77,7 +91,12 @@ public class ResourceAllocationListWriter {
         out.println("</body>");
         out.println("</html>");
     }
-
+    private String boldify(String s,String s0){
+        if(s.equals(s0)){
+            return "<b>"+s+"</b>";
+        }
+        return s;
+    }
     public void writeStudentsHtml(PrintStream out) {
         out.println("<html>");
         out.println("<header>");
@@ -87,7 +106,7 @@ public class ResourceAllocationListWriter {
         out.println("</style>");
         out.println("</header>");
         out.println("<body>");
-        out.println("<h1>PFE Info Appliquee 2017-2018, Session 1, version 1.1</h1>");
+        out.println("<h1>" + title + ", version " + version + "</h1>");
         out.println("<table class='mytable'>");
         out.println("<tr>");
         out.println("<th>Code</th>");

@@ -413,7 +413,7 @@ and open the template in the editor.
                                     <p:column>
                                         <div class="vr-progress-container" style="width: 100%;">
                                             <div class="#{teacherCourseLoadCtrl.model.stat.val.deviationLabel}"
-                                                 style="width:#{vr.frame(vr.abs(teacherCourseLoadCtrl.model.stat.val.deviation),0,1)*100}%">
+                                                 style="width:#{vr.frame(vr.abs(teacherCourseLoadCtrl.model.stat.val.deviation),0,2)/2*100}%">
 
                                             </div>
                                         </div>
@@ -790,7 +790,7 @@ and open the template in the editor.
                                                     <p:selectCheckboxMenu
                                                         styleClass="vr-form-field #{teacherCourseLoadCtrl.othersCourseFilter.model.selectedCourseDisciplines.isEmpty() ?'':'vr-form-selected-many-selected'}"
                                                         value="#{teacherCourseLoadCtrl.othersCourseFilter.model.selectedCourseDisciplines}"
-                                                        label="Disciplines Enseignants"
+                                                        label="Disciplines Modules"
                                                         filter="true" filterMatchMode="startsWith"
                                                         panelStyle="width:250px">
                                                         <p:ajax listener="#{teacherCourseLoadCtrl.onRefreshFiltersChanged}"

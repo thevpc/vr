@@ -544,7 +544,7 @@ public class AcademicPerfEvalPlugin {
                 }
             }
             ).run();
-            traceService.trace("generateStudentsFeedbackForm", "success", traceParams,
+            traceService.trace("Academic.generateStudentsFeedbackForm", "success", traceParams,
                     traceData,
                     "/Education/Evaluation",
                     java.util.logging.Level.INFO
@@ -552,7 +552,7 @@ public class AcademicPerfEvalPlugin {
         } catch (Exception ex) {
             traceParams = MapUtils.map("model", academicFeedbackModel.getName(), "filter", studentProfileFilter, "error", ex.getMessage());
             traceData = JsonUtils.jsonMap("model", academicFeedbackModel.getName(), "filter", studentProfileFilter, "error", ex.getMessage());
-            traceService.trace("generateStudentsFeedbackForm", "error", traceParams, traceData,
+            traceService.trace("Academic.generateStudentsFeedbackForm", "error", traceParams, traceData,
                     "/Education/Evaluation",
                     java.util.logging.Level.SEVERE
             );

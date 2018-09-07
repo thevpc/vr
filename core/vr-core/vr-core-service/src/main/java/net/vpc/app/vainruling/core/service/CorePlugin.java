@@ -806,6 +806,10 @@ public class CorePlugin {
         return bodyDaoManager.findDocumentsByFilter(entityName, criteria, objSearch, textSearch, parameters);
     }
 
+    public List<Document> findDocumentsByAutoFilter(String entityName, Map<String, String> autoFilterValues, String textSearch, String exprFilter) {
+        return bodyDaoManager.findDocumentsByAutoFilter(entityName, autoFilterValues, textSearch, exprFilter);
+    }
+
     public String createSearchHelperString(String name, String entityName) {
         return bodyDaoManager.createSearchHelperString(name, entityName);
     }
@@ -844,14 +848,6 @@ public class CorePlugin {
 
     public Map getMessages() {
         return i18n.getResourceBundleSuite().getMap();
-    }
-
-    public AutoFilterData getEntityAutoFilter(String entityName, String autoFilterName) {
-        return bodyDaoManager.getEntityAutoFilter(entityName, autoFilterName);
-    }
-
-    public AutoFilterData[] getEntityFilters(String entityName) {
-        return bodyDaoManager.getEntityFilters(entityName);
     }
 
     public List<NamedId> getFieldValues(String entityName, String fieldName, Map<String, Object> constraints, Object currentInstance) {
@@ -1066,10 +1062,17 @@ public class CorePlugin {
         return new String[]{domain, login};
     }
 
-    public NamedId getEntityAutoFilterDefaultSelectedValue(String entityName, String autoFilterName) {
-        return bodyDaoManager.getEntityAutoFilterDefaultSelectedValue(entityName, autoFilterName);
+    public AutoFilterData getEntityAutoFilter(String entityName, String autoFilterName) {
+        return bodyDaoManager.getEntityAutoFilter(entityName, autoFilterName);
     }
 
+    public AutoFilterData[] getEntityAutoFilters(String entityName) {
+        return bodyDaoManager.getEntityAutoFilters(entityName);
+    }
+
+//    public NamedId getEntityAutoFilterDefaultSelectedValue(String entityName, String autoFilterName) {
+//        return bodyDaoManager.getEntityAutoFilterDefaultSelectedValue(entityName, autoFilterName);
+//    }
     public List<NamedId> getEntityAutoFilterValues(String entityName, String autoFilterName) {
         return bodyDaoManager.getEntityAutoFilterValues(entityName, autoFilterName);
     }
