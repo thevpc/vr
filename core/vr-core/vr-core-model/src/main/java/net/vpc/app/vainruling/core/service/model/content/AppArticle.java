@@ -7,7 +7,6 @@ package net.vpc.app.vainruling.core.service.model.content;
 
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
-import net.vpc.upa.AccessLevel;
 import net.vpc.upa.ProtectionLevel;
 import net.vpc.upa.config.*;
 import net.vpc.upa.types.DateTime;
@@ -32,7 +31,7 @@ import java.sql.Timestamp;
                 @Property(name = "ui.auto-filter.sender", value = "{expr='this.sender',order=3}")
         }
 )
-public class ArticlesItem {
+public class AppArticle {
 
     @Path("Main")
     @Id
@@ -56,7 +55,7 @@ public class ArticlesItem {
                     @Property(name = UIConstants.Grid.COLUMN_STYLE_CLASS, value = "#{hashCssColor(this.disposition.name)}")
             }
     )
-    private ArticlesDisposition disposition;
+    private AppArticleDisposition disposition;
 
     @Field(readProtectionLevel = ProtectionLevel.PROTECTED, defaultValue = "true")
     private boolean includeSender = true;
@@ -65,7 +64,7 @@ public class ArticlesItem {
 
     @Summary
     @Field(readProtectionLevel = ProtectionLevel.PROTECTED)
-    private ArticlesDispositionGroup dispositionGroup;
+    private AppArticleDispositionGroup dispositionGroup;
     @Field(readProtectionLevel = ProtectionLevel.PROTECTED)
     private String decoration;
 
@@ -152,10 +151,10 @@ public class ArticlesItem {
     @Field(readProtectionLevel = ProtectionLevel.PROTECTED)
     private Timestamp deletedOn;
 
-    public ArticlesItem() {
+    public AppArticle() {
     }
 
-    public ArticlesItem(String subject, String content, ArticlesDisposition disposition) {
+    public AppArticle(String subject, String content, AppArticleDisposition disposition) {
         this.subject = subject;
         this.content = content;
         this.disposition = disposition;
@@ -225,11 +224,11 @@ public class ArticlesItem {
         this.sendTime = sendTime;
     }
 
-    public ArticlesDisposition getDisposition() {
+    public AppArticleDisposition getDisposition() {
         return disposition;
     }
 
-    public void setDisposition(ArticlesDisposition disposition) {
+    public void setDisposition(AppArticleDisposition disposition) {
         this.disposition = disposition;
     }
 
@@ -346,7 +345,7 @@ public class ArticlesItem {
             return false;
         }
 
-        ArticlesItem that = (ArticlesItem) o;
+        AppArticle that = (AppArticle) o;
 
         if (id != that.id) {
             return false;
@@ -442,11 +441,11 @@ public class ArticlesItem {
         return result;
     }
 
-    public ArticlesDispositionGroup getDispositionGroup() {
+    public AppArticleDispositionGroup getDispositionGroup() {
         return dispositionGroup;
     }
 
-    public void setDispositionGroup(ArticlesDispositionGroup dispositionGroup) {
+    public void setDispositionGroup(AppArticleDispositionGroup dispositionGroup) {
         this.dispositionGroup = dispositionGroup;
     }
 

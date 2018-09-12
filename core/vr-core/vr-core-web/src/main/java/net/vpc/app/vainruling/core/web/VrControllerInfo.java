@@ -10,8 +10,9 @@ import net.vpc.app.vainruling.core.web.menu.BreadcrumbItem;
 /**
  * @author taha.bensalah@gmail.com
  */
-public class VrControllerInfo implements VrActionInfo{
+public class VrControllerInfo implements VrActionInfo {
 
+    private String controllerName;
     private String title;
     private String subTitle;
 
@@ -25,11 +26,13 @@ public class VrControllerInfo implements VrActionInfo{
 
     private BreadcrumbItem[] breadcrumb;
     private int priority;
+    private String cmd;
+    private boolean acceptAnonymous;
 
     public VrControllerInfo() {
     }
 
-    public VrControllerInfo(String title, String subTitle, String menuPath,String url, String css, String securityKey, BreadcrumbItem... breadcrumb) {
+    public VrControllerInfo(String controllerName,String cmd,String title, String subTitle, String menuPath, String url, String css, String securityKey, BreadcrumbItem... breadcrumb) {
         this.title = title;
         this.subTitle = subTitle;
         this.menuPath = menuPath;
@@ -37,6 +40,34 @@ public class VrControllerInfo implements VrActionInfo{
         this.css = css;
         this.securityKey = securityKey;
         this.breadcrumb = breadcrumb;
+        this.controllerName = controllerName;
+        this.cmd = cmd;
+    }
+
+    public boolean isAcceptAnonymous() {
+        return acceptAnonymous;
+    }
+
+    public void setAcceptAnonymous(boolean acceptAnonymous) {
+        this.acceptAnonymous = acceptAnonymous;
+    }
+
+     
+    public String getControllerName() {
+        return controllerName;
+    }
+
+    public void setControllerName(String controllerName) {
+        this.controllerName = controllerName;
+    }
+    
+
+    public String getCmd() {
+        return cmd;
+    }
+
+    public void setCmd(String cmd) {
+        this.cmd = cmd;
     }
 
     public String getSource() {

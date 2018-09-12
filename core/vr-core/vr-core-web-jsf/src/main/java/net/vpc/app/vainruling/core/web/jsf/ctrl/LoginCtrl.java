@@ -32,7 +32,8 @@ import java.io.IOException;
  */
 @VrController(
         //        title = "Login",
-        url = "login"
+        url = "login",
+        acceptAnonymous = true
 )
 @Controller
 public class LoginCtrl {

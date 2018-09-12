@@ -58,6 +58,23 @@ public class VrMenuManager {
     private CorePlugin core;
     private LinkedList<PageInfo> pageHistory = new LinkedList<>();
 
+    private boolean isSelectedVRMenuInfo(VRMenuInfo t) {
+        if (t.isLeaf()) {
+            VrControllerInfo ci = getModel().getControllerInfo();
+            if (ci != null) {
+                String ctrlName = getControllerUniformName(t.getType());
+                if (ci.getControllerName().endsWith(ctrlName)) {
+                    String cmd = StringUtils.trim(ci.getCmd());
+                    String cmd2 = StringUtils.trim(t.getCommand());
+                    if (cmd.equals(cmd2)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     class ControllerInfo {
 
         String name;
@@ -112,7 +129,7 @@ public class VrMenuManager {
                 return value.toLowerCase().contains(finalSearchText);
             }
         };
-        return (new MenuTree(menuFilter).root);
+        return (new MenuTree(menuFilter,this).root);
     }
 
     public String buildMenu() {
@@ -252,7 +269,7 @@ public class VrMenuManager {
             }
             VrController c2Ann = (VrController) targetClass.getAnnotation(VrController.class);
             if (c2Ann != null) {
-                VrControllerInfo vrControllerInfo = resolveVrControllerInfoByAnnotation(obj, c2Ann, name);
+                VrControllerInfo vrControllerInfo = resolveVrControllerInfoByAnnotation(obj, c2Ann, name, cmd);
                 if (vrControllerInfo != null) {
                     return new VrControllerInfoAndObject(vrControllerInfo, obj);
                 }
@@ -261,15 +278,22 @@ public class VrMenuManager {
         return null;
     }
 
-    public VrControllerInfo resolveVrControllerInfoByAnnotation(Object obj, VrController c2Ann, String typeName) {
+    public String getControllerUniformName(String typeName) {
+        String uniformCtrlName = typeName;
+        if (uniformCtrlName.endsWith("Ctrl") && uniformCtrlName.length() > "Ctrl".length()) {
+            uniformCtrlName = uniformCtrlName.substring(0, uniformCtrlName.length() - "Ctrl".length());
+        }
+        return uniformCtrlName;
+    }
+
+    public VrControllerInfo resolveVrControllerInfoByAnnotation(Object obj, VrController c2Ann, String typeName, String cmd) {
         if (c2Ann != null) {
             String uniformCtrlNameBase = typeName;
-            String uniformCtrlName = typeName;
-            if (uniformCtrlName.endsWith("Ctrl") && uniformCtrlName.length() > "Ctrl".length()) {
-                uniformCtrlName = uniformCtrlName.substring(0, uniformCtrlName.length() - "Ctrl".length());
-            }
+            String uniformCtrlName = getControllerUniformName(typeName);
             VrControllerInfo d = new VrControllerInfo();
-
+            d.setAcceptAnonymous(c2Ann.acceptAnonymous());
+            d.setCmd(cmd);
+            d.setControllerName(uniformCtrlName);
             String title = I18n.get().getOrNull("Controller." + uniformCtrlNameBase);
             if (StringUtils.isEmpty(title)) {
                 title = I18n.get().getOrNull("Controller." + uniformCtrlName);
@@ -375,8 +399,12 @@ public class VrMenuManager {
     private String gotoPage(String command, String arguments, boolean addToHistory) {
 //        Object sssso = getPageCtrl(command);
         VrWebHelper.prepareUserSession();
-//        String goodBeanName = resolveGoodBeanName(o);
         VrControllerInfoAndObject d = resolveVrControllerInfoByInstance(command, arguments);
+        boolean loggedIn = CorePlugin.get().isLoggedIn();
+        if(!loggedIn && !d.getInfo().isAcceptAnonymous()){
+            return null;
+        }
+//        String goodBeanName = resolveGoodBeanName(o);
         List<BreadcrumbItem> bc = new ArrayList<>();
         String url = null;
         if (d != null) {
@@ -417,6 +445,7 @@ public class VrMenuManager {
 //        } else {
 //            bc.add(new BreadcrumbItem("", "", "", "", ""));
 //        }
+        getModel().setControllerInfo(d == null ? null : d.getInfo());
         getModel().setBreadcrumb(bc);
         getModel().setTitleCrumb((d != null) ? new BreadcrumbItem(d.getInfo().getTitle(), d.getInfo().getSubTitle(), d.getInfo().getCss(), "", "") : new BreadcrumbItem("", "", "", "", ""));
 //        UserSession s = CorePlugin.get().getCurrentSession();
@@ -445,7 +474,7 @@ public class VrMenuManager {
         if (!StringUtils.isEmpty(arguments)) {
             data += " ; " + arguments;
         }
-        TraceService.get().trace("System.visit-document", null,MapUtils.map("path", lvp.toString()), data, "/System/Access", Level.FINE);
+        TraceService.get().trace("System.visit-document", null, MapUtils.map("path", lvp.toString()), data, "/System/Access", Level.FINE);
         if (StringUtils.isEmpty(url)) {
             return null;
         }
@@ -461,14 +490,14 @@ public class VrMenuManager {
         }
         return null;
     }
-    
+
     public PageInfo popHistory() {
         if (pageHistory.size() > 0) {
             return pageHistory.removeLast();
         }
         return null;
     }
-    
+
     public void pushHistory(String command, Object arguments) {
         if (arguments == null) {
             arguments = "";
@@ -479,7 +508,7 @@ public class VrMenuManager {
         }
         PageInfo pi = new PageInfo(command, String.valueOf(arguments));
         if (pageHistory.size() > 0) {
-            if(pageHistory.getLast().equals(pi)){
+            if (pageHistory.getLast().equals(pi)) {
                 return;
             }
         }
@@ -711,9 +740,18 @@ public class VrMenuManager {
         private List<BreadcrumbItem> breadcrumb = new ArrayList<BreadcrumbItem>();
         private BreadcrumbItem titleCrumb = new BreadcrumbItem("", "", "", "", "");
         private List<VRMenuInfo> menuCtrl = null;
+        private VrControllerInfo controllerInfo = null;
         private String currentPageId;
         private VRMenuInfo root;
         private String searchText;
+
+        public VrControllerInfo getControllerInfo() {
+            return controllerInfo;
+        }
+
+        public void setControllerInfo(VrControllerInfo controllerInfo) {
+            this.controllerInfo = controllerInfo;
+        }
 
         public String getSearchText() {
             return searchText;
@@ -783,23 +821,36 @@ public class VrMenuManager {
     private static class MenuTreeVisitor implements TreeVisitor<VRMenuInfo> {
 
         private ObjectFilter<String> filter;
+        private VrMenuManager m;
 
-        public MenuTreeVisitor(ObjectFilter<String> filter) {
+        public MenuTreeVisitor(ObjectFilter<String> filter, VrMenuManager m) {
             this.filter = filter;
+            this.m = m;
         }
 
         @Override
         public void visit(VRMenuInfo t, TreeDefinition<VRMenuInfo> tree) {
+            if (m.isSelectedVRMenuInfo(t)) {
+                t.setSelected(true);
+            }
             List<VRMenuInfo> children = tree.getChildren(t);
             for (int i = children.size() - 1; i >= 0; i--) {
                 VRMenuInfo el = children.get(i);
+                boolean removed = false;
                 if (el.getType().equals("package") && el.getChildren().isEmpty()) {
                     children.remove(i);
+                    removed = true;
                 } else {
                     if (el.getChildren().size() == 0) {
                         if (!filter.accept(el.getName())) {
                             children.remove(i);
+                            removed = true;
                         }
+                    }
+                }
+                if (!removed) {
+                    if (el.isSelected()) {
+                        t.setSelected(true);
                     }
                 }
             }
@@ -813,8 +864,8 @@ public class VrMenuManager {
         final HashSet<VRMenuInfo> nonVisitedCustomMenus = new HashSet<>(autowiredCustomMenusByCtrl);
         final HashSet<VRMenuInfo> visitedCustomMenus = new HashSet<>();
 
-        public MenuTree(ObjectFilter<String> filter) {
-            TreeTraversal.postOrderTreeTraversal(this, new MenuTreeVisitor(filter));
+        public MenuTree(ObjectFilter<String> filter,VrMenuManager menuManager) {
+            TreeTraversal.postOrderTreeTraversal(this, new MenuTreeVisitor(filter,menuManager));
         }
 
         @Override

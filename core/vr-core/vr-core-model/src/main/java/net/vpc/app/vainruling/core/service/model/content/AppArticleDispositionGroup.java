@@ -12,17 +12,20 @@ import net.vpc.upa.config.*;
  */
 @Entity(listOrder = "this.index, this.title")
 @Path("/Social/Config")
-public class ArticlesDispositionGroupType {
+public class AppArticleDispositionGroup {
 
     @Path("Main")
     @Id
     @Sequence
     private int id;
+
     @Summary
     @Unique
     private String name;
     @Main
     private String title;
+    @Summary
+    private AppArticleDispositionBundle bundle;
     @Summary
     private String mainColor;
 
@@ -71,6 +74,14 @@ public class ArticlesDispositionGroupType {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public AppArticleDispositionBundle getBundle() {
+        return bundle;
+    }
+
+    public void setBundle(AppArticleDispositionBundle bundle) {
+        this.bundle = bundle;
     }
 
     public String getMainColor() {

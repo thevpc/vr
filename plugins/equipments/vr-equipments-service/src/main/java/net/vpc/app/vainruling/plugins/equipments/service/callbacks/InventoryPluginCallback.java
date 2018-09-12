@@ -32,7 +32,7 @@ public class InventoryPluginCallback {
 
     @OnPreCreate
     public void onPreCreate(FieldEvent event) {
-        if (event.getField().getAbsoluteName().equals("ArticlesItem.disposition")) {
+        if (event.getField().getAbsoluteName().equals("AppArticle.disposition")) {
             event.getField().setDefaultObject((CustomDefaultObject) () -> CorePlugin.get().findArticleDisposition("Welcome"));
         }
     }

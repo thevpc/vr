@@ -167,20 +167,42 @@ class CorePluginBodyFileSystem extends CorePluginBody {
     }
 
     public FileInfo getMyHomeFile(String path) {
-        VFile f = getMyHomeFileSystem().get(path);
+        return createFileInfo(getMyHomeFileSystem().get(path));
+    }
+    
+    public FileInfo getMyFile(String path) {
+        return createFileInfo(getMyFileSystem().get(path));
+    }
+
+    public FileInfo getUserFile(String login, String path) {
+        return createFileInfo(getUserFileSystem(login).get(path));
+    }
+    public FileInfo getUserHomeFile(String login, String path) {
+        return createFileInfo(getUserHomeFileSystem(login).get(path));
+    }
+
+    public FileInfo getProfileFile(String profile, String path) {
+        return createFileInfo(getProfileFileSystem(profile).get(path));
+    }
+
+    public FileInfo getRootFile(String path) {
+        return createFileInfo(getRootFileSystem().get(path));
+    }
+
+    public FileInfo createFileInfo(VFile f) {
         FileInfo fileInfo = new FileInfo();
         fileInfo.setName(f.getName());
         int i = 0;
         VFile[] listeFile = f.listFiles();
-        FileInfo[] liste = new FileInfo[listeFile.length];
-        liste = new FileInfo[listeFile.length];
+        FileInfo[] childrenArr = new FileInfo[listeFile.length];
+        childrenArr = new FileInfo[listeFile.length];
         for (VFile vf : listeFile) {
-            liste[i] = new FileInfo(vf.getName(), vf.getFileType(), vf.lastModified());
+            childrenArr[i] = new FileInfo(vf.getName(), vf.getFileType(), vf.lastModified(), vf.isFile() ? getDownloadsCount(vf) : 0);
             i++;
         }
         fileInfo.setLastModif(f.lastModified());
         fileInfo.setType(f.getFileType());
-        fileInfo.setChildren(liste);
+        fileInfo.setChildren(childrenArr);
         return fileInfo;
     }
 

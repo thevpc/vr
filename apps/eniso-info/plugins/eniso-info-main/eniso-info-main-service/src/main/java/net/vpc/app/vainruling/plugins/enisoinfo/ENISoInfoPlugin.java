@@ -11,7 +11,7 @@ import net.vpc.app.vainruling.core.service.model.AppContact;
 import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.app.vainruling.core.service.model.AppProfile;
 import net.vpc.app.vainruling.core.service.model.AppUser;
-import net.vpc.app.vainruling.core.service.model.content.ArticlesDisposition;
+import net.vpc.app.vainruling.core.service.model.content.AppArticleDisposition;
 import net.vpc.app.vainruling.core.service.plugins.Install;
 import net.vpc.app.vainruling.core.service.plugins.Start;
 import net.vpc.app.vainruling.core.service.plugins.VrPlugin;
@@ -55,7 +55,7 @@ public class ENISoInfoPlugin {
         for (String[] n : new String[][]{{"II", "Informatique Industrielle"}, {"EI", "Electronique Indstrielle"}, {"MA", "Mecanique Avancee"}, {"ADM", "Administration"}}) {
             core.findOrCreateAppDepartment(n[0], n[0], n[1]);
         }
-        ArticlesDisposition education = core.findOrCreateDisposition("Services", "Education", "Education");
+        AppArticleDisposition education = core.findOrCreateArticleDisposition("Services", "Education", "Education");
         //force to Education
         education.setDescription("Education");
         education.setActionName("Education");

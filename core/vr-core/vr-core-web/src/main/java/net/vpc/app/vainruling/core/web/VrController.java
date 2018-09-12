@@ -49,7 +49,7 @@ public @interface VrController {
     int order() default 100;
 
     /**
-     * needed if several controller are exclusives
+     * needed if several controller are exclusive
      * (for instance student profile and teacher profile)
      * @return priority value, le higher the more priority
      */
@@ -61,4 +61,6 @@ public @interface VrController {
      * @return
      */
     String replacementFor() default "";
+    
+    boolean acceptAnonymous() default false;
 }

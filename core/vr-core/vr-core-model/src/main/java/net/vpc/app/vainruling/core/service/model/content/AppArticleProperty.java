@@ -5,9 +5,7 @@
  */
 package net.vpc.app.vainruling.core.service.model.content;
 
-import net.vpc.app.vainruling.core.service.obj.AppFile;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
-import net.vpc.upa.RelationshipType;
 import net.vpc.upa.config.*;
 
 /**
@@ -15,13 +13,15 @@ import net.vpc.upa.config.*;
  */
 @Entity(listOrder = "this.name")
 @Path("Social")
-public class ArticlesProperty {
+public class AppArticleProperty {
 
     @Path("Main")
     @Id
     @Sequence
     private int id;
 
+    @Summary
+    private AppArticle article;
     @Main
     private String name;
 
@@ -42,6 +42,15 @@ public class ArticlesProperty {
         this.id = id;
     }
 
+    public AppArticle getArticle() {
+        return article;
+    }
+
+    public void setArticle(AppArticle article) {
+        this.article = article;
+    }
+
+    
     public String getName() {
         return name;
     }

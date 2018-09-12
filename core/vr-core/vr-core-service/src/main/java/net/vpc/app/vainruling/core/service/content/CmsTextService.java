@@ -1,7 +1,5 @@
 package net.vpc.app.vainruling.core.service.content;
 
-import java.util.List;
-
 /**
  * Created by vpc on 9/5/16.
  */
@@ -11,9 +9,9 @@ public interface CmsTextService extends ContentTextService {
 
     ContentText getSelectedContentText();
 
-    String getProperty(String name);
-
-    String getProperty(String name, String defaultValue);
+//    String getProperty(String name);
+//
+//    String getProperty(String name, String defaultValue);
 
     void setContentDisposition(String name);
 
@@ -26,7 +24,7 @@ public interface CmsTextService extends ContentTextService {
     boolean isEnabledAction(String action,int id);
 
     /**
-     * exectues action and return true if the action wa
+     * executes action and return true if the action wa
      * @param action
      * @param id
      * @return

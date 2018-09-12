@@ -34,11 +34,11 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Level;
 
-import net.vpc.app.vainruling.core.service.model.content.ArticlesDisposition;
-import net.vpc.app.vainruling.core.service.model.content.ArticlesDispositionGroup;
-import net.vpc.app.vainruling.core.service.model.content.ArticlesDispositionGroupType;
-import net.vpc.app.vainruling.core.service.model.content.ArticlesFile;
-import net.vpc.app.vainruling.core.service.model.content.ArticlesItem;
+import net.vpc.app.vainruling.core.service.model.content.AppArticleDisposition;
+import net.vpc.app.vainruling.core.service.model.content.AppArticleDispositionGroup;
+import net.vpc.app.vainruling.core.service.model.content.AppArticleDispositionBundle;
+import net.vpc.app.vainruling.core.service.model.content.AppArticleFile;
+import net.vpc.app.vainruling.core.service.model.content.AppArticle;
 import net.vpc.app.vainruling.core.service.model.content.FullArticle;
 import net.vpc.app.vainruling.core.service.obj.MainPhotoProvider;
 import net.vpc.app.vainruling.core.service.obj.PropertyMainPhotoProvider;
@@ -573,8 +573,58 @@ public class CorePlugin {
         return bodyFileSystem.getUserTypeFolder(userTypeId);
     }
 
+    /**
+     * Current User Home Folder path
+     * @param path
+     * @return 
+     */
     public FileInfo getMyHomeFile(String path) {
         return bodyFileSystem.getMyHomeFile(path);
+    }
+
+    /**
+     * Extended Current User Folder path (includes all Profile Folders)
+     * @param path
+     * @return 
+     */
+    public FileInfo getMyFile(String path) {
+        return bodyFileSystem.getMyFile(path);
+    }
+
+    /**
+     * Extended User Folder path (includes all Profile Folders)
+     * @param path
+     * @return 
+     */
+    public FileInfo getUserFile(String login, String path) {
+        return bodyFileSystem.getUserFile(login, path);
+    }
+
+    /**
+     * User Home Folder path
+     * @param path
+     * @return 
+     */
+    public FileInfo getUserHomeFile(String login, String path) {
+        return bodyFileSystem.getUserHomeFile(login, path);
+    }
+
+    /**
+     * Profile Home Folder path
+     * @param path
+     * @return 
+     */
+    public FileInfo getProfileFile(String profile, String path) {
+        return bodyFileSystem.getProfileFile(profile, path);
+    }
+
+    /**
+     * Root Folder path
+     * @param path
+     * @return 
+     */
+    public FileInfo getRootFile(String path) {
+        return bodyFileSystem.getRootFile(path);
     }
 
     public VirtualFileSystem getMyHomeFileSystem() {
@@ -647,36 +697,36 @@ public class CorePlugin {
         cacheService.invalidate();
     }
 
-    public ArticlesItem findArticle(int articleId) {
+    public AppArticle findArticle(int articleId) {
         return bodyContentManager.findArticle(articleId);
     }
 
-    public ArticlesDisposition findArticleDisposition(int articleDispositionId) {
+    public AppArticleDisposition findArticleDisposition(int articleDispositionId) {
         return bodyContentManager.findArticleDisposition(articleDispositionId);
     }
 
-    public List<ArticlesDispositionGroupType> findArticleDispositionGroupTypes() {
+    public List<AppArticleDispositionBundle> findArticleDispositionGroupTypes() {
         return bodyContentManager.findArticleDispositionGroupTypes();
     }
 
-    public List<ArticlesDispositionGroup> findArticleDispositionGroups(int siteType) {
+    public List<AppArticleDispositionGroup> findArticleDispositionGroups(int siteType) {
         return bodyContentManager.findArticleDispositionGroups(siteType);
     }
 
-    public ArticlesDispositionGroup findArticleDispositionGroup(String name) {
+    public AppArticleDispositionGroup findArticleDispositionGroup(String name) {
         return bodyContentManager.findArticleDispositionGroup(name);
     }
 
-    public ArticlesDisposition findArticleDisposition(String name) {
+    public AppArticleDisposition findArticleDisposition(String name) {
         return bodyContentManager.findArticleDisposition(name);
     }
 
-    public List<ArticlesFile> findArticlesFiles(int articleId) {
-        return bodyContentManager.findArticlesFiles(articleId);
+    public List<AppArticleFile> findArticlesFiles(int articleId) {
+        return bodyContentManager.findArticleFiles(articleId);
     }
 
-    public List<ArticlesFile> findArticlesFiles(int[] articleIds) {
-        return bodyContentManager.findArticlesFiles(articleIds);
+    public List<AppArticleFile> findArticlesFiles(int[] articleIds) {
+        return bodyContentManager.findArticleFiles(articleIds);
     }
 
     public FullArticle findFullArticle(int id) {
@@ -687,14 +737,14 @@ public class CorePlugin {
         bodyContentManager.markArticleVisited(articleId);
     }
 
-    public ArticlesDisposition findOrCreateDisposition(String name, String description, String actionName) {
-        return bodyContentManager.findOrCreateDisposition(name, description, actionName);
+    public AppArticleDisposition findOrCreateArticleDisposition(String name, String description, String actionName) {
+        return bodyContentManager.findOrCreateArticleDisposition(name, description, actionName);
     }
 
-    @Deprecated
-    public List<FullArticle> findFullArticlesByCategory(String disposition) {
-        return bodyContentManager.findFullArticlesByCategory(disposition);
-    }
+//    @Deprecated
+//    public List<FullArticle> findFullArticlesByCategory(String disposition) {
+//        return bodyContentManager.findFullArticlesByCategory(disposition);
+//    }
 
     public List<FullArticle> findFullArticlesByDisposition(String group, String disposition) {
         return bodyContentManager.findFullArticlesByDisposition(group, disposition);
@@ -718,16 +768,16 @@ public class CorePlugin {
         bodyContentManager.getRSS(rss, out);
     }
 
-    public String getArticlesProperty(String value) {
-        return bodyContentManager.getArticlesProperty(value);
+    public String getArticleProperty(int articleId,String name) {
+        return bodyContentManager.getArticleProperty(articleId,name);
     }
 
-    public String getArticlesPropertyOrCreate(String value, String defaultValue) {
-        return bodyContentManager.getArticlesPropertyOrCreate(value, defaultValue);
+    public String findOrCreateArticleProperty(int articleId,String name, String defaultValue) {
+        return bodyContentManager.findOrCreateArticleProperty(articleId,name, defaultValue);
     }
 
-    public Map<String, String> getArticlesProperties() {
-        return bodyContentManager.getArticlesProperties();
+    public Map<String, String> getArticlesProperties(int articleId) {
+        return bodyContentManager.getArticleProperties(articleId);
     }
 
     public int getActiveSessionsCount() {
@@ -742,6 +792,10 @@ public class CorePlugin {
         return bodyDaoManager.resolveId(entityName, t);
     }
 
+    public Object save(Object t) {
+        return bodyDaoManager.save(t);
+    }
+    
     public Object save(String entityName, Object t) {
         return bodyDaoManager.save(entityName, t);
     }
@@ -1169,6 +1223,10 @@ public class CorePlugin {
             return null;
         }
         return p.getMainIconPath(id, valueOrNull);
+    }
+
+    public boolean isLoggedIn() {
+        return getCurrentUser()!=null;
     }
 
 }

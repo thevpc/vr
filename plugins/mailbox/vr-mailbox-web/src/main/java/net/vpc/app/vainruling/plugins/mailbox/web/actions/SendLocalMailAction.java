@@ -8,7 +8,7 @@ package net.vpc.app.vainruling.plugins.mailbox.web.actions;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.obj.EntityAction;
 
-import net.vpc.app.vainruling.core.service.model.content.ArticlesItem;
+import net.vpc.app.vainruling.core.service.model.content.AppArticle;
 import net.vpc.app.vainruling.core.web.obj.EntityViewActionDialog;
 import net.vpc.upa.AccessMode;
 
@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * @author taha.bensalah@gmail.com
  */
-@EntityAction(entityType = ArticlesItem.class,
+@EntityAction(entityType = AppArticle.class,
         actionStyle = "fa-envelope-square"
 )
 public class SendLocalMailAction implements EntityViewActionDialog {
@@ -35,7 +35,7 @@ public class SendLocalMailAction implements EntityViewActionDialog {
 
 //    @Override
 //    public ActionDialogResult invoke(String actionId, Class entityType, Object obj, List<String> selectedIdStrings, Object[] args) {
-//        VrApp.getBean(MailboxPlugin.class).sendLocalMail((ArticlesItem) obj, (String) args[0]);
+//        VrApp.getBean(MailboxPlugin.class).sendLocalMail((AppArticle) obj, (String) args[0]);
 //        return ActionDialogResult.VOID;
 //    }
 

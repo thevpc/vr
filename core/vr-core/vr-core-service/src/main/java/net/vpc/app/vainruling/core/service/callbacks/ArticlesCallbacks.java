@@ -7,7 +7,7 @@ package net.vpc.app.vainruling.core.service.callbacks;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
-import net.vpc.app.vainruling.core.service.model.content.ArticlesItem;
+import net.vpc.app.vainruling.core.service.model.content.AppArticle;
 import net.vpc.upa.CustomDefaultObject;
 import net.vpc.upa.Entity;
 import net.vpc.upa.Field;
@@ -33,7 +33,7 @@ public class ArticlesCallbacks {
     public void onCreateField(FieldEvent event) throws UPAException {
         Entity e = event.getEntity();
         Field f = event.getField();
-        if (e.getEntityType().equals(ArticlesItem.class)) {
+        if (e.getEntityType().equals(AppArticle.class)) {
             if (f.getName().equals("sender")) {
                 f.setDefaultObject(VrUtils.DEFAULT_OBJECT_CURRENT_USER);
             }

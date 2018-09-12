@@ -365,7 +365,7 @@
                                 </h:outputLink>
                             </li>
                             <ui:repeat value="#{vr.menu.resolveGroups()}" var="p0">
-                                <li class="treeview">
+                                <li class="treeview #{p0.selected ?'active':''}">
                                     <a href="#">
                                         <i class="fa  #{vr.nvl(p0.icon,'fa-folder')}"></i> <span>#{p0.name}</span>
                                         <span class="pull-right-container">
@@ -378,7 +378,7 @@
 
                                     <ul class="treeview-menu">
                                         <ui:repeat value="#{p0.resolveGroups()}" var="p1">
-                                            <li><a href="#"><i class="fa #{vr.nvl(p1.icon,'fa-folder')}"></i> #{p1.name}
+                                            <li class="#{p1.selected ?'active':''}"><a href="#"><i class="fa #{vr.nvl(p1.icon,'fa-folder')}"></i> #{p1.name}
                                                     <h:panelGroup styleClass="pull-right-container">
                                                         <ui:repeat value="#{p1.labels}" var="l">
                                                             <small class="label pull-right #{vr.mapValue(l.type,'bg-black','success','bg-green','info','bg-light-blue','warn','bg-orange','severe','bg-red')}">#{l.name}</small>
@@ -388,7 +388,7 @@
                                                 </a>
                                                 <ul class="treeview-menu">
                                                     <ui:repeat value="#{p1.resolveGroups()}" var="p2">
-                                                        <li><a href="#"><i
+                                                        <li class="#{p2.selected ?'active':''}"><a href="#"><i
                                                                     class="fa #{vr.nvl(p2.icon,'fa-folder')}"></i> #{p2.name}
                                                                 <h:panelGroup styleClass="pull-right-container">
                                                                     <ui:repeat value="#{p2.labels}" var="l">
@@ -399,7 +399,7 @@
                                                             </a>
                                                             <ul class="treeview-menu">
                                                                 <ui:repeat value="#{p2.resolveGroups()}" var="p3">
-                                                                    <li><a href="#"><i
+                                                                    <li class="#{p3.selected ?'active':''}"><a href="#"><i
                                                                                 class="fa #{vr.nvl(p3.icon,'fa-folder')}"></i> #{p3.name}
                                                                             <h:panelGroup styleClass="pull-right-container">
                                                                                 <ui:repeat value="#{p3.labels}" var="l">
@@ -413,7 +413,7 @@
                                                                     </li>
                                                                 </ui:repeat>
                                                                 <ui:repeat value="#{p2.resolveLeaves()}" var="p3">
-                                                                    <li>
+                                                                    <li class="#{p3.selected ?'active':''}">
                                                                         <h:outputLink value="#{p3.prettyURL}"><i
                                                                                 class="fa #{vr.nvl(p3.icon,vr.mapValue(p3.type,'fa-cube','obj','fa-circle-o'))}"></i> #{p3.name}
                                                                             <h:panelGroup styleClass="pull-right-container">
@@ -428,7 +428,7 @@
                                                         </li>
                                                     </ui:repeat>
                                                     <ui:repeat value="#{p1.resolveLeaves()}" var="p2">
-                                                        <li>
+                                                        <li class="#{p2.selected ?'active':''}">
                                                             <h:outputLink value="#{p2.prettyURL}"><i
                                                                     class="fa #{vr.nvl(p2.icon,vr.mapValue(p2.type,'fa-cube','obj','fa-circle-o'))}"></i> #{p2.name}
                                                                 <h:panelGroup styleClass="pull-right-container">
@@ -443,7 +443,7 @@
                                             </li>
                                         </ui:repeat>
                                         <ui:repeat value="#{p0.resolveLeaves()}" var="p1">
-                                            <li>
+                                            <li class="#{p1.selected ?'active':''}">
                                                 <h:outputLink value="#{p1.prettyURL}">
                                                     <i class="fa #{vr.nvl(p1.icon,vr.mapValue(p1.type,'fa-cube','obj','fa-circle-o'))}"></i> #{p1.name}
                                                     <h:panelGroup styleClass="pull-right-container">
@@ -458,7 +458,7 @@
                                 </li>
                             </ui:repeat>
                             <ui:repeat value="#{vr.menu.resolveLeaves()}" var="p0">
-                                <li>
+                                <li class="#{p0.selected ?'active':''}">
                                     <h:outputLink value="#{p0.prettyURL}"><i
                                             class="fa vr.nvl(p0.icon,vr.mapValue(p0.type,'fa-cube','obj','fa-circle-o'))"></i> #{p0.name}
                                         <h:panelGroup styleClass="pull-right-container">

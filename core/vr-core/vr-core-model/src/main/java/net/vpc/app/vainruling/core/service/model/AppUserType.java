@@ -34,6 +34,11 @@ public class AppUserType {
         this.id = id;
         this.name = name;
     }
+    
+    public AppUserType(String code, String name) {
+        this.code = code;
+        this.name = name;
+    }
 
     public String getName2() {
         return name2;

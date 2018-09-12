@@ -14,7 +14,7 @@ import net.vpc.upa.config.*;
  */
 @Entity(listOrder = "this.name")
 @Path("/Social/Config")
-public class ArticlesDisposition implements CmsTextDisposition {
+public class AppArticleDisposition implements CmsTextDisposition {
 
     @Path("Main")
     @Id

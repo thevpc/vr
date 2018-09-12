@@ -92,17 +92,17 @@ public class MailboxCtrl implements VrControllerInfoResolver, VRMenuProvider {
         if(config.sent) {
             switch (config.folder) {
                 case CURRENT: {
-                    return new VrControllerInfo(getPreferredTitle(config.folder, config.sent), "Messages Envoyés","/Social", "modules/mailbox/mailbox", "fa-table", MailboxPluginSecurity.RIGHT_CUSTOM_SITE_MAILBOX,
+                    return new VrControllerInfo("mailbox",cmd,getPreferredTitle(config.folder, config.sent), "Messages Envoyés","/Social", "modules/mailbox/mailbox", "fa-table", MailboxPluginSecurity.RIGHT_CUSTOM_SITE_MAILBOX,
                             new BreadcrumbItem("Social", "Messages", "fa-dashboard", "", "")
                     );
                 }
                 case DELETED: {
-                    return new VrControllerInfo(getPreferredTitle(config.folder, config.sent), "Messages Envoyés Effacés","/Social", "modules/mailbox/mailbox", "fa-table", MailboxPluginSecurity.RIGHT_CUSTOM_SITE_MAILBOX,
+                    return new VrControllerInfo("mailbox",cmd,getPreferredTitle(config.folder, config.sent), "Messages Envoyés Effacés","/Social", "modules/mailbox/mailbox", "fa-table", MailboxPluginSecurity.RIGHT_CUSTOM_SITE_MAILBOX,
                             new BreadcrumbItem("Social", "Messages", "fa-dashboard", "", "")
                     );
                 }
                 case ARCHIVED: {
-                    return new VrControllerInfo(getPreferredTitle(config.folder, config.sent), "Messages Envoyés Archivés","/Social", "modules/mailbox/mailbox", "fa-table", MailboxPluginSecurity.RIGHT_CUSTOM_SITE_MAILBOX,
+                    return new VrControllerInfo("mailbox",cmd,getPreferredTitle(config.folder, config.sent), "Messages Envoyés Archivés","/Social", "modules/mailbox/mailbox", "fa-table", MailboxPluginSecurity.RIGHT_CUSTOM_SITE_MAILBOX,
                             new BreadcrumbItem("Social", "Messages", "fa-dashboard", "", "")
                     );
                 }
@@ -110,17 +110,17 @@ public class MailboxCtrl implements VrControllerInfoResolver, VRMenuProvider {
         }else{
             switch (config.folder) {
                 case CURRENT: {
-                    return new VrControllerInfo(getPreferredTitle(config.folder, config.sent), "Messages Reçus","/Social", "modules/mailbox/mailbox", "fa-table", MailboxPluginSecurity.RIGHT_CUSTOM_SITE_MAILBOX,
+                    return new VrControllerInfo("mailbox",cmd,getPreferredTitle(config.folder, config.sent), "Messages Reçus","/Social", "modules/mailbox/mailbox", "fa-table", MailboxPluginSecurity.RIGHT_CUSTOM_SITE_MAILBOX,
                             new BreadcrumbItem("Social", "Messages", "fa-dashboard", "", "")
                     );
                 }
                 case DELETED: {
-                    return new VrControllerInfo(getPreferredTitle(config.folder, config.sent), "Messages Reçus Effacés","/Social", "modules/mailbox/mailbox", "fa-table", MailboxPluginSecurity.RIGHT_CUSTOM_SITE_MAILBOX,
+                    return new VrControllerInfo("mailbox",cmd,getPreferredTitle(config.folder, config.sent), "Messages Reçus Effacés","/Social", "modules/mailbox/mailbox", "fa-table", MailboxPluginSecurity.RIGHT_CUSTOM_SITE_MAILBOX,
                             new BreadcrumbItem("Social", "Messages", "fa-dashboard", "", "")
                     );
                 }
                 case ARCHIVED: {
-                    return new VrControllerInfo(getPreferredTitle(config.folder, config.sent), "Messages Reçus Archivés","/Social", "modules/mailbox/mailbox", "fa-table", MailboxPluginSecurity.RIGHT_CUSTOM_SITE_MAILBOX,
+                    return new VrControllerInfo("mailbox",cmd,getPreferredTitle(config.folder, config.sent), "Messages Reçus Archivés","/Social", "modules/mailbox/mailbox", "fa-table", MailboxPluginSecurity.RIGHT_CUSTOM_SITE_MAILBOX,
                             new BreadcrumbItem("Social", "Messages", "fa-dashboard", "", "")
                     );
                 }

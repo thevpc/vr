@@ -250,6 +250,10 @@ class CorePluginBodyDAOManager extends CorePluginBody {
         return entity.getBuilder().objectToId(t);
     }
 
+    public Object save(Object t) {
+        return save(null, t);
+    }
+
     public Object save(String entityName, Object t) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         if (entityName == null) {

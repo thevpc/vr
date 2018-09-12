@@ -1,3 +1,23 @@
+Version 1.13.11 :
+-----------------
+## New Features
+
+## Features removed
+
+## Other Changes
+    [Core] Upgraded to UPA 1.2.48.1
+    [Core] Renamed ArticlesItem (and others) to AppArticle
+    [Core] findFullArticlesByDisposition now will add smart 
+           file name if not found
+    [Core] added  Object save(Object t)
+    [JSF ] replaced p:editor by p:textEditor in primefaces 
+    [Web ] FSServlet added path type (?t=user|home|all|root) as request parameter
+    
+## Bug Fixes
+    [Core] fixed problem when user has no login (not enabled)
+
+--------------------------------------------------------------------------------
+
 Version 1.13.10 :
 -----------------
 ## New Features

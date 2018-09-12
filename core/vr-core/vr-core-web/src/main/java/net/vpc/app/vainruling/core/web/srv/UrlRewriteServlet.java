@@ -5,11 +5,8 @@
  */
 package net.vpc.app.vainruling.core.web.srv;
 
-import net.vpc.app.vainruling.core.service.CorePlugin;
-import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppUrl;
 import net.vpc.common.strings.StringUtils;
-import net.vpc.common.vfs.VirtualFileSystem;
 import net.vpc.upa.UPA;
 
 import javax.servlet.RequestDispatcher;

@@ -15,14 +15,14 @@ import net.vpc.upa.config.*;
  */
 @Entity(listOrder = "this.name")
 @Path("Social")
-public class ArticlesFile implements AppFile{
+public class AppArticleFile implements AppFile{
 
     @Path("Main")
     @Id
     @Sequence
     private int id;
     @ManyToOne(relationType = RelationshipType.COMPOSITION)
-    private ArticlesItem article;
+    private AppArticle article;
 
     @Main
     private String name;
@@ -56,11 +56,11 @@ public class ArticlesFile implements AppFile{
         this.id = id;
     }
 
-    public ArticlesItem getArticle() {
+    public AppArticle getArticle() {
         return article;
     }
 
-    public void setArticle(ArticlesItem article) {
+    public void setArticle(AppArticle article) {
         this.article = article;
     }
 
@@ -93,7 +93,7 @@ public class ArticlesFile implements AppFile{
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        ArticlesFile that = (ArticlesFile) o;
+        AppArticleFile that = (AppArticleFile) o;
 
         if (id != that.id) return false;
         if (position != that.position) return false;

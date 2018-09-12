@@ -5,7 +5,6 @@
  */
 package net.vpc.app.vainruling.core.service.model.content;
 
-import net.vpc.app.vainruling.core.service.util.PeriodType;
 import net.vpc.upa.config.*;
 
 /**
@@ -13,20 +12,17 @@ import net.vpc.upa.config.*;
  */
 @Entity(listOrder = "this.index, this.title")
 @Path("/Social/Config")
-public class ArticlesDispositionGroup {
+public class AppArticleDispositionBundle {
 
     @Path("Main")
     @Id
     @Sequence
     private int id;
-
     @Summary
     @Unique
     private String name;
     @Main
     private String title;
-    @Summary
-    private ArticlesDispositionGroupType type;
     @Summary
     private String mainColor;
 
@@ -75,14 +71,6 @@ public class ArticlesDispositionGroup {
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    public ArticlesDispositionGroupType getType() {
-        return type;
-    }
-
-    public void setType(ArticlesDispositionGroupType type) {
-        this.type = type;
     }
 
     public String getMainColor() {

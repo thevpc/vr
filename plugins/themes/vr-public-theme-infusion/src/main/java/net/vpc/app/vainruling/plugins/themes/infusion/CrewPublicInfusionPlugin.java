@@ -9,7 +9,7 @@ public class CrewPublicInfusionPlugin {
     private void onInstall() {
         CorePlugin core = CorePlugin.get();
         for (int i = 1; i <= 7; i++) {
-            core.findOrCreateDisposition("Main.Row" + i, "Page principale, Ligne " + i, null);
+            core.findOrCreateArticleDisposition("Main.Row" + i, "Page principale, Ligne " + i, null);
         }
     }
 }

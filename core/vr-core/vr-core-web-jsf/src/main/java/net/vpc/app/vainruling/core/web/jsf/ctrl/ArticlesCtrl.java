@@ -11,9 +11,9 @@ import net.vpc.app.vainruling.core.service.content.CmsTextDisposition;
 import net.vpc.app.vainruling.core.service.content.CmsTextService;
 import net.vpc.app.vainruling.core.service.content.ContentText;
 import net.vpc.app.vainruling.core.service.model.AppUser;
-import net.vpc.app.vainruling.core.service.model.content.ArticlesDisposition;
-import net.vpc.app.vainruling.core.service.model.content.ArticlesFile;
-import net.vpc.app.vainruling.core.service.model.content.ArticlesItem;
+import net.vpc.app.vainruling.core.service.model.content.AppArticleDisposition;
+import net.vpc.app.vainruling.core.service.model.content.AppArticleFile;
+import net.vpc.app.vainruling.core.service.model.content.AppArticle;
 import net.vpc.app.vainruling.core.service.model.content.FullArticle;
 import net.vpc.app.vainruling.core.web.jsf.Vr;
 import net.vpc.common.strings.StringUtils;
@@ -74,7 +74,7 @@ public class ArticlesCtrl implements CmsTextService {
     }
 
     public String getDispositionActionName(String disposition){
-        ArticlesDisposition articleDisposition = core.findArticleDisposition(disposition);
+        AppArticleDisposition articleDisposition = core.findArticleDisposition(disposition);
         String actionName=null;
         if(articleDisposition!=null){
             actionName=articleDisposition.getActionName();
@@ -86,7 +86,7 @@ public class ArticlesCtrl implements CmsTextService {
     }
 
     public boolean isDispositionEnabled(String disposition){
-        ArticlesDisposition articleDisposition = core.findArticleDisposition(disposition);
+        AppArticleDisposition articleDisposition = core.findArticleDisposition(disposition);
         if(articleDisposition!=null){
             return articleDisposition.isEnabled();
         }
@@ -98,21 +98,21 @@ public class ArticlesCtrl implements CmsTextService {
         core.markArticleVisited(articleId);
     }
 
-    public void loadContentTexts(String name) {
-        List<FullArticle> a = findArticles(name);
+    public void loadContentTexts(String disposition) {
+        List<FullArticle> a = findArticles(disposition);
 //        if("Welcome".equalsIgnoreCase(name)){
 //            //add further filter
 //            for (Iterator<FullArticle> iterator = a.iterator(); iterator.hasNext(); ) {
 //                FullArticle article = iterator.next();
-//                DateTime d = article.getArticlesItem().getSendTime();
+//                DateTime d = article.getArticle().getSendTime();
 //                Date d2 = net.vpc.common.util.DateUtils.addMonths(new Date(), 1);
 //                if(d.compareTo(d2)<0){
 //                    iterator.remove();
 //                }
 //            }
 //        }
-        getModel().setDisposition(name);
-        getModel().getArticles().put(name, a);
+        getModel().setDisposition(disposition);
+        getModel().getArticles().put(disposition, a);
         if (getModel().getCurrent() == null) {
             if (a != null && a.size() > 0) {
                 if(a.get(0)!=null) {
@@ -135,10 +135,10 @@ public class ArticlesCtrl implements CmsTextService {
     }
 
     public List<FullArticle> findArticles(String disposition) {
-        return core.findFullArticlesByCategory(disposition);
+        return core.findFullArticlesByDisposition(null,disposition);
     }
 
-    public List<ArticlesFile> findArticlesFiles(int articleId) {
+    public List<AppArticleFile> findArticlesFiles(int articleId) {
         return core.findArticlesFiles(articleId);
     }
 
@@ -150,10 +150,10 @@ public class ArticlesCtrl implements CmsTextService {
         return null;
     }
 
-//    public ArticlesItem getArticle(String disposition, int pos) {
+//    public AppArticle getArticle(String disposition, int pos) {
 //        FullArticle a = getFullArticle(disposition, pos);
 //        if (a != null) {
-//            return a.getArticlesItem();
+//            return a.getArticle();
 //        }
 //        return null;
 //    }
@@ -184,15 +184,15 @@ public class ArticlesCtrl implements CmsTextService {
         return list;
     }
 
-    @Override
-    public String getProperty(String name) {
-        return core.getArticlesProperty(name);
-    }
-
-    @Override
-    public String getProperty(String name, String defaultValue) {
-        return core.getArticlesPropertyOrCreate(name,defaultValue);
-    }
+//    @Override
+//    public String getProperty(String name) {
+//        return core.getArticleProperty(name);
+//    }
+//
+//    @Override
+//    public String getProperty(String name, String defaultValue) {
+//        return core.findOrCreateArticleProperty(name,defaultValue);
+//    }
 
     @Override
     public CmsTextDisposition getContentDispositionByName(String name) {
@@ -219,7 +219,7 @@ public class ArticlesCtrl implements CmsTextService {
         AppUser currentUser = core.getCurrentUser();
         if(currentUser!=null){
             CorePlugin core = CorePlugin.get();
-            ArticlesItem a = core.findArticle(id);
+            AppArticle a = core.findArticle(id);
             if(a!=null){
                 if(a.getSender()!=null && currentUser.getId()==a.getSender().getId()){
                     return true;
@@ -239,29 +239,29 @@ public class ArticlesCtrl implements CmsTextService {
         try {
             if("edit".equals(action)) {
                 if (ec != null) {
-                    Vr.get().redirect(Vr.get().gotoPageObjItem(ArticlesItem.class.getSimpleName(), String.valueOf(id)));
+                    Vr.get().redirect(Vr.get().gotoPageObjItem(AppArticle.class.getSimpleName(), String.valueOf(id)));
                     return true;
                 }
             }else if("delete".equals(action)){
                 CorePlugin core = CorePlugin.get();
-                ArticlesItem a = core.findArticle(id);
+                AppArticle a = core.findArticle(id);
                 if(a!=null && !a.isDeleted()){
-                    core.remove("ArticlesItem",a.getId());
+                    core.remove("AppArticle",a.getId());
                     return true;
                 }
             }else if("archive".equals(action)){
                 CorePlugin core = CorePlugin.get();
-                ArticlesItem a = core.findArticle(id);
+                AppArticle a = core.findArticle(id);
                 if(a!=null && !a.isArchived()){
-                    core.archive("ArticlesItem",a);
+                    core.archive("AppArticle",a);
                     return true;
                 }
             }else if("important".equals(action)){
                 CorePlugin core = CorePlugin.get();
-                ArticlesItem a = core.findArticle(id);
+                AppArticle a = core.findArticle(id);
                 if(a!=null){
                     a.setImportant(!a.isImportant());
-                    core.save("ArticlesItem",a);
+                    core.save("AppArticle",a);
                     return true;
                 }
             }

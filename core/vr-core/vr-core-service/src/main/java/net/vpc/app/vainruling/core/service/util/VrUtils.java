@@ -50,17 +50,17 @@ public class VrUtils {
 
     public static SimpleDateFormat UNIVERSAL_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     public static NullAsEmptyStringComparator NULL_AS_EMPTY_STRING_COMPARATOR = new NullAsEmptyStringComparator();
-    public static Comparator<Date> DATE_COMPARATOR = new NullComparator<Date>(){
+    public static Comparator<Date> DATE_COMPARATOR = new NullComparator<Date>() {
         @Override
         public int compareNonNull(Date o1, Date o2) {
             return o1.compareTo(o2);
         }
     };
-    
+
     public static String STRING_SEP = ", ;";
 
     public static final Gson GSON = new GsonBuilder()
-                .registerTypeHierarchyAdapter(net.vpc.upa.Document.class, new DocumentSerializer())
+            .registerTypeHierarchyAdapter(net.vpc.upa.Document.class, new DocumentSerializer())
             .create();
     public static final CustomDefaultObject DEFAULT_OBJECT_CURRENT_USER = new CustomDefaultObject() {
 
@@ -886,6 +886,7 @@ public class VrUtils {
         }
         return new String(chars);
     }
+
     public static String normalizeFileName(String name) {
         char[] chars = StringUtils.normalize(name).toCharArray();
         for (int i = 0; i < chars.length; i++) {
@@ -902,10 +903,9 @@ public class VrUtils {
                 case '%':
                 case '|':
                 case '<':
-                case '>': 
-                case '/': 
-                case '\\': 
-                {
+                case '>':
+                case '/':
+                case '\\': {
                     chars[i] = ' ';
                     break;
                 }
@@ -1017,13 +1017,18 @@ public class VrUtils {
     public static VFile[] getUserAbsoluteFiles(int id, String[] path) {
         CorePlugin core = VrApp.getBean(CorePlugin.class);
         AppUser t = core.findUser(id);
+        if (t == null) {
+            return new VFile[0];
+        }
         List<VFile> files = new ArrayList<VFile>();
         if (t != null) {
             VFile userFolder = core.getUserFolder(t.getLogin());
-            for (String p : path) {
-                VFile ff = userFolder.get(p);
-                if (ff.exists()) {
-                    files.add(ff);
+            if (userFolder != null) {
+                for (String p : path) {
+                    VFile ff = userFolder.get(p);
+                    if (ff.exists()) {
+                        files.add(ff);
+                    }
                 }
             }
             if (t.getType() != null) {
@@ -1258,4 +1263,14 @@ public class VrUtils {
         }
     }
 
+    public static String resolveFileName(String name, String path) {
+        String n = name;
+        if (StringUtils.isEmpty(n)) {
+            n = getURLName(path);
+        }
+        if (StringUtils.isEmpty(n)) {
+            n = "NONAME";
+        }
+        return n;
+    }
 }

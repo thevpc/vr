@@ -32,8 +32,10 @@ import java.util.logging.Logger;
  */
 @WebServlet(name = "FSServlet", urlPatterns = "/fs/*")
 public class FSServlet extends HttpServlet {
+
     private static final Logger log = Logger.getLogger(FSServlet.class.getName());
     final int DEFAULT_BUFFER_SIZE = 4 * 1024 * 1024;
+
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         VFile file = getFile(request);
         if (file != null) {
@@ -53,12 +55,12 @@ public class FSServlet extends HttpServlet {
                 response.setBufferSize(buffezSize);
                 try {
                     FileUtils.copy(in, response.getOutputStream(), buffezSize);
-                }catch(java.io.IOException ex){
-                    if(ex.getClass().getName().endsWith(".ClientAbortException")){
+                } catch (java.io.IOException ex) {
+                    if (ex.getClass().getName().endsWith(".ClientAbortException")) {
                         //this is a tomcat 'Broken pipe' handling i suppose
-                        log.log(Level.SEVERE, "Error serving file "+file.getPath()+". "+ex.getMessage());
-                    }else{
-                        log.log(Level.SEVERE, "Error serving file "+file.getPath()+". "+ex.getMessage(),ex);
+                        log.log(Level.SEVERE, "Error serving file " + file.getPath() + ". " + ex.getMessage());
+                    } else {
+                        log.log(Level.SEVERE, "Error serving file " + file.getPath() + ". " + ex.getMessage(), ex);
                     }
                 }
             } finally {
@@ -72,9 +74,11 @@ public class FSServlet extends HttpServlet {
     }
 
     private static String extractBoundary(String contentTypeHeader, String defaultValue) {
-        if (contentTypeHeader == null) return defaultValue;
+        if (contentTypeHeader == null) {
+            return defaultValue;
+        }
         String[] headerSections = contentTypeHeader.split(";");
-        for (String section: headerSections) {
+        for (String section : headerSections) {
             String[] subHeaderSections = section.split("=");
             String headerName = subHeaderSections[0].trim();
             if (headerName.toLowerCase().equals("boundary")) {
@@ -85,11 +89,11 @@ public class FSServlet extends HttpServlet {
     }
 
     public static boolean isMultipart(String mimetype) {
-        if(mimetype==null){
-            mimetype="";
+        if (mimetype == null) {
+            mimetype = "";
         }
-        String b=extractBoundary(mimetype,null);
-        return b!=null && !b.isEmpty()
+        String b = extractBoundary(mimetype, null);
+        return b != null && !b.isEmpty()
                 && mimetype.toLowerCase().startsWith("multipart/");
     }
 
@@ -97,11 +101,11 @@ public class FSServlet extends HttpServlet {
         VFile file = getFile(request);
         if (file != null) {
             String contentType = request.getContentType();
-            if(!isMultipart(contentType)){
+            if (!isMultipart(contentType)) {
                 response.setStatus(400);
                 return;
             }
-            MultipartStream stream=new MultipartStream(request.getInputStream(),extractBoundary(contentType,"").getBytes(),DEFAULT_BUFFER_SIZE,
+            MultipartStream stream = new MultipartStream(request.getInputStream(), extractBoundary(contentType, "").getBytes(), DEFAULT_BUFFER_SIZE,
                     null);
 
             boolean hasNextPart = stream.skipPreamble();
@@ -143,14 +147,52 @@ public class FSServlet extends HttpServlet {
         if (StringUtils.isEmpty(pathInfo)) {
             return null;
         }
+        String type = request.getParameter("t");
+        VirtualFileSystem fs = null;
         CorePlugin core = VrApp.getBean(CorePlugin.class);
-        final VirtualFileSystem fs = UPA.getContext().invokePrivileged(new Action<VirtualFileSystem>() {
-            @Override
-            public VirtualFileSystem run() {
-                return core.getRootFileSystem();
-            }
-        });
-        if(fs==null){
+        if (StringUtils.isEmpty(type)) {
+            type = "root";
+            fs = UPA.getContext().invokePrivileged(new Action<VirtualFileSystem>() {
+                @Override
+                public VirtualFileSystem run() {
+                    return core.getRootFileSystem();
+                }
+            });
+        } else if (type.equals("u") || type.equals("user") || request.getParameter("u") != null) {
+            String user = request.getParameter("u");
+            type = "user";
+            fs = UPA.getContext().invokePrivileged(new Action<VirtualFileSystem>() {
+                @Override
+                public VirtualFileSystem run() {
+                    return core.getUserFileSystem(user);
+                }
+            });
+        } else if (type.equals("h") || type.equals("home")) {
+            type = "home";
+            fs = UPA.getContext().invokePrivileged(new Action<VirtualFileSystem>() {
+                @Override
+                public VirtualFileSystem run() {
+                    return core.getMyHomeFileSystem();
+                }
+            });
+        } else if (type.equals("a") || type.equals("all")) {
+            type = "all";
+            fs = UPA.getContext().invokePrivileged(new Action<VirtualFileSystem>() {
+                @Override
+                public VirtualFileSystem run() {
+                    return core.getMyFileSystem();
+                }
+            });
+        } else {
+            type = "root";
+            fs = UPA.getContext().invokePrivileged(new Action<VirtualFileSystem>() {
+                @Override
+                public VirtualFileSystem run() {
+                    return core.getRootFileSystem();
+                }
+            });
+        }
+        if (fs == null) {
             return null;
         }
         String filename = null;
@@ -160,7 +202,7 @@ public class FSServlet extends HttpServlet {
             return null;
         }
         VFile file = fs.get(filename);
-        if (file!=null && file.exists() && file.isFile()) {
+        if (file != null && file.exists() && file.isFile()) {
             return file;
         }
         return null;

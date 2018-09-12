@@ -27,15 +27,16 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.*;
-import net.vpc.app.vainruling.core.service.model.content.ArticlesDisposition;
-import net.vpc.app.vainruling.core.service.model.content.ArticlesDispositionGroup;
-import net.vpc.app.vainruling.core.service.model.content.ArticlesDispositionGroupType;
-import net.vpc.app.vainruling.core.service.model.content.ArticlesFile;
-import net.vpc.app.vainruling.core.service.model.content.ArticlesItem;
-import net.vpc.app.vainruling.core.service.model.content.ArticlesItemStrict;
-import net.vpc.app.vainruling.core.service.model.content.ArticlesProperty;
+import net.vpc.app.vainruling.core.service.model.content.AppArticleDisposition;
+import net.vpc.app.vainruling.core.service.model.content.AppArticleDispositionGroup;
+import net.vpc.app.vainruling.core.service.model.content.AppArticleDispositionBundle;
+import net.vpc.app.vainruling.core.service.model.content.AppArticleFile;
+import net.vpc.app.vainruling.core.service.model.content.AppArticle;
+import net.vpc.app.vainruling.core.service.model.content.AppArticleStrict;
+import net.vpc.app.vainruling.core.service.model.content.AppArticleProperty;
 import net.vpc.app.vainruling.core.service.model.content.FullArticle;
 import net.vpc.app.vainruling.core.service.util.AppVersion;
+import net.vpc.common.io.PathInfo;
 import net.vpc.common.util.MutableDate;
 
 class CorePluginBodyContentManager extends CorePluginBody {
@@ -46,7 +47,7 @@ class CorePluginBodyContentManager extends CorePluginBody {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         AppVersion vv = core.getAppVersion();
         core.getOrCreateAppPropertyValue("System.App.Title", null, vv.getLongName());
-        core.getOrCreateAppPropertyValue("System.App.Description", null, vv.getLongName()+" Web Site");
+        core.getOrCreateAppPropertyValue("System.App.Description", null, vv.getLongName() + " Web Site");
         core.getOrCreateAppPropertyValue("System.App.Keywords", null, "vr");
         core.getOrCreateAppPropertyValue("System.App.Title.Major.Main", null, "My");
         core.getOrCreateAppPropertyValue("System.App.Title.Major.Secondary", null, "App");
@@ -59,113 +60,113 @@ class CorePluginBodyContentManager extends CorePluginBody {
         core.getOrCreateAppPropertyValue("System.App.GotoWelcomeText", null, "My Space");
         core.getOrCreateAppPropertyValue("System.App.GotoLoginText", null, "My Space");
 
-        findOrCreateDisposition("Welcome", "Home", "Home");
-        findOrCreateDisposition("Testimonials", "Testimonials", "Testimonials");
-        findOrCreateDisposition("Testimonials.Header", "Testimonials", null);
-        findOrCreateDisposition("Services", "Services", "Services");
-        findOrCreateDisposition("Services.Header", "Services", null);
-        findOrCreateDisposition("Featured", "Featured", "Featured");
-        findOrCreateDisposition("Featured.Header", "Featured", null);
-        findOrCreateDisposition("About", "About", "About");
-        findOrCreateDisposition("About.Header", "About", null);
-        findOrCreateDisposition("News", "News", "Press");
-        findOrCreateDisposition("News.Header", "Press", null);
-        findOrCreateDisposition("Activities", "Activities", "Activities");
-        findOrCreateDisposition("Activities.Header", "Activities", null);
+        findOrCreateArticleDisposition("Welcome", "Home", "Home");
+        findOrCreateArticleDisposition("Testimonials", "Testimonials", "Testimonials");
+        findOrCreateArticleDisposition("Testimonials.Header", "Testimonials", null);
+        findOrCreateArticleDisposition("Services", "Services", "Services");
+        findOrCreateArticleDisposition("Services.Header", "Services", null);
+        findOrCreateArticleDisposition("Featured", "Featured", "Featured");
+        findOrCreateArticleDisposition("Featured.Header", "Featured", null);
+        findOrCreateArticleDisposition("About", "About", "About");
+        findOrCreateArticleDisposition("About.Header", "About", null);
+        findOrCreateArticleDisposition("News", "News", "Press");
+        findOrCreateArticleDisposition("News.Header", "Press", null);
+        findOrCreateArticleDisposition("Activities", "Activities", "Activities");
+        findOrCreateArticleDisposition("Activities.Header", "Activities", null);
         if (core.findFullArticlesByDisposition(null, "About.Header").isEmpty()) {
-            core.save("ArticlesItem", new ArticlesItem("About", null, findArticleDisposition("About.Header")));
+            core.save(new AppArticle("About", null, findArticleDisposition("About.Header")));
         }
         if (core.findFullArticlesByDisposition(null, "About").isEmpty()) {
-            core.save("ArticlesItem", new ArticlesItem("Nos Valeurs", null, findArticleDisposition("About.Header")));
+            core.save(new AppArticle("Nos Valeurs", null, findArticleDisposition("About.Header")));
         }
         if (core.findFullArticlesByDisposition(null, "About").isEmpty()) {
-            core.save("ArticlesItem", new ArticlesItem("Reinvention", null, findArticleDisposition("About.Header")));
+            core.save(new AppArticle("Reinvention", null, findArticleDisposition("About.Header")));
         }
         if (core.findFullArticlesByDisposition(null, "About").isEmpty()) {
-            core.save("ArticlesItem", new ArticlesItem("Actualite", null, findArticleDisposition("About.Header")));
+            core.save(new AppArticle("Actualite", null, findArticleDisposition("About.Header")));
         }
         if (core.findFullArticlesByDisposition(null, "About").isEmpty()) {
-            core.save("ArticlesItem", new ArticlesItem("APropos", null, findArticleDisposition("About.Header")));
+            core.save(new AppArticle("APropos", null, findArticleDisposition("About.Header")));
         }
         if (core.findFullArticlesByDisposition(null, "News.Header").isEmpty()) {
-            ArticlesItem a = new ArticlesItem();
+            AppArticle a = new AppArticle();
             a.setSubject("Press");
             a.setDisposition(findArticleDisposition("News.Header"));
-            core.save("ArticlesItem", a);
+            core.save(a);
         }
         if (core.findFullArticlesByDisposition(null, "Activities.Header").isEmpty()) {
-            ArticlesItem a = new ArticlesItem();
+            AppArticle a = new AppArticle();
             a.setSubject("Activities");
             a.setDisposition(findArticleDisposition("Activities.Header"));
-            core.save("ArticlesItem", a);
+            core.save(a);
         }
         if (core.findFullArticlesByDisposition(null, "Featured.Header").isEmpty()) {
-            ArticlesItem a = new ArticlesItem();
+            AppArticle a = new AppArticle();
             a.setSubject("Featured");
             a.setDisposition(findArticleDisposition("Featured.Header"));
-            core.save("ArticlesItem", a);
+            core.save(a);
         }
         if (core.findFullArticlesByDisposition(null, "Activities.Header").isEmpty()) {
-            ArticlesItem a = new ArticlesItem();
+            AppArticle a = new AppArticle();
             a.setSubject("Activities");
             a.setDisposition(findArticleDisposition("Activities.Header"));
-            core.save("ArticlesItem", a);
+            core.save(a);
         }
         if (core.findFullArticlesByDisposition(null, "Testimonials.Header").isEmpty()) {
-            ArticlesItem a = new ArticlesItem();
+            AppArticle a = new AppArticle();
             a.setSubject("Testimonials");
             a.setDisposition(findArticleDisposition("Testimonials.Header"));
-            core.save("ArticlesItem", a);
+            core.save(a);
         }
         if (core.findFullArticlesByDisposition(null, "Services.Header").isEmpty()) {
-            ArticlesItem a = new ArticlesItem();
+            AppArticle a = new AppArticle();
             a.setSubject("Services");
             a.setDisposition(findArticleDisposition("Services.Header"));
-            core.save("ArticlesItem", a);
+            core.save(a);
         }
         AppProfile publisher = core.findOrCreateProfile("Publisher");
-        for (String right : CorePluginSecurity.getEntityRights(pu.getEntity("ArticlesItem"), true, true, true, false, false)) {
+        for (String right : CorePluginSecurity.getEntityRights(pu.getEntity(AppArticle.class), true, true, true, false, false)) {
             core.addProfileRight(publisher.getId(), right);
         }
-        for (String right : CorePluginSecurity.getEntityRights(pu.getEntity("ArticlesFile"), true, true, true, false, false)) {
+        for (String right : CorePluginSecurity.getEntityRights(pu.getEntity(AppArticleFile.class), true, true, true, false, false)) {
             core.addProfileRight(publisher.getId(), right);
         }
     }
 
-    public ArticlesItem findArticle(int articleId) {
-        return UPA.getPersistenceUnit().findById(ArticlesItem.class, articleId);
+    public AppArticle findArticle(int articleId) {
+        return UPA.getPersistenceUnit().findById(AppArticle.class, articleId);
     }
 
-    public ArticlesDisposition findArticleDisposition(int articleDispositionId) {
-        return UPA.getPersistenceUnit().findById(ArticlesDisposition.class, articleDispositionId);
+    public AppArticleDisposition findArticleDisposition(int articleDispositionId) {
+        return UPA.getPersistenceUnit().findById(AppArticleDisposition.class, articleDispositionId);
     }
 
-    public List<ArticlesDispositionGroupType> findArticleDispositionGroupTypes() {
-        EntityCache entityCache = getContext().getCacheService().get(ArticlesDispositionGroupType.class);
+    public List<AppArticleDispositionBundle> findArticleDispositionGroupTypes() {
+        EntityCache entityCache = getContext().getCacheService().get(AppArticleDispositionBundle.class);
         return entityCache.getValues();
     }
 
-    public List<ArticlesDispositionGroup> findArticleDispositionGroups(int siteType) {
-        final EntityCache entityCache = getContext().getCacheService().get(ArticlesDispositionGroup.class);
-        return entityCache.getProperty("findArticleDispositionGroups:" + siteType, new Action<List<ArticlesDispositionGroup>>() {
+    public List<AppArticleDispositionGroup> findArticleDispositionGroups(int bundleId) {
+        final EntityCache entityCache = getContext().getCacheService().get(AppArticleDispositionGroup.class);
+        return entityCache.getProperty("findArticleDispositionGroups:" + bundleId, new Action<List<AppArticleDispositionGroup>>() {
             @Override
-            public List<ArticlesDispositionGroup> run() {
+            public List<AppArticleDispositionGroup> run() {
                 return UPA.getPersistenceUnit()
-                        .createQuery("Select u from ArticlesDispositionGroup u where u.typeId=:typeId order by u.index,u.title")
-                        .setParameter("typeId", siteType)
+                        .createQuery("Select u from AppArticleDispositionGroup u where u.bundleId=:bundleId order by u.index,u.title")
+                        .setParameter("bundleId", bundleId)
                         .getResultList();
             }
         });
     }
 
-    public ArticlesDispositionGroup findArticleDispositionGroup(String name) {
-        final EntityCache entityCache = getContext().getCacheService().get(ArticlesDispositionGroup.class);
-        Map<String, ArticlesDispositionGroup> m = entityCache.getProperty("findArticleDispositionGroup", new Action<Map<String, ArticlesDispositionGroup>>() {
+    public AppArticleDispositionGroup findArticleDispositionGroup(String name) {
+        final EntityCache entityCache = getContext().getCacheService().get(AppArticleDispositionGroup.class);
+        Map<String, AppArticleDispositionGroup> m = entityCache.getProperty("findArticleDispositionGroup", new Action<Map<String, AppArticleDispositionGroup>>() {
             @Override
-            public Map<String, ArticlesDispositionGroup> run() {
-                Map<String, ArticlesDispositionGroup> m = new HashMap<String, ArticlesDispositionGroup>();
-                MapList<Integer, ArticlesDispositionGroup> values = entityCache.getValues();
-                for (ArticlesDispositionGroup u : values) {
+            public Map<String, AppArticleDispositionGroup> run() {
+                Map<String, AppArticleDispositionGroup> m = new HashMap<String, AppArticleDispositionGroup>();
+                MapList<Integer, AppArticleDispositionGroup> values = entityCache.getValues();
+                for (AppArticleDispositionGroup u : values) {
                     String key = u.getName();
                     if (!StringUtils.isEmpty(key)) {
                         m.put(key, u);
@@ -177,14 +178,14 @@ class CorePluginBodyContentManager extends CorePluginBody {
         return m.get(name);
     }
 
-    public ArticlesDisposition findArticleDisposition(String name) {
-        final EntityCache entityCache = getContext().getCacheService().get(ArticlesDisposition.class);
-        Map<String, ArticlesDisposition> m = entityCache.getProperty("findArticleDispositionByName", new Action<Map<String, ArticlesDisposition>>() {
+    public AppArticleDisposition findArticleDisposition(String name) {
+        final EntityCache entityCache = getContext().getCacheService().get(AppArticleDisposition.class);
+        Map<String, AppArticleDisposition> m = entityCache.getProperty("findArticleDispositionByName", new Action<Map<String, AppArticleDisposition>>() {
             @Override
-            public Map<String, ArticlesDisposition> run() {
-                Map<String, ArticlesDisposition> m = new HashMap<String, ArticlesDisposition>();
-                MapList<Integer, ArticlesDisposition> values = entityCache.getValues();
-                for (ArticlesDisposition u : values) {
+            public Map<String, AppArticleDisposition> run() {
+                Map<String, AppArticleDisposition> m = new HashMap<String, AppArticleDisposition>();
+                MapList<Integer, AppArticleDisposition> values = entityCache.getValues();
+                for (AppArticleDisposition u : values) {
                     String key = u.getName();
                     if (!StringUtils.isEmpty(key)) {
                         m.put(key, u);
@@ -196,8 +197,8 @@ class CorePluginBodyContentManager extends CorePluginBody {
         return m.get(name);
     }
 
-    public List<ArticlesFile> findArticlesFiles(int articleId) {
-        return UPA.getPersistenceUnit().createQuery("Select u from ArticlesFile u where "
+    public List<AppArticleFile> findArticleFiles(int articleId) {
+        return UPA.getPersistenceUnit().createQuery("Select u from AppArticleFile u where "
                 + " u.articleId=:articleId"
                 + " order by "
                 + "  u.position asc"
@@ -206,7 +207,7 @@ class CorePluginBodyContentManager extends CorePluginBody {
                 .getResultList();
     }
 
-    public List<ArticlesFile> findArticlesFiles(int[] articleIds) {
+    public List<AppArticleFile> findArticleFiles(int[] articleIds) {
         if (articleIds.length == 0) {
             return Collections.emptyList();
         }
@@ -216,7 +217,7 @@ class CorePluginBodyContentManager extends CorePluginBody {
             ids_string.append(",");
             ids_string.append(articleIds[i]);
         }
-        return UPA.getPersistenceUnit().createQuery("Select u from ArticlesFile u where "
+        return UPA.getPersistenceUnit().createQuery("Select u from AppArticleFile u where "
                 + " u.articleId in(" + ids_string + ")"
                 + " order by "
                 + "  u.position asc"
@@ -227,35 +228,35 @@ class CorePluginBodyContentManager extends CorePluginBody {
     public FullArticle findFullArticle(int id) {
         //invoke privileged to find out article not created by self.
         //when using non privileged mode, users can see SOLELY articles they have created
-        ArticlesItem a = UPA.getPersistenceUnit().invokePrivileged(new Action<ArticlesItem>() {
+        AppArticle a = UPA.getPersistenceUnit().invokePrivileged(new Action<AppArticle>() {
             @Override
-            public ArticlesItem run() {
+            public AppArticle run() {
                 return findArticle(id);
             }
         });
         if (a == null) {
             return null;
         }
+        List<AppArticle> ok = filterArticles(Arrays.asList(a));
+        if(ok.isEmpty()){
+            return null;
+        }
+        a=ok.get(0);
+
         String aname = a.getLinkText();
         String aurl = a.getLinkURL();
         String acss = a.getLinkClassStyle();
-        List<ArticlesFile> att = new ArrayList<>();
+        List<AppArticleFile> att = new ArrayList<>();
         if (!StringUtils.isEmpty(aname) || !StringUtils.isEmpty(aurl)) {
-            if (StringUtils.isEmpty(aname)) {
-                aname = VrUtils.getURLName(aurl);
-            }
-            if (StringUtils.isEmpty(aname)) {
-                aname = "NoName";
-            }
-            ArticlesFile baseArt = new ArticlesFile();
+            AppArticleFile baseArt = new AppArticleFile();
             baseArt.setId(-1);
-            baseArt.setName(aname);
+            baseArt.setName(VrUtils.resolveFileName(aname, aurl));
             boolean added = false;
             if (aurl != null && aurl.startsWith("/")) {
                 VFile vFile = getRootFileSystem0().get(aurl);
                 if (vFile.isDirectory()) {
                     for (VFile file : vFile.listFiles()) {
-                        ArticlesFile baseArt2 = new ArticlesFile();
+                        AppArticleFile baseArt2 = new AppArticleFile();
                         baseArt2.setId(-1);
                         baseArt2.setName(file.getName());
                         baseArt2.setPath(file.getPath());
@@ -271,18 +272,18 @@ class CorePluginBodyContentManager extends CorePluginBody {
                 att.add(baseArt);
             }
         }
-        List<ArticlesFile> c = findArticlesFiles(a.getId());
+        List<AppArticleFile> c = findArticleFiles(a.getId());
         if (c != null) {
-            for (ArticlesFile articlesFile : c) {
+            for (AppArticleFile articleFile : c) {
                 boolean added = false;
-                aurl = articlesFile.getPath();
+                aurl = articleFile.getPath();
                 if (aurl != null && aurl.startsWith("/")) {
                     VFile vFile = getRootFileSystem0().get(aurl);
                     if (vFile.isDirectory()) {
                         for (VFile file : vFile.listFiles()) {
-                            ArticlesFile baseArt2 = new ArticlesFile();
+                            AppArticleFile baseArt2 = new AppArticleFile();
                             baseArt2.setId(-1);
-                            baseArt2.setName(file.getName());
+                            baseArt2.setName(VrUtils.resolveFileName(file.getName(), file.getPath()));
                             baseArt2.setPath(file.getPath());
                             baseArt2.setStyle(acss);
                             att.add(baseArt2);
@@ -291,11 +292,11 @@ class CorePluginBodyContentManager extends CorePluginBody {
                     }
                 }
                 if (!added) {
-                    att.add(articlesFile);
+                    att.add(articleFile);
                 }
             }
         }
-        FullArticle f = new FullArticle(new ArticlesItemStrict(a), att);
+        FullArticle f = new FullArticle(new AppArticleStrict(a), att);
         return f;
     }
 
@@ -316,7 +317,7 @@ class CorePluginBodyContentManager extends CorePluginBody {
             @Override
             public void run() {
                 PersistenceUnit pu = UPA.getPersistenceUnit();
-                Entity entity = pu.getEntity(ArticlesItem.class);
+                Entity entity = pu.getEntity(AppArticle.class);
                 Document document = entity.createDocument();
                 document.setObject("visitCount", new UserExpression("visitCount+1"));
                 entity.createUpdateQuery()
@@ -329,11 +330,10 @@ class CorePluginBodyContentManager extends CorePluginBody {
 //        });
     }
 
-    @Deprecated
-    public List<FullArticle> findFullArticlesByCategory(String disposition) {
-        return findFullArticlesByDisposition(null, disposition);
-    }
-
+//    @Deprecated
+//    public List<FullArticle> findFullArticlesByCategory(String disposition) {
+//        return findFullArticlesByDisposition(null, disposition);
+//    }
     public List<FullArticle> findFullArticlesByDisposition(String group, String disposition) {
         if (group == null) {
             UserSession userSession = getContext().getCorePlugin().getCurrentSession();
@@ -342,7 +342,7 @@ class CorePluginBodyContentManager extends CorePluginBody {
         if (StringUtils.isEmpty(group)) {
             group = "";
         }
-        ArticlesDispositionGroup g = findArticleDispositionGroup(group);
+        AppArticleDispositionGroup g = findArticleDispositionGroup(group);
         if (g == null) {
             g = findArticleDispositionGroup("II");
         }
@@ -364,17 +364,17 @@ class CorePluginBodyContentManager extends CorePluginBody {
             @Override
             public List<FullArticle> run() {
                 List<FullArticle> all = new ArrayList<>();
-                List<ArticlesItem> articles = findArticlesByUserAndCategory(login, dispositionGroupId, includeNoDept, disposition);
+                List<AppArticle> articles = findArticlesByUserAndCategory(login, dispositionGroupId, includeNoDept, disposition);
                 int[] articleIds = new int[articles.size()];
                 for (int i = 0; i < articleIds.length; i++) {
                     articleIds[i] = articles.get(i).getId();
                 }
-                ListValueMap<Integer, ArticlesFile> articlesFilesMap = new ListValueMap<Integer, ArticlesFile>();
-                for (ArticlesFile articlesFile : findArticlesFiles(articleIds)) {
-                    articlesFilesMap.put(articlesFile.getArticle().getId(), articlesFile);
+                ListValueMap<Integer, AppArticleFile> articleFilesMap = new ListValueMap<Integer, AppArticleFile>();
+                for (AppArticleFile articleFile : findArticleFiles(articleIds)) {
+                    articleFilesMap.put(articleFile.getArticle().getId(), articleFile);
                 }
-                for (ArticlesItem a : articles) {
-                    ArticlesDisposition d = a.getDisposition();
+                for (AppArticle a : articles) {
+                    AppArticleDisposition d = a.getDisposition();
                     if (d != null) {
                         int periodCalendarType = -1;
                         if (d.getPeriodType() != null && d.getMaxPeriod() > 0) {
@@ -400,7 +400,7 @@ class CorePluginBodyContentManager extends CorePluginBody {
                     String aname = a.getLinkText();
                     String aurl = a.getLinkURL();
                     String acss = a.getLinkClassStyle();
-                    List<ArticlesFile> att = new ArrayList<>();
+                    List<AppArticleFile> att = new ArrayList<>();
                     if (!StringUtils.isEmpty(aname) || !StringUtils.isEmpty(aurl)) {
                         if (StringUtils.isEmpty(aname)) {
                             aname = VrUtils.getURLName(aurl);
@@ -408,7 +408,7 @@ class CorePluginBodyContentManager extends CorePluginBody {
                         if (StringUtils.isEmpty(aname)) {
                             aname = "NoName";
                         }
-                        ArticlesFile baseArt = new ArticlesFile();
+                        AppArticleFile baseArt = new AppArticleFile();
                         baseArt.setId(-1);
                         baseArt.setName(aname);
                         baseArt.setPath(aurl);
@@ -418,7 +418,7 @@ class CorePluginBodyContentManager extends CorePluginBody {
                             VFile vFile = getRootFileSystem0().get(aurl);
                             if (vFile.isDirectory()) {
                                 for (VFile file : vFile.listFiles()) {
-                                    ArticlesFile baseArt2 = new ArticlesFile();
+                                    AppArticleFile baseArt2 = new AppArticleFile();
                                     baseArt2.setId(-1);
                                     baseArt2.setName(file.getName());
                                     baseArt2.setPath(file.getPath());
@@ -433,16 +433,16 @@ class CorePluginBodyContentManager extends CorePluginBody {
                         }
                     }
 
-                    List<ArticlesFile> c = articlesFilesMap.get(a.getId());
+                    List<AppArticleFile> c = articleFilesMap.get(a.getId());
                     if (c != null) {
-                        for (ArticlesFile articlesFile : c) {
+                        for (AppArticleFile articleFile : c) {
                             boolean added = false;
-                            aurl = articlesFile.getPath();
+                            aurl = articleFile.getPath();
                             if (aurl != null && aurl.startsWith("/")) {
                                 VFile vFile = getRootFileSystem0().get(aurl);
                                 if (vFile.isDirectory()) {
                                     for (VFile file : vFile.listFiles()) {
-                                        ArticlesFile baseArt2 = new ArticlesFile();
+                                        AppArticleFile baseArt2 = new AppArticleFile();
                                         baseArt2.setId(-1);
                                         baseArt2.setName(file.getName());
                                         baseArt2.setPath(file.getPath());
@@ -453,11 +453,11 @@ class CorePluginBodyContentManager extends CorePluginBody {
                                 }
                             }
                             if (!added) {
-                                att.add(articlesFile);
+                                att.add(articleFile);
                             }
                         }
                     }
-                    FullArticle f = new FullArticle(new ArticlesItemStrict(a), att);
+                    FullArticle f = new FullArticle(new AppArticleStrict(a), att);
                     all.add(f);
                 }
                 return all;
@@ -466,11 +466,11 @@ class CorePluginBodyContentManager extends CorePluginBody {
         }, null);
     }
 
-    protected List<ArticlesItem> findArticlesByUserAndCategory(String login, int dispositionGroupId, boolean includeNoDept, String... dispositions) {
+    protected List<AppArticle> findArticlesByUserAndCategory(String login, int dispositionGroupId, boolean includeNoDept, String... dispositions) {
         if (dispositions.length == 0) {
             return Collections.EMPTY_LIST;
         }
-        StringBuilder queryStr = new StringBuilder("Select u from ArticlesItem u where ");
+        StringBuilder queryStr = new StringBuilder("Select u from AppArticle u where ");
         queryStr.append(" u.deleted=false ");
         queryStr.append(" and u.archived=false");
         queryStr.append(" and (");
@@ -504,11 +504,35 @@ class CorePluginBodyContentManager extends CorePluginBody {
                 + ", u.sendTime desc");
 
         Query query = UPA.getPersistenceUnit().createQuery(queryStr.toString()).setParameters(disps);
-        List<ArticlesItem> all = query.getResultList();
+        List<AppArticle> all = query.getResultList();
 
-        return getContext().getCorePlugin().filterByProfilePattern(all, null, login, new ProfilePatternFilter<ArticlesItem>() {
+        return getContext().getCorePlugin().filterByProfilePattern(all, null, login, new ProfilePatternFilter<AppArticle>() {
             @Override
-            public String getProfilePattern(ArticlesItem t) {
+            public String getProfilePattern(AppArticle t) {
+                AppUser s = t.getSender();
+                String author = s == null ? null : s.getLogin();
+                String p = t.getRecipientProfiles();
+                if (StringUtils.isEmpty(p)) {
+                    return p;
+                }
+                if (StringUtils.isEmpty(author)) {
+                    return p;
+                }
+                return "( " + p + " ) , " + author;
+            }
+        });
+    }
+
+    /**
+     * removes articles that should not be seen by current user!
+     *
+     * @param articles
+     * @return
+     */
+    public List<AppArticle> filterArticles(List<AppArticle> articles) {
+        return getContext().getCorePlugin().filterByProfilePattern(articles, null, getContext().getCorePlugin().getCurrentUserLogin(), new ProfilePatternFilter<AppArticle>() {
+            @Override
+            public String getProfilePattern(AppArticle t) {
                 AppUser s = t.getSender();
                 String author = s == null ? null : s.getLogin();
                 String p = t.getRecipientProfiles();
@@ -531,7 +555,7 @@ class CorePluginBodyContentManager extends CorePluginBody {
 
     public void getRSS(String rss, OutputStream out) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        ArticlesDisposition t = pu.findByMainField(ArticlesDisposition.class, "rss." + rss);
+        AppArticleDisposition t = pu.findByMainField(AppArticleDisposition.class, "rss." + rss);
         List<FullArticle> articles = findFullArticlesByDisposition(-1, true, "rss." + rss);
         try {
             String feedType = "rss_2.0";
@@ -576,53 +600,68 @@ class CorePluginBodyContentManager extends CorePluginBody {
         }
     }
 
-//    @EntityActionList(entityType = ArticlesItem.class)
+//    @EntityActionList(entityType = AppArticle.class)
 //    public String[] findArticleActions(){
 //        return new String[]{"SendEmail"};
 //    }
-    public String getArticlesProperty(String value) {
-        return getArticlesProperties().get(value);
-    }
-
-    public String getArticlesPropertyOrCreate(String value, String defaultValue) {
-        String s = getArticlesProperties().get(value);
-        if (StringUtils.isEmpty(s) && !StringUtils.isEmpty(defaultValue)) {
-            PersistenceUnit pu = UPA.getPersistenceUnit();
-            pu.invokePrivileged(new VoidAction() {
-                @Override
-                public void run() {
-                    ArticlesProperty p = new ArticlesProperty();
-                    p.setName(value);
-                    p.setValue(defaultValue);
-                    pu.persist(p);
-                }
-            });
-            s = defaultValue;
+    public String getArticleProperty(int articleId, String name) {
+        AppArticleProperty prop = UPA.getPersistenceUnit().createQuery("Select a from AppArticleProperty a where a.articleId=:id and a.name=:name")
+                .setParameter("id", articleId)
+                .setParameter("name", name)
+                .getFirstResultOrNull();
+        if (prop != null) {
+            return prop.getValue();
         }
-        return s;
+        return null;
     }
 
-    public Map<String, String> getArticlesProperties() {
-        final EntityCache entityCache = getContext().getCacheService().get(ArticlesProperty.class);
-        Map<String, String> m = entityCache.getProperty("getArticlesProperties", new Action<Map<String, String>>() {
-            @Override
-            public Map<String, String> run() {
-                Map<String, String> m = new HashMap<String, String>();
-                MapList<Integer, ArticlesProperty> values = entityCache.getValues();
-                for (ArticlesProperty u : values) {
-                    String key = u.getName();
-                    if (!StringUtils.isEmpty(key)) {
-                        m.put(key, u.getValue());
-                    }
-                }
-                return m;
-            }
-        });
-        return m;
+    public String findOrCreateArticleProperty(int articleId, String name, String defaultValue) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        AppArticleProperty prop = pu.createQuery("Select a from AppArticleProperty a where a.articleId=:id and a.name=:name")
+                .setParameter("id", articleId)
+                .setParameter("name", name)
+                .getFirstResultOrNull();
+        if (prop != null) {
+            return prop.getValue();
+        }
+        AppArticle a = pu.findById(AppArticle.class, articleId);
+        prop = new AppArticleProperty();
+        prop.setName(name);
+        prop.setArticle(a);
+        prop.setValue(defaultValue);
+        pu.persist(prop);
+        return defaultValue;
     }
 
-    public ArticlesDisposition findOrCreateDisposition(String name, String description, String actionName) {
-        ArticlesDisposition disposition = new ArticlesDisposition();
+    public Map<String, String> getArticleProperties(int articleId) {
+        List<AppArticleProperty> props = UPA.getPersistenceUnit().createQuery("Select a from AppArticleProperty a where a.articleId=:id")
+                .setParameter("id", articleId)
+                .getResultList();
+        Map<String, String> all = new HashMap<>();
+        for (AppArticleProperty prop : props) {
+            all.put(prop.getName(), prop.getValue());
+        }
+        return all;
+//        final EntityCache entityCache = getContext().getCacheService().get(AppArticleProperty.class);
+//        Map<String, String> m = entityCache.getProperty("getArticlesProperties", new Action<Map<String, String>>() {
+//            @Override
+//            public Map<String, String> run() {
+//                Map<String, String> m = new HashMap<String, String>();
+//                MapList<Integer, AppArticleProperty> values = entityCache.getValues();
+//                for (AppArticleProperty u : values) {
+//                    String key = u.getName();
+//                    if (!StringUtils.isEmpty(key)) {
+//                        m.put(key, u.getValue());
+//                    }
+//                }
+//                return m;
+//            }
+//        });
+//        return m;
+    }
+
+    public AppArticleDisposition findOrCreateArticleDisposition(String name, String description, String actionName) {
+        AppArticleDisposition disposition = new AppArticleDisposition();
         disposition.setEnabled(true);
         disposition.setName(name);
         disposition.setDescription(description);

@@ -7,7 +7,7 @@ package net.vpc.app.vainruling.plugins.mailbox.web.actions;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.model.content.ArticlesItem;
+import net.vpc.app.vainruling.core.service.model.content.AppArticle;
 import net.vpc.app.vainruling.core.service.notification.VrNotificationEvent;
 import net.vpc.app.vainruling.core.service.notification.VrNotificationSession;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
@@ -34,6 +34,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.vpc.app.vainruling.core.web.jsf.Vr;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -93,7 +94,7 @@ public class SendExternalMailActionCtrl {
 //            @Override
 //            public void run() {
         try {
-            ArticlesItem obj = (ArticlesItem) VrApp.getBean(ObjCtrl.class).getCurrentEntityObject();
+            AppArticle obj = (AppArticle) VrApp.getBean(ObjCtrl.class).getCurrentEntityObject();
             mailbox.sendExternalMail(obj, VrUtils.formatJSONObject(c));
         } catch (Exception e) {
             e.printStackTrace();
@@ -109,7 +110,7 @@ public class SendExternalMailActionCtrl {
 
     public void fireEventExtraDialogClosed() {
         VrApp.getBean(VrNotificationSession.class).clear(MailboxPlugin.SEND_EXTERNAL_MAIL_QUEUE);
-        RequestContext.getCurrentInstance().closeDialog(null);
+        Vr.get().closeDialog();
     }
 
     public Model getModel() {

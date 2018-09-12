@@ -36,6 +36,7 @@ public class VRMenuInfo implements VrActionInfo{
     private String path;
     private String type;
     private String command;
+    private boolean selected;
     private VrActionEnabler enabler;
     private String securityKey;
     private String icon;
@@ -71,6 +72,14 @@ public class VRMenuInfo implements VrActionInfo{
 //                    );
 //            labels.add(new VRMenuLabel(sval,stype));
 //        }
+    }
+
+    public boolean isSelected() {
+        return selected;
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
     }
     
 

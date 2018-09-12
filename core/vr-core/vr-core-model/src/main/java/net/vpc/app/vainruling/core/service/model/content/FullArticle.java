@@ -19,20 +19,20 @@ import java.util.List;
  */
 public class FullArticle implements ContentText{
 
-    private ArticlesItemStrict articlesItem;
+    private AppArticleStrict article;
     private List<ContentPath> attachments;
     private List<ContentPath> imageAttachments;
     private List<ContentPath> nonImageAttachments;
 
-    public FullArticle(ArticlesItemStrict articlesItem, List<ArticlesFile> attachments) {
-        this.articlesItem = articlesItem;
+    public FullArticle(AppArticleStrict article, List<AppArticleFile> attachments) {
+        this.article = article;
         this.attachments = new ArrayList<ContentPath>();
-        for (ArticlesFile attachment : attachments) {
+        for (AppArticleFile attachment : attachments) {
             this.attachments.add(new DefaultContentPath(attachment));
         }
         this.imageAttachments = new ArrayList<>();
         this.nonImageAttachments = new ArrayList<>();
-        for (ArticlesFile attachment : attachments) {
+        for (AppArticleFile attachment : attachments) {
             String n = (attachment != null && attachment.getPath() != null) ? attachment.getPath().toLowerCase() : "";
             if (n.endsWith(".gif") || n.endsWith(".jpeg") || n.endsWith(".jpg") || n.endsWith(".png")) {
                 imageAttachments.add(new DefaultContentPath(attachment));
@@ -45,15 +45,15 @@ public class FullArticle implements ContentText{
 
 
     public ArticlesDispositionStrict getDisposition() {
-        return articlesItem.getDisposition();
+        return article.getDisposition();
     }
 
-    public ArticlesItemStrict getArticlesItem() {
-        return articlesItem;
+    public AppArticleStrict getArticle() {
+        return article;
     }
 
-    public void setArticlesItem(ArticlesItemStrict content) {
-        this.articlesItem = content;
+    public void setArticle(AppArticleStrict content) {
+        this.article = content;
     }
 
     public List<ContentPath> getAttachments() {
@@ -82,77 +82,77 @@ public class FullArticle implements ContentText{
 
     @Override
     public String getSubTitle() {
-        return articlesItem.getSubTitle();
+        return article.getSubTitle();
     }
 
     @Override
     public int getId() {
-        return articlesItem.getId();
+        return article.getId();
     }
 
     @Override
     public String getSubject() {
-        return articlesItem.getSubject();
+        return article.getSubject();
     }
 
     @Override
     public String getDecoration() {
-        return articlesItem.getDecoration();
+        return article.getDecoration();
     }
 
     @Override
     public String getContent() {
-        return articlesItem.getContent();
+        return article.getContent();
     }
 
     @Override
     public String getCategory() {
-        return articlesItem.getDisposition()==null?null:articlesItem.getDisposition().getName();
+        return article.getDisposition()==null?null:article.getDisposition().getName();
     }
 
     @Override
     public String getImageURL() {
-        return articlesItem.getImageURL();
+        return article.getImageURL();
     }
 
     @Override
     public AppUserStrict getUser() {
-        return articlesItem.getSender();
+        return article.getSender();
     }
 
     @Override
     public String getLinkClassStyle() {
-        return articlesItem.getLinkClassStyle();
+        return article.getLinkClassStyle();
     }
 
     @Override
     public boolean isNoSubject() {
-        return articlesItem.isNoSubject();
+        return article.isNoSubject();
     }
 
     @Override
     public boolean isImportant() {
-        return articlesItem.isImportant();
+        return article.isImportant();
     }
 
     @Override
     public String getLinkText() {
-        return articlesItem.getLinkText();
+        return article.getLinkText();
     }
 
     @Override
     public String getLinkURL() {
-        return articlesItem.getLinkURL();
+        return article.getLinkURL();
     }
 
     @Override
     public Date getPublishTime() {
-        return articlesItem.getSendTime();
+        return article.getSendTime();
     }
 
     @Override
     public int getVisitCount() {
-        return articlesItem.getVisitCount();
+        return article.getVisitCount();
     }
 
     @Override
@@ -162,7 +162,7 @@ public class FullArticle implements ContentText{
 
         FullArticle that = (FullArticle) o;
 
-        if (articlesItem != null ? !articlesItem.equals(that.articlesItem) : that.articlesItem != null) return false;
+        if (article != null ? !article.equals(that.article) : that.article != null) return false;
         if (attachments != null ? !attachments.equals(that.attachments) : that.attachments != null) return false;
         if (imageAttachments != null ? !imageAttachments.equals(that.imageAttachments) : that.imageAttachments != null)
             return false;
@@ -172,7 +172,7 @@ public class FullArticle implements ContentText{
 
     @Override
     public int hashCode() {
-        int result = articlesItem != null ? articlesItem.hashCode() : 0;
+        int result = article != null ? article.hashCode() : 0;
         result = 31 * result + (attachments != null ? attachments.hashCode() : 0);
         result = 31 * result + (imageAttachments != null ? imageAttachments.hashCode() : 0);
         result = 31 * result + (nonImageAttachments != null ? nonImageAttachments.hashCode() : 0);

@@ -6,9 +6,9 @@ import net.vpc.app.vainruling.core.service.content.ContentPath;
  * Created by vpc on 9/5/16.
  */
 public class DefaultContentPath implements ContentPath {
-    private ArticlesFile file;
+    private AppArticleFile file;
 
-    public DefaultContentPath(ArticlesFile file) {
+    public DefaultContentPath(AppArticleFile file) {
         this.file = file;
     }
 

@@ -18,6 +18,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.web.VrController;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -44,29 +46,58 @@ public class VrWebSecurityFilter implements Filter {
         String pathInfo = req.getPathInfo();
         boolean acceptRequest = true;
         CorePlugin sso = null;
-        UserToken currentToken=null;
-        boolean requireAuth=false;
-        if(r.toString().contains("/modules/")){
-            requireAuth=true;
-        }else if(servletPath!=null){
-            if((servletPath.equals("/ue") || servletPath.startsWith("/ue/"))) {
+        UserToken currentToken = null;
+        boolean requireAuth = false;
+        if (r.toString().contains("/modules/")) {
+            requireAuth = true;
+        } else if (servletPath != null) {
+            if ((servletPath.equals("/ue") || servletPath.startsWith("/ue/"))) {
                 //no need for auth cause it will be done after expanding the url!
-                requireAuth=false;
-            }else if((servletPath.equals("/p") || servletPath.startsWith("/p/"))) {
-                if (pathInfo == null) {
-                    requireAuth = true;
-                } else if (pathInfo.startsWith("/news")) {
-                    requireAuth = false;
-                } else if (pathInfo.equals("/login") || pathInfo.equals("/loginCtrl")) {
-                    requireAuth = false;
-                } else {
-                    requireAuth = true;
-                }
-            }else if(servletPath.startsWith("/r/modules/")) {
-                requireAuth = true;
-            }else if(servletPath.startsWith("/r/")) {
                 requireAuth = false;
-            }else if(servletPath.equals("/r")) {
+            } else if ((servletPath.equals("/p") || servletPath.startsWith("/p/"))) {
+                requireAuth = pathInfo == null;
+//                if (pathInfo == null) {
+//                    requireAuth = true;
+//                } else if (pathInfo.startsWith("/news")) {
+//                    requireAuth = false;
+//                } else if (pathInfo.equals("/login") || pathInfo.equals("/loginCtrl")) {
+//                    requireAuth = false;
+//                } else {
+//                    String ctrlName = pathInfo.substring(1);
+//                    int intr = ctrlName.indexOf('?');
+//                    if (intr > 0) {
+//                        ctrlName = ctrlName.substring(0, intr);
+//                    }
+//                    Object b = null;
+//                    try {
+//                        b = VrApp.getBean(ctrlName);
+//                    } catch (Exception ex) {
+//                        //ignore;
+//                    }
+//                    if (b == null && !ctrlName.endsWith("Ctrl")) {
+//                        try {
+//                            b = VrApp.getBean(ctrlName + "Ctrl");
+//                        } catch (Exception ex) {
+//                            //ignore;
+//                        }
+//                    }
+//                    if (b != null) {
+//                        Class ctrlType = b.getClass();
+//                        VrController vc = (VrController) ctrlType.getAnnotation(VrController.class);
+//                        if (vc == null) {
+//                            requireAuth = true;
+//                        }else{
+//                            String sc = vc.securityKey();
+//                        }
+//                    } else {
+//                        requireAuth = true;
+//                    }
+//                }
+            } else if (servletPath.startsWith("/r/modules/")) {
+                requireAuth = true;
+            } else if (servletPath.startsWith("/r/")) {
+                requireAuth = false;
+            } else if (servletPath.equals("/r")) {
                 requireAuth = false;
             }
         }
@@ -114,53 +145,53 @@ public class VrWebSecurityFilter implements Filter {
             try {
                 chain.doFilter(request, response);
             } catch (Exception e) {
-                if(e instanceof javax.el.ELException || e instanceof IllegalArgumentException){
+                if (e instanceof javax.el.ELException || e instanceof IllegalArgumentException) {
                     e.printStackTrace();
                 }
                 HttpServletResponse webresponse = (HttpServletResponse) response;
                 if (e instanceof ServletException) {
                     Throwable rootCause = ((ServletException) e).getRootCause();
                     if (rootCause instanceof ViewExpiredException) {
-                        if(!webresponse.isCommitted()) {
+                        if (!webresponse.isCommitted()) {
                             webresponse.sendRedirect(contextPath + "/r/index.xhtml?faces-redirect=true");
                         }
                         return;
                     }
                 }
                 if (e instanceof ViewExpiredException) {
-                    if(!webresponse.isCommitted()) {
+                    if (!webresponse.isCommitted()) {
                         webresponse.sendRedirect(contextPath + "/r/index.xhtml?faces-redirect=true");
                     }
                     return;
                 }
-                if(e.getClass().getName().endsWith(".ClientAbortException")){
+                if (e.getClass().getName().endsWith(".ClientAbortException")) {
                     //this is a tomcat 'Broken pipe' handling i suppose
                     log.log(Level.SEVERE, "ClientAbortException");
-                    if(!webresponse.isCommitted()) {
+                    if (!webresponse.isCommitted()) {
                         webresponse.sendRedirect(contextPath + "/r/index.xhtml?faces-redirect=true");
                     }
                     return;
                 }
                 log.log(Level.SEVERE, "Unhandled Error", e);
-                if(!webresponse.isCommitted()) {
+                if (!webresponse.isCommitted()) {
                     webresponse.sendRedirect(contextPath + "/r/index.xhtml?faces-redirect=true");
                 }
 //                HttpServletResponse res = (HttpServletResponse) response;
 //                res.sendError(500);
             }
         } else {
-            if(sso!=null){
+            if (sso != null) {
                 String ri = req.getRequestURI();
                 String qs = req.getQueryString();
-                if(qs!=null){
-                    ri=ri+"?"+qs;
+                if (qs != null) {
+                    ri = ri + "?" + qs;
                 }
                 UserSession currentSession = sso.getCurrentSession();
                 currentSession.setPreConnexionURL(ri);
             }
             HttpServletResponse res = (HttpServletResponse) response;
-            if(!res.isCommitted()) {
-                res.sendRedirect(req.getContextPath()+"/p/loginCtrl");
+            if (!res.isCommitted()) {
+                res.sendRedirect(req.getContextPath() + "/p/loginCtrl");
             }
         }
     }

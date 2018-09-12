@@ -20,7 +20,8 @@ import org.springframework.stereotype.Controller;
  */
 @VrController(
 //        title = "News",
-        url = "#{vr.publicThemeRelativePath}/news"
+        url = "#{vr.publicThemeRelativePath}/news",
+        acceptAnonymous = true
 )
 @Scope(value = "singleton")
 @Controller

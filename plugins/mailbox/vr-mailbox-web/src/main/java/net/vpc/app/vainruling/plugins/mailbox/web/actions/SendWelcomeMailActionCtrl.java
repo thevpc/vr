@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.vpc.app.vainruling.core.web.jsf.Vr;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -104,7 +105,7 @@ public class SendWelcomeMailActionCtrl {
 
     public void fireEventExtraDialogClosed() {
         VrApp.getBean(VrNotificationSession.class).clear(MailboxPlugin.SEND_WELCOME_MAIL_QUEUE);
-        RequestContext.getCurrentInstance().closeDialog(null);
+        Vr.get().closeDialog();
     }
 
     public Model getModel() {

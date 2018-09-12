@@ -84,6 +84,8 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
             ObjConfig c = VrUtils.parseJSONObject(cmd, ObjConfig.class);
             Entity entity = UPA.getPersistenceUnit().getEntity(c.entity);
             VrControllerInfo d = new VrControllerInfo();
+            d.setControllerName("obj");
+            d.setCmd(cmd);
             d.setTitle(getPageTitleString(entity, AccessMode.READ));
             d.setUrl("modules/obj/objects");
             d.setCss("fa-table");

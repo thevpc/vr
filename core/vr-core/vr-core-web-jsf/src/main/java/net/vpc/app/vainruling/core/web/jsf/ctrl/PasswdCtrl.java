@@ -21,7 +21,7 @@ import java.util.logging.Logger;
  */
 @VrController(
         url = "modules/config/passwd",
-        menu = "/Config",
+        menu = "/Desktop",
         securityKey = CorePluginSecurity.RIGHT_CUSTOM_ADMIN_PASSWD
 )
 public class PasswdCtrl {

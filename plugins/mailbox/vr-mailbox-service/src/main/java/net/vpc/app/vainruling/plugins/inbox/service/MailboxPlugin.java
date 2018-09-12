@@ -11,7 +11,7 @@ import net.vpc.app.vainruling.core.service.TraceService;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppProfile;
 import net.vpc.app.vainruling.core.service.model.AppUser;
-import net.vpc.app.vainruling.core.service.model.content.ArticlesItem;
+import net.vpc.app.vainruling.core.service.model.content.AppArticle;
 import net.vpc.app.vainruling.core.service.notification.VrNotificationEvent;
 import net.vpc.app.vainruling.core.service.notification.VrNotificationManager;
 import net.vpc.app.vainruling.core.service.notification.VrNotificationSession;
@@ -1067,7 +1067,7 @@ public class MailboxPlugin {
         return new ArrayList<String>(new TreeSet<String>(all));
     }
 
-    public void sendExternalMail(ArticlesItem obj, String config) {
+    public void sendExternalMail(AppArticle obj, String config) {
         if (obj == null) {
             return;
         }
@@ -1078,7 +1078,7 @@ public class MailboxPlugin {
         if (c == null) {
             c = new SendExternalMailConfig();
         }
-        ArticlesItem a = obj;
+        AppArticle a = obj;
         RecipientType etype = c.getEmailType();
         if (etype == null) {
             etype = RecipientType.TOEACH;
@@ -1139,14 +1139,14 @@ public class MailboxPlugin {
         }
     }
 
-    public void sendLocalMail(ArticlesItem obj, String config) {
+    public void sendLocalMail(AppArticle obj, String config) {
         if (obj == null) {
             return;
         }
         if (!UPA.getPersistenceGroup().getSecurityManager().isAllowedKey(MailboxPluginSecurity.RIGHT_CUSTOM_ARTICLE_SEND_INTERNAL_EMAIL)) {
             return;
         }
-        ArticlesItem a = obj;
+        AppArticle a = obj;
         SendExternalMailConfig c = VrUtils.parseJSONObject(config, SendExternalMailConfig.class);
         if (c == null) {
             c = new SendExternalMailConfig();

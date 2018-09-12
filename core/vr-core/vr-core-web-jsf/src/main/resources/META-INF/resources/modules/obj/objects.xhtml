@@ -603,8 +603,9 @@ and open the template in the editor.
                                                          styleClass="form-control"/>
                                     </pe:dynaFormControl>
                                     <pe:dynaFormControl type="richtextarea" for="trichtextarea" >
-                                        <p:editor id="trichtextarea" value="#{data.value}" required="#{data.required}"
-                                                  disabled="#{data.disabled}"/>
+                                        <p:textEditor 
+                                            id="trichtextarea" value="#{data.value}" required="#{data.required}"
+                                            readonly="#{data.disabled}"/>
                                     </pe:dynaFormControl>
 
                                     <pe:dynaFormControl type="wikitextarea" for="twikiarea" >

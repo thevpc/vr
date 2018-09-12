@@ -15,17 +15,18 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URLDecoder;
+import net.vpc.app.vainruling.core.service.CorePlugin;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@WebServlet(name = "PageServlet", urlPatterns = "/p/*",loadOnStartup = 10)
+@WebServlet(name = "PageServlet", urlPatterns = "/p/*", loadOnStartup = 10)
 public class PageServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        VrMenuManager core = VrApp.getBean(VrMenuManager.class);
+        VrMenuManager mm = VrApp.getBean(VrMenuManager.class);
         String filename = URLDecoder.decode(request.getPathInfo(), "UTF-8");
         if (filename.startsWith("/")) {
             filename = filename.substring(1);
@@ -33,9 +34,14 @@ public class PageServlet extends HttpServlet {
         if (filename.endsWith("/")) {
             filename = filename.substring(0, filename.length() - 1);
         }
-        String newPath = core.gotoPage(filename, request.getParameter("a"));
-        if(newPath==null){
-            request.getRequestDispatcher("/p/welcome").forward(request, response);
+        String newPath = mm.gotoPage(filename, request.getParameter("a"));
+        if (newPath == null) {
+            CorePlugin core = VrApp.getBean(CorePlugin.class);
+            if (core.isLoggedIn()) {
+                request.getRequestDispatcher("/p/welcome").forward(request, response);
+            } else {
+                request.getRequestDispatcher("/p/login").forward(request, response);
+            }
             return;
         }
         int i = newPath.indexOf("?");

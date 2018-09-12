@@ -83,6 +83,8 @@ public class DocumentsCtrl implements VRMenuProvider, VrControllerInfoResolver, 
                 c = new Config();
             }
             VrControllerInfo d = new VrControllerInfo();
+            d.setControllerName("documents");
+            d.setCmd(cmd);
             d.setUrl("modules/files/documents");
             d.setCss("fa-table");
 

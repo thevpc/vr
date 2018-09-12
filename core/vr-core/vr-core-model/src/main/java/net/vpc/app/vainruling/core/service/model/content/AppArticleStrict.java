@@ -4,10 +4,10 @@ import net.vpc.app.vainruling.core.service.model.strict.AppUserStrict;
 
 import java.util.Date;
 
-public class ArticlesItemStrict {
+public class AppArticleStrict {
     private int id;
     private ArticlesDispositionStrict disposition;
-    private ArticlesDispositionGroup dispositionGroup;
+    private AppArticleDispositionGroup dispositionGroup;
     private AppUserStrict sender;
     private String content;
     private String decoration;
@@ -23,7 +23,7 @@ public class ArticlesItemStrict {
     private int visitCount;
     private boolean noSubject;
     private boolean important;
-    public ArticlesItemStrict(ArticlesItem item) {
+    public AppArticleStrict(AppArticle item) {
         id=item.getId();
         disposition=new ArticlesDispositionStrict(item.getDisposition());
         imageURL=item.getImageURL();
@@ -108,11 +108,11 @@ public class ArticlesItemStrict {
         this.disposition = disposition;
     }
 
-    public ArticlesDispositionGroup getDispositionGroup() {
+    public AppArticleDispositionGroup getDispositionGroup() {
         return dispositionGroup;
     }
 
-    public void setDispositionGroup(ArticlesDispositionGroup dispositionGroup) {
+    public void setDispositionGroup(AppArticleDispositionGroup dispositionGroup) {
         this.dispositionGroup = dispositionGroup;
     }
 
@@ -193,7 +193,7 @@ public class ArticlesItemStrict {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        ArticlesItemStrict that = (ArticlesItemStrict) o;
+        AppArticleStrict that = (AppArticleStrict) o;
 
         return id == that.id;
     }
