@@ -65,7 +65,7 @@ public class AppGlobalCtrl extends BasePageCtrl {
             if (p <= 60000) {
                 return "Arrêt imminent...";
             }
-            return "Arrêt dans " + Chronometer.formatPeriod(p, DatePart.MINUTE);
+            return "Arrêt dans " + Chronometer.formatPeriodMilli(p, DatePart.MINUTE);
         }
         return getModel().getHeadMessageText();
     }

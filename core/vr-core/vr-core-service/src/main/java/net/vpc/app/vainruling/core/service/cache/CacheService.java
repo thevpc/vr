@@ -29,6 +29,14 @@ public class CacheService {
             entityCache.clear();
         }
 
+        public void invalidate(Entity entity) {
+            properties.clear();
+            EntityCache c = entityCache.get(entity.getName());
+            if (c != null) {
+                c.invalidate();
+            }
+        }
+        
         public void invalidate(Entity entity, Object value) {
             properties.clear();
             EntityCache c = entityCache.get(entity.getName());
@@ -93,6 +101,10 @@ public class CacheService {
 
     public void invalidate(Entity entity, Object value) {
         getDomainCache().invalidate(entity,value);
+    }
+    
+    public void invalidate(Entity entity) {
+        getDomainCache().invalidate(entity);
     }
 
     public <K, V> MapList<K, V> getList(Class<V> entity) {

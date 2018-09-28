@@ -33,7 +33,7 @@ public class AcademicPerfEvalFeature {
                 || entityName.equals(AcademicCoursePlan.class.getSimpleName())
                 || entityName.equals(AcademicStudent.class.getSimpleName())) {
             if (entity.findField("allowCourseFeedback") == null) {
-                Section tracking = entity.getSection("Eval", MissingStrategy.CREATE);
+                Section tracking = entity.getSection("Eval", MissingStrategy.CREATE, 0);
                 tracking.addField(
                         new DefaultFieldBuilder().setName("allowCourseFeedback")
                                 .setDataType(BooleanType.BOOLEAN)
@@ -42,7 +42,7 @@ public class AcademicPerfEvalFeature {
             }
         } else if (entityName.equals(AcademicCourseAssignment.class.getSimpleName())) {
             if (entity.findField("enableCourseFeedback") == null) {
-                Section tracking = entity.getSection("Eval", MissingStrategy.CREATE);
+                Section tracking = entity.getSection("Eval", MissingStrategy.CREATE, 0);
                 tracking.addField(new DefaultFieldBuilder().setName("enableCourseFeedback")
                         .setDataType(BooleanType.BOOLEAN)
                         .setDefaultObject(true)

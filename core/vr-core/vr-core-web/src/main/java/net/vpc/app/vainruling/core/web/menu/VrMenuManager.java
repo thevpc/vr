@@ -129,7 +129,7 @@ public class VrMenuManager {
                 return value.toLowerCase().contains(finalSearchText);
             }
         };
-        return (new MenuTree(menuFilter,this).root);
+        return (new MenuTree(menuFilter, this).root);
     }
 
     public String buildMenu() {
@@ -267,6 +267,27 @@ public class VrMenuManager {
                     return new VrControllerInfoAndObject(vrControllerInfo, obj);
                 }
             }
+            if (obj instanceof VrActionEnabler) {
+                VrActionEnabler r = (VrActionEnabler) obj;
+                String name2 = name;
+                if(!r.isEnabled(new VrActionInfo() {
+                    @Override
+                    public String getMenuPath() {
+                        VrController c2Ann = (VrController) targetClass.getAnnotation(VrController.class);
+                        if (c2Ann != null) {
+                            return c2Ann.menu();
+                        }
+                        return null;
+                    }
+
+                    @Override
+                    public String getSource() {
+                        return name2;
+                    }
+                })){
+                  continue;
+                }
+            }
             VrController c2Ann = (VrController) targetClass.getAnnotation(VrController.class);
             if (c2Ann != null) {
                 VrControllerInfo vrControllerInfo = resolveVrControllerInfoByAnnotation(obj, c2Ann, name, cmd);
@@ -401,7 +422,7 @@ public class VrMenuManager {
         VrWebHelper.prepareUserSession();
         VrControllerInfoAndObject d = resolveVrControllerInfoByInstance(command, arguments);
         boolean loggedIn = CorePlugin.get().isLoggedIn();
-        if(!loggedIn && !d.getInfo().isAcceptAnonymous()){
+        if (!loggedIn && !d.getInfo().isAcceptAnonymous()) {
             return null;
         }
 //        String goodBeanName = resolveGoodBeanName(o);
@@ -864,8 +885,8 @@ public class VrMenuManager {
         final HashSet<VRMenuInfo> nonVisitedCustomMenus = new HashSet<>(autowiredCustomMenusByCtrl);
         final HashSet<VRMenuInfo> visitedCustomMenus = new HashSet<>();
 
-        public MenuTree(ObjectFilter<String> filter,VrMenuManager menuManager) {
-            TreeTraversal.postOrderTreeTraversal(this, new MenuTreeVisitor(filter,menuManager));
+        public MenuTree(ObjectFilter<String> filter, VrMenuManager menuManager) {
+            TreeTraversal.postOrderTreeTraversal(this, new MenuTreeVisitor(filter, menuManager));
         }
 
         @Override

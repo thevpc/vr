@@ -32,6 +32,6 @@ public class PeriodToSecondsConverter implements Converter {
             return "";
         }
         long b = ((Number) value).longValue();
-        return Chronometer.formatPeriod(b, DatePart.SECOND);
+        return Chronometer.formatPeriodMilli(b, DatePart.SECOND);
     }
 }

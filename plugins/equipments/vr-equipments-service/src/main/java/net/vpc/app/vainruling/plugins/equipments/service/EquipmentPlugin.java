@@ -140,10 +140,7 @@ public class EquipmentPlugin {
     private void installService() {
         CorePlugin core = VrApp.getBean(CorePlugin.class);
 
-        AppUserType technicianType;
-        technicianType = new AppUserType();
-        technicianType.setName("Technician");
-        technicianType = core.findOrCreate(technicianType);
+        AppUserType technicianType = core.findOrCreate(new AppUserType("Technician","Technician"));
 
         AppProfile technicianProfile;
         technicianProfile = new AppProfile();

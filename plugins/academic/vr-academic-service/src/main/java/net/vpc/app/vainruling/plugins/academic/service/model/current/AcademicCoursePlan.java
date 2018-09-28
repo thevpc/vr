@@ -89,6 +89,7 @@ public class AcademicCoursePlan {
     )
     private AcademicCourseLevel courseLevel;
 
+    @Summary
     private AcademicTeacher responsible;
     private AcademicTeacher responsible2;
     private String responsibleAvailability;

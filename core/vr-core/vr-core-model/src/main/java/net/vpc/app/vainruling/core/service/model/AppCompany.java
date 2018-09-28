@@ -19,11 +19,13 @@ import java.sql.Timestamp;
 @Path("Contact")
 @Properties(
         {
-                @Property(name = "ui.auto-filter.country", value = "{expr='this.country',order=1}"),
-                @Property(name = "ui.auto-filter.governorate", value = "{expr='this.governorate',order=2}"),
-                @Property(name = "ui.auto-filter.settlement", value = "{expr='this.settlement',order=3}"),
-                @Property(name = "ui.auto-filter.industry", value = "{expr='this.industry',order=4}"),
-        })
+            @Property(name = "ui.auto-filter.country", value = "{expr='this.country',order=1}")
+            ,
+                @Property(name = "ui.auto-filter.governorate", value = "{expr='this.governorate',order=2}")
+            ,
+                @Property(name = "ui.auto-filter.settlement", value = "{expr='this.settlement',order=3}")
+            ,
+                @Property(name = "ui.auto-filter.industry", value = "{expr='this.industry',order=4}"),})
 public class AppCompany {
 
     @Path("Main")
@@ -37,6 +39,7 @@ public class AppCompany {
     private String name2;
     @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
     private String address;
+    private AppCompanyGroup companyGroup;
     @Summary
     private AppCountry country;
     @Summary
@@ -65,6 +68,13 @@ public class AppCompany {
     private Timestamp creationDate;
     @Formula(value = "CurrentTimestamp()", formulaType = {FormulaType.PERSIST, FormulaType.UPDATE})
     private Timestamp updateDate;
+
+    public AppCompany() {
+    }
+
+    public AppCompany(String name) {
+        this.name = name;
+    }
 
     public String getAbout() {
         return about;
@@ -215,10 +225,22 @@ public class AppCompany {
         this.activityDetails = activityDetails;
     }
 
+    public AppCompanyGroup getCompanyGroup() {
+        return companyGroup;
+    }
+
+    public void setCompanyGroup(AppCompanyGroup companyGroup) {
+        this.companyGroup = companyGroup;
+    }
+
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         AppCompany that = (AppCompany) o;
 

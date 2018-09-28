@@ -1,15 +1,13 @@
 package net.vpc.app.vr.plugins.academicprofile.service.model;
 
-import net.vpc.app.vainruling.core.service.model.AppCompany;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.upa.config.*;
-import net.vpc.upa.types.Date;
 
 /**
  * Created by vpc on 7/19/17.
  */
 @Entity
-@Path("Admin/Config")
+@Path("Education")
 public class AcademicCVSection {
 
     @Id

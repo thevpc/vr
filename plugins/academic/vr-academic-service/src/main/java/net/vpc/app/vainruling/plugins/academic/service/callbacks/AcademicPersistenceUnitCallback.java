@@ -35,13 +35,13 @@ public class AcademicPersistenceUnitCallback {
         String entityName = entity.getName();
         if (entityName.equals(AppDepartmentPeriod.class.getSimpleName())) {
             if (entity.findField("enableLoadEditing") == null) {
-                Section tracking = entity.getSection("Load", MissingStrategy.CREATE);
+                Section tracking = entity.getSection("Load", MissingStrategy.CREATE, 0);
                 tracking.addField(new DefaultFieldBuilder().setName("enableLoadEditing").addModifier(UserFieldModifier.SUMMARY).setDefaultObject(true).setDataType(BooleanType.BOOLEAN));
             }
         }
         if (entityName.equals(AppPeriod.class.getSimpleName())) {
             if (entity.findField("loadConversionTable") == null) {
-                Section tracking = entity.getSection("Load", MissingStrategy.CREATE);
+                Section tracking = entity.getSection("Load", MissingStrategy.CREATE, 0);
                 tracking.addField(new DefaultFieldBuilder().setName("loadConversionTable").addModifier(UserFieldModifier.SUMMARY)
                         .setDataType(new ManyToOneType(AcademicLoadConversionTable.class, true))
                 );
@@ -55,6 +55,5 @@ public class AcademicPersistenceUnitCallback {
         AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
         p.validateAcademicData(c.getCurrentPeriod().getId());
     }
-
 
 }

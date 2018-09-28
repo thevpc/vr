@@ -5,7 +5,6 @@
  */
 package net.vpc.app.vainruling.core.service.model;
 
-import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.upa.FormulaType;
 import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
@@ -15,7 +14,7 @@ import net.vpc.upa.types.DateTime;
  * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "this.name desc")
-@Path("Admin/Config")
+@Path("/Repository/General")
 public class AppPeriod {
 
     @Path("Main")

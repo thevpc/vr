@@ -14,7 +14,7 @@ import java.util.Objects;
  * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "this.name")
-@Path("Admin/Security")
+@Path("/Admin/Security")
 public class AppRightName {
 
     @Path("Main")

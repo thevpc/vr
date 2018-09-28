@@ -15,6 +15,7 @@ Version 1.13.11 :
     
 ## Bug Fixes
     [Core] fixed problem when user has no login (not enabled)
+    [Profile] fixed profile broken page
 
 --------------------------------------------------------------------------------
 

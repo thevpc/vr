@@ -30,6 +30,7 @@
         <module>plugins/academic-profile</module>
 
         <module>plugins/themes</module>
+        <module>core/vr-nb-integration</module>
     </modules>
 
 </project>

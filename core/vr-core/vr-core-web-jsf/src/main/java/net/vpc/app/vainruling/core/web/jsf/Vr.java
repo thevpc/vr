@@ -1505,4 +1505,16 @@ public class Vr {
         DialogBuilder.closeCurrent();
         //RequestContext.getCurrentInstance().closeDialog(null);
     }
+    
+    public String strCoalesce(Object ... any){
+        for (Object obj : any) {
+            if(obj!=null){
+                String s = String.valueOf(obj);
+                if(!StringUtils.isEmpty(s)){
+                    return s;
+                }
+            }
+        }
+        return "";
+    }
 }

@@ -36,7 +36,7 @@ import net.vpc.upa.types.DateTime;
                 @Property(name = UIConstants.ENTITY_TEXT_SEARCH_FACTORY, value = "net.vpc.app.vainruling.core.service.obj.AppUserObjSearchFactory")
         })
 public class AppUser extends AppContactBase implements Cloneable {
-
+    @Path(value = "UserInfos",position = 0)
     @Summary
     @Unique
     @Field(

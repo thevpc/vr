@@ -41,7 +41,7 @@ public class AcademicStudentCallback {
                                 .addModifier(UserFieldModifier.SUMMARY)
                                 .setReadProtectionLevel(ProtectionLevel.PROTECTED)
                                 .setDataType(DataTypeFactory.STRING)
-                                .setIndex(3)
+                                .setPosition(3)
                                 .setLiveSelectFormula("this.user.email")
                 );
             }
@@ -52,7 +52,7 @@ public class AcademicStudentCallback {
                                 .addModifier(UserFieldModifier.SUMMARY)
                                 .setReadProtectionLevel(ProtectionLevel.PROTECTED)
                                 .setDataType(DataTypeFactory.STRING)
-                                .setIndex(4)
+                                .setPosition(4)
                                 .setLiveSelectFormula("this.user.phone1")
                 );
             }

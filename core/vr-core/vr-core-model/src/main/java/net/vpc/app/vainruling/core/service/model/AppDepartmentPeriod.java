@@ -11,7 +11,7 @@ import net.vpc.upa.config.*;
  * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "this.period.name desc, department.name asc")
-@Path("Admin/Config")
+@Path("/Repository/General")
 public class AppDepartmentPeriod {
 
     @Path("Main")

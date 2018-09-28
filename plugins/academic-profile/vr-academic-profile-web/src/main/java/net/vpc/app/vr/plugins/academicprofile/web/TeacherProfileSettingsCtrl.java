@@ -8,7 +8,6 @@ package net.vpc.app.vr.plugins.academicprofile.web;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppCompany;
-import net.vpc.app.vainruling.core.service.model.AppContact;
 import net.vpc.app.vainruling.core.web.*;
 import net.vpc.app.vainruling.core.web.jsf.DialogBuilder;
 import net.vpc.app.vainruling.core.web.jsf.Vr;
@@ -75,7 +74,7 @@ public class TeacherProfileSettingsCtrl implements DocumentUploadListener, VrAct
     @OnPageLoad
     private void onPageReload() {
         Vr vr = Vr.get();
-        getModel().setContact(core.getCurrentUser());
+        getModel().setUser(core.getCurrentUser());
         AcademicPlugin ap = VrApp.getBean(AcademicPlugin.class);
         AcademicTeacher currentTeacher = ap.getCurrentTeacher();
         if (currentTeacher != null) {
@@ -177,7 +176,7 @@ public class TeacherProfileSettingsCtrl implements DocumentUploadListener, VrAct
             @Override
             public void run() {
                 try {
-                    app.updateContactInformations(getModel().contact);
+                    app.updateContactInformations(getModel().user);
                     app.updateTeacherCVInformations(getModel().teacherCV);
                     FacesUtils.addInfoMessage("Modifications enregistrées");
                 } catch (Exception ex) {
@@ -193,7 +192,7 @@ public class TeacherProfileSettingsCtrl implements DocumentUploadListener, VrAct
             @Override
             public void run() {
                 try {
-                    app.updateContactInformations(getModel().contact);
+                    app.updateContactInformations(getModel().user);
                     FacesUtils.addInfoMessage("Modifications enregistrées");
                 } catch (Exception ex) {
                     log.log(Level.SEVERE, "Error", ex);
@@ -392,7 +391,7 @@ public class TeacherProfileSettingsCtrl implements DocumentUploadListener, VrAct
     public static class Model {
 
         private AcademicTeacher teacher;
-        private AppUser contact;
+        private AppUser user;
         private AcademicTeacherCV teacherCV;
 
         private boolean uploadingPhoto;
@@ -468,12 +467,12 @@ public class TeacherProfileSettingsCtrl implements DocumentUploadListener, VrAct
             this.teacherCV = teacherCV;
         }
 
-        public AppUser getContact() {
-            return contact;
+        public AppUser getUser() {
+            return user;
         }
 
-        public void setContact(AppUser contact) {
-            this.contact = contact;
+        public void setUser(AppUser user) {
+            this.user = user;
         }
 
         public List<SelectItem> getCompanyItems() {

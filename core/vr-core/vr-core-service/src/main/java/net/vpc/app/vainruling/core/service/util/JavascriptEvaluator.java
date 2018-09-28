@@ -93,19 +93,24 @@ public class JavascriptEvaluator {
                 code = "return (" + code + ");";
             }
         }
-        this.code = code;
+        String varName="x";
+        this.code = replaceWord(code,"this",varName);
         try {
             engine = createScriptEngine();
         } catch (Exception ex) {
             engine = createManagerJdk();
         }
         try {
-            engine.eval("function jseval(x) { " + code + " }");
+            engine.eval("function jseval("+varName+") { " + code + " }");
             engine.put("vr", new ScriptUtil());
         } catch (ScriptException e) {
             throw new RuntimeException(e);
         }
 
+    }
+
+    private static String replaceWord(String x,String a,String b){
+        return x.replaceAll("\\b"+a+"\\b", b);
     }
 
 //    public static void main(String[] args) {

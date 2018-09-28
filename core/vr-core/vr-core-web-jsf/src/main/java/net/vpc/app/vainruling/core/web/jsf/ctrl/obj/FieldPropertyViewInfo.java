@@ -37,9 +37,9 @@ public class FieldPropertyViewInfo {
             FlagSet<FieldModifier> modifiers = field.getModifiers();
             main = modifiers.contains(FieldModifier.MAIN);
             id = modifiers.contains(FieldModifier.ID);
-            insert = modifiers.contains(FieldModifier.PERSIST_DEFAULT);
+            insert = field.getPersistFormula() == null && modifiers.contains(FieldModifier.PERSIST_DEFAULT);
             insert_seq = modifiers.contains(FieldModifier.PERSIST_SEQUENCE);
-            update = !id && modifiers.contains(FieldModifier.UPDATE_DEFAULT)
+            update = field.getUpdateFormula() == null && !id && modifiers.contains(FieldModifier.UPDATE_DEFAULT)
                     //this is added to fix problem for creation date
                     && modifiers.contains(FieldModifier.PERSIST_DEFAULT);
         } else {
@@ -54,20 +54,20 @@ public class FieldPropertyViewInfo {
         updateMode = objCtrl.getModel().getMode() == AccessMode.UPDATE;
         if (field != null) {
             AccessLevel effectiveAccessLevel = field.getEffectiveAccessLevel(objCtrl.getModel().getMode());
-            switch (effectiveAccessLevel){
-                case INACCESSIBLE:{
-                    visible=false;
-                    disabled=true;
+            switch (effectiveAccessLevel) {
+                case INACCESSIBLE: {
+                    visible = false;
+                    disabled = true;
                     break;
                 }
-                case READ_ONLY:{
-                    visible=true;
-                    disabled=true;
+                case READ_ONLY: {
+                    visible = true;
+                    disabled = true;
                     break;
                 }
-                case READ_WRITE:{
-                    visible=true;
-                    disabled=false;
+                case READ_WRITE: {
+                    visible = true;
+                    disabled = false;
                     break;
                 }
             }
@@ -80,8 +80,18 @@ public class FieldPropertyViewInfo {
         }
         boolean forceDisabled = configuration != null && configuration.get("enabled") != null && (Boolean.FALSE.equals(configuration.get("enabled")) || "false".equalsIgnoreCase(String.valueOf(configuration.get("enabled"))));
         boolean forceInvisible = configuration != null && configuration.get("visible") != null && (Boolean.FALSE.equals(configuration.get("visible")) || "false".equalsIgnoreCase(String.valueOf(configuration.get("visible"))));
-        if(!disabled && forceDisabled) {
+        if (!disabled && forceDisabled) {
             disabled = forceDisabled;
+        }
+        if (field != null) {
+            if (!disabled) {
+                if (insertMode) {
+                    disabled = field.getPersistFormula() != null;
+                }
+                if (updateMode) {
+                    disabled = field.getUpdateFormula() != null;
+                }
+            }
         }
         submitOnChange = configuration != null && configuration.get("submitOnChange") != null && (Boolean.TRUE.equals(configuration.get("submitOnChange")) || "true".equalsIgnoreCase(String.valueOf(configuration.get("submitOnChange"))));;
 
@@ -97,7 +107,6 @@ public class FieldPropertyViewInfo {
 //                }
 //            }
 //        }
-
         if (visible && forceInvisible) {
             visible = false;
         }

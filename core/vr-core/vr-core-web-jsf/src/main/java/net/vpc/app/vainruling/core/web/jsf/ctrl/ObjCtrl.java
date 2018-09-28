@@ -1107,7 +1107,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
                 ViewContext viewContext = new ViewContext();
                 List<OrderedPropertyView> propertyViews = new ArrayList<OrderedPropertyView>();
                 List<EntityItem> entityParts = ot.getItems();
-//                List<EntityPart> entityParts = VrUtils.sortPreserveIndex(ot.getParts(), new Comparator<EntityPart>() {
+//                List<EntityPart> entityParts = VrUtils.sortPreserveIndex(ot.getItems(), new Comparator<EntityPart>() {
 //                    @Override
 //                    public int compare(EntityItem o1, EntityItem o2) {
 ////                    if (o1 instanceof Section && o2 instanceof Section) {

@@ -13,7 +13,7 @@ import net.vpc.upa.config.*;
  * @author taha.bensalah@gmail.com
  */
 @Entity
-@Path("Admin/Security")
+@Path("/Repository/Security")
 public class AppProfileRight {
 
     @Path("Main")

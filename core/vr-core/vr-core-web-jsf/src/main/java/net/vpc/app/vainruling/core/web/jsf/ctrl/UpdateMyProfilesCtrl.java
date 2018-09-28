@@ -26,7 +26,7 @@ import java.util.logging.Logger;
 @VrController(
         breadcrumb = {
             @UPathItem(title = "Admin", css = "fa-dashboard", ctrl = "")},
-        menu = "/Admin/Security",
+        menu = "/Contact",
         url = "/modules/admin/my-profiles"//,
 //        securityKey = CorePluginSecurity.RIGHT_CUSTOM_UPDATE_MY_PROFILES
 )

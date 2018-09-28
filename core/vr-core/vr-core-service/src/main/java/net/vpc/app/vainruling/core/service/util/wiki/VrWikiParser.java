@@ -23,6 +23,7 @@ import java.util.logging.Logger;
  * @author taha.bensalah@gmail.com on 7/24/16.
  */
 public class VrWikiParser {
+
     private static final Logger log = Logger.getLogger(VrWikiParser.class.getName());
 
     public static String convertToHtml(String value, String title) {
@@ -31,38 +32,6 @@ public class VrWikiParser {
 
     public static String convertToText(String value, String title) {
         return renderWikiText(value, title, false);
-    }
-
-    public static void main(String[] args) throws Exception {
-        if (args.length < 1) {
-            System.err.println("Usage: java -jar swc-example-basic-archetype-VERSION.jar [--html|--text] TITLE");
-            System.err.println();
-            System.err.println("  The program will look for a file called `TITLE.wikitext',");
-            System.err.println("  parse the file and write an HTML version to `TITLE.html'.");
-            return;
-        }
-
-        boolean renderHtml = true;
-
-        int i = 0;
-        if (args[i].equalsIgnoreCase("--html")) {
-            renderHtml = true;
-            ++i;
-        } else if (args[i].equalsIgnoreCase("--text")) {
-            renderHtml = false;
-            ++i;
-        }
-
-        String fileTitle = args[i];
-
-        String html = renderWikiText(
-                new File(fileTitle + ".wikitext"),
-                fileTitle,
-                renderHtml);
-
-        FileUtils.writeStringToFile(
-                new File(fileTitle + (renderHtml ? ".html" : ".text")),
-                html);
     }
 
     static String renderWikiText(File file, String fileTitle, boolean renderHtml) throws Exception {
@@ -142,6 +111,7 @@ public class VrWikiParser {
     private static final class MyRendererCallback
             implements
             HtmlRendererCallback {
+
         protected static final String LOCAL_URL = "";
 
         @Override
@@ -161,15 +131,17 @@ public class VrWikiParser {
             String page = UrlEncoding.WIKI.encode(target.getNormalizedFullTitle());
             String f = target.getFragment();
             String url = page;
-            if (f != null && !f.isEmpty())
+            if (f != null && !f.isEmpty()) {
                 url = page + "#" + UrlEncoding.WIKI.encode(f);
+            }
             return LOCAL_URL + "/" + url;
         }
 
         @Override
         public String makeUrl(WtUrl target) {
-            if (target.getProtocol() == "")
+            if (target.getProtocol()==null ||  target.getProtocol().isEmpty()) {
                 return target.getPath();
+            }
             return target.getProtocol() + ":" + target.getPath();
         }
 

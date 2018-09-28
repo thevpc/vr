@@ -59,7 +59,7 @@ public class StudentProfileSettingsCtrl implements DocumentUploadListener, VrAct
     @OnPageLoad
     private void onPageReload() {
         Vr vr = Vr.get();
-        getModel().setContact(core.getCurrentUser());
+        getModel().setUser(core.getCurrentUser());
         AcademicPlugin ap = VrApp.getBean(AcademicPlugin.class);
         getModel().setStudent(ap.findStudentByUser(core.getCurrentUserId()));
         getModel().setStudentCV(app.findOrCreateAcademicStudentCV(getModel().getStudent().getId()));
@@ -91,7 +91,7 @@ public class StudentProfileSettingsCtrl implements DocumentUploadListener, VrAct
             @Override
             public void run() {
                 try {
-                    app.updateContactInformations(getModel().contact);
+                    app.updateContactInformations(getModel().user);
                     app.updateStudentInformations(getModel().student);
                     FacesUtils.addInfoMessage("Modifications enregistrées");
                 } catch (Exception ex) {
@@ -107,7 +107,7 @@ public class StudentProfileSettingsCtrl implements DocumentUploadListener, VrAct
             @Override
             public void run() {
                 try {
-                    app.updateContactInformations(getModel().contact);
+                    app.updateContactInformations(getModel().user);
                     app.updateStudentCVInformations(getModel().studentCV);
                     FacesUtils.addInfoMessage("Modifications enregistrées");
                 } catch (Exception ex) {
@@ -154,7 +154,7 @@ public class StudentProfileSettingsCtrl implements DocumentUploadListener, VrAct
             @Override
             public void run() {
                 try {
-                    app.updateContactInformations(getModel().contact);
+                    app.updateContactInformations(getModel().user);
                     FacesUtils.addInfoMessage("Modifications enregistrées");
                 } catch (Exception ex) {
                     log.log(Level.SEVERE, "Error", ex);
@@ -276,7 +276,7 @@ public class StudentProfileSettingsCtrl implements DocumentUploadListener, VrAct
         private boolean uploadingPhoto;
         private boolean uploadingCV;
         private AcademicStudent student;
-        private AppUser contact;
+        private AppUser user;
         private AcademicStudentCV studentCV;
 
         private String privateTheme;
@@ -300,12 +300,12 @@ public class StudentProfileSettingsCtrl implements DocumentUploadListener, VrAct
             this.studentCV = studentCV;
         }
 
-        public AppUser getContact() {
-            return contact;
+        public AppUser getUser() {
+            return user;
         }
 
-        public void setContact(AppUser contact) {
-            this.contact = contact;
+        public void setUser(AppUser user) {
+            this.user = user;
         }
 
         public boolean isUploadingPhoto() {

@@ -30,10 +30,10 @@ public class AppUserType {
     public AppUserType() {
     }
 
-    public AppUserType(int id, String name) {
-        this.id = id;
-        this.name = name;
-    }
+//    public AppUserType(int id, String name) {
+//        this.id = id;
+//        this.name = name;
+//    }
     
     public AppUserType(String code, String name) {
         this.code = code;

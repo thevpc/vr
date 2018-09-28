@@ -37,10 +37,7 @@ public class AcademicPluginBodyStudents extends AcademicPluginBody {
         core = CorePlugin.get();
         academic = getContext().getPlugin();
         trace = TraceService.get();
-        AppUserType studentType = new AppUserType();
-        studentType.setCode("Student");
-        studentType.setName("Student");
-        core.findOrCreate(studentType);
+        core.findOrCreate(new AppUserType("Student","Student"));
 
         AppProfile studentProfile = core.findOrCreateCustomProfile("Student", "UserType");
         core.addProfileRight(studentProfile.getId(), CorePluginSecurity.RIGHT_CUSTOM_FILE_SYSTEM_MY_FILE_SYSTEM);

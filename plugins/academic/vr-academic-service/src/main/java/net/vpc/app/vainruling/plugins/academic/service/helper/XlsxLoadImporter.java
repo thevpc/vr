@@ -514,7 +514,7 @@ public class XlsxLoadImporter {
         if (oldAcademicTeacher != null) {
             academicTeacher = oldAcademicTeacher;
         } else {
-            AppUser u = core.findUserByContact(user.getId());
+            AppUser u = core.findUser(user.getId());
             if (u != null) {
                 academicTeacher.setUser(u);
             }

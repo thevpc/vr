@@ -145,3 +145,6 @@ private/
 /documents/eniso.info/doc/enisoinfo-guide-enseignants.lyx~
 /runtime/intertek/
 /core/vr-core/vr-core-web-jsf/target/
+/core/vr-nb-integration/target/
+/core/vr-nb-integration-ide/application/target/
+/core/vr-nb-integration-ide/branding/target/

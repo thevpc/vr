@@ -34,14 +34,14 @@
                                             <div class="form-group">
                                                 <h:outputLabel class="col-sm-3 control-label text-blue" value="Email 1" for="email1" />
                                                 <div class="col-sm-7">
-                                                    <h:inputText  value="#{teacherProfileSettingsCtrl.model.email}" class="form-control" id="email1"/>
+                                                    <h:inputText  value="#{teacherProfileSettingsCtrl.model.user.email}" class="form-control" id="email1"/>
                                                 </div>
                                             </div>
                                             <br/>
                                             <div class="form-group">
                                                 <h:outputLabel class="col-sm-3 control-label text-blue" value="Email 2" for="email2" />
                                                 <div class="col-sm-7">
-                                                    <h:inputText  value="#{teacherProfileSettingsCtrl.model.email2}" class="form-control" id="email2"/>
+                                                    <h:inputText  value="#{teacherProfileSettingsCtrl.model.user.email2}" class="form-control" id="email2"/>
                                                     <!-- !!!!-->
                                                 </div>
                                             </div>
@@ -50,13 +50,13 @@
                                             <div class="form-group">
                                                 <h:outputLabel class="col-sm-3 control-label text-blue" value="Téléphones"/>
                                                 <div class="col-xs-3">
-                                                    <h:inputText value="#{teacherProfileSettingsCtrl.model.phone1}"  styleClass="form-control"/>
+                                                    <h:inputText value="#{teacherProfileSettingsCtrl.model.user.phone1}"  styleClass="form-control"/>
                                                 </div>
                                                 <div class="col-xs-2">
-                                                    <h:inputText value="#{teacherProfileSettingsCtrl.model.phone2}"  styleClass="form-control"/>
+                                                    <h:inputText value="#{teacherProfileSettingsCtrl.model.user.phone2}"  styleClass="form-control"/>
                                                 </div>
                                                 <div class="col-xs-2">
-                                                    <h:inputText value="#{teacherProfileSettingsCtrl.model.phone3}"  styleClass="form-control"/>
+                                                    <h:inputText value="#{teacherProfileSettingsCtrl.model.user.phone3}"  styleClass="form-control"/>
                                                 </div>
 
                                             </div>
@@ -65,14 +65,14 @@
                                             <div class="form-group">
                                                 <h:outputLabel class="col-sm-3 control-label text-blue" value="Numéro du bureau" for="officeLocationNumber" />
                                                 <div class="col-sm-7">
-                                                    <h:inputText value="#{teacherProfileSettingsCtrl.model.officeLocationNumber}"  class="form-control" id="officeLocationNumber"/>
+                                                    <h:inputText value="#{teacherProfileSettingsCtrl.model.user.officeLocationNumber}"  class="form-control" id="officeLocationNumber"/>
                                                 </div>
                                             </div>
                                             <br/>
                                             <div class="form-group">
                                                 <h:outputLabel class="col-sm-3 control-label text-blue" value="Numéro de téléphone du bureau" for="officePhoneNumber" />
                                                 <div class="col-sm-7">
-                                                    <h:inputText value="#{teacherProfileSettingsCtrl.model.officePhoneNumber}"  class="form-control" id="officePhoneNumber"/>
+                                                    <h:inputText value="#{teacherProfileSettingsCtrl.model.user.officePhoneNumber}"  class="form-control" id="officePhoneNumber"/>
                                                 </div>
                                             </div>
                                             <br/>
@@ -135,7 +135,7 @@
                                             <div class="form-group">
                                                 <h:outputLabel class="col-sm-3 control-label text-maroon" value="A propos" for="about" />
                                                 <div class="col-sm-7">
-                                                    <h:inputTextarea value="#{teacherProfileSettingsCtrl.model.description}" rows="3" class="form-control" id="about"/>
+                                                    <h:inputTextarea value="#{teacherProfileSettingsCtrl.model.user.description}" rows="3" class="form-control" id="about"/>
                                                 </div>
                                             </div>
                                             <div class="form-group">

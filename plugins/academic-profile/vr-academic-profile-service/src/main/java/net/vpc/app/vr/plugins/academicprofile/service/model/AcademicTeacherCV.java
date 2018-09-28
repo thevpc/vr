@@ -7,7 +7,6 @@ package net.vpc.app.vr.plugins.academicprofile.service.model;
 
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
-import net.vpc.upa.AccessLevel;
 import net.vpc.upa.ProtectionLevel;
 import net.vpc.upa.config.*;
 
@@ -15,7 +14,7 @@ import net.vpc.upa.config.*;
  * @author taha.bensalah@gmail.com
  */
 @Entity
-@Path("Config")
+@Path("Education")
 public class AcademicTeacherCV {
 
     @Id

@@ -36,9 +36,7 @@ class CorePluginBodySecurityAuthenticator extends CorePluginBody {
         d.adminProfile.setCustomType("Profile");
         pu.merge(d.adminProfile);
 
-        d.adminType = new AppUserType();
-        d.adminType.setName("Admin");
-        d.adminType = core.findOrCreate(d.adminType);
+        d.adminType = core.findOrCreate(new AppUserType("Admin","Admin"));
 
         d.civilities = new ArrayList<>();
         for (String n : new String[]{"M.", "Mlle", "Mme"}) {

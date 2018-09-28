@@ -120,7 +120,7 @@ public class AppContactBase {
 
     private AppGovernorate birthGovernorate;
 
-    @Path("Trace")
+    @Path(value = "Trace",position = 100)
 //    @Properties(
 //            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
     @Formula(value = "CurrentTimestamp()", formulaType = FormulaType.PERSIST)

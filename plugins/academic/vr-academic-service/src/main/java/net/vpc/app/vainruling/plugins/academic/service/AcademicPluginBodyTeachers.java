@@ -42,11 +42,7 @@ public class AcademicPluginBodyTeachers extends AcademicPluginBody {
         core = CorePlugin.get();
         academic = getContext().getPlugin();
 
-        AppUserType teacherType;
-        teacherType = new AppUserType();
-        teacherType.setCode("Teacher");
-        teacherType.setName("Teacher");
-        core.findOrCreate(teacherType);
+        core.findOrCreate(new AppUserType("Teacher","Teacher"));
 
         core.addProfileRight("Teacher", AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_TEACHER);
 
@@ -403,6 +399,7 @@ public class AcademicPluginBodyTeachers extends AcademicPluginBody {
     public void validateAcademicData_Teacher(int teacherId, int periodId) {
         CorePluginSecurity.requireRight(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_CONFIG_WRITE);
         PersistenceUnit pu = UPA.getPersistenceUnit();
+        cacheService.invalidate(pu.getEntity(AcademicTeacher.class));
         AcademicTeacher s = findTeacher(teacherId);
         Map<Integer, AcademicClass> academicClasses = academic.findAcademicClassesMap();
         AppUser u = s.getUser();

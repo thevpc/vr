@@ -6,7 +6,7 @@ import net.vpc.upa.config.*;
  * Created by vpc on 7/19/17.
  */
 @Entity()
-@Path("Admin/Config")
+@Path("/Repository/General")
 public class AppSkill {
 
     @Path("Main")

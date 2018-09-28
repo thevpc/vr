@@ -32,6 +32,6 @@ public class PeriodToMinutesConverter implements Converter {
             return "";
         }
         long b = ((Number) value).longValue();
-        return Chronometer.formatPeriod(b, DatePart.MINUTE);
+        return Chronometer.formatPeriodMilli(b, DatePart.MINUTE);
     }
 }

@@ -364,9 +364,13 @@ public class CorePlugin {
     }
 
     public <T> T findOrCreate(T o) {
-        return bodyDaoManager.findOrCreate(o);
+        if(o instanceof AppUserType){
+            return bodyDaoManager.findOrCreate(o,"code");
+        }else{
+            return bodyDaoManager.findOrCreate(o);
+        }
     }
-
+    
     public <T> T findOrCreate(T o, String field) {
         return bodyDaoManager.findOrCreate(o, field);
     }
@@ -1099,7 +1103,7 @@ public class CorePlugin {
     }
 
     public boolean hasProfile(String key) {
-        return getCurrentToken().getProfileCodes().contains(key);
+        return getCurrentToken().isAdmin() || getCurrentToken().getProfileCodes().contains(key);
     }
 
     public String[] resolveLogin(String login0) {

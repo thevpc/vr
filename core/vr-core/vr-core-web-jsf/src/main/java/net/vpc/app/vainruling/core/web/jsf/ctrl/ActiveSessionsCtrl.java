@@ -260,7 +260,7 @@ public class ActiveSessionsCtrl implements PollAware {
         if(t==null){
             return null;
         }
-        return Chronometer.formatPeriod(System.currentTimeMillis() - t.getTime(), DatePart.SECOND);
+        return Chronometer.formatPeriodMilli(System.currentTimeMillis() - t.getTime(), DatePart.SECOND);
     }
 
     public static class TypeStat implements Comparable<TypeStat> {
