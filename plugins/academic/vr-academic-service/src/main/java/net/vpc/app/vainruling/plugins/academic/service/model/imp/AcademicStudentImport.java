@@ -5,7 +5,7 @@
  */
 package net.vpc.app.vainruling.plugins.academic.service.model.imp;
 
-import net.vpc.app.vainruling.core.service.model.AppContact;
+import java.util.Date;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
 import net.vpc.upa.config.Id;
@@ -25,6 +25,8 @@ public class AcademicStudentImport {
     private String lastName2;
     private Integer departmentId;
     private String departmentName;
+    private String birthDateString;
+    private Date birthDate;
     private Integer preClassBacId;
     private String preClassBacName;
     private double preClassBacScore;
@@ -389,4 +391,21 @@ public class AcademicStudentImport {
     public void setPreClassChoice3Id(Integer preClassChoice3Id) {
         this.preClassChoice3Id = preClassChoice3Id;
     }
+
+    public String getBirthDateString() {
+        return birthDateString;
+    }
+
+    public void setBirthDateString(String birthDateString) {
+        this.birthDateString = birthDateString;
+    }
+
+    public Date getBirthDate() {
+        return birthDate;
+    }
+
+    public void setBirthDate(Date birthDate) {
+        this.birthDate = birthDate;
+    }
+    
 }

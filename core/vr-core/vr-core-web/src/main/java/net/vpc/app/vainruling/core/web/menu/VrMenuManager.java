@@ -432,7 +432,7 @@ public class VrMenuManager {
             bc.addAll(Arrays.asList(d.getInfo().getBreadcrumb()));
             url = d.getInfo().getUrl();
             if (!StringUtils.isEmpty(d.getInfo().getSecurityKey())) {
-                if (!UPA.getPersistenceUnit().getSecurityManager().isAllowedKey(d.getInfo().getSecurityKey())) {
+                if (!"welcome".equals(command) && !UPA.getPersistenceUnit().getSecurityManager().isAllowedKey(d.getInfo().getSecurityKey())) {
                     if ("publicIndex".equals(command)) {
                         throw new SecurityException("Page is Inaccessible");
                     } else {
@@ -495,7 +495,7 @@ public class VrMenuManager {
         if (!StringUtils.isEmpty(arguments)) {
             data += " ; " + arguments;
         }
-        TraceService.get().trace("System.visit-document", null, MapUtils.map("path", lvp.toString()), data, "/System/Access", Level.FINE);
+        TraceService.get().trace("System.visit-page", null, MapUtils.map("path", lvp.toString()), data, "/System/Access", Level.FINE);
         if (StringUtils.isEmpty(url)) {
             return null;
         }

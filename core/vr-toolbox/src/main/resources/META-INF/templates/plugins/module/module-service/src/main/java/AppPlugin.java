@@ -34,7 +34,7 @@ public class ${{className(vrProjectName)}}${{className(vrModuleName)}}Plugin {
         core.setAppProperty("System.App.Title.Minor.Main", null, "${{vrProjectName}}");
         core.setAppProperty("System.App.Title.Minor.Secondary", null, "app");
         core.findOrCreateAppDepartment("D", "D", "Department");
-        core.findOrCreateDisposition("Services", "Services", "Services");
+        core.findOrCreateArticleDisposition("Services", "Services", "Services");
     }
 
     /**

@@ -7,18 +7,18 @@ import net.vpc.app.vainruling.plugins.academic.planning.service.AcademicPlanning
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
-import net.vpc.app.vainruling.plugins.calendars.service.VrCalendarProvider;
-import net.vpc.app.vainruling.plugins.calendars.service.model.CalendarWeek;
+import net.vpc.app.vainruling.plugins.calendars.service.model.WeekCalendar;
 import net.vpc.upa.Action;
 import net.vpc.upa.UPA;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
+import net.vpc.app.vainruling.plugins.calendars.service.AppWeekCalendarProvider;
 
 @Component
-public class AcademicCalendarProvider implements VrCalendarProvider {
+public class AcademicCalendarProvider implements AppWeekCalendarProvider {
     @Override
-    public Set<Integer> retainUsersWithPublicCalendars(Set<Integer> users) {
+    public Set<Integer> retainUsersWithPublicWeekCalendars(Set<Integer> users) {
         AcademicPlugin academicPlugin=AcademicPlugin.get();
         AcademicPlanningPlugin academicPlanningPlugin=AcademicPlanningPlugin.get();
         AppPeriod mainPeriod = CorePlugin.get().getCurrentPeriod();
@@ -74,16 +74,16 @@ public class AcademicCalendarProvider implements VrCalendarProvider {
     }
 
     @Override
-    public List<CalendarWeek> findCalendars(String type, String key) {
+    public List<WeekCalendar> findWeekCalendars(String type, String key) {
         AcademicPlanningPlugin academicPlanningPlugin=AcademicPlanningPlugin.get();
         if ("class-calendar".equals(type)) {
-            CalendarWeek calendarWeek = academicPlanningPlugin.loadClassPlanning(key);
+            WeekCalendar calendarWeek = academicPlanningPlugin.loadClassPlanning(key);
             if (calendarWeek != null) {
                 return Arrays.asList(calendarWeek);
             }
         }
         if ("teacher-calendar".equals(type)) {
-            CalendarWeek calendarWeek = academicPlanningPlugin.loadTeacherPlanning(Integer.parseInt(key));
+            WeekCalendar calendarWeek = academicPlanningPlugin.loadTeacherPlanning(Integer.parseInt(key));
             if (calendarWeek != null) {
                 return Arrays.asList(calendarWeek);
             }
@@ -95,30 +95,30 @@ public class AcademicCalendarProvider implements VrCalendarProvider {
     }
 
     @Override
-    public List<CalendarWeek> findUserPrivateCalendars(int userId) {
+    public List<WeekCalendar> findUserPrivateWeekCalendars(int userId) {
         return Collections.EMPTY_LIST;
     }
 
     @Override
-    public List<CalendarWeek> findUserPublicCalendars(int userId) {
-        return UPA.getPersistenceUnit().invokePrivileged(new Action<List<CalendarWeek>>() {
+    public List<WeekCalendar> findUserPublicWeekCalendars(int userId) {
+        return UPA.getPersistenceUnit().invokePrivileged(new Action<List<WeekCalendar>>() {
             @Override
-            public List<CalendarWeek> run() {
+            public List<WeekCalendar> run() {
                 AcademicPlugin academicPlugin=AcademicPlugin.get();
                 AcademicPlanningPlugin academicPlanningPlugin=AcademicPlanningPlugin.get();
                 AcademicTeacher teacherByUser = academicPlugin.findTeacherByUser(userId);
                 AcademicStudent student = academicPlugin.findStudentByUser(userId);
-                List<CalendarWeek> all = new ArrayList<>();
+                List<WeekCalendar> all = new ArrayList<>();
                 if (teacherByUser != null) {
-                    CalendarWeek e = academicPlanningPlugin.loadTeacherPlanning(teacherByUser.getId());
+                    WeekCalendar e = academicPlanningPlugin.loadTeacherPlanning(teacherByUser.getId());
                     if (e != null) {
                         all.add(e);
                     }
                 }
                 if (student != null) {
-                    List<CalendarWeek> e = academicPlanningPlugin.loadStudentPlanningList(student.getId());
+                    List<WeekCalendar> e = academicPlanningPlugin.loadStudentPlanningList(student.getId());
                     if (e != null) {
-                        for (CalendarWeek calendarWeek : e) {
+                        for (WeekCalendar calendarWeek : e) {
                             if (calendarWeek != null) {
                                 all.add(calendarWeek);
                             }

@@ -58,6 +58,15 @@ public class VrApp implements ApplicationContextAware, ApplicationListener<Conte
         }
         return m;
     }
+    
+    public static List<Class> getBeanTypesForAnnotations(Class type) throws BeansException {
+        String[] appPluginBeans = getContext().getBeanNamesForAnnotation(type);
+        List<Class> m = new ArrayList<>();
+        for (String n : appPluginBeans) {
+            m.add(getContext().getType(n));
+        }
+        return m;
+    }
 
     public static Map<String, Object> getBeansMapForAnnotations(Class type) throws BeansException {
         String[] appPluginBeans = getContext().getBeanNamesForAnnotation(type);

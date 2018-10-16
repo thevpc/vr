@@ -6,7 +6,6 @@
 package net.vpc.app.vainruling.core.service;
 
 import net.vpc.app.vainruling.core.service.cache.CacheService;
-import net.vpc.app.vainruling.core.service.model.AppEvent;
 import net.vpc.app.vainruling.core.service.fs.FileInfo;
 import net.vpc.app.vainruling.core.service.fs.VrFSEntry;
 import net.vpc.app.vainruling.core.service.fs.VrFSTable;
@@ -212,7 +211,7 @@ public class CorePlugin {
     }
 
     public boolean userRemoveProfile(int userId, int profileId) {
-        return bodySecurityManager.userRemoveProfile(profileId, profileId);
+        return bodySecurityManager.userRemoveProfile(userId, profileId);
     }
 
     public boolean userAddProfile(int userId, String profileCode) {
@@ -364,13 +363,13 @@ public class CorePlugin {
     }
 
     public <T> T findOrCreate(T o) {
-        if(o instanceof AppUserType){
-            return bodyDaoManager.findOrCreate(o,"code");
-        }else{
+        if (o instanceof AppUserType) {
+            return bodyDaoManager.findOrCreate(o, "code");
+        } else {
             return bodyDaoManager.findOrCreate(o);
         }
     }
-    
+
     public <T> T findOrCreate(T o, String field) {
         return bodyDaoManager.findOrCreate(o, field);
     }
@@ -418,10 +417,9 @@ public class CorePlugin {
         return bodySecurityManager.findUsersByProfileFilter(profilePattern, userType);
     }
 
-    public AppUser findUserByContact(int contactId) {
-        return bodyConfig.findUserByContact(contactId);
-    }
-
+//    public AppUser findUserByContact(int contactId) {
+//        return bodyConfig.findUserByContact(contactId);
+//    }
     public AppContact findOrCreateContact(AppContact c) {
         return bodySecurityManager.findOrCreateContact(c);
     }
@@ -579,8 +577,9 @@ public class CorePlugin {
 
     /**
      * Current User Home Folder path
+     *
      * @param path
-     * @return 
+     * @return
      */
     public FileInfo getMyHomeFile(String path) {
         return bodyFileSystem.getMyHomeFile(path);
@@ -588,8 +587,9 @@ public class CorePlugin {
 
     /**
      * Extended Current User Folder path (includes all Profile Folders)
+     *
      * @param path
-     * @return 
+     * @return
      */
     public FileInfo getMyFile(String path) {
         return bodyFileSystem.getMyFile(path);
@@ -597,8 +597,9 @@ public class CorePlugin {
 
     /**
      * Extended User Folder path (includes all Profile Folders)
+     *
      * @param path
-     * @return 
+     * @return
      */
     public FileInfo getUserFile(String login, String path) {
         return bodyFileSystem.getUserFile(login, path);
@@ -606,8 +607,9 @@ public class CorePlugin {
 
     /**
      * User Home Folder path
+     *
      * @param path
-     * @return 
+     * @return
      */
     public FileInfo getUserHomeFile(String login, String path) {
         return bodyFileSystem.getUserHomeFile(login, path);
@@ -615,8 +617,9 @@ public class CorePlugin {
 
     /**
      * Profile Home Folder path
+     *
      * @param path
-     * @return 
+     * @return
      */
     public FileInfo getProfileFile(String profile, String path) {
         return bodyFileSystem.getProfileFile(profile, path);
@@ -624,8 +627,9 @@ public class CorePlugin {
 
     /**
      * Root Folder path
+     *
      * @param path
-     * @return 
+     * @return
      */
     public FileInfo getRootFile(String path) {
         return bodyFileSystem.getRootFile(path);
@@ -749,7 +753,6 @@ public class CorePlugin {
 //    public List<FullArticle> findFullArticlesByCategory(String disposition) {
 //        return bodyContentManager.findFullArticlesByCategory(disposition);
 //    }
-
     public List<FullArticle> findFullArticlesByDisposition(String group, String disposition) {
         return bodyContentManager.findFullArticlesByDisposition(group, disposition);
     }
@@ -772,12 +775,12 @@ public class CorePlugin {
         bodyContentManager.getRSS(rss, out);
     }
 
-    public String getArticleProperty(int articleId,String name) {
-        return bodyContentManager.getArticleProperty(articleId,name);
+    public String getArticleProperty(int articleId, String name) {
+        return bodyContentManager.getArticleProperty(articleId, name);
     }
 
-    public String findOrCreateArticleProperty(int articleId,String name, String defaultValue) {
-        return bodyContentManager.findOrCreateArticleProperty(articleId,name, defaultValue);
+    public String findOrCreateArticleProperty(int articleId, String name, String defaultValue) {
+        return bodyContentManager.findOrCreateArticleProperty(articleId, name, defaultValue);
     }
 
     public Map<String, String> getArticlesProperties(int articleId) {
@@ -799,7 +802,7 @@ public class CorePlugin {
     public Object save(Object t) {
         return bodyDaoManager.save(t);
     }
-    
+
     public Object save(String entityName, Object t) {
         return bodyDaoManager.save(entityName, t);
     }
@@ -810,6 +813,10 @@ public class CorePlugin {
 
     public boolean isSoftRemovable(String entityName) {
         return bodyDaoManager.isSoftRemovable(entityName);
+    }
+
+    public RemoveTrace remove(Class entityType, Object id) {
+        return bodyDaoManager.remove(entityType, id);
     }
 
     public RemoveTrace remove(String entityName, Object id) {
@@ -910,25 +917,6 @@ public class CorePlugin {
 
     public List<NamedId> getFieldValues(String entityName, String fieldName, Map<String, Object> constraints, Object currentInstance) {
         return bodyDaoManager.getFieldValues(entityName, fieldName, constraints, currentInstance);
-    }
-
-    public List<AppEvent> findAllEventsByCurrentMonth() {
-        Calendar c = Calendar.getInstance();
-        c.set(Calendar.HOUR_OF_DAY, 00);
-        c.set(Calendar.MINUTE, 00);
-        c.set(Calendar.SECOND, 00);
-
-        c.set(Calendar.DAY_OF_MONTH, 1);
-        Date d1 = c.getTime();
-
-        c.add(Calendar.MONTH, 1);
-        Date d2 = c.getTime();
-
-        PersistenceUnit pu = UPA.getPersistenceUnit();
-        return pu.createQuery("Select e from AppEvent e where e.beginDate >=:d1 and e.beginDate < :d2 ")
-                .setParameter("d1", d1)
-                .setParameter("d2", d2)
-                .getResultList();
     }
 
     private TraceService getTrace() {
@@ -1230,7 +1218,7 @@ public class CorePlugin {
     }
 
     public boolean isLoggedIn() {
-        return getCurrentUser()!=null;
+        return getCurrentUser() != null;
     }
 
 }

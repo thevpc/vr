@@ -140,7 +140,7 @@ public class EquipmentPlugin {
     private void installService() {
         CorePlugin core = VrApp.getBean(CorePlugin.class);
 
-        AppUserType technicianType = core.findOrCreate(new AppUserType("Technician","Technician"));
+        AppUserType technicianType = core.findOrCreate(new AppUserType("Technician", "Technician"));
 
         AppProfile technicianProfile;
         technicianProfile = new AppProfile();
@@ -322,7 +322,7 @@ public class EquipmentPlugin {
         return false;
     }
 
-    public boolean borrowBackEquipment(int id, Integer actor,double qty) {
+    public boolean borrowBackEquipment(int id, Integer actor, double qty) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
 //        Equipment eq = findEquipment(id);
         EquipmentStatusLog elog = findEquipmentLatestLog(id);
@@ -339,12 +339,125 @@ public class EquipmentPlugin {
             elog2.setActor(actorInstance);
             elog2.setStartDate(new Timestamp(System.currentTimeMillis()));
             elog2.setType(EquipmentStatusType.AVAILABLE);
-            elog2.setQuantity(Math.abs(Math.max(elog.getQuantity(),Math.abs(qty))));
+            elog2.setQuantity(Math.abs(Math.max(elog.getQuantity(), Math.abs(qty))));
             elog2.setResponsible(null);
             pu.persist(elog2);
             return true;
         }
         return false;
+    }
+
+    public void changeEquipmentBorrowVisaStatus(int rentId, EquipmentAcquisitionStatus status) {
+
+    }
+
+    public void changeEquipmentBorrowFinalStatus(int rentId, Equipment status) {
+        //UPA.getPersistenceUnit().
+    }
+
+    public List<EquipmentBorrowRequest> findEquipmentRequestsByBorrowerUser(int userId, boolean requestHistory) {
+        return UPA.getPersistenceUnit().createQueryBuilder("EquipmentBorrowRequest")
+                .setEntityAlias("u")
+                .byField("borrowerUserId", userId)
+                .byField("borrowerArchive", false, !requestHistory)
+                .getResultList();
+    }
+
+    public boolean isEquipmentRequestAcceptVisaUser(int equipmentId, int userId) {
+        return true;
+    }
+
+    public boolean isEquipmentRequestAcceptSuperOperatorUser(int equipmentId, int userId) {
+        return true;
+    }
+
+    public void createEquipmentRequestByBorrowerUser(int userId, int equipmentId, Date from, Date to) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        AppUser u = pu.findById(AppUser.class, userId);
+        EquipmentBorrowRequest a = new EquipmentBorrowRequest();
+        a.setEquipment(pu.findById(Equipment.class, equipmentId));
+        a.setBorrowerUser(u);
+        a.setBorrowerDate(new Date());
+        a.setFinalStatus(EquipmentBorrowStatus.PENDING);
+        a.setOperatorUserStatus(EquipmentBorrowStatus.PENDING);
+        a.setSuperOperatorUserStatus(EquipmentBorrowStatus.PENDING);
+        a.setVisaUserStatus(EquipmentBorrowStatus.PENDING);
+        if(isEquipmentRequestAcceptVisaUser(equipmentId, userId)){
+            a.setVisaUserStatus(EquipmentBorrowStatus.NEW);
+        }else {
+            a.setOperatorUserStatus(EquipmentBorrowStatus.NEW);
+        }
+        pu.persist(a);
+    }
+
+    public void applyEquipmentRequestByVisaUser(int requestId, int userId, boolean accept) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        AppUser u = pu.findById(AppUser.class, userId);
+        EquipmentBorrowRequest a = pu.findById(EquipmentBorrowRequest.class, requestId);
+        if (a != null && a.getVisaUserStatus()==EquipmentBorrowStatus.PENDING ) {
+            a.setVisaUser(u);
+            a.setVisaUserStatus(accept?EquipmentBorrowStatus.ACCEPTED:EquipmentBorrowStatus.REJECTED);
+            a.setVisaUserStatusDate(new Date());
+            pu.merge(a);
+        }
+    }
+
+    public void applyEquipmentRequestByOperatorUser(int requestId, int userId, EquipmentBorrowStatus status) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        AppUser u = pu.findById(AppUser.class, userId);
+        EquipmentBorrowRequest a = pu.findById(EquipmentBorrowRequest.class, requestId);
+        if (a != null) {
+            a.setOperatorUser(u);
+            a.setOperatorUserStatus(status);
+            a.setOperatorUserStatusDate(new Date());
+            pu.merge(a);
+        }
+    }
+
+    public void applyEquipmentRequestBySuperOperatorUser(int requestId, int userId, EquipmentBorrowStatus status) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        AppUser u = pu.findById(AppUser.class, userId);
+        EquipmentBorrowRequest a = pu.findById(EquipmentBorrowRequest.class, requestId);
+        if (a != null) {
+            a.setSuperOperatorUser(u);
+            a.setSuperOperatorUserStatus(status);
+            a.setSuperOperatorUserStatusDate(new Date());
+            pu.merge(a);
+        }
+    }
+
+    public void applyEquipmentRequestFinalStatus(int requestId, EquipmentBorrowStatus status) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        EquipmentBorrowRequest a = pu.findById(EquipmentBorrowRequest.class, requestId);
+        if (a != null) {
+            a.setFinalStatus(status);
+            a.setFinalStatusDate(new Date());
+            pu.merge(a);
+        }
+    }
+
+    public List<EquipmentBorrowRequest> findEquipmentRequestsByVisaUser(int userId, boolean requestHistory) {
+        return UPA.getPersistenceUnit().createQueryBuilder(EquipmentBorrowRequest.class)
+                .setEntityAlias("u")
+                .byField("visaUserId", userId)
+                .byField("visaArchive", false, !requestHistory)
+                .getResultList();
+    }
+
+    public List<EquipmentBorrowRequest> findEquipmentRequestsByOperatorUser(int userId, boolean requestHistory) {
+        return UPA.getPersistenceUnit().createQueryBuilder(EquipmentBorrowRequest.class)
+                .setEntityAlias("u")
+                .byField("operatorUserId", userId)
+                .byField("operatorArchive", false, !requestHistory)
+                .getResultList();
+    }
+
+    public List<EquipmentBorrowRequest> findEquipmentRequestsBySuperOperatorUser(int userId, boolean requestHistory) {
+        return UPA.getPersistenceUnit().createQueryBuilder(EquipmentBorrowRequest.class)
+                .setEntityAlias("u")
+                .byField("superOperatorUserId", userId)
+                .byField("superOperatorArchive", false, !requestHistory)
+                .getResultList();
     }
 
     private static class InitData {

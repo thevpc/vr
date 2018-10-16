@@ -27,7 +27,7 @@ import net.vpc.upa.types.DataTypeFactory;
  * @author taha.bensalah@gmail.com
  */
 @Callback
-public class AcademicStudentCallback {
+public class AcademicStudentInterceptor {
 
 
     @OnPrepare

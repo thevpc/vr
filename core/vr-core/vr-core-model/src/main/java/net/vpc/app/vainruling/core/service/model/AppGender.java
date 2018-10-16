@@ -20,10 +20,13 @@ public class AppGender {
 
     private int id;
     //    @Unique
+    @Summary
     private String code;
     @Main
     private String name;
+    @Summary
     private String name2;
+    @Summary
     private String name3;
 
     public AppGender() {

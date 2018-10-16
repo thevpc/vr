@@ -3,7 +3,7 @@
  *
  * and open the template in the editor.
  */
-package net.vpc.app.vainruling.plugins.calendars.web;
+package net.vpc.app.vainruling.plugins.calendars.web.week;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.model.AppUser;
@@ -13,7 +13,7 @@ import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.plugins.calendars.service.CalendarsPlugin;
 import net.vpc.app.vainruling.plugins.calendars.service.CalendarsPluginSecurity;
 import net.vpc.app.vainruling.plugins.calendars.service.model.CalendarDay;
-import net.vpc.app.vainruling.plugins.calendars.service.model.CalendarWeek;
+import net.vpc.app.vainruling.plugins.calendars.service.model.WeekCalendar;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,17 +30,17 @@ import java.util.List;
                 @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
 //        css = "fa-table",
 //        title = "Mon Emploi du temps",
-        url = "modules/calendars/my-calendars-list",
+        url = "modules/calendars/my-week-calendars",
         menu = "/Calendars",
         securityKey = CalendarsPluginSecurity.RIGHT_CUSTOM_EDUCATION_MY_PLANNING
 )
-public class MyPlanningListCtrl extends AbstractPlanningCtrl {
+public class MyWeekCalendarsCtrl extends AbstractWeekCalendarCtrl {
     @Autowired
     CorePlugin core;
     @Autowired
     CalendarsPlugin calendarsPlugin;
 
-    public MyPlanningListCtrl() {
+    public MyWeekCalendarsCtrl() {
         super();
         model = new ModelExt();
     }
@@ -52,11 +52,11 @@ public class MyPlanningListCtrl extends AbstractPlanningCtrl {
     public void onRefresh() {
 
         AppUser user = core.getCurrentUser();
-        getModel().setPlannings(calendarsPlugin.findUserPublicCalendars(user == null ? -1 : user.getId(), true));
+        getModel().setPlannings(calendarsPlugin.findUserPublicWeekCalendars(user == null ? -1 : user.getId(), true));
         getModel().setGroups(new ArrayList<SelectItem>());
-        List<CalendarWeek> plannings = getModel().getPlannings();
+        List<WeekCalendar> plannings = getModel().getPlannings();
         for (int i = 0; i < plannings.size(); i++) {
-            CalendarWeek data = plannings.get(i);
+            WeekCalendar data = plannings.get(i);
             String planningName = data.getPlanningName();
             if (!StringUtils.isEmpty(data.getSourceName())) {
                 planningName += " (" + data.getSourceName() + ")";
@@ -75,7 +75,7 @@ public class MyPlanningListCtrl extends AbstractPlanningCtrl {
             }
         }
 
-        CalendarWeek planning = getModel().getSelectionIndex() == null ? null : plannings.get(getModel().getSelectionIndex());
+        WeekCalendar planning = getModel().getSelectionIndex() == null ? null : plannings.get(getModel().getSelectionIndex());
         if (planning == null) {
             updateModel(new ArrayList<CalendarDay>());
         } else {
@@ -96,7 +96,7 @@ public class MyPlanningListCtrl extends AbstractPlanningCtrl {
 
         Integer selectionIndex;
         List<SelectItem> groups = new ArrayList<SelectItem>();
-        List<CalendarWeek> plannings = new ArrayList<>();
+        List<WeekCalendar> plannings = new ArrayList<>();
 
         public List<SelectItem> getGroups() {
             return groups;
@@ -114,11 +114,11 @@ public class MyPlanningListCtrl extends AbstractPlanningCtrl {
             this.selectionIndex = selectionIndex;
         }
 
-        public List<CalendarWeek> getPlannings() {
+        public List<WeekCalendar> getPlannings() {
             return plannings;
         }
 
-        public void setPlannings(List<CalendarWeek> plannings) {
+        public void setPlannings(List<WeekCalendar> plannings) {
             this.plannings = plannings;
         }
 

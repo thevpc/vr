@@ -4,8 +4,8 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.vpc.app.vain-ruling.plugins.calendars</groupId>
     <artifactId>vr-calendars-web</artifactId>
-    <name>net.vpc.app.vain-ruling.plugins.calendars.vr-calendars-web</name>
     <version>1.13.11</version>
+    <name>net.vpc.app.vain-ruling.plugins.calendars.vr-calendars-web</name>
     <packaging>jar</packaging>
     <url>https://github.com/thevpc/vr/wiki</url>
 

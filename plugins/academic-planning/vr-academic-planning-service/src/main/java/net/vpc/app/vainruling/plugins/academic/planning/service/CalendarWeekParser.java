@@ -2,7 +2,7 @@ package net.vpc.app.vainruling.plugins.academic.planning.service;
 
 import net.vpc.app.vainruling.plugins.calendars.service.model.CalendarDay;
 import net.vpc.app.vainruling.plugins.calendars.service.model.CalendarHour;
-import net.vpc.app.vainruling.plugins.calendars.service.model.CalendarWeek;
+import net.vpc.app.vainruling.plugins.calendars.service.model.WeekCalendar;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.Closeable;
 import org.w3c.dom.Element;
@@ -30,8 +30,8 @@ public class CalendarWeekParser {
         return name;
     }
 
-    public CalendarWeek parse(String id){
-        CalendarWeek dd = parsePlanningDataXML(nNode,sourceName);
+    public WeekCalendar parse(String id){
+        WeekCalendar dd = parsePlanningDataXML(nNode,sourceName);
         if (dd != null) {
             dd.setId(id);
             dd.setPlanningUniformName(name.trim().toLowerCase());
@@ -40,13 +40,13 @@ public class CalendarWeekParser {
         return null;
     }
 
-    public static CalendarWeek parsePlanningDataXML(Node planningNode, String sourceName) {
+    public static WeekCalendar parsePlanningDataXML(Node planningNode, String sourceName) {
 //                    System.out.println("\nCurrent Element :" + nNode.getNodeName());
         if (planningNode.getNodeType() == Node.ELEMENT_NODE) {
 
             Element eElement = (Element) planningNode;
             String tn = eElement.getAttribute("name");
-            CalendarWeek p2 = new CalendarWeek();
+            WeekCalendar p2 = new WeekCalendar();
             p2.setSourceName(sourceName);
             p2.setPlanningName(tn.trim());
             p2.setDays(new ArrayList<CalendarDay>());

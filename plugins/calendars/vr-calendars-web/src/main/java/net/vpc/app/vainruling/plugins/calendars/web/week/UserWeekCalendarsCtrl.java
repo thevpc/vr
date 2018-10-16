@@ -3,7 +3,7 @@
  *
  * and open the template in the editor.
  */
-package net.vpc.app.vainruling.plugins.calendars.web;
+package net.vpc.app.vainruling.plugins.calendars.web.week;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
@@ -14,7 +14,7 @@ import net.vpc.app.vainruling.core.web.UPathItem;
 import net.vpc.app.vainruling.core.web.jsf.VrJsf;
 import net.vpc.app.vainruling.plugins.calendars.service.CalendarsPlugin;
 import net.vpc.app.vainruling.plugins.calendars.service.CalendarsPluginSecurity;
-import net.vpc.app.vainruling.plugins.calendars.service.model.CalendarWeek;
+import net.vpc.app.vainruling.plugins.calendars.service.model.WeekCalendar;
 import net.vpc.app.vainruling.plugins.calendars.service.model.CalendarDay;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.Convert;
@@ -32,17 +32,17 @@ import java.util.*;
                 @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
 //        css = "fa-table",
 //        title = "Tous les Emplois",
-        url = "modules/calendars/user-calendars",
+        url = "modules/calendars/user-week-calendars",
         menu = "/Calendars",
         securityKey = CalendarsPluginSecurity.RIGHT_CUSTOM_EDUCATION_USER_CALENDARS
 )
-public class UserCalendarsCtrl extends AbstractPlanningCtrl {
+public class UserWeekCalendarsCtrl extends AbstractWeekCalendarCtrl {
     @Autowired
     private CalendarsPlugin calendars;
     @Autowired
     private CorePlugin core;
 
-    public UserCalendarsCtrl() {
+    public UserWeekCalendarsCtrl() {
         super();
         model = new ModelExt();
     }
@@ -65,7 +65,7 @@ public class UserCalendarsCtrl extends AbstractPlanningCtrl {
                 }
             }
         }
-        userIds = calendars.findUsersWithPublicCalendars(userIds);
+        userIds = calendars.findUsersWithPublicWeekCalendars(userIds);
         List<AppUser> users = new ArrayList<>();
         for (Integer userId : userIds) {
             users.add(core.findUser(userId));
@@ -83,7 +83,7 @@ public class UserCalendarsCtrl extends AbstractPlanningCtrl {
             }
         }
 
-        //Set<Integer> findUsersWithPublicCalendars()
+        //Set<Integer> findUsersWithPublicWeekCalendars()
         if (!oldSelectedUserFound) {
             getModel().setUserId(null);
         }
@@ -92,7 +92,7 @@ public class UserCalendarsCtrl extends AbstractPlanningCtrl {
 
     public void onChangeUser() {
         int oldSelectedUser = Convert.toInt(getModel().getUserId(), IntegerParserConfig.LENIENT_F);
-        CalendarWeek plannings = calendars.findMergedUserPublicCalendar(oldSelectedUser);
+        WeekCalendar plannings = calendars.findMergedUserPublicWeekCalendar(oldSelectedUser);
         if (plannings == null) {
             updateModel(new ArrayList<CalendarDay>());
         } else {

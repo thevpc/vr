@@ -156,13 +156,21 @@
             </plugin>
         </plugins>
     </build>
+    
     <dependencies>
         <dependency>
             <groupId>net.vpc.common</groupId>
             <artifactId>vpc-common-strings</artifactId>
-            <version>1.2.13</version>
+            <version>1.2.14</version>
+        </dependency>
+    
+        <dependency>
+            <groupId>net.vpc.app</groupId>
+            <artifactId>nuts</artifactId>
+            <version>0.4.1</version>
         </dependency>
     </dependencies>
+    
     <repositories>
         <repository>
             <id>vpc-public-maven</id>

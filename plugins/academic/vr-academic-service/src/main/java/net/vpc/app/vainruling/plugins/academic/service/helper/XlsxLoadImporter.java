@@ -5,6 +5,10 @@
  */
 package net.vpc.app.vainruling.plugins.academic.service.helper;
 
+import net.vpc.app.vainruling.core.service.util.ColumnMappingMatcher;
+import net.vpc.app.vainruling.core.service.util.LenientArray;
+import net.vpc.app.vainruling.plugins.academic.service.helper.mapping.StudentMapping;
+import net.vpc.app.vainruling.plugins.academic.service.helper.mapping.CourseAssignmentsMapping;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.TraceService;
 import net.vpc.app.vainruling.core.service.VrApp;
@@ -24,7 +28,6 @@ import net.vpc.common.util.Convert;
 import net.vpc.common.util.DoubleParserConfig;
 import net.vpc.common.util.IntegerParserConfig;
 import net.vpc.common.vfs.VFile;
-import net.vpc.upa.Action;
 import net.vpc.upa.UPA;
 import net.vpc.upa.bulk.DataReader;
 import net.vpc.upa.bulk.DataRow;
@@ -366,24 +369,6 @@ public class XlsxLoadImporter {
             AppConfig appConfig = core.getCurrentConfig();
             ctx.mainPeriod = appConfig == null ? null : appConfig.getMainPeriod();
         }
-        if (ctx.gendersById == null) {
-            ctx.gendersByName = new HashMap<>();
-            ctx.gendersById = new HashMap<>();
-            for (AppGender g : core.findGenders()) {
-                ctx.gendersByName.put(g.getName().toUpperCase(), g);
-                ctx.gendersById.put(g.getId(), g);
-            }
-
-        }
-
-        if (ctx.civilityById == null) {
-            ctx.civilityByName = new HashMap<>();
-            ctx.civilityById = new HashMap<>();
-            for (AppCivility g : core.findCivilities()) {
-                ctx.civilityByName.put(g.getName().toUpperCase(), g);
-                ctx.civilityById.put(g.getId(), g);
-            }
-        }
 
         AcademicTeacher academicTeacher = new AcademicTeacher();
         AppUser user = new AppUser();
@@ -445,38 +430,8 @@ public class XlsxLoadImporter {
             }
         }
 
-        AppGender gender = null;
-        if (a.getGenderId() != null) {
-            gender = ctx.gendersById.get(a.getGenderId());
-            if (gender == null) {
-                throw new NoSuchElementException("Gender Not Found " + a.getGenderId());
-            }
-        } else {
-            gender = a.getGenderName() == null ? null : ctx.gendersByName.get(a.getGenderName().toUpperCase());
-            if (gender == null) {
-                throw new NoSuchElementException("Gender Not Found " + a.getGenderName());
-            }
-        }
-
-        AppCivility civility = null;
-        if (a.getCivilityId() != null) {
-            civility = ctx.civilityById.get(a.getCivilityId());
-            if (civility == null) {
-                throw new NoSuchElementException("Civility Not Found " + a.getCivilityId());
-            }
-        } else {
-            civility = ctx.civilityByName.get(a.getCivilityName().toUpperCase());
-            if (civility == null) {
-                if (gender.getName().equals("F")) {
-                    civility = ctx.civilityByName.get("Mlle");
-                } else {
-                    civility = ctx.civilityByName.get("M.");
-                }
-                if (civility == null) {
-                    throw new NoSuchElementException("Civility Not Found " + a.getCivilityName());
-                }
-            }
-        }
+        AppGender gender = ctx.genders.resolveGender(a.getGenderId(), a.getGenderName(), true);
+        AppCivility civility = ctx.civilities.resolveCivility(a.getCivilityId(), a.getCivilityName(), gender, true);
 
         AcademicTeacherSituation situation = null;
         if (a.getSituationId() != null) {
@@ -594,67 +549,33 @@ public class XlsxLoadImporter {
         trace.trace("Academic.import-teachers", "success", MapUtils.map("path", file.getPath(), "time", ch.toString(), "rows", count), JsonUtils.jsonMap("path", file.getPath(), "time", ch.toString(), "rows", count), getClass().getSimpleName(), Level.INFO);
     }
 
-    public AcademicStudentImport parseAcademicStudentImport(Object[] values) throws IOException {
-
-        int col = 0;
-        final int COL_NIN = col++;
-        final int COL_SUBSCRIPTION_NBR = col++;
-        final int COL_FIRST_NAME = col++;
-        final int COL_LAST_NAME = col++;
-        final int COL_EMAIL = col++;
-        final int COL_GSM = col++;
-        final int COL_YEAR1 = col++;
-        final int COL_CLASS = col++;
-        final int COL_GENDER = col++;
-        final int COL_CIVILITY = col++;
-        final int COL_LAST_NAME2 = col++;
-        final int COL_FIRST_NAME2 = col++;
-        final int COL_PREP = col++;
-        final int COL_PREP_SECTION = col++;
-        final int COL_PREP_RANK = col++;
-        final int COL_PREP_RANK_MAX = col++;
-        final int COL_PREP_SCORE = col++;
-        final int COL_BAC = col++;
-        final int COL_BAC_SCORE = col++;
-        if (values == null) {
-            values = new Object[col];
-        } else if (values.length < col) {
-            values = Arrays.copyOf(values, col);
-        }
-        CorePlugin core = VrApp.getBean(CorePlugin.class);
-        String fn = VrUtils.validateContactName(Convert.toString(values[COL_FIRST_NAME]));
-        String ln = VrUtils.validateContactName(Convert.toString(values[COL_LAST_NAME]));
-        String nin = Convert.toString(values[COL_NIN]);
+    public AcademicStudentImport parseAcademicStudentImport(Object[] values2, StudentMapping sm) throws IOException {
+        LenientArray values = new LenientArray(values2);
+        String fn = VrUtils.validateContactName(values.getString(sm.COL_FIRST_NAME));
+        String ln = VrUtils.validateContactName(values.getString(sm.COL_LAST_NAME));
+        String nin = values.getString(sm.COL_NIN);
         if (!StringUtils.isEmpty(nin) || !StringUtils.isEmpty(fn) || !StringUtils.isEmpty(ln)) {
             AcademicStudentImport a = new AcademicStudentImport();
             a.setFirstName(fn);
             a.setLastName(ln);
             a.setNin(nin);
-            a.setStartPeriodName(Convert.toString(values[COL_YEAR1]));
-            a.setClassName(Convert.toString(values[COL_CLASS]));
-            a.setFirstName2(Convert.toString(values[COL_FIRST_NAME2]));
-            a.setPreClassPrepName(Convert.toString(values[COL_PREP]));
-            a.setPreClassTypeName(Convert.toString(values[COL_PREP_SECTION]));
-            a.setPreClassPrepRank(Convert.toInt(values[COL_PREP_RANK], IntegerParserConfig.LENIENT));
-            a.setPreClassPrepRankMax(Convert.toInt(values[COL_PREP_RANK_MAX], IntegerParserConfig.LENIENT));
-            a.setPreClassBacName(Convert.toString(values[COL_BAC]));
-            Object value = values[COL_PREP_SCORE];
-            if (value != null && (value instanceof String)) {
-                value = VrUtils.prepareParseInt((String) value);
-            }
-            a.setPreClassPrepScore(Convert.toDouble(value, DoubleParserConfig.LENIENT));
-
-            value = values[COL_BAC_SCORE];
-            if (value != null && (value instanceof String)) {
-                value = VrUtils.prepareParseInt((String) value);
-            }
-            a.setPreClassBacScore(Convert.toDouble(value, DoubleParserConfig.LENIENT));
-            a.setLastName2(Convert.toString(values[COL_LAST_NAME2]));
-            a.setPhone1(Convert.toString(values[COL_GSM]));
-            a.setGenderName(Convert.toString(values[COL_GENDER]));
-            a.setSubscriptionNumber(Convert.toString(values[COL_SUBSCRIPTION_NBR]));
-            a.setCivilityName(Convert.toString(values[COL_CIVILITY]));
-            a.setEmail(Convert.toString(values[COL_EMAIL]));
+            a.setStartPeriodName(values.getString(sm.COL_YEAR1));
+            a.setClassName(values.getString(sm.COL_CLASS));
+            a.setFirstName2(values.getString(sm.COL_FIRST_NAME2));
+            a.setPreClassPrepName(values.getString(sm.COL_PREP));
+            a.setPreClassTypeName(values.getString(sm.COL_PREP_SECTION));
+            a.setPreClassPrepRank(values.getInt(sm.COL_PREP_RANK));
+            a.setPreClassPrepRankMax(values.getInt(sm.COL_PREP_RANK_MAX));
+            a.setPreClassBacName(values.getString(sm.COL_BAC));
+            a.setPreClassPrepScore(values.getDouble(sm.COL_PREP_SCORE));
+            a.setPreClassBacScore(values.getDouble(sm.COL_BAC_SCORE));
+            a.setLastName2(values.getString(sm.COL_LAST_NAME2));
+            a.setPhone1(values.getString(sm.COL_GSM));
+            a.setGenderName(values.getString(sm.COL_GENDER));
+            a.setSubscriptionNumber(values.getString(sm.COL_SUBSCRIPTION_NBR));
+            a.setCivilityName(values.getString(sm.COL_CIVILITY));
+            a.setEmail(values.getString(sm.COL_EMAIL));
+            a.setBirthDate(values.getDate(sm.COL_BIRTH_DATE));
             return a;
         }
         return null;
@@ -682,25 +603,6 @@ public class XlsxLoadImporter {
             }
 
         }
-        if (ctx.gendersById == null) {
-            ctx.gendersByName = new HashMap<>();
-            ctx.gendersById = new HashMap<>();
-            for (AppGender g : core.findGenders()) {
-                ctx.gendersByName.put(g.getName().toUpperCase(), g);
-                ctx.gendersById.put(g.getId(), g);
-            }
-
-        }
-
-        if (ctx.civilityById == null) {
-            ctx.civilityByName = new HashMap<>();
-            ctx.civilityById = new HashMap<>();
-            for (AppCivility g : core.findCivilities()) {
-                ctx.civilityByName.put(g.getName().toUpperCase(), g);
-                ctx.civilityById.put(g.getId(), g);
-            }
-        }
-
         AppDepartment dept = null;
         if (a.getDepartmentId() != null) {
             dept = core.findDepartment(a.getDepartmentId());
@@ -726,38 +628,8 @@ public class XlsxLoadImporter {
             }
         }
 
-        AppGender gender = null;
-        if (a.getGenderId() != null) {
-            gender = ctx.gendersById.get(a.getGenderId());
-            if (gender == null) {
-                throw new NoSuchElementException("Gender Not Found " + a.getGenderId());
-            }
-        } else {
-            gender = ctx.gendersByName.get(a.getGenderName().toUpperCase().trim());
-            if (gender == null) {
-                throw new NoSuchElementException("Gender Not Found " + a.getGenderName());
-            }
-        }
-
-        AppCivility civility = null;
-        if (a.getCivilityId() != null) {
-            civility = ctx.civilityById.get(a.getCivilityId());
-            if (civility == null) {
-                throw new NoSuchElementException("Civility Not Found " + a.getCivilityId());
-            }
-        } else {
-            civility = ctx.civilityByName.get(a.getCivilityName().toUpperCase().trim());
-            if (civility == null) {
-                if (gender.getName().equals("F")) {
-                    civility = ctx.civilityByName.get("MLLE");
-                } else {
-                    civility = ctx.civilityByName.get("M.");
-                }
-                if (civility == null) {
-                    throw new NoSuchElementException("Civility Not Found " + a.getCivilityName());
-                }
-            }
-        }
+        AppGender gender = ctx.genders.resolveGender(a.getGenderId(), a.getGenderName(), true);
+        AppCivility civility = ctx.civilities.resolveCivility(a.getCivilityId(), a.getCivilityName(), gender, true);
 
         AcademicBac bac = null;
         if (a.getPreClassBacId() != null) {
@@ -897,6 +769,13 @@ public class XlsxLoadImporter {
         if (checkUpdatable(user.getEmail(), a.getEmail(), force)) {
             user.setEmail(a.getEmail());
         }
+
+        if (checkUpdatable(user.getBirthDate(), a.getBirthDate(), force)) {
+            user.setBirthDate(a.getBirthDate());
+        }
+        if (checkUpdatable(user.getBirthDate(), a.getBirthDateString(), force)) {
+            user.setBirthDate(LenientArray.convertDate(a.getBirthDateString()));
+        }
         if (checkUpdatable(user.getPositionSuffix(), studentclass.getName(), force)) {
             user.setPositionSuffix(studentclass.getName());
         }
@@ -939,15 +818,19 @@ public class XlsxLoadImporter {
     }
 
     public int importStudents(int periodId, VFile file, boolean simulate) throws IOException {
-        final AcademicPlugin service = VrApp.getBean(AcademicPlugin.class);
         Chronometer ch = new Chronometer();
         log.log(Level.INFO, (simulate ? " Simulate " : "") + "importStudents from {0}", file);
         File tmp = file.copyToNativeTempFile();
         SheetParser sp = pfm.createSheetParser(tmp);
-        sp.setContainsHeader(true);
+        sp.setContainsHeader(false);
         sp.setSheetIndex(0);
         sp.setSkipRows(0);
         DataReader rows = sp.parse();
+
+        StudentMapping sm = new StudentMapping();
+        if (rows.hasNext()) {
+            ColumnMappingMatcher.match(sm, rows.readRow().getValues());
+        }
 
         CorePlugin core = VrApp.getBean(CorePlugin.class);
         ImportStudentContext importStudentContext = new ImportStudentContext();
@@ -957,7 +840,7 @@ public class XlsxLoadImporter {
         while (rows.hasNext()) {
             DataRow row = rows.readRow();
             Object[] values = row.getValues();
-            AcademicStudentImport a = parseAcademicStudentImport(values);
+            AcademicStudentImport a = parseAcademicStudentImport(values, sm);
             if (a != null) {
                 importStudent(a, importStudentContext);
                 count++;
@@ -968,6 +851,7 @@ public class XlsxLoadImporter {
         trace.trace("Academic.import-students" + (simulate ? "-simulation" : ""), "success", MapUtils.map("path", file.getPath(), "time", ch.toString(), "rows", count), JsonUtils.jsonMap("path", file.getPath(), "time", ch.toString(), "rows", count), "/Education/Import", Level.INFO);
         return count;
     }
+
 
     public void importCourseAssignments(int periodId, VFile file, ImportOptions importOptions) throws IOException {
         final AcademicPlugin service = VrApp.getBean(AcademicPlugin.class);
@@ -983,40 +867,24 @@ public class XlsxLoadImporter {
         log.log(Level.INFO, "importCourseAssignments from {0}", file);
         File tmp = file.copyToNativeTempFile();
         SheetParser sp = pfm.createSheetParser(tmp);
-        sp.setContainsHeader(true);
-        int DEPARTMENT_COLUMN = 0;
-        int OWNER_DEPARTMENT_COLUMN = 1;
-        int PROGRAM_COLUMN = 2;
-        int STUDENT_CLASS_COLUMN = 3;
-        int STUDENT_SUBLASS_COLUMN = 4;
-        int SEMESTER_COLUMN = 5;
-        int COURSE_GROUP_COLUMN = 6;
-        int COURSE_NAME_COLUMN = 7;
-        int COURSE_TYPE_COLUMN = 8;
-        int LOAD_C_COLUMN = 9;
-        int LOAD_TD_COLUMN = 10;
-        int LOAD_TP_COLUMN = 11;
-        int LOAD_PM_COLUMN = 12;
-        int NBR_GROUPS_COLUMN = 13;
-        int NBR_SHARES_COLUMN = 14;
-        int TEACHER_NAME_COUMN = 15;
-        int TEACHER_INTENTS_COUMN = 16;
-        int DISCIPLINE_COLUMN = 17;
-        int IGNORE_COLUMN = 18;
-
+        sp.setContainsHeader(false);
+        CourseAssignmentsMapping sm = new CourseAssignmentsMapping();
         sp.setSheetIndex(0);
         sp.setSkipRows(1);
         DataReader rows = sp.parse();
         int all = 0;
         long count = 0;
         long maxCount = -1;
+        if (rows.hasNext()) {
+            ColumnMappingMatcher.match(sm, rows.readRow().getValues());
+        }
         while (rows.hasNext() && (maxCount < 0 || count < maxCount)) {
             DataRow row = rows.readRow();
-            Object[] values = row.getValues();
+            LenientArray values = new LenientArray(row.getValues());
             all++;
-            String nbrGroupsString = (Convert.toString(values[NBR_GROUPS_COLUMN]));
-            String ignoreString = (Convert.toString(values[IGNORE_COLUMN]));
-            String courseName = Convert.toString(values[COURSE_NAME_COLUMN]);
+            String nbrGroupsString = values.getString(sm.NBR_GROUPS_COLUMN);
+            String ignoreString = values.getString(sm.IGNORE_COLUMN);
+            String courseName = values.getString(sm.COURSE_NAME_COLUMN);
 
             boolean ignoreRow = false;
             if ("##".equals(nbrGroupsString)) {
@@ -1048,7 +916,7 @@ public class XlsxLoadImporter {
                 AcademicTeacher teacher = null;
                 List<AcademicTeacher> teacherIntents = new ArrayList<>();
                 {
-                    String stringVal = Convert.toString(values[DEPARTMENT_COLUMN]);
+                    String stringVal = values.getString(sm.DEPARTMENT_COLUMN);
                     if (!StringUtils.isEmpty(stringVal)) {
                         department = core.findDepartment(stringVal);
                         if (department == null) {
@@ -1057,13 +925,13 @@ public class XlsxLoadImporter {
                     }
                 }
                 {
-                    String stringVal = Convert.toString(values[OWNER_DEPARTMENT_COLUMN]);
+                    String stringVal = values.getString(sm.OWNER_DEPARTMENT_COLUMN);
                     if (!StringUtils.isEmpty(stringVal)) {
                         ownerDepartment = core.findDepartment(stringVal);
                     }
                 }
                 {
-                    String stringVal = Convert.toString(values[PROGRAM_COLUMN]);
+                    String stringVal = values.getString(sm.PROGRAM_COLUMN);
                     if (!StringUtils.isEmpty(stringVal)) {
                         if (department != null) {
                             program = service.findProgram(department.getId(), stringVal);
@@ -1081,7 +949,7 @@ public class XlsxLoadImporter {
                     }
                 }
                 {
-                    String stringVal = Convert.toString(values[STUDENT_CLASS_COLUMN]);
+                    String stringVal = values.getString(sm.STUDENT_CLASS_COLUMN);
                     if (StringUtils.isEmpty(stringVal)) {
                         throw new IllegalArgumentException("Missing Class Name");
                     }
@@ -1110,7 +978,7 @@ public class XlsxLoadImporter {
                     }
                 }
                 {
-                    String stringVal = Convert.toString(values[STUDENT_SUBLASS_COLUMN]);
+                    String stringVal = values.getString(sm.STUDENT_SUBLASS_COLUMN);
                     if (!StringUtils.isEmpty(stringVal)) {
                         studentSubClass = service.findAcademicClass(program.getId(), stringVal);
                         if (studentSubClass == null) {
@@ -1119,7 +987,7 @@ public class XlsxLoadImporter {
                     }
                 }
                 {
-                    String stringVal = Convert.toString(values[SEMESTER_COLUMN]);
+                    String stringVal = values.getString(sm.SEMESTER_COLUMN);
                     if (stringVal == null) {
                         throw new IllegalArgumentException("Missing semester for " + courseName);
                     }
@@ -1142,7 +1010,7 @@ public class XlsxLoadImporter {
                     }
                 }
                 {
-                    String stringVal = Convert.toString(values[COURSE_GROUP_COLUMN]);
+                    String stringVal = values.getString(sm.COURSE_GROUP_COLUMN);
                     if (stringVal != null) {
                         courseGroup = service.findCourseGroup(periodId, courseLevel.getAcademicClass().getId(), stringVal);
                         if (courseGroup == null) {
@@ -1155,11 +1023,10 @@ public class XlsxLoadImporter {
                     }
                 }
                 {
-                    discipline = service.formatDisciplinesNames(
-                            Convert.toString(values[DISCIPLINE_COLUMN]), true);
+                    discipline = service.formatDisciplinesNames(values.getString(sm.DISCIPLINE_COLUMN), true);
                 }
                 {
-                    String stringVal = Convert.toString(values[COURSE_TYPE_COLUMN]);
+                    String stringVal = values.getString(sm.COURSE_TYPE_COLUMN);
                     if (stringVal == null) {
                         throw new IllegalArgumentException("Missing module type for " + courseName);
                     }
@@ -1168,7 +1035,7 @@ public class XlsxLoadImporter {
                         throw new IllegalArgumentException("Invalid course type " + stringVal);
                     }
                 }
-                double valueC = Convert.toDouble(values[LOAD_C_COLUMN], DoubleParserConfig.LENIENT);
+                double valueC = values.getDouble(sm.LOAD_C_COLUMN);
 //                    {
 //                        String stringVal = Convert.toString(values[31]);
 //                        ModuleType v = service.findModuleType(stringVal);
@@ -1179,13 +1046,13 @@ public class XlsxLoadImporter {
 //                        }
 //                        d.setModuleType(v);
 //                    }
-                double valueTD = Convert.toDouble(values[LOAD_TD_COLUMN], DoubleParserConfig.LENIENT);
-                double valueTP = Convert.toDouble(values[LOAD_TP_COLUMN], DoubleParserConfig.LENIENT);
-                double valuePM = Convert.toDouble(values[LOAD_PM_COLUMN], DoubleParserConfig.LENIENT);
-                double nbrGroups = Convert.toDouble(values[NBR_GROUPS_COLUMN], DoubleParserConfig.LENIENT);
-                double nbrShares = Convert.toDouble(values[NBR_SHARES_COLUMN], LENIENT_1);
-                String teacherName = Convert.toString(values[TEACHER_NAME_COUMN]);
-                String teacherIntentsString = Convert.toString(values[TEACHER_INTENTS_COUMN]);
+                double valueTD = values.getDouble(sm.LOAD_TD_COLUMN);
+                double valueTP = values.getDouble(sm.LOAD_TP_COLUMN);
+                double valuePM = values.getDouble(sm.LOAD_PM_COLUMN);
+                double nbrGroups = values.getDouble(sm.NBR_GROUPS_COLUMN);
+                double nbrShares = values.getDoubleOr1(sm.NBR_SHARES_COLUMN);
+                String teacherName = values.getString(sm.TEACHER_NAME_COUMN);
+                String teacherIntentsString = values.getString(sm.TEACHER_INTENTS_COUMN);
                 if (teacherName == null && teacherIntents == null) {
                     System.out.println("Missing Assignment in Row " + Arrays.asList(values));
                 } else {
@@ -1318,150 +1185,4 @@ public class XlsxLoadImporter {
         }
     }
 
-    public static class ImportStudentContext {
-
-        private Map<String, AppGender> gendersByName;
-        private Map<Integer, AppGender> gendersById;
-        private Map<String, AppCivility> civilityByName;
-        private Map<Integer, AppCivility> civilityById;
-        private Map<String, AppProfile> profiles;
-        private AppCompany mainCompany;
-        private AppPeriod mainPeriod;
-        private boolean simulate;
-
-        public Map<String, AppGender> getGendersByName() {
-            return gendersByName;
-        }
-
-        public ImportStudentContext setGendersByName(Map<String, AppGender> gendersByName) {
-            this.gendersByName = gendersByName;
-            return this;
-        }
-
-        public Map<Integer, AppGender> getGendersById() {
-            return gendersById;
-        }
-
-        public ImportStudentContext setGendersById(Map<Integer, AppGender> gendersById) {
-            this.gendersById = gendersById;
-            return this;
-        }
-
-        public Map<String, AppCivility> getCivilityByName() {
-            return civilityByName;
-        }
-
-        public ImportStudentContext setCivilityByName(Map<String, AppCivility> civilityByName) {
-            this.civilityByName = civilityByName;
-            return this;
-        }
-
-        public Map<Integer, AppCivility> getCivilityById() {
-            return civilityById;
-        }
-
-        public ImportStudentContext setCivilityById(Map<Integer, AppCivility> civilityById) {
-            this.civilityById = civilityById;
-            return this;
-        }
-
-        public Map<String, AppProfile> getProfiles() {
-            return profiles;
-        }
-
-        public ImportStudentContext setProfiles(Map<String, AppProfile> profiles) {
-            this.profiles = profiles;
-            return this;
-        }
-
-        public AppCompany getMainCompany() {
-            return mainCompany;
-        }
-
-        public ImportStudentContext setMainCompany(AppCompany mainCompany) {
-            this.mainCompany = mainCompany;
-            return this;
-        }
-
-        public AppPeriod getMainPeriod() {
-            return mainPeriod;
-        }
-
-        public ImportStudentContext setMainPeriod(AppPeriod mainPeriod) {
-            this.mainPeriod = mainPeriod;
-            return this;
-        }
-
-        public boolean isSimulate() {
-            return simulate;
-        }
-
-        public void setSimulate(boolean simulate) {
-            this.simulate = simulate;
-        }
-    }
-
-    public static class ImportTeacherContext {
-
-        private AppPeriod mainPeriod;
-        private AppCompany mainCompany;
-        private Map<String, AppGender> gendersByName;
-        private Map<Integer, AppGender> gendersById;
-        private Map<String, AppCivility> civilityByName;
-        private Map<Integer, AppCivility> civilityById;
-
-        public AppPeriod getMainPeriod() {
-            return mainPeriod;
-        }
-
-        public ImportTeacherContext setMainPeriod(AppPeriod mainPeriod) {
-            this.mainPeriod = mainPeriod;
-            return this;
-        }
-
-        public AppCompany getMainCompany() {
-            return mainCompany;
-        }
-
-        public ImportTeacherContext setMainCompany(AppCompany mainCompany) {
-            this.mainCompany = mainCompany;
-            return this;
-        }
-
-        public Map<String, AppGender> getGendersByName() {
-            return gendersByName;
-        }
-
-        public ImportTeacherContext setGendersByName(Map<String, AppGender> gendersByName) {
-            this.gendersByName = gendersByName;
-            return this;
-        }
-
-        public Map<Integer, AppGender> getGendersById() {
-            return gendersById;
-        }
-
-        public ImportTeacherContext setGendersById(Map<Integer, AppGender> gendersById) {
-            this.gendersById = gendersById;
-            return this;
-        }
-
-        public Map<String, AppCivility> getCivilityByName() {
-            return civilityByName;
-        }
-
-        public ImportTeacherContext setCivilityByName(Map<String, AppCivility> civilityByName) {
-            this.civilityByName = civilityByName;
-            return this;
-        }
-
-        public Map<Integer, AppCivility> getCivilityById() {
-            return civilityById;
-        }
-
-        public ImportTeacherContext setCivilityById(Map<Integer, AppCivility> civilityById) {
-            this.civilityById = civilityById;
-            return this;
-        }
-    }
 }

@@ -512,13 +512,13 @@ class CorePluginBodyConfig extends CorePluginBody {
         if (StringUtils.isEmpty(countryName)) {
             countryName = "Tunisia";
         }
-        AppCountry country = pu.findByMainField(AppCountry.class, countryName);
-        if (country == null) {
-            country = new AppCountry();
-            country.setName(countryName);
-            pu.persist(country);
+        AppCountry defaultCountry = pu.findByMainField(AppCountry.class, countryName);
+        if (defaultCountry == null) {
+            defaultCountry = new AppCountry();
+            defaultCountry.setName(countryName);
+            pu.persist(defaultCountry);
         }
-        return country;
+        return defaultCountry;
     }
 
     private AppIndustry installDefaultIndustry() {
@@ -528,13 +528,13 @@ class CorePluginBodyConfig extends CorePluginBody {
             industryName = "My Industry";
         }
 
-        AppIndustry eduIndustry = pu.findByMainField(AppIndustry.class, industryName);
-        if (eduIndustry == null) {
-            eduIndustry = new AppIndustry();
-            eduIndustry.setName(industryName);
-            pu.persist(eduIndustry);
+        AppIndustry defaultIndustry = pu.findByMainField(AppIndustry.class, industryName);
+        if (defaultIndustry == null) {
+            defaultIndustry = new AppIndustry();
+            defaultIndustry.setName(industryName);
+            pu.persist(defaultIndustry);
         }
-        return eduIndustry;
+        return defaultIndustry;
     }
 
     private AppCompany installDefaultCompany() {
@@ -543,7 +543,7 @@ class CorePluginBodyConfig extends CorePluginBody {
         if (StringUtils.isEmpty(companyName)) {
             companyName = "My Company";
         }
-        AppCompany defaultCompany = pu.findByMainField(AppIndustry.class, companyName);
+        AppCompany defaultCompany = pu.findByMainField(AppCompany.class, companyName);
         if (defaultCompany == null) {
             defaultCompany = new AppCompany();
             defaultCompany.setName(companyName);
@@ -605,12 +605,12 @@ class CorePluginBodyConfig extends CorePluginBody {
         return currentConfig == null ? null : currentConfig.getMainPeriod();
     }
 
-    public AppUser findUserByContact(int contactId) {
-        PersistenceUnit pu = UPA.getPersistenceUnit();
-        return pu.createQueryBuilder(AppUser.class)
-                .byField("contactId", contactId)
-                .getFirstResultOrNull();
-    }
+//    public AppUser findUserByContact(int contactId) {
+//        PersistenceUnit pu = UPA.getPersistenceUnit();
+//        return pu.createQueryBuilder(AppUser.class)
+//                .byField("contactId", contactId)
+//                .getFirstResultOrNull();
+//    }
 
     public AppDepartment findDepartment(int id) {
         return UPA.getPersistenceUnit().findById(AppDepartment.class, id);

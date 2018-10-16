@@ -10,8 +10,7 @@ and open the template in the editor.
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://java.sun.com/jsf/core"
-
-        >
+>
 
 <h:head>
 </h:head>
@@ -19,6 +18,8 @@ and open the template in the editor.
 <h:body>
 
 
+    <!--@elvariable id="myWeekCalendarsCtrl" type="net.vpc.app.vainruling.plugins.calendars.web.MyPlanningListCtrl"-->
+    <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.jsf.Vr"-->
     <ui:composition template="#{vr.privateTemplatePath}">
         <ui:define name="content">
             <!--                <h:form id="buttonsForm">
@@ -34,12 +35,10 @@ and open the template in the editor.
             <h:form id="listForm">
 
                 <div >
-                    <p:selectOneMenu value="#{teacherPlanningCtrl.model.teacherId}"
-                                     filter="true" filterMatchMode="contains"
-                    >
-                        <p:ajax listener="#{teacherPlanningCtrl.onTeacherChanged}" update=":listForm"/>
-                        <f:selectItem itemLabel="Selectionner Enseignant..." itemValue=""/>
-                        <f:selectItems value="#{teacherPlanningCtrl.model.teachers}"/>
+                    <p:selectOneMenu value="#{myWeekCalendarsCtrl.model.selectionIndex}">
+                        <p:ajax listener="#{myWeekCalendarsCtrl.onGroupChanged}" update=":listForm"/>
+                        <f:selectItem itemLabel="Selectionner..." itemValue=""/>
+                        <f:selectItems value="#{myWeekCalendarsCtrl.model.groups}"/>
                     </p:selectOneMenu>
                     <!--<p:commandButton value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton " ajax="true" actionListener="# {teacherCourseLoadCtrl.onRefresh}"  update=":listForm"/>-->
                 </div>
@@ -47,41 +46,40 @@ and open the template in the editor.
                 <div >
                     <div class="table-responsive">
                         <p:outputLabel value="Aucun Emploi du temps n'a pu etre resolu" rendered="#{
-                                    teacherPlanningCtrl.model.teacherId ne null 
-                                    and 
-                                    teacherPlanningCtrl.model.teacherId.length() gt 0
-                                    and 
-                                    (teacherPlanningCtrl.model.planning eq null 
-                                    or (teacherPlanningCtrl.model.planning.size()) eq 0
+                                    myWeekCalendarsCtrl.model.selectionIndex ne null
+                                    and
+                                    (myWeekCalendarsCtrl.model.planning eq null 
+                                    or (myWeekCalendarsCtrl.model.planning.size()) eq 0
                                     )
                             }"/>
                         <p:panelGrid
-                                rendered="#{teacherPlanningCtrl.model.planning ne null and (teacherPlanningCtrl.model.planning.size()) gt 0}">
+                                style="width: 100%"
+                                rendered="#{myWeekCalendarsCtrl.model.planning ne null and (myWeekCalendarsCtrl.model.planning.size()) gt 0}">
                             <p:row>
                                 <p:column styleClass="ui-widget-header"><p:outputLabel value=""/></p:column>
                                 <p:column styleClass="ui-widget-header"><p:outputLabel
-                                        value="#{teacherPlanningCtrl.model.planning[0].dayName}"/></p:column>
+                                        value="#{myWeekCalendarsCtrl.model.planning[0].dayName}"/></p:column>
                                 <p:column styleClass="ui-widget-header"><p:outputLabel value="Mardi"/></p:column>
                                 <p:column styleClass="ui-widget-header"><p:outputLabel value="Mercredi"/></p:column>
                                 <p:column styleClass="ui-widget-header"><p:outputLabel value="Jeudi"/></p:column>
                                 <p:column styleClass="ui-widget-header"><p:outputLabel value="Vendredi"/></p:column>
                                 <p:column styleClass="ui-widget-header"><p:outputLabel value="Samedi"/></p:column>
                             </p:row>
-                            <ui:repeat var="h" value="#{teacherPlanningCtrl.model.planning[0].hours}" varStatus="hs">
+                            <ui:repeat var="h" value="#{myWeekCalendarsCtrl.model.planning[0].hours}" varStatus="hs">
                                 <p:row>
                                     <p:column styleClass="ui-widget-header">
                                         <p:outputLabel
-                                                value="#{teacherPlanningCtrl.model.planning[hs.index].hours[hs.index].hour}"/>
+                                                value="#{myWeekCalendarsCtrl.model.planning[hs.index].hours[hs.index].hour}"/>
                                     </p:column>
-                                    <ui:repeat var="r" value="#{teacherPlanningCtrl.model.planning}">
+                                    <ui:repeat var="r" value="#{myWeekCalendarsCtrl.model.planning}">
                                         <p:column
-                                                style="width:15.5%;#{teacherPlanningCtrl.resolveCssStyleForCourse(r.hours[hs.index].subject)}"
+                                                style="width:15.5%;#{myWeekCalendarsCtrl.resolveCssStyleForCourse(r.hours[hs.index].subject)}"
                                                 >
                                             <h:panelGrid columns="1">
                                                 <p:outputLabel value="#{r.hours[hs.index].subject}"
                                                                style="font-weight: bold"/>
                                                 <p:outputLabel value="#{r.hours[hs.index].actor}"
-                                                               style="#{teacherPlanningCtrl.resolveCssStyleForClass(r.hours[hs.index].students)}"
+                                                               style="#{myWeekCalendarsCtrl.resolveCssStyleForClass(r.hours[hs.index].students)}"
                                                         />
                                                 <p:outputLabel value="#{r.hours[hs.index].activity}"/>
                                                 <p:outputLabel value="#{r.hours[hs.index].room}"/>

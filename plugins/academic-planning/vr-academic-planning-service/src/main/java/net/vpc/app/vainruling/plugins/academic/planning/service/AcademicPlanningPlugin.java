@@ -13,8 +13,7 @@ import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicClass;
-import net.vpc.app.vainruling.plugins.calendars.service.VrCalendarProvider;
-import net.vpc.app.vainruling.plugins.calendars.service.model.CalendarWeek;
+import net.vpc.app.vainruling.plugins.calendars.service.model.WeekCalendar;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.ListValueMap;
 import net.vpc.common.util.SetValueMap;
@@ -33,6 +32,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.util.*;
 import net.vpc.app.vainruling.core.service.plugins.VrPlugin;
+import net.vpc.app.vainruling.plugins.calendars.service.AppWeekCalendarProvider;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -117,7 +117,7 @@ public class AcademicPlanningPlugin {
         return validTeachers;
     }
 
-    public CalendarWeek loadTeacherPlanning(int teacherId) {
+    public WeekCalendar loadTeacherPlanning(int teacherId) {
         AcademicTeacher teacher = academicPlugin.findTeacher(teacherId);
 
         String teacherName = teacher == null ? "" : teacher.resolveFullName();
@@ -234,9 +234,9 @@ public class AcademicPlanningPlugin {
         return all;
     }
 
-    public List<CalendarWeek> loadStudentPlanningList(int studentId) {
+    public List<WeekCalendar> loadStudentPlanningList(int studentId) {
         AcademicStudent student = academicPlugin.findStudent(studentId);
-        List<CalendarWeek> list = new ArrayList<>();
+        List<WeekCalendar> list = new ArrayList<>();
         HashMap<String, String> nameMapping = new HashMap<>();
         AcademicPlugin ap = VrApp.getBean(AcademicPlugin.class);
         List<AcademicClass> allCls = ap.findAcademicDownHierarchyList(new AcademicClass[]{student.getLastClass1(), student.getLastClass2(), student.getLastClass3()}, null);
@@ -284,7 +284,7 @@ public class AcademicPlanningPlugin {
         return list;
     }
 
-    public CalendarWeek loadClassPlanning(String className) {
+    public WeekCalendar loadClassPlanning(String className) {
         String uniformClassName = className == null ? "" : className.toLowerCase().trim();
         if (StringUtils.isEmpty(uniformClassName)) {
             return null;

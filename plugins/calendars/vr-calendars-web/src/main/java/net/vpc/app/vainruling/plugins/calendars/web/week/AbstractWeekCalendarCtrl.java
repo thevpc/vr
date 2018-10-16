@@ -3,7 +3,7 @@
  *
  * and open the template in the editor.
  */
-package net.vpc.app.vainruling.plugins.calendars.web;
+package net.vpc.app.vainruling.plugins.calendars.web.week;
 
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.web.VrColorTable;
@@ -19,7 +19,7 @@ import java.util.Set;
 /**
  * @author taha.bensalah@gmail.com
  */
-public class AbstractPlanningCtrl {
+public class AbstractWeekCalendarCtrl {
 
 
 

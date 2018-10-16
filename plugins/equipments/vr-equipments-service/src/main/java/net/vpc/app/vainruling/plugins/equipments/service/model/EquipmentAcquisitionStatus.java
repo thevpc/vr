@@ -6,7 +6,6 @@
 package net.vpc.app.vainruling.plugins.equipments.service.model;
 
 import net.vpc.app.vainruling.core.service.util.UIConstants;
-import net.vpc.upa.RelationshipType;
 import net.vpc.upa.config.*;
 
 /**

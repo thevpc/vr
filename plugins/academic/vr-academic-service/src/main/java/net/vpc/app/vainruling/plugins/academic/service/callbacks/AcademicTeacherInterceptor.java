@@ -30,7 +30,7 @@ import net.vpc.upa.PersistenceUnit;
  * @author taha.bensalah@gmail.com
  */
 @Callback
-public class AcademicTeacherCallback {
+public class AcademicTeacherInterceptor {
 
     @OnPrepare
     public void OnPrepareEntity(EntityEvent event) throws UPAException {

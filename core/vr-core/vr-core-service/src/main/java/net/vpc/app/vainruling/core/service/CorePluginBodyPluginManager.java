@@ -490,7 +490,7 @@ class CorePluginBodyPluginManager extends CorePluginBody {
                     String sk = String.valueOf(k);
                     if (sk.startsWith("config.")) {
                         String kk = sk.substring("config.".length());
-                        _appVersion.getConfig().put(kk, p.getProperty(kk));
+                        _appVersion.getConfig().put(kk, p.getProperty(sk));
                     }
                 }
 

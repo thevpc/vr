@@ -4,6 +4,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.vpc.app.nuts.Nuts;
+import net.vpc.app.nuts.NutsId;
+import net.vpc.app.nuts.NutsSearch;
+import net.vpc.app.nuts.NutsWorkspace;
 import net.vpc.app.vr.core.toolbox.util.IOUtils;
 import net.vpc.app.vr.core.toolbox.util._StringUtils;
 
@@ -137,6 +141,22 @@ public class Main {
 
     public void createProject(File storePropertiesTo) throws IOException {
         config.set("vrModuleName", "main");
+        getFileSystemTemplater().println("Looking for latest VR version...");
+        NutsWorkspace w = Nuts.openWorkspace();
+        boolean newVersion = false;
+        try {
+            NutsId v = w.findOne(new NutsSearch("net.vpc.app.vain-ruling.core:vr-core-service").setLastestVersions(true), null);
+            if (v != null) {
+                getFileSystemTemplater().println("Detected VR version " + v.getVersion());
+                config.setProperty("vrFwkCoreVersion", v.getVersion().getValue(), ValidatorFactory.VERSION);
+                newVersion = true;
+            }
+        } catch (Exception ex) {
+            //ignore
+        }
+        if (!newVersion) {
+            getFileSystemTemplater().println("Using base VR version " + config.getProperties(true).getProperty("vrFwkCoreVersion"));
+        }
         getFileSystemTemplater().println("Generating new project project...");
         getFileSystemTemplater().copyXml("pom.xml", "/");
         getFileSystemTemplater().targetMkdirs("app");

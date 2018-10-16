@@ -23,7 +23,8 @@ public enum EquipmentStatusType {
     COMPLAINT(0),
     ACQUISITION(1),
     BORROWABLE(1),
-    INSTORE(1)
+    INSTORE(1),
+    ASSGNED(-1)
     ;
 
     private int sign;

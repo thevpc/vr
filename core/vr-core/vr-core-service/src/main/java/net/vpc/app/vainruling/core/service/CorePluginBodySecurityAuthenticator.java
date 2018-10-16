@@ -6,11 +6,12 @@ import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.*;
 import net.vpc.upa.types.DateTime;
-import org.springframework.context.ApplicationContext;
 
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.vpc.app.vainruling.core.service.util.Arg;
+import net.vpc.app.vainruling.core.service.util.I18n;
 
 class CorePluginBodySecurityAuthenticator extends CorePluginBody {
 
@@ -204,7 +205,9 @@ class CorePluginBodySecurityAuthenticator extends CorePluginBody {
 
 //            activeSessionsTracker.onCreate(currentSession);
             //update stats
-            getContext().getTrace().trace("login", "successful", user.getLogin(), "/System/Access", null, null, user.getLogin(), user.getId(), Level.INFO, token.getIpAddress());
+            getContext().getTrace().trace("System.login", 
+                    I18n.get().get("System.login.succeeded.trace.message", new Arg("user",user.getLogin())), 
+                    user.getLogin(), "/System/Access", null, null, user.getLogin(), user.getId(), Level.INFO, token.getIpAddress());
             UPA.getPersistenceUnit().invokePrivileged(new VoidAction() {
                 @Override
                 public void run() {
@@ -288,7 +291,8 @@ class CorePluginBodySecurityAuthenticator extends CorePluginBody {
         if (login != null) {
 
             if (s.getRootUserId() != null) {
-                getContext().getTrace().trace("logout", "successful logout " + login + " to " + s.getRootLogin(),
+                getContext().getTrace().trace("logout", 
+                        I18n.get().get("System.logout-back.succeeded.trace.message", new Arg("user",login), new Arg("oldUser",s.getRootLogin())),
                         login + " => "
                         + s.getRootLogin(),
                         "/System/Access", null, null, login, id, Level.INFO, s.getIpAddress()
@@ -296,8 +300,8 @@ class CorePluginBodySecurityAuthenticator extends CorePluginBody {
                 s.setUserId(s.getRootUserId());
                 s.setRootUserId(null);
                 buildToken(s);
-            } else {
-                getContext().getTrace().trace("logout", "successful logout " + login,
+            } else { 
+                getContext().getTrace().trace("System.logout", I18n.get().get("System.logout.succeeded.trace.message", new Arg("user",login)),
                         login,
                         "/System/Access", null, null, login, id, Level.INFO, s.getIpAddress()
                 );
@@ -328,7 +332,7 @@ class CorePluginBodySecurityAuthenticator extends CorePluginBody {
             int id = t == null || t.getUserId() == null ? -1 : t.getUserId();
             if (t != null) {
                 if (login != null) {
-                    getContext().getTrace().trace("logout", "force logout " + login,
+                    getContext().getTrace().trace("logout", I18n.get().get("System.logout.succeeded.trace.message", new Arg("user",login)),
                             login,
                             "/System/Access", null, null, login, id, Level.INFO, t.getIpAddress()
                     );

@@ -27,7 +27,7 @@ import net.vpc.upa.types.ManyToOneType;
  * @author taha.bensalah@gmail.com
  */
 @Callback
-public class AcademicPersistenceUnitCallback {
+public class AcademicPersistenceUnitInterceptor {
 
     @OnPrePrepare
     public void onPreInitEntity(EntityEvent event) {

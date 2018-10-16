@@ -60,7 +60,7 @@ public class AppContactBase {
 
     private AppGender gender;
 
-    @Path("Details")
+    @Path("Contacts")
 //    @Properties(
 //            @Property(name = UIConstants.Form.SEPARATOR, value = "Details"))
     @Summary

@@ -1239,7 +1239,7 @@ td.vr-mailbox-name label {
 .vr-form-control-right-button60 {
     width: 60px;
     height: 34px;
-    float: right;
+    /*float: right;*/
 }
 
 .vr-form-control-right-button30 {

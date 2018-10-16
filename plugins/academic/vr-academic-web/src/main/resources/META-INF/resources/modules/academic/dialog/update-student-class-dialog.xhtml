@@ -34,7 +34,9 @@ and open the template in the editor.
                             <div class="form-group">
                                 <label>Période (*)</label>
                                 <p:selectOneMenu styleClass="form-control vr-form-control"
-                                                 value="#{updateStudentClassActionCtrl.model.selectedPeriod}">
+                                                 value="#{updateStudentClassActionCtrl.model.selectedPeriod}"
+                                                 filter="true" filterMatchMode="contains"
+                                                 >
                                     <f:selectItem itemLabel="Selectionner Période..." itemValue=""/>
                                     <f:selectItems value="#{updateStudentClassActionCtrl.model.periods}"/>
                                 </p:selectOneMenu>
@@ -51,7 +53,9 @@ and open the template in the editor.
                                 <div class="form-group">
                                     <label>Filtrer par Classe</label>
                                     <p:selectOneMenu styleClass="form-control vf-form-control"
-                                                     value="#{updateStudentClassActionCtrl.model.selectedClassFrom}">
+                                                     value="#{updateStudentClassActionCtrl.model.selectedClassFrom}"
+                                                     filter="true" filterMatchMode="contains"
+                                                     >
                                         <f:selectItem itemLabel="Selectionner Classe..." itemValue=""/>
                                         <f:selectItems value="#{updateStudentClassActionCtrl.model.classes}"/>
                                     </p:selectOneMenu>
@@ -77,7 +81,9 @@ and open the template in the editor.
                                     <div class="form-group">
                                         <label>Changer en ...</label>
                                         <p:selectOneMenu value="#{updateStudentClassActionCtrl.model.selectedClassTo}"
-                                                         styleClass="form-control vr-form-control">
+                                                         styleClass="form-control vr-form-control"
+                                                         filter="true" filterMatchMode="contains"
+                                                         >
                                             <f:selectItem itemLabel="Selectionner Classe..."
                                                           itemValue=""/>
                                             <f:selectItems value="#{updateStudentClassActionCtrl.model.classes}"/>

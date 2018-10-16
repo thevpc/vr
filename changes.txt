@@ -3,18 +3,23 @@ Version 1.13.11 :
 ## New Features
 
 ## Features removed
-
+    [Core] removed findUserByContact
 ## Other Changes
+    [Core] added @Summary for relevent fields in  AppGender
     [Core] Upgraded to UPA 1.2.48.1
     [Core] Renamed ArticlesItem (and others) to AppArticle
     [Core] findFullArticlesByDisposition now will add smart 
            file name if not found
     [Core] added  Object save(Object t)
     [JSF ] replaced p:editor by p:textEditor in primefaces 
+    [Edu ] added custom Student import files support (auto detect column names from a preset)
     [Web ] FSServlet added path type (?t=user|home|all|root) as request parameter
     
 ## Bug Fixes
     [Core] fixed problem when user has no login (not enabled)
+    [Core] fixed problem when with initial config customization
+    [Core] fixed findOrCreateCustomProfile
+    [Core] fixed log i18n messaging 
     [Profile] fixed profile broken page
 
 --------------------------------------------------------------------------------

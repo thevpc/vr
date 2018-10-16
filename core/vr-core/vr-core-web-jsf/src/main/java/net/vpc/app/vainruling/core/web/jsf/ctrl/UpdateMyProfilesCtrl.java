@@ -34,7 +34,7 @@ import java.util.logging.Logger;
 public class UpdateMyProfilesCtrl implements VrActionEnabler {
 
     private static final Logger log = Logger.getLogger(UpdateMyProfilesCtrl.class.getName());
-    private Model model = new Model();
+    private final Model model = new Model();
     @Autowired
     private CorePlugin core;
     private List<AppProfile> cachedAdministrableProfiles;

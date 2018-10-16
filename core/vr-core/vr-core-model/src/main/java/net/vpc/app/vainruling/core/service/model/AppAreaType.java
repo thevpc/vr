@@ -21,6 +21,8 @@ public class AppAreaType {
     @Main
     @Unique
     private String name;
+    @Summary
+    private String roomSpace;
 
     public AppAreaType() {
     }
@@ -65,4 +67,13 @@ public class AppAreaType {
         return id;
     }
 
+    public String getRoomSpace() {
+        return roomSpace;
+    }
+
+    public void setRoomSpace(String roomSpace) {
+        this.roomSpace = roomSpace;
+    }
+
+    
 }

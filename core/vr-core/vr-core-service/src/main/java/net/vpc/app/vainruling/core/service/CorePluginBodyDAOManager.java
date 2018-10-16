@@ -309,8 +309,13 @@ class CorePluginBodyDAOManager extends CorePluginBody {
         return entity.containsField("deleted");
     }
 
+    public RemoveTrace remove(Class entityType, Object id) {
+        return remove(UPA.getPersistenceUnit().getEntity(entityType).getName(), id);
+    }
+    
     public RemoveTrace remove(String entityName, Object id) {
         if (entityName == null) {
+            //TODO REMOVE THIS!!!!
             entityName = UPA.getPersistenceUnit().getEntity(id.getClass()).getName();
         }
         if (!isSoftRemovable(entityName)) {

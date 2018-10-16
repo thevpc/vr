@@ -77,16 +77,16 @@ public class SendWelcomeMailActionCtrl {
                 if("AppUser".equals(obj.getEntity().getName())) {
                     List<AppUser> users = obj.getSelectedEntityObjects();
                     VrApp.getBean(MailboxPlugin.class).sendWelcomeEmail(users, true);
-                }else if("AppContact".equals(obj.getEntity().getName())) {
-                    List<AppContact> contacts = obj.getSelectedEntityObjects();
-                    List<AppUser> users = new ArrayList<>();
-                    for (AppContact contact : contacts) {
-                        AppUser u = core.findUserByContact(contact.getId());
-                        if(u!=null) {
-                            users.add(u);
-                        }
-                    }
-                    VrApp.getBean(MailboxPlugin.class).sendWelcomeEmail(users, true);
+//                }else if("AppContact".equals(obj.getEntity().getName())) {
+//                    List<AppContact> contacts = obj.getSelectedEntityObjects();
+//                    List<AppUser> users = new ArrayList<>();
+//                    for (AppContact contact : contacts) {
+//                        AppUser u = core.findUserByContact(contact.getId());
+//                        if(u!=null) {
+//                            users.add(u);
+//                        }
+//                    }
+//                    VrApp.getBean(MailboxPlugin.class).sendWelcomeEmail(users, true);
                 }
             } else if ("new".equals(getModel().getTarget())) {
                 VrApp.getBean(MailboxPlugin.class).sendWelcomeEmail(true);

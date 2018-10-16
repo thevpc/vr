@@ -12,7 +12,7 @@ import java.util.List;
  * @author taha.bensalah@gmail.com
  */
 @XmlRootElement
-public class CalendarWeek {
+public class WeekCalendar {
 
     private String id;
     private String sourceName;
@@ -20,7 +20,7 @@ public class CalendarWeek {
     private String planningUniformName;
     private List<CalendarDay> days;
 
-    public CalendarWeek() {
+    public WeekCalendar() {
     }
 
     public String getId() {

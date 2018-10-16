@@ -18,6 +18,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.vpc.app.vainruling.plugins.academic.service.helper.ImportStudentContext;
+import net.vpc.app.vainruling.plugins.academic.service.helper.ImportTeacherContext;
 
 public class AcademicPluginBodyImports extends AcademicPluginBody {
 
@@ -35,7 +37,7 @@ public class AcademicPluginBodyImports extends AcademicPluginBody {
     public void importStudent(int periodId, AcademicStudentImport s) throws IOException {
         CorePluginSecurity.requireRight(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_CONFIG_IMPORT);
         XlsxLoadImporter i = new XlsxLoadImporter();
-        XlsxLoadImporter.ImportStudentContext ctx = new XlsxLoadImporter.ImportStudentContext();
+        ImportStudentContext ctx = new ImportStudentContext();
         ctx.setMainPeriod(core.findPeriodOrMain(periodId));
         i.importStudent(s, ctx);
     }
@@ -43,7 +45,7 @@ public class AcademicPluginBodyImports extends AcademicPluginBody {
     public void importTeacher(int periodId, AcademicTeacherImport t) throws IOException {
         CorePluginSecurity.requireRight(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_CONFIG_IMPORT);
         XlsxLoadImporter i = new XlsxLoadImporter();
-        XlsxLoadImporter.ImportTeacherContext ctx = new XlsxLoadImporter.ImportTeacherContext();
+        ImportTeacherContext ctx = new ImportTeacherContext();
         ctx.setMainPeriod(core.findPeriodOrMain(periodId));
         i.importTeacher(t, ctx);
     }

@@ -28,7 +28,7 @@ import net.vpc.upa.exceptions.UPAException;
  * @author taha.bensalah@gmail.com
  */
 @Callback
-public class AcademicCourseAssignmentCallback {
+public class AcademicCourseAssignmentInterceptor {
 
 
     @NamedFormula

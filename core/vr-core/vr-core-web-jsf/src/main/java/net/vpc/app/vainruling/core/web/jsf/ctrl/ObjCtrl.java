@@ -349,15 +349,15 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
 
     public void setEntityName(String entityName) {
         enabledButtons.clear();
-        try {
+//        try {
             UPA.getPersistenceUnit().getEntity(entityName);
             getModel().setEntityName(entityName);
             getModel().setSearchTextHelper(core.createSearchHelperString(null, entityName));
             getModel().setList(new ArrayList<ObjRow>());
             getModel().setCurrent(delegated_newInstance());
-        } catch (RuntimeException ex) {
-            log.log(Level.SEVERE, "Error", ex);
-        }
+//        } catch (RuntimeException ex) {
+//            log.log(Level.SEVERE, "Error", ex);
+//        }
     }
 
     public Entity getEntity() {
@@ -1560,7 +1560,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
                 .setResizable(true)
                 .setDraggable(true)
                 .setModal(true)
-                .setHeight(500)
+//                .setHeight(500)
                 .open();
     }
 

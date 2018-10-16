@@ -15,11 +15,10 @@ import net.vpc.app.vainruling.core.web.UPathItem;
 import net.vpc.app.vainruling.plugins.academic.planning.service.AcademicPlanningPlugin;
 import net.vpc.app.vainruling.plugins.academic.planning.service.AcademicPlanningPluginSecurity;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.app.vainruling.plugins.calendars.service.model.CalendarWeek;
+import net.vpc.app.vainruling.plugins.calendars.service.model.WeekCalendar;
 import net.vpc.app.vainruling.plugins.calendars.service.model.CalendarDay;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacherPeriod;
-import net.vpc.app.vainruling.plugins.calendars.web.AbstractPlanningCtrl;
+import net.vpc.app.vainruling.plugins.calendars.web.week.AbstractWeekCalendarCtrl;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.NamedId;
@@ -27,6 +26,7 @@ import net.vpc.upa.NamedId;
 import javax.faces.model.SelectItem;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.stereotype.Controller;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -36,13 +36,14 @@ import java.util.List;
                 @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
 //        css = "fa-table",
 //        title = "Emploi par Enseignant",
-        url = "modules/academic/planning/teacher-planning",
+        url = "modules/academic/planning/teacher-week-calendars",
         menu = "/Calendars",
         securityKey = AcademicPlanningPluginSecurity.RIGHT_CUSTOM_EDUCATION_TEACHER_PLANNING
 )
-public class TeacherPlanningCtrl extends AbstractPlanningCtrl {
+@Controller
+public class TeacherWeekCalendarsCtrl extends AbstractWeekCalendarCtrl {
 
-    public TeacherPlanningCtrl() {
+    public TeacherWeekCalendarsCtrl() {
         super();
         model = new ModelExt();
     }
@@ -75,7 +76,7 @@ public class TeacherPlanningCtrl extends AbstractPlanningCtrl {
             getModel().getTeachers().add(FacesUtils.createSelectItem(t.getStringId(), t.getStringName()));
         }
         int t = StringUtils.isEmpty(getModel().getTeacherId()) ? -1 : Integer.parseInt(getModel().getTeacherId());
-        CalendarWeek plannings = pl.loadTeacherPlanning(t);
+        WeekCalendar plannings = pl.loadTeacherPlanning(t);
         if (plannings == null) {
             updateModel(new ArrayList<CalendarDay>());
         } else {

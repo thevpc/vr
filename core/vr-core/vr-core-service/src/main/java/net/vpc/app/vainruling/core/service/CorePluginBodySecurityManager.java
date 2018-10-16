@@ -320,7 +320,7 @@ class CorePluginBodySecurityManager extends CorePluginBody {
     public boolean userAddProfile(int userId, String profileCode) {
         CorePluginSecurity.requireAdmin();
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        
+
         if (pu.createQuery("Select u.profile from AppUserProfileBinding  u where u.userId=:userId and u.profile.code=:code")
                 .setParameter("userId", userId)
                 .setParameter("code", profileCode)
@@ -413,12 +413,12 @@ class CorePluginBodySecurityManager extends CorePluginBody {
         if (p == null) {
             p = new AppProfile();
             p.setCode(profileCode);
+            p.setCustomType(customType);
             p.setName(I18n.get().get(new I18NString("Profile", p.getCustomType(), p.getCode()),
-                     new Arg("code", p.getCode()),
-                     new Arg("name", p.getName())
+                    new Arg("code", p.getCode()),
+                    new Arg("name", p.getName())
             ));
             p.setCustom(true);
-            p.setCustomType(customType);
             UPA.getPersistenceUnit().persist(p);
         } else if (!p.isCustom()) {
             //force to custom
@@ -532,13 +532,13 @@ class CorePluginBodySecurityManager extends CorePluginBody {
                 for (AppProfile profile : values) {
                     String key = profile.getCode();
                     if (!StringUtils.isEmpty(key)) {
-                        m.put(key, profile);
+                        m.put(key.toLowerCase(), profile);
                     }
                 }
                 return m;
             }
         });
-        return m.get(profileCode);
+        return m.get(profileCode==null?null:profileCode.toLowerCase());
 //        PersistenceUnit pu = UPA.getPersistenceUnit();
 //        return pu.createQueryBuilder(AppProfile.class).byField("code", profileCode)
 //                .getEntity();
@@ -628,7 +628,9 @@ class CorePluginBodySecurityManager extends CorePluginBody {
                         if (p != null) {
                             code = p.getCode();
                             if (!StringUtils.isEmpty(code)) {
-                                found.put(code, p);
+                                if (!found.containsKey(code)) {
+                                    found.put(code, p);
+                                }
                             }
                         }
                     }
@@ -945,7 +947,7 @@ class CorePluginBodySecurityManager extends CorePluginBody {
         userOrProfile = userOrProfile.trim().toLowerCase();
         List<String> all = new ArrayList<>();
         for (AppProfile appProfile : findProfiles()) {
-            if (appProfile.getCode()!= null && appProfile.getCode().toLowerCase().contains(userOrProfile)) {
+            if (appProfile.getCode() != null && appProfile.getCode().toLowerCase().contains(userOrProfile)) {
                 all.add(appProfile.getCode().trim());
             }
         }
