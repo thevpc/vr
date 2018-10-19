@@ -33,7 +33,7 @@ public class GoMailServiceTest {
             m.subject("Hi");
             m.body("This is my first example", "text/plain", GoMailBodyPosition.OBJECT);
             m.send();
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             Logger.getLogger(GoMailServiceTest.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

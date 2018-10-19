@@ -5,6 +5,7 @@
  */
 package net.vpc.app.vainruling.plugins.calendars.service;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import net.vpc.app.vainruling.plugins.calendars.model.RuntimeAppCalendarEvent;
@@ -25,9 +26,15 @@ public interface AppCalendarService {
         return null;
     }
 
+    default List<RuntimeAppCalendar> getPublicCalendars() {
+        return Collections.emptyList();
+    }
+
     List<RuntimeAppCalendar> getMyCalendars();
 
     List<RuntimeAppCalendarEvent> getMyEvents(String calendarCode, Date fromDate, Date toDate);
+
+    List<RuntimeAppCalendarEvent> getPublicEvents(String calendarCode, Date fromDate, Date toDate);
 
     default int getMyEventsCount(String calendarCode, Date fromDate, Date toDate) {
         List<RuntimeAppCalendarEvent> e = getMyEvents(calendarCode, fromDate, toDate);

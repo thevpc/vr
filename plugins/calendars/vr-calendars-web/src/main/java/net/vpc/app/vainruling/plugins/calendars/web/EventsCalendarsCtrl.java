@@ -64,13 +64,11 @@ public class EventsCalendarsCtrl {
 
         AppCalendar d = cals.findMyPrivateEventCalendar();
         for (AppCalendar ii : cals.findMyEventCalendars()) {
-            if (cals.isEventCalendarWriteAllowed(ii)) {
-                map.put(ii.getCode(), ii);
-                if (d != null && !d.getCode().equals(ii.getCode())) {
-                    list.add(new SelectItem(ii.getCode(), ii.getName()));
-                } else {
-                    list.add(new SelectItem(ii.getCode(), "Mon Calendrier Privé"));
-                }
+            map.put(ii.getCode(), ii);
+            if (d != null && !d.getCode().equals(ii.getCode())) {
+                list.add(new SelectItem(ii.getCode(), ii.getName()));
+            } else {
+                list.add(new SelectItem(ii.getCode(), "Mon Calendrier Privé"));
             }
         }
         if (getModel().getCalendar() == null || !map.containsKey(getModel().getCalendar())) {
@@ -122,9 +120,18 @@ public class EventsCalendarsCtrl {
         getModel().setCurrentCalendarEditable(true);
         getModel().setCurrentEventEditable(true);
         getModel().setEventProperties(new ArrayList<>());
-        if(isAllCalendarsSelected() || !cals.isEventCalendarWriteAllowed(e.getCalendar())){
-            getModel().setWriteCalendars(cals.findMyWritableEventCalendars());
-        }else {
+        if (isAllCalendarsSelected() || !cals.isEventCalendarWriteAllowed(e.getCalendar())) {
+            List<AppCalendar> list = cals.findMyWritableEventCalendars();
+            AppCalendar d = cals.findMyPrivateEventCalendar();
+            for (AppCalendar ii : list) {
+                if (d != null && !d.getCode().equals(ii.getCode())) {
+                    //
+                } else if(d!=null){
+                    ii.setName("Mon Calendrier Privé");
+                }
+            }
+            getModel().setWriteCalendars(list);
+        } else {
             getModel().setWriteCalendars(new ArrayList<>(Arrays.asList(e.getCalendar())));
         }
     }
@@ -133,8 +140,10 @@ public class EventsCalendarsCtrl {
         try {
             AppCalendarEvent e = (AppCalendarEvent) getModel().getEvent();
             String cn = getModel().getCalendar();
-            AppCalendar cal = (StringUtils.isEmpty(cn)) ? cals.findMyPrivateEventCalendar() : cals.findEventCalendarByCode(cn);
-            e.setCalendar(cal);
+            if (e.getCalendar() == null) {
+                AppCalendar cal = (StringUtils.isEmpty(cn)) ? cals.findMyPrivateEventCalendar() : cals.findEventCalendarByCode(cn);
+                e.setCalendar(cal);
+            }
             getModel().eventModel.addEvent(e, true);
             setSelectedNewEvent();
         } catch (Exception ex) {
@@ -165,15 +174,15 @@ public class EventsCalendarsCtrl {
         } else {
             getModel().setWriteCalendars(cals.findMyWritableEventCalendars());
             if (e.getCalendar() != null) {
-                boolean found=false;
+                boolean found = false;
                 for (AppCalendar writeCalendar : getModel().getWriteCalendars()) {
-                    if (writeCalendar.getCode()!=null && writeCalendar.getCode().equals(e.getCalendar().getCode())) {
-                        found=true;
+                    if (writeCalendar.getCode() != null && writeCalendar.getCode().equals(e.getCalendar().getCode())) {
+                        found = true;
                     }
                 }
                 //workaround when Calendar security changes by not allowed event to be updated
-                if(!found){
-                     getModel().getWriteCalendars().add(e.getCalendar());
+                if (!found) {
+                    getModel().getWriteCalendars().add(e.getCalendar());
                 }
             }
             getModel().setEventProperties(new ArrayList<>());
@@ -197,9 +206,9 @@ public class EventsCalendarsCtrl {
         e.setOwner(core.getCurrentUser());
         e.setCalendar(getMySelectedWriteCalendar());
         onEventSelect(e);
-        if(isAllCalendarsSelected() || !cals.isEventCalendarWriteAllowed(e.getCalendar())){
+        if (isAllCalendarsSelected() || !cals.isEventCalendarWriteAllowed(e.getCalendar())) {
             getModel().setWriteCalendars(cals.findMyWritableEventCalendars());
-        }else {
+        } else {
             getModel().setWriteCalendars(new ArrayList<>(Arrays.asList(e.getCalendar())));
         }
         getModel().setCurrentEventNew(true);
@@ -244,7 +253,6 @@ public class EventsCalendarsCtrl {
             this.currentEventNew = currentEventNew;
         }
 
-        
         public boolean isCurrentCalendarEditable() {
             return currentCalendarEditable;
         }

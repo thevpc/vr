@@ -36,18 +36,18 @@
                     <p:growl id="messages" showDetail="true" />
                     <h:panelGrid columns="4" style="margin-bottom:10px" cellpadding="5">
                         <p:outputLabel value="Choisir Calendrier"/>
-                        <p:selectOneMenu  value="#{eventsCalendarsCtrl.model.calendar}"
+                        <p:selectOneMenu  value="#{publicEventsCalendarsCtrl.model.calendar}"
                                           styleClass="vr-form-field"
                                           filter="true" filterMatchMode="contains"
                                           >
 
-                            <f:selectItems value="#{eventsCalendarsCtrl.model.calendars}"/>
-                            <p:ajax listener="#{eventsCalendarsCtrl.onRefreshCurrentCalendar}"   update=":form:schedule"/>
+                            <f:selectItems value="#{publicEventsCalendarsCtrl.model.calendars}"/>
+                            <p:ajax listener="#{publicEventsCalendarsCtrl.onRefreshCurrentCalendar}"   update=":form:schedule"/>
 
                         </p:selectOneMenu>
                     </h:panelGrid>
                     <h:panelGrid columnClasses="value">
-                        <p:schedule id="schedule" value="#{eventsCalendarsCtrl.model.eventModel}" 
+                        <p:schedule id="schedule" value="#{publicEventsCalendarsCtrl.model.eventModel}" 
                                     widgetVar="myschedule" 
                                     locale="fr" 
                                     timeFormat="HH:MM"  
@@ -55,12 +55,8 @@
 
                                     >
 
-                            <p:ajax event="dateSelect" disabled="#{!eventsCalendarsCtrl.model.currentCalendarEditable}" listener="#{eventsCalendarsCtrl.onDateSelect}" update=":form:eventDialog" oncomplete="PF('eventDialog').show();" />
-                            <p:ajax event="eventSelect" listener="#{eventsCalendarsCtrl.onEventSelect}" update=":form:eventDialog" 
+                            <p:ajax event="eventSelect" listener="#{publicEventsCalendarsCtrl.onEventSelect}" update=":form:eventDialog" 
                                     oncomplete="PF('eventDialog').show();" />
-                            <p:ajax event="eventMove"  disabled="#{!eventsCalendarsCtrl.model.currentCalendarEditable}" listener="#{eventsCalendarsCtrl.onEventMove}" update="messages" />
-                            <p:ajax event="eventResize"  disabled="#{!eventsCalendarsCtrl.model.currentCalendarEditable}" listener="#{eventsCalendarsCtrl.onEventResize}" update="messages" />
-
                         </p:schedule>
 
 
@@ -77,9 +73,8 @@
                                     <p:outputLabel for="title" value="Titre"/>
                                 </p:column>
                                 <p:column>
-                                    <p:inputText id="title"
-                                                 disabled="#{!eventsCalendarsCtrl.model.currentEventEditable}"
-                                                 value="#{eventsCalendarsCtrl.model.event.title}"
+                                    <p:inputText id="title" disabled="true"
+                                                 value="#{publicEventsCalendarsCtrl.model.event.title}"
                                                  style="width: 100%;"
                                                  />
                                 </p:column>
@@ -90,19 +85,9 @@
 
                                 </p:column>
                                 <p:column>
-                                    <p:selectOneMenu class="form-control vr-form-control"
-                                                     rendered="#{eventsCalendarsCtrl.model.currentEventEditable}"
-                                                     value="#{eventsCalendarsCtrl.model.event.calendar}"
-                                                     converter="#{vr.entityObjConverter('AppCalendar')}"
-                                                     styleClass="vr-form-field"
-                                                     filter="true" filterMatchMode="contains"
-                                                     >
-                                        <f:selectItems value="#{eventsCalendarsCtrl.model.writeCalendars}"/>
-                                    </p:selectOneMenu>
                                     <p:inputText class="form-control vr-form-control"
-                                                 rendered="#{!eventsCalendarsCtrl.model.currentEventEditable}"
                                                  disabled="true"
-                                                 value="#{eventsCalendarsCtrl.model.event.calendar.name}"
+                                                 value="#{publicEventsCalendarsCtrl.model.event.calendar.name}"
                                                  />
                                 </p:column>
 
@@ -113,16 +98,10 @@
 
                                 </p:column>
                                 <p:column>
-                                    <p:selectOneMenu class="form-control vr-form-control"
-                                                     id="type"
-                                                     disabled="#{!eventsCalendarsCtrl.model.currentEventEditable}"
-                                                     value="#{eventsCalendarsCtrl.model.event.eventType}"
-                                                     converter="#{vr.entityObjConverter('AppCalendarEventType')}"
-                                                     styleClass="vr-form-field"
-                                                     filter="true" filterMatchMode="contains"
-                                                     >
-                                        <f:selectItems value="#{vr.entitySelectItems('AppCalendarEventType',true,false)}"/>
-                                    </p:selectOneMenu>
+                                    <p:inputText class="form-control vr-form-control"
+                                                 disabled="true"
+                                                 value="#{publicEventsCalendarsCtrl.model.event.eventType.name}"
+                                                 />
                                 </p:column>
 
                             </p:row>
@@ -132,8 +111,8 @@
                                 </p:column>
                                 <p:column>
                                     <p:calendar id="from" 
-                                                value="#{eventsCalendarsCtrl.model.event.startDate}" 
-                                                disabled="#{!eventsCalendarsCtrl.model.currentEventEditable}"
+                                                value="#{publicEventsCalendarsCtrl.model.event.startDate}" 
+                                                disabled="true"
                                                 timeZone="GMT+2" pattern="dd/MM/yyyy HH:mm" />
                                 </p:column>
                             </p:row>
@@ -142,8 +121,8 @@
                                     <p:outputLabel for="to" value="A" />
                                 </p:column>
                                 <p:column>
-                                    <p:calendar id="to" value="#{eventsCalendarsCtrl.model.event.endDate}" 
-                                                disabled="#{!eventsCalendarsCtrl.model.currentEventEditable}"
+                                    <p:calendar id="to" value="#{publicEventsCalendarsCtrl.model.event.endDate}" 
+                                                disabled="true"
                                                 timeZone="GMT+2" pattern="dd/MM/yyyy HH:mm" />
                                 </p:column>
                             </p:row>
@@ -153,8 +132,8 @@
                                 </p:column>
                                 <p:column>
                                     <h:selectBooleanCheckbox id="allDay" 
-                                                             disabled="#{!eventsCalendarsCtrl.model.currentEventEditable}"
-                                                             value="#{eventsCalendarsCtrl.model.event.allDay}" />
+                                                             disabled="true"
+                                                             value="#{publicEventsCalendarsCtrl.model.event.allDay}" />
                                 </p:column>
                             </p:row>
                             <p:row>
@@ -162,40 +141,13 @@
                                     <p:outputLabel value="Emplacement" />
                                 </p:column>
                                 <p:column>
-                                    <p:selectOneMenu class="form-control vr-form-control"
-                                                     disabled="#{!eventsCalendarsCtrl.model.currentEventEditable}"
-                                                     value="#{eventsCalendarsCtrl.model.event.location}"
-                                                     converter="#{vr.entityObjConverter('AppArea')}"
-                                                     styleClass="vr-form-field"
-                                                         filter="true" filterMatchMode="contains"
-                                                     >
-                                        <f:selectItems value="#{vr.entitySelectItems('AppArea',true,false)}"/>
-                                    </p:selectOneMenu>
-                                </p:column>
-                            </p:row>
-                            <p:row>
-                                <p:column>
-                                    <p:outputLabel value="Autre Emplacement"/>
-                                </p:column>
-                                <p:column>
-                                    <p:inputText disabled="#{!eventsCalendarsCtrl.model.currentEventEditable}"
-                                                 value="#{eventsCalendarsCtrl.model.event.otherLocation}" 
-                                                 style="width: 100%;"
+                                    <p:inputText class="form-control vr-form-control"
+                                                 disabled="true"
+                                                 value="#{publicEventsCalendarsCtrl.model.event.location.name} #{publicEventsCalendarsCtrl.model.event.otherLocation}"
                                                  />
                                 </p:column>
                             </p:row>
-                            <p:row>
-                                <p:column>
-                                    <p:outputLabel value="Propriétaire" />
-                                </p:column>
-                                <p:column>
-                                    <p:inputText disabled="true"
-                                                 value="#{eventsCalendarsCtrl.model.event.owner.fullName}" 
-                                                 style="width: 100%;"
-                                                 />
-                                </p:column>
-                            </p:row>
-                            <c:forEach var="item" items="#{eventsCalendarsCtrl.model.eventProperties}">
+                            <c:forEach var="item" items="#{publicEventsCalendarsCtrl.model.eventProperties}">
                                 <p:row>
                                     <p:column>
                                         <p:outputLabel value="#{item.propertyName}" />
@@ -211,8 +163,8 @@
                             <p:row>
                                 <p:column colspan="2">
                                     <h:inputTextarea style="width: 100%" 
-                                                     disabled="#{!eventsCalendarsCtrl.model.currentEventEditable}"
-                                                     value="#{eventsCalendarsCtrl.model.event.description}" />
+                                                     disabled="true"
+                                                     value="#{publicEventsCalendarsCtrl.model.event.description}" />
                                 </p:column>
                             </p:row>
                         </p:panelGrid>
@@ -220,10 +172,6 @@
 
 
                         <div style="margin-top: 10px;float: right;">
-                            <p:commandButton id="saveButton" rendered="#{eventsCalendarsCtrl.model.currentEventEditable}" value="Enregistrer" actionListener="#{eventsCalendarsCtrl.onSave()}" oncomplete="PF('myschedule').update();PF('eventDialog').hide();" 
-                                             update="schedule" />
-                            <p:commandButton id="deleteButton" rendered="#{eventsCalendarsCtrl.model.currentEventEditable and ! eventsCalendarsCtrl.model.currentEventNew}"  value="Supprimer" actionListener="#{eventsCalendarsCtrl.onDelete()}" oncomplete="PF('myschedule').update();PF('eventDialog').hide();" 
-                                             update="schedule" />
                             <p:commandButton id="closeButton" value="Fermer"  oncomplete="PF('myschedule').update();PF('eventDialog').hide();" style="position: relative"/>
                         </div>
                     </p:dialog>

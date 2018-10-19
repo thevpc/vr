@@ -21,7 +21,7 @@ import net.vpc.upa.config.Sequence;
  */
 @Entity(listOrder = "this.name")
 @Path("/Repository/General")
-public class AppCalendar{
+public class AppCalendar {
 
     @Sequence
     @Id
@@ -36,6 +36,7 @@ public class AppCalendar{
     private AppUserType readUserTypeFilter;
     private String readProfileFilter;
     private String writeProfileFilter;
+    private boolean publicCalendar;
     private transient boolean dynamic;
     @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
     private String description;
@@ -151,5 +152,12 @@ public class AppCalendar{
         return String.valueOf(getName());
     }
 
-    
+    public boolean isPublicCalendar() {
+        return publicCalendar;
+    }
+
+    public void setPublicCalendar(boolean publicCalendar) {
+        this.publicCalendar = publicCalendar;
+    }
+
 }

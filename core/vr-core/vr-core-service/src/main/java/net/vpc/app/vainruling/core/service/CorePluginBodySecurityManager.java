@@ -538,15 +538,15 @@ class CorePluginBodySecurityManager extends CorePluginBody {
                 return m;
             }
         });
-        return m.get(profileCode==null?null:profileCode.toLowerCase());
+        return m.get(profileCode == null ? null : profileCode.toLowerCase());
 //        PersistenceUnit pu = UPA.getPersistenceUnit();
 //        return pu.createQueryBuilder(AppProfile.class).byField("code", profileCode)
 //                .getEntity();
 
     }
 
-    protected Set<String> findUniformProfileCodesMapByUserId(int userId, boolean includeLogin) {
-        Map<Integer, Set<String>> uniformProfileCodesMapByUserId = findUniformProfileCodesMapByUserId(includeLogin);
+    protected Set<String> findUniformProfileCodesMapByUserId(int userId, boolean includeLogin, boolean expandProfiles) {
+        Map<Integer, Set<String>> uniformProfileCodesMapByUserId = findUniformProfileCodesMapByUserId(includeLogin, expandProfiles);
         Set<String> profiles = uniformProfileCodesMapByUserId.get(userId);
         if (profiles == null) {
             AppUser u = findUser(userId);
@@ -558,12 +558,22 @@ class CorePluginBodySecurityManager extends CorePluginBody {
             if (includeLogin) {
                 profiles.add(u.getLogin().toLowerCase());
             }
+            profiles.addAll(expandProfileCodes(profiles));
+        } else {
+            profiles = new HashSet(profiles);
+            AppUser u = findUser(userId);
+            if (u == null) {
+                return null;
+            }
+            if (includeLogin) {
+                profiles.add(u.getLogin().toLowerCase());
+            }
         }
         return profiles;
     }
 
-    protected Map<Integer, Set<String>> findUniformProfileCodesMapByUserId(final boolean includeLogin) {
-        String cacheKey = "findUniformProfileCodesMapByUserId:" + includeLogin;
+    protected Map<Integer, Set<String>> findUniformProfileCodesMapByUserId(final boolean includeLogin, boolean expandProfiles) {
+        String cacheKey = "findUniformProfileCodesMapByUserId:" + includeLogin + ":" + expandProfiles;
         final EntityCache entityCache = getContext().getCacheService().get(AppUserProfileBinding.class);
         return entityCache
                 .getProperty(cacheKey, new Action<Map<Integer, Set<String>>>() {
@@ -582,6 +592,11 @@ class CorePluginBodySecurityManager extends CorePluginBody {
                                     all.put(o.getUser().getId(), list);
                                 }
                                 list.add(o.getProfile().getCode().toLowerCase());
+                            }
+                        }
+                        if (expandProfiles) {
+                            for (Map.Entry<Integer, Set<String>> entry : all.entrySet()) {
+                                entry.getValue().addAll(expandProfileCodes(entry.getValue()));
                             }
                         }
                         return all;
@@ -612,66 +627,72 @@ class CorePluginBodySecurityManager extends CorePluginBody {
 //        return value;
     }
 
-    private List<AppProfile> expandProfiles(List<AppProfile> profiles) {
-        Map<String, AppProfile> found = new LinkedHashMap<>();
-        for (AppProfile profile : profiles) {
-            String code = profile.getCode();
-            if (!StringUtils.isEmpty(code)) {
-                found.put(code, profile);
+    public Set<String> expandProfileCodes(Collection<String> profiles) {
+        Set<String> found = new HashSet<>();
+        Stack<String> stack = new Stack<>();
+        for (String profile : profiles) {
+            if (!StringUtils.isEmpty(profile)) {
+                stack.push(profile.toLowerCase());
             }
-            String inherited = profile.getInherited();
-            if (!StringUtils.isEmpty(inherited)) {
-                String[] st = inherited.split("[ ,;]");
-                for (String s : st) {
-                    if (!found.containsKey(s)) {
-                        AppProfile p = findProfileByCode(s);
-                        if (p != null) {
-                            code = p.getCode();
-                            if (!StringUtils.isEmpty(code)) {
-                                if (!found.containsKey(code)) {
-                                    found.put(code, p);
-                                }
-                            }
+        }
+        while (!stack.isEmpty()) {
+            String profileCode = stack.pop();
+            found.add(profileCode);
+            AppProfile profile = findProfileByCode(profileCode);
+            if (profile != null) {
+                String inherited = profile.getInherited();
+                if (!StringUtils.isEmpty(inherited)) {
+                    String[] st = inherited.split("[ ,;]");
+                    for (String s : st) {
+                        s = s.toLowerCase();
+                        if (!found.contains(s)) {
+                            stack.push(s);
                         }
                     }
                 }
-
             }
         }
-        return new ArrayList<>(found.values());
+        return found;
     }
 
     public List<AppProfile> findProfilesByUser(int userId) {
-        final EntityCache entityCache = getContext().getCacheService().get(AppUserProfileBinding.class);
-        Map<Integer, List<AppProfile>> m = entityCache
-                .getProperty("findProfilesByUser", new Action<Map<Integer, List<AppProfile>>>() {
-                    @Override
-                    public Map<Integer, List<AppProfile>> run() {
-                        PersistenceUnit pu = UPA.getPersistenceUnit();
-                        MapList<Integer, AppUserProfileBinding> values = entityCache.getValues();
-                        Map<Integer, List<AppProfile>> m = new HashMap<Integer, List<AppProfile>>();
-                        for (AppUserProfileBinding binding : values) {
-                            if (binding.getUser() != null && binding.getProfile() != null) {
-                                List<AppProfile> found = m.get(binding.getUser().getId());
-                                if (found == null) {
-                                    found = new ArrayList<AppProfile>();
-                                    m.put(binding.getUser().getId(), found);
-                                }
-                                found.add(binding.getProfile());
-                            }
-                        }
-                        return m;
-                    }
-                });
-        List<AppProfile> all = m.get(userId);
-        if (all == null) {
-            all = Collections.EMPTY_LIST;
+        Set<String> codes = findUniformProfileCodesMapByUserId(userId, true, true);
+        List<AppProfile> pro = new ArrayList<>();
+        if (codes != null) {
+            for (String code : codes) {
+                AppProfile pp = findProfileByCode(code);
+                if (pp != null) {
+                    pro.add(pp);
+                }
+            }
         }
-//        PersistenceUnit pu = UPA.getPersistenceUnit();
-//        return pu.createQuery("Select u.profile from AppUserProfileBinding  u where u.userId=:userId")
-//                .setParameter("userId", userId)
-//                .getResultList();
-        return expandProfiles(all);
+        return pro;
+//        final EntityCache entityCache = getContext().getCacheService().get(AppUserProfileBinding.class);
+//        Map<Integer, List<AppProfile>> m = entityCache
+//                .getProperty("findProfilesByUser", new Action<Map<Integer, List<AppProfile>>>() {
+//                    @Override
+//                    public Map<Integer, List<AppProfile>> run() {
+//                        PersistenceUnit pu = UPA.getPersistenceUnit();
+//                        MapList<Integer, AppUserProfileBinding> values = entityCache.getValues();
+//                        Map<Integer, List<AppProfile>> m = new HashMap<Integer, List<AppProfile>>();
+//                        for (AppUserProfileBinding binding : values) {
+//                            if (binding.getUser() != null && binding.getProfile() != null) {
+//                                List<AppProfile> found = m.get(binding.getUser().getId());
+//                                if (found == null) {
+//                                    found = new ArrayList<AppProfile>();
+//                                    m.put(binding.getUser().getId(), found);
+//                                }
+//                                found.add(binding.getProfile());
+//                            }
+//                        }
+//                        return m;
+//                    }
+//                });
+//        List<AppProfile> all = m.get(userId);
+//        if (all == null) {
+//            all = Collections.EMPTY_LIST;
+//        }
+//        return expandProfiles(all);
     }
 
     public List<AppUser> findUsersByTypeAndDepartment(int userType, int userDepartment) {
@@ -884,7 +905,7 @@ class CorePluginBodySecurityManager extends CorePluginBody {
         if (userId == null) {
             userId = findUserIdByLogin(login);
         }
-        Set<String> foundProfileNames = (userId == null) ? (new HashSet<String>()) : findUniformProfileCodesMapByUserId(userId, true);
+        Set<String> foundProfileNames = (userId == null) ? (new HashSet<String>()) : findUniformProfileCodesMapByUserId(userId, true, true);
         if (foundProfileNames == null) {
             foundProfileNames = new HashSet<>();
         }

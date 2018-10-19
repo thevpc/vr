@@ -22,6 +22,7 @@ import net.vpc.app.vainruling.plugins.calendars.model.AppCalendarEvent;
 import net.vpc.app.vainruling.plugins.calendars.model.RuntimeAppCalendarEvent;
 import net.vpc.app.vainruling.plugins.calendars.model.RuntimeAppCalendar;
 import net.vpc.common.util.MutableDate;
+import net.vpc.upa.Action;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.UPA;
 
@@ -431,7 +432,7 @@ public class CalendarsPlugin {
                         all.add(evt);
                     }
 
-                }else if (cal.getClass().equals(RuntimeAppCalendar.class)) {
+                } else if (cal.getClass().equals(RuntimeAppCalendar.class)) {
                     RuntimeAppCalendar r = (RuntimeAppCalendar) cal;
                     AppCalendarService y = calendarEventServices.get(r.getServiceName());
                     if (y != null) {
@@ -444,6 +445,59 @@ public class CalendarsPlugin {
                     }
                 }
             }
+        }
+        return all;
+    }
+
+    /**
+     * find all events in the window
+     * [referenceDate-windowSizeInDays,referenceDate+windowSizeInDays]
+     *
+     * @param calendar
+     * @param fromDate
+     * @param toDate
+     * @return
+     */
+    public List<AppCalendarEvent> findPublicEventCalendarEvents(Date fromDate, Date toDate) {
+        List<AppCalendar> a = findPublicEventCalendars(true, true);
+        List<AppCalendarEvent> all = new ArrayList<>();
+        int v = -99;
+        for (AppCalendar cal : a) {
+            if (cal.getClass().equals(AppCalendar.class)) {
+                AppCalendar aa = (AppCalendar) cal;
+                List<AppCalendarEvent> evts = UPA.getPersistenceUnit().createQuery(
+                        "select i from AppCalendarEvent i where "
+                        + " i.calendarId=:calendarId "
+                        + " and ("
+                        + "    (i.startDate>=:startDate and i.startDate<:endDate) "
+                        + " or (i.endDate>=:startDate and i.endDate<:endDate) "
+                        + " or (i.startDate<=:startDate and i.endDate>=:endDate) "
+                        + " )"
+                )
+                        .setParameter("calendarId", aa.getId())
+                        .setParameter("startDate", fromDate)
+                        .setParameter("endDate", toDate)
+                        .getResultList();
+                for (AppCalendarEvent evt : evts) {
+                    if (evt.isEditable() && evt.getOwner() != null && evt.getOwner().getId() != core.getCurrentUserId()) {
+                        evt.setEditable(false);
+                    }
+                    all.add(evt);
+                }
+
+            } else if (cal.getClass().equals(RuntimeAppCalendar.class)) {
+                RuntimeAppCalendar r = (RuntimeAppCalendar) cal;
+                AppCalendarService y = calendarEventServices.get(r.getServiceName());
+                if (y != null) {
+                    for (RuntimeAppCalendarEvent e : y.getPublicEvents(cal.getCode(), fromDate, toDate)) {
+                        v--;
+                        e.setId(v);
+                        e.setEditable(false);
+                        all.add(e);
+                    }
+                }
+            }
+
         }
         return all;
     }
@@ -516,6 +570,46 @@ public class CalendarsPlugin {
         return findMyEventCalendars(true, true);
     }
 
+    public List<AppCalendar> findPublicEventCalendars(boolean includePersistent, boolean includeRuntime) {
+        return UPA.getPersistenceUnit().invokePrivileged(new Action<List<AppCalendar>>() {
+            @Override
+            public List<AppCalendar> run() {
+                Map<String, AppCalendar> all = new HashMap<>();
+
+                if (includePersistent) {
+                    PersistenceUnit pu = UPA.getPersistenceUnit();
+                    List<AppCalendar> allPersistentValendars = pu.createQuery("select i from AppCalendar i where i.publicCalendar=true").getResultList();
+                    AppCalendar dc = findMyPrivateEventCalendar();
+                    all.put(dc.getCode(), dc);
+                    for (AppCalendar c : allPersistentValendars) {
+                        if (c.getId() != dc.getId()) {
+                            if (isEventCalendarReadAllowed(c)) {
+                                if (!StringUtils.isEmpty(c.getCode())) {
+                                    if (!all.containsKey(c.getCode())) {
+                                        all.put(c.getCode(), c);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                if (includeRuntime) {
+                    for (AppCalendarService calendarEventSerivce : calendarEventServices.values()) {
+                        List<RuntimeAppCalendar> cls = calendarEventSerivce.getPublicCalendars();
+                        if (cls != null) {
+                            for (RuntimeAppCalendar cl : cls) {
+                                if (cl != null && !StringUtils.isEmpty(cl.getCode()) && !all.containsKey(cl.getCode())) {
+                                    all.put(cl.getCode(), cl);
+                                }
+                            }
+                        }
+                    }
+                }
+                return new ArrayList<>(all.values());
+            }
+        });
+    }
+
     public List<AppCalendar> findMyEventCalendars(boolean includePersistent, boolean includeRuntime) {
         Map<String, AppCalendar> all = new HashMap<>();
 
@@ -525,7 +619,8 @@ public class CalendarsPlugin {
             int userId = cu == null ? -1 : cu.getId();
             int userTypeId = (cu == null || cu.getType() == null) ? -1 : cu.getType().getId();
             List<AppCalendar> allPersistentValendars = pu.createQuery("select i from AppCalendar i where "
-                    + " ( "
+                    + "  i.publicCalendar=true "
+                    + " or ( "
                     + " (i.readUserFilterId=null or i.readUserFilterId=:userId)"
                     + " and (i.readUserTypeFilterId=null or i.readUserTypeFilterId=:userTypeId)"
                     + " ) or i.ownerId=:userId"
