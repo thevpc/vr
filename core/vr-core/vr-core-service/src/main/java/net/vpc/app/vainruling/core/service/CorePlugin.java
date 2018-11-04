@@ -80,6 +80,7 @@ public class CorePlugin {
     private final CorePluginBodyConfig bodyConfig = new CorePluginBodyConfig();
     private final CorePluginBody[] bodies = new CorePluginBody[]{bodyFileSystem, bodyConfig, bodySecurityAuth, bodySecurityManager, bodyDaoManager, bodyContentManager};
     private CorePluginBodyContext bodyContext;
+    private boolean started = false;
 
     public static CorePlugin get() {
         return VrApp.getBean(CorePlugin.class);
@@ -91,38 +92,46 @@ public class CorePlugin {
 //        return VrApp.getContext().getBean(UserSession.class);
 //    }
     void start() {
-        //LogUtils.configure(Level.FINE,"net.vpc");
-        //disable log4j imported by jxl-api
-        org.apache.log4j.LogManager.getRootLogger().setLevel(org.apache.log4j.Level.OFF);
+        try {
+            //LogUtils.configure(Level.FINE,"net.vpc");
+            //disable log4j imported by jxl-api
+            org.apache.log4j.LogManager.getRootLogger().setLevel(org.apache.log4j.Level.OFF);
 
-        i18n.register("i18n.dictionary");
-        i18n.register("i18n.presentation");
-        i18n.register("i18n.service");
+            i18n.register("i18n.dictionary");
+            i18n.register("i18n.presentation");
+            i18n.register("i18n.service");
 //        try {
 //            InitialContext c = new InitialContext();
 //            c.bind("java:comp/env/datasource", VrApp.getContext().getBean("datasource"));
 //        }catch(Exception ex){
 //            ex.printStackTrace();
 //        }
-        bodyContext = new CorePluginBodyContext(this, cacheService, trace);
-        List<PersistenceUnit> persistenceUnits = UPA.getPersistenceGroup().getPersistenceUnits();
-        bodyPluginManager.setContext(bodyContext);
-        for (CorePluginBody body : bodies) {
-            body.setContext(bodyContext);
-        }
-        for (PersistenceUnit persistenceUnit : persistenceUnits) {
-            persistenceUnit.invokePrivileged(new VoidAction() {
-                @Override
-                public void run() {
-                    bodyPluginManager.install();
+            bodyContext = new CorePluginBodyContext(this, cacheService, trace);
+            List<PersistenceUnit> persistenceUnits = UPA.getPersistenceGroup().getPersistenceUnits();
+            bodyPluginManager.setContext(bodyContext);
+            for (CorePluginBody body : bodies) {
+                body.setContext(bodyContext);
+            }
+            for (PersistenceUnit persistenceUnit : persistenceUnits) {
+                persistenceUnit.invokePrivileged(new VoidAction() {
+                    @Override
+                    public void run() {
+                        bodyPluginManager.install();
 
 //                    for (CorePluginBody body : bodies) {
 //                        body.install();
 //                    }
-                    bodyPluginManager.onStart();
-                }
-            });
+                        bodyPluginManager.onStart();
+                    }
+                });
+            }
+        } finally {
+            started = true;
         }
+    }
+
+    public boolean isStarted() {
+        return started;
     }
 
     @Install

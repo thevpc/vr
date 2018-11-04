@@ -22,7 +22,7 @@ import net.vpc.upa.config.Summary;
  *
  * @author vpc
  */
-@Entity
+@Entity(listOrder = "this.opDate desc")
 @Path("Equipment")
 public class EquipmentIssueLog {
 

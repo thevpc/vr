@@ -36,7 +36,8 @@ import net.vpc.upa.types.DateTime;
                 @Property(name = UIConstants.ENTITY_TEXT_SEARCH_FACTORY, value = "net.vpc.app.vainruling.core.service.obj.AppUserObjSearchFactory")
         })
 public class AppUser extends AppContactBase implements Cloneable {
-    @Path(value = "UserInfos",position = 0)
+
+    @Path(value = "UserInfos", position = 0)
     @Summary
     @Unique
     @Field(
@@ -55,7 +56,7 @@ public class AppUser extends AppContactBase implements Cloneable {
 
     @Summary
     private AppDepartment department;
-    
+
     @Summary
     private AppUserType type;
 
@@ -78,6 +79,21 @@ public class AppUser extends AppContactBase implements Cloneable {
      */
     @Field(protectionLevel = ProtectionLevel.PROTECTED)
     private String passwordAuto;
+
+    public void copyFrom(AppContactBase other) {
+        super.copyFrom(other);
+        if (other instanceof AppUser) {
+            AppUser u=(AppUser)other;
+            this.login = u.login;
+            this.password = u.password;
+            this.department = u.department;
+            this.type = u.type;
+            this.lastConnexionDate = u.lastConnexionDate;
+            this.connexionCount = u.connexionCount;
+            this.welcomeSent = u.welcomeSent;
+            this.passwordAuto = u.passwordAuto;
+        }
+    }
 
     public static String getName(AppUser t) {
         String log = t.getLogin();
@@ -174,7 +190,6 @@ public class AppUser extends AppContactBase implements Cloneable {
 //        AppContact c = getContact();
 //        return c == null ? String.valueOf(getId()) : c.getFullTitle();
 //    }
-
     public AppUser copy() {
         AppUser appUser = null;
         try {

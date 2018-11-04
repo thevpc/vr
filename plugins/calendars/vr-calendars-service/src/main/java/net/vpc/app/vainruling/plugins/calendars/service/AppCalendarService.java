@@ -34,7 +34,9 @@ public interface AppCalendarService {
 
     List<RuntimeAppCalendarEvent> getMyEvents(String calendarCode, Date fromDate, Date toDate);
 
-    List<RuntimeAppCalendarEvent> getPublicEvents(String calendarCode, Date fromDate, Date toDate);
+    default List<RuntimeAppCalendarEvent> getPublicEvents(String calendarCode, Date fromDate, Date toDate){
+        return Collections.emptyList();
+    }
 
     default int getMyEventsCount(String calendarCode, Date fromDate, Date toDate) {
         List<RuntimeAppCalendarEvent> e = getMyEvents(calendarCode, fromDate, toDate);

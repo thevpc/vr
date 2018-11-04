@@ -55,13 +55,18 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.lang.reflect.Array;
+import java.lang.reflect.Method;
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import net.vpc.app.vainruling.core.service.util.I18n;
+import net.vpc.app.vainruling.core.web.jsf.converters.EnumConverter;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -667,12 +672,13 @@ public class Vr {
         String v = null;
         if (value instanceof ContentText) {
             v = ((ContentText) value).getContent();
+            if(v==null){
+                v="";
+            }
         } else {
             v = String.valueOf(value).trim();
         }
-        if (v.isEmpty()) {
-            return "";
-        }
+        v=v.trim();
         return VrUtils.extractPureHTML(replaceCustomURLs(v));
     }
 
@@ -1403,6 +1409,41 @@ public class Vr {
         return StringUtils.removeDuplicates(StringUtils.split(string, ",; :"));
     }
 
+    public Object[] enumValues(String enumClassName){
+        Class<?> cls;
+        try {
+            cls = Class.forName(enumClassName);
+        } catch (ClassNotFoundException ex) {
+            throw new IllegalArgumentException(ex);
+        }
+        try {
+            //alternatively
+            Method method = cls.getDeclaredMethod("values");
+            return (Object[]) method.invoke(null);
+        } catch (Exception ex) {
+            throw new IllegalArgumentException("Why");
+        }
+    }
+    
+    public List<SelectItem> enumSelectItems(String enumClassName, boolean selectNone, boolean selectNull) {
+        //should cache this?
+        List<SelectItem> list = new ArrayList<>();
+        if (selectNone) {
+            list.add(FacesUtils.createSelectItem("", "Non Spécifié"));
+        }
+        if (selectNull) {
+            list.add(FacesUtils.createSelectItem(NULL_VALUE_STR, "--Valeur Nulle--"));
+        }
+        I18n p = I18n.get();
+        
+        for (Object x : enumValues(enumClassName)) {
+            String name = p.getEnum(x);
+            String id = x.toString();
+            list.add(FacesUtils.createSelectItem(id, name));
+        }
+        return list;
+    }
+    
     public List<SelectItem> entitySelectItems(String entityName, boolean selectNone, boolean selectNull) {
         //should cache this?
         List<SelectItem> list = new ArrayList<>();
@@ -1422,6 +1463,16 @@ public class Vr {
         return list;
     }
 
+    public Converter enumConverter(String enumClassName) {
+        Class<?> cls;
+        try {
+            cls = Class.forName(enumClassName);
+        } catch (ClassNotFoundException ex) {
+            throw new IllegalArgumentException(ex);
+        }
+        return new javax.faces.convert.EnumConverter(cls);
+    }
+    
     public Converter entityObjConverter(String entityName) {
         return new EntityConverter(entityName);
     }

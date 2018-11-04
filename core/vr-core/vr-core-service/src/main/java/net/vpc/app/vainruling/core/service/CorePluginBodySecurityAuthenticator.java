@@ -398,6 +398,10 @@ class CorePluginBodySecurityAuthenticator extends CorePluginBody {
     }
 
     public UserToken getCurrentToken() {
+        if(!getContext().getCorePlugin().isStarted()){
+            //in start method
+            return null;
+        }
         try {
             UserTokenProvider p = VrApp.getBean(UserTokenProvider.class);
             UserToken token = p.getToken();
@@ -610,6 +614,10 @@ class CorePluginBodySecurityAuthenticator extends CorePluginBody {
     }
 
     public boolean isCurrentSessionAdmin() {
+        if(!getContext().getCorePlugin().isStarted()){
+            //in start method
+            return true;
+        }
         UserToken us = null;
         try {
             us = getContext().getCorePlugin().getCurrentToken();

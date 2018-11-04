@@ -27,14 +27,11 @@ public class AppContactBase {
     /**
      * National Identity Number
      */
-
     private String nin;
 
     private String passportNumber;
 
-
     private AppCivility civility;
-
 
     private String fullName;
 
@@ -43,10 +40,9 @@ public class AppContactBase {
     private String lastName;
 
     @Main
-    @Formula(value = "concat(Coalesce(this.fullName,''),' - ',Coalesce(this.positionSuffix,'?'))",formulaOrder = 1)
+    @Formula(value = "concat(Coalesce(this.fullName,''),' - ',Coalesce(this.positionSuffix,'?'))", formulaOrder = 1)
 
     private String fullTitle;
-
 
     private String positionSuffix;
 
@@ -68,7 +64,6 @@ public class AppContactBase {
     private String email;
 
     private String email2;
-
 
     @Summary
     @Field(protectionLevel = ProtectionLevel.PROTECTED)
@@ -106,13 +101,12 @@ public class AppContactBase {
 
     private String description;
 
-
     @Path("AdminInfo")
-    
+
     @Field(max = "4000")
     @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
     private String address;
-    
+
     private AppGovernorate addressGovernorate;
     private Date birthDate;
 
@@ -120,7 +114,7 @@ public class AppContactBase {
 
     private AppGovernorate birthGovernorate;
 
-    @Path(value = "Trace",position = 100)
+    @Path(value = "Trace", position = 100)
 //    @Properties(
 //            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
     @Formula(value = "CurrentTimestamp()", formulaType = FormulaType.PERSIST)
@@ -135,6 +129,54 @@ public class AppContactBase {
     private boolean deleted;
     private String deletedBy;
     private Timestamp deletedOn;
+
+    public AppContactBase() {
+    }
+
+    public AppContactBase(AppContactBase other) {
+        copyFrom(other);
+    }
+    
+    public void copyFrom(AppContactBase other) {
+        if (other != null) {
+            this.id = other.id;
+            this.nin = other.nin;
+            this.passportNumber = other.passportNumber;
+            this.civility = other.civility;
+            this.fullName = other.fullName;
+            this.firstName = other.firstName;
+            this.lastName = other.lastName;
+            this.fullTitle = other.fullTitle;
+            this.positionSuffix = other.positionSuffix;
+            this.fullName2 = other.fullName2;
+            this.firstName2 = other.firstName2;
+            this.lastName2 = other.lastName2;
+            this.gender = other.gender;
+            this.email = other.email;
+            this.email2 = other.email2;
+            this.phone1 = other.phone1;
+            this.phone2 = other.phone2;
+            this.phone3 = other.phone3;
+            this.officeLocationNumber = other.officeLocationNumber;
+            this.officePhoneNumber = other.officePhoneNumber;
+            this.positionTitle1 = other.positionTitle1;
+            this.positionTitle2 = other.positionTitle2;
+            this.positionTitle3 = other.positionTitle3;
+            this.company = other.company;
+            this.description = other.description;
+            this.address = other.address;
+            this.addressGovernorate = other.addressGovernorate;
+            this.birthDate = other.birthDate;
+            this.birthLocation = other.birthLocation;
+            this.birthGovernorate = other.birthGovernorate;
+            this.creationDate = other.creationDate;
+            this.updateDate = other.updateDate;
+            this.enabled = other.enabled;
+            this.deleted = other.deleted;
+            this.deletedBy = other.deletedBy;
+            this.deletedOn = other.deletedOn;
+        }
+    }
 
     public static String getName(AppContactBase t) {
         String n = t.getFullName();
@@ -236,7 +278,7 @@ public class AppContactBase {
 
     @Override
     public String toString() {
-        if (fullName!=null) {
+        if (fullName != null) {
             return fullName;
         }
         return "NO_NAME";//"AppContact{" + "id=" + id + ", fullName=" + fullName + ", firstName=" + firstName + ", lastName=" + lastName + ", nin=" + nin + ", email=" + email + ", gender=" + gender + ", civitity=" + civility + ", company=" + company + ", positionTitle1=" + positionTitle1 + ", positionTitle2=" + positionTitle2 + ", positionTitle3=" + positionTitle3 + ", deleted=" + deleted + ", enabled=" + enabled + ", deletedBy=" + deletedBy + ", deletedOn=" + deletedOn + '}';
@@ -473,12 +515,15 @@ public class AppContactBase {
     public void setAddressGovernorate(AppGovernorate addressGovernorate) {
         this.addressGovernorate = addressGovernorate;
     }
-    
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         AppContactBase that = (AppContactBase) o;
 
