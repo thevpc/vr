@@ -72,6 +72,12 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuProvider
     }
 
     @Override
+    public int getSupport(String name) {
+        return "Todo".equals(name)?1:-1;
+    }
+
+
+    @Override
     protected Todo delegated_newInstance() {
         final Todo todo = new Todo();
         todo.setArchived(false);

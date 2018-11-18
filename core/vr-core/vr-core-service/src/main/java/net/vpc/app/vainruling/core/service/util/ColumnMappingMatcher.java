@@ -22,7 +22,7 @@ public class ColumnMappingMatcher {
             String[] scolumnTitles = new String[columnTitles.length];
             Map<String, Integer> m = new HashMap<>();
             for (int i = 0; i < scolumnTitles.length; i++) {
-                String ss = StringUtils.normalize(Convert.toString(columnTitles[i]));
+                String ss = StringUtils.normalizeString(Convert.toString(columnTitles[i]));
                 scolumnTitles[i] = ss;
                 m.put(ss, i);
             }
@@ -32,7 +32,7 @@ public class ColumnMappingMatcher {
                     declaredField.setAccessible(true);
                     boolean ok = false;
                     for (String y : cm.value()) {
-                        y=StringUtils.normalize(y);
+                        y=StringUtils.normalizeString(y);
                         if (m.get(y) != null) {
                             declaredField.set(o, m.get(y));
                             ok = true;

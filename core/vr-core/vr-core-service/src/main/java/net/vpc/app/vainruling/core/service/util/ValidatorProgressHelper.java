@@ -55,4 +55,9 @@ public class ValidatorProgressHelper {
         }
         return score/expected;
     }
+
+    public List<String> getErrorMessages() {
+        return errorMessages;
+    }
+    
 }

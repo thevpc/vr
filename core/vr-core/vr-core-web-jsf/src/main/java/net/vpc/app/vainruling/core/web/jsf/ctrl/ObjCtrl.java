@@ -350,11 +350,11 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
     public void setEntityName(String entityName) {
         enabledButtons.clear();
 //        try {
-            UPA.getPersistenceUnit().getEntity(entityName);
-            getModel().setEntityName(entityName);
-            getModel().setSearchTextHelper(core.createSearchHelperString(null, entityName));
-            getModel().setList(new ArrayList<ObjRow>());
-            getModel().setCurrent(delegated_newInstance());
+        UPA.getPersistenceUnit().getEntity(entityName);
+        getModel().setEntityName(entityName);
+        getModel().setSearchTextHelper(core.createSearchHelperString(null, entityName));
+        getModel().setList(new ArrayList<ObjRow>());
+        getModel().setCurrent(delegated_newInstance());
 //        } catch (RuntimeException ex) {
 //            log.log(Level.SEVERE, "Error", ex);
 //        }
@@ -691,7 +691,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
     }
 
     public String getMainIcon(ObjRow row) {
-        return core.getMainIconPath(getEntityName(),getEntity().getBuilder().documentToId(row.getDocument()), row.getDocument());
+        return core.getMainIconPath(getEntityName(), getEntity().getBuilder().documentToId(row.getDocument()), row.getDocument());
     }
 
     public void loadList() {
@@ -1169,36 +1169,40 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
                     int maxPerLine = 2;
                     for (Relationship relation : ot.getRelationships()) {
                         if (relation.getTargetEntity().getName().equals(ot.getName())) {
-                            if (relation.getRelationshipType() == RelationshipType.COMPOSITION) {
-                                EntityDetailPropertyView details = new EntityDetailPropertyView(relation.getName(), relation, UIConstants.Control.ENTITY_DETAIL, propertyViewManager);
-                                details.setPrependNewLine((counter % maxPerLine) == 0);
-                                details.setAppendNewLine(false);
-                                details.setColspan(1);
-                                details.setDisabled(!UPA.getPersistenceUnit().getSecurityManager().isAllowedNavigate(relation.getSourceEntity()));
-                                counter++;
-                                if (firstDetailRelation) {
-                                    details.setSeparatorText("Details");
-                                    firstDetailRelation = false;
+                            if (!core.isInaccessibleEntity(relation.getSourceRole().getEntity().getName())) {
+                                if (relation.getRelationshipType() == RelationshipType.COMPOSITION) {
+                                    EntityDetailPropertyView details = new EntityDetailPropertyView(relation.getName(), relation, UIConstants.Control.ENTITY_DETAIL, propertyViewManager);
+                                    details.setPrependNewLine((counter % maxPerLine) == 0);
+                                    details.setAppendNewLine(false);
+                                    details.setColspan(1);
+                                    details.setDisabled(!UPA.getPersistenceUnit().getSecurityManager().isAllowedNavigate(relation.getSourceEntity()));
+                                    counter++;
+                                    if (firstDetailRelation) {
+                                        details.setSeparatorText("Details");
+                                        firstDetailRelation = false;
+                                    }
+                                    propertyViews.add(new OrderedPropertyView(propertyViews.size(), details));
                                 }
-                                propertyViews.add(new OrderedPropertyView(propertyViews.size(), details));
                             }
                         }
                     }
                     counter = 0;
                     for (Relationship relation : ot.getRelationships()) {
                         if (relation.getTargetEntity().getName().equals(ot.getName())) {
-                            if (relation.getRelationshipType() == RelationshipType.AGGREGATION) {
-                                EntityDetailPropertyView details = new EntityDetailPropertyView(relation.getName(), relation, UIConstants.Control.ENTITY_DETAIL, propertyViewManager);
-                                details.setPrependNewLine((counter % maxPerLine) == 0);
-                                details.setAppendNewLine(false);
-                                details.setColspan(1);
-                                details.setDisabled(!UPA.getPersistenceUnit().getSecurityManager().isAllowedNavigate(relation.getSourceEntity()));
-                                counter++;
-                                if (firstDetailRelation) {
-                                    details.setSeparatorText("Références");
-                                    firstDetailRelation = false;
+                            if (!core.isInaccessibleEntity(relation.getSourceRole().getEntity().getName())) {
+                                if (relation.getRelationshipType() == RelationshipType.AGGREGATION) {
+                                    EntityDetailPropertyView details = new EntityDetailPropertyView(relation.getName(), relation, UIConstants.Control.ENTITY_DETAIL, propertyViewManager);
+                                    details.setPrependNewLine((counter % maxPerLine) == 0);
+                                    details.setAppendNewLine(false);
+                                    details.setColspan(1);
+                                    details.setDisabled(!UPA.getPersistenceUnit().getSecurityManager().isAllowedNavigate(relation.getSourceEntity()));
+                                    counter++;
+                                    if (firstDetailRelation) {
+                                        details.setSeparatorText("Références");
+                                        firstDetailRelation = false;
+                                    }
+                                    propertyViews.add(new OrderedPropertyView(propertyViews.size(), details));
                                 }
-                                propertyViews.add(new OrderedPropertyView(propertyViews.size(), details));
                             }
                         }
                     }
@@ -1206,19 +1210,21 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
                     boolean firstAssoRelation = true;
                     for (Relationship relation : ot.getRelationships()) {
                         if (relation.getTargetEntity().getName().equals(ot.getName())) {
-                            final RelationshipType t = relation.getRelationshipType();
-                            if (t != RelationshipType.AGGREGATION && t != RelationshipType.COMPOSITION) {
-                                EntityDetailPropertyView details = new EntityDetailPropertyView(relation.getName(), relation, UIConstants.Control.ENTITY_DETAIL, propertyViewManager);
-                                details.setPrependNewLine((counter % maxPerLine) == 0);
-                                details.setAppendNewLine(false);
-                                details.setDisabled(!UPA.getPersistenceUnit().getSecurityManager().isAllowedNavigate(relation.getSourceEntity()));
-                                details.setColspan(1);
-                                counter++;
-                                if (firstAssoRelation) {
-                                    details.setSeparatorText("Autres Références");
-                                    firstAssoRelation = false;
+                            if (!core.isInaccessibleEntity(relation.getSourceRole().getEntity().getName())) {
+                                final RelationshipType t = relation.getRelationshipType();
+                                if (t != RelationshipType.AGGREGATION && t != RelationshipType.COMPOSITION) {
+                                    EntityDetailPropertyView details = new EntityDetailPropertyView(relation.getName(), relation, UIConstants.Control.ENTITY_DETAIL, propertyViewManager);
+                                    details.setPrependNewLine((counter % maxPerLine) == 0);
+                                    details.setAppendNewLine(false);
+                                    details.setDisabled(!UPA.getPersistenceUnit().getSecurityManager().isAllowedNavigate(relation.getSourceEntity()));
+                                    details.setColspan(1);
+                                    counter++;
+                                    if (firstAssoRelation) {
+                                        details.setSeparatorText("Autres Références");
+                                        firstAssoRelation = false;
+                                    }
+                                    propertyViews.add(new OrderedPropertyView(propertyViews.size(), details));
                                 }
-                                propertyViews.add(new OrderedPropertyView(propertyViews.size(), details));
                             }
                         }
                     }
@@ -1483,14 +1489,13 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
                     cfg.searchExpr = ((ObjSimpleSearch) getModel().getSearch()).getExpression();
                 }
             }
-            
+
             //will no more add to history the same entity editor (for the same entity name)
             PageInfo pi = menu.peekHistory();
-            if(pi!=null && ("obj".equals(pi.getCommand()) || "objCtrl".equals(pi.getCommand()))){
+            if (pi != null && ("obj".equals(pi.getCommand()) || "objCtrl".equals(pi.getCommand()))) {
                 ObjConfig c = VrUtils.parseJSONObject(pi.getArguments(), ObjConfig.class);
-                if(c!=null){
-                    if(c.entity!=null && c.entity.equals(cfg.entity)
-                            ){
+                if (c != null) {
+                    if (c.entity != null && c.entity.equals(cfg.entity)) {
                         menu.popHistory();
                     }
                 }
@@ -1560,7 +1565,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
                 .setResizable(true)
                 .setDraggable(true)
                 .setModal(true)
-//                .setHeight(500)
+                //                .setHeight(500)
                 .open();
     }
 

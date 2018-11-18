@@ -51,8 +51,10 @@ public class AppCompany {
     @Summary
     private String activityDetails;
     private String postalCode;
+    private String taxIdNumber;
     private String phone;
     private String fax;
+    private String fax2;
     private String mainContact;
     private String mainContactAddress;
     private String mainWebSite;

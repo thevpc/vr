@@ -1,7 +1,5 @@
 package net.vpc.app.vainruling.plugins.academic.pbl.service.dto;
 
-import net.vpc.app.vainruling.plugins.academic.pbl.service.model.ApblProject;
-import net.vpc.app.vainruling.plugins.academic.pbl.service.model.ApblTeam;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 

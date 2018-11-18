@@ -15,6 +15,7 @@ import java.util.List;
  * Created by vpc on 9/5/16.
  */
 public class VrUPAUtils {
+
     private static SimpleDateFormat UNIVERSAL_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
     private static Object jsonPrimitiveToValue(JsonElement jsonElement, DataType dataType) {
@@ -64,8 +65,6 @@ public class VrUPAUtils {
 //            throw new IllegalArgumentException("Not Supported yet");
 //        }
 //    }
-
-
 //    protected static Object strToObj(String value,DataType type) {
 //        if(value==null || value.length()==0){
 //            return null;
@@ -84,7 +83,6 @@ public class VrUPAUtils {
 //            throw new IllegalArgumentException("Unsupported");
 //        }
 //    }
-
 //    public static void check(Object o,DataType t) {
 //        JsonElement r = objToJson(o, t);
 //        String rs = r.toString();
@@ -106,7 +104,6 @@ public class VrUPAUtils {
 //        check(ConditionType.EXPRESSION,new EnumType(ConditionType.class,true));
 //        check(true,TypesFactory.BOOLEAN);
 //    }
-
     public static Object jsonToObj(String value, DataType type) {
         if (value == null) {
             return null;
@@ -122,7 +119,13 @@ public class VrUPAUtils {
     }
 
     public static Object jsonToObj(JsonElement value, DataType type) {
+        if (value == null) {
+            return null;
+        }
         if (value instanceof JsonNull) {
+            return null;
+        }
+        if (value.isJsonPrimitive() && value.getAsString().isEmpty()) {
             return null;
         }
         if (type instanceof ManyToOneType) {
@@ -158,28 +161,28 @@ public class VrUPAUtils {
             }
         } else if (type instanceof IntType) {
             if (value instanceof JsonPrimitive) {
-                if(value.toString().equals("\"\"")){
+                if (value.toString().equals("\"\"")) {
                     return null;
                 }
                 return value.getAsInt();
             }
         } else if (type instanceof LongType) {
             if (value instanceof JsonPrimitive) {
-                if(value.toString().equals("\"\"")){
+                if (value.toString().equals("\"\"")) {
                     return null;
                 }
                 return value.getAsLong();
             }
         } else if (type instanceof DoubleType) {
             if (value instanceof JsonPrimitive) {
-                if(value.toString().equals("\"\"")){
+                if (value.toString().equals("\"\"")) {
                     return null;
                 }
                 return value.getAsDouble();
             }
         } else if (type instanceof BooleanType) {
             if (value instanceof JsonPrimitive) {
-                if(value.toString().equals("\"\"")){
+                if (value.toString().equals("\"\"")) {
                     return null;
                 }
                 return value.getAsBoolean();
@@ -191,7 +194,7 @@ public class VrUPAUtils {
         } else if (type instanceof TemporalType) {
             if (value instanceof JsonPrimitive) {
                 String s = value.getAsString();
-                if(value.toString().equals("\"\"")){
+                if (value.toString().equals("\"\"")) {
                     return null;
                 }
                 try {
@@ -203,7 +206,7 @@ public class VrUPAUtils {
         } else if (type instanceof EnumType) {
             if (value instanceof JsonPrimitive) {
                 String s = value.getAsString();
-                if(value.toString().equals("\"\"")){
+                if (value.toString().equals("\"\"")) {
                     return null;
                 }
                 return ((EnumType) type).parse(s);
@@ -220,20 +223,20 @@ public class VrUPAUtils {
         }
         if (type instanceof ManyToOneType) {
             Relationship manyToOneRelationship = ((ManyToOneType) type).getRelationship();
-            if(manyToOneRelationship.getTargetEntity().isInstance(value)){
-                value=manyToOneRelationship.getTargetEntity().getBuilder().objectToPrimitiveId(value);
+            if (manyToOneRelationship.getTargetEntity().isInstance(value)) {
+                value = manyToOneRelationship.getTargetEntity().getBuilder().objectToPrimitiveId(value);
             }
-            return objToJson(value,((ManyToOneType) type).getRelationship().getTargetEntity().getDataType());
-        }else if (type instanceof KeyType) {
-            Entity entity=((KeyType) type).getEntity();
-            if(entity.isInstance(value)){
-                value=entity.getBuilder().objectToId(value);
+            return objToJson(value, ((ManyToOneType) type).getRelationship().getTargetEntity().getDataType());
+        } else if (type instanceof KeyType) {
+            Entity entity = ((KeyType) type).getEntity();
+            if (entity.isInstance(value)) {
+                value = entity.getBuilder().objectToId(value);
             }
-            PrimitiveId primitiveId = (value instanceof PrimitiveId) ? (PrimitiveId) value:entity.getBuilder().idToPrimitiveId(value);
+            PrimitiveId primitiveId = (value instanceof PrimitiveId) ? (PrimitiveId) value : entity.getBuilder().idToPrimitiveId(value);
             if (primitiveId == null) {
                 return new JsonPrimitive("");
             }
-            if(primitiveId.size()==1){
+            if (primitiveId.size() == 1) {
                 return objToJson(primitiveId.getValue(0), primitiveId.getField(0).getDataType());
             }
             JsonArray all = new JsonArray();
@@ -261,9 +264,9 @@ public class VrUPAUtils {
     }
 
     public static Relationship getManyToOnePrimitiveRelationShip(Field field) {
-        if (!(field.getDataType() instanceof ManyToOneType) &&
-                field.getManyToOneRelationships().size() > 0 &&
-                field.getManyToOneRelationships().get(0).getSourceRole().getEntityField() != null) {
+        if (!(field.getDataType() instanceof ManyToOneType)
+                && field.getManyToOneRelationships().size() > 0
+                && field.getManyToOneRelationships().get(0).getSourceRole().getEntityField() != null) {
             return field.getManyToOneRelationships().get(0);
         }
         return null;
@@ -290,9 +293,9 @@ public class VrUPAUtils {
     }
 
     public static String getEntityListLabel(Entity entity) {
-        String orNull = VrApp.getBean(I18n.class).getOrNull("Entity." + entity.getName() + ".ListTitle",new Arg("name", entity.getName()),new Arg("title", entity.getTitle()));
+        String orNull = VrApp.getBean(I18n.class).getOrNull("Entity." + entity.getName() + ".ListTitle", new Arg("name", entity.getName()), new Arg("title", entity.getTitle()));
         if (orNull == null) {
-            orNull = entity.getTitle()+"s";
+            orNull = entity.getTitle() + "s";
         }
         return orNull;
     }
@@ -301,7 +304,7 @@ public class VrUPAUtils {
         String orNull = VrApp.getBean(I18n.class).getOrNull(rols);
         if (orNull == null) {
             Entity entity = rols.getEntity();
-            orNull = VrApp.getBean(I18n.class).getOrNull("Entity." + entity.getName() + ".ListTitle",new Arg("name", entity.getName()),new Arg("title", entity.getTitle()));
+            orNull = VrApp.getBean(I18n.class).getOrNull("Entity." + entity.getName() + ".ListTitle", new Arg("name", entity.getName()), new Arg("title", entity.getTitle()));
             if (orNull == null) {
                 orNull = VrApp.getBean(I18n.class).getOrNull(entity);
             }

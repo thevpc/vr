@@ -7,6 +7,8 @@ import java.util.List;
  */
 public interface ContentTextService {
 
+    int getSupport(String name);
+    
     void loadContentTexts(String name);
 
     List<ContentText> getContentTextList(String id);

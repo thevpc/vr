@@ -23,6 +23,10 @@ public class AppArticleStrict {
     private int visitCount;
     private boolean noSubject;
     private boolean important;
+
+    public AppArticleStrict() {
+
+    }
     public AppArticleStrict(AppArticle item) {
         id=item.getId();
         disposition=new ArticlesDispositionStrict(item.getDisposition());

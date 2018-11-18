@@ -301,6 +301,19 @@ public class CalendarsPlugin {
         return (AppCalendar) UPA.getPersistenceUnit().findByField(AppCalendar.class, "code", code);
     }
 
+    public AppCalendar findMyDefaultEditEventCalendar() {
+        AppUser me = core.getCurrentUser();
+        String c = (String) core.getAppPropertyValue("vr-calendars.DefaultEditCalendar", me.getLogin());
+        if (!StringUtils.isEmpty(c)) {
+            AppCalendar ca = findEventCalendarByCode(c);
+            if (ca != null && isEventCalendarWriteAllowed(ca)) {
+                return ca;
+                //log error
+            }
+        }
+        return findMyPrivateEventCalendar();
+    }
+
     public AppCalendar findMyPrivateEventCalendar() {
         AppUser me = core.getCurrentUser();
         String c = (String) core.getAppPropertyValue("vr-calendars.DefaultCalendar", me.getLogin());

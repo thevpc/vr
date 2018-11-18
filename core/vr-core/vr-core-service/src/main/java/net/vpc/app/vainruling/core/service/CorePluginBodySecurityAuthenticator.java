@@ -37,7 +37,7 @@ class CorePluginBodySecurityAuthenticator extends CorePluginBody {
         d.adminProfile.setCustomType("Profile");
         pu.merge(d.adminProfile);
 
-        d.adminType = core.findOrCreate(new AppUserType("Admin","Admin"));
+        d.adminType = core.findOrCreate(new AppUserType("Admin", "Admin"));
 
         d.civilities = new ArrayList<>();
         for (String n : new String[]{"M.", "Mlle", "Mme"}) {
@@ -120,7 +120,7 @@ class CorePluginBodySecurityAuthenticator extends CorePluginBody {
         if (login == null) {
             login = "";
         }
-        login = StringUtils.normalize(login.trim()).toLowerCase();
+        login = StringUtils.normalizeString(login.trim()).toLowerCase();
         StringBuilder sb = new StringBuilder();
         boolean firstSpace = true;
         for (char c : login.toCharArray()) {
@@ -142,15 +142,15 @@ class CorePluginBodySecurityAuthenticator extends CorePluginBody {
         if (user == null) {
             AppUser user2 = getContext().getCorePlugin().findUser(login);
             if (user2 == null) {
-                getContext().getTrace().trace("login", "login not found. Failed as " + login + "/" + password, login + "/" + password, "/System/Access", null, null, (login == null || login.length() == 0) ? "anonymous" : login, -1, Level.SEVERE, token.getIpAddress());
+                getContext().getTrace().trace("System.login.failed", "login not found. Failed as " + login + "/" + password, login + "/" + password, "/System/Access", null, null, (login == null || login.length() == 0) ? "anonymous" : login, -1, Level.SEVERE, token.getIpAddress());
             } else if ((user2.isDeleted() || !user2.isEnabled())) {
-                getContext().getTrace().trace("login", "invalid state. Failed as " + login + "/" + password, login + "/" + password
+                getContext().getTrace().trace("System.login.failed", "invalid state. Failed as " + login + "/" + password, login + "/" + password
                         + ". deleted=" + user2.isDeleted()
                         + ". enabled=" + user2.isEnabled(), "/System/Access", null, null, (login.length() == 0) ? "anonymous" : login, user2.getId(), Level.SEVERE, token.getIpAddress()
                 );
             } else {
                 getContext().getTrace().trace(
-                        "login", "invalid password. Failed as " + login + "/" + password, login + "/" + password,
+                        "System.login.failed", "Invalid password. Failed as " + login + "/" + password, login + "/" + password,
                         "/System/Access", null, null, (login.length() == 0) ? "anonymous" : login, user2.getId(),
                         Level.SEVERE, token.getIpAddress()
                 );
@@ -205,8 +205,8 @@ class CorePluginBodySecurityAuthenticator extends CorePluginBody {
 
 //            activeSessionsTracker.onCreate(currentSession);
             //update stats
-            getContext().getTrace().trace("System.login", 
-                    I18n.get().get("System.login.succeeded.trace.message", new Arg("user",user.getLogin())), 
+            getContext().getTrace().trace("System.login",
+                    I18n.get().get("System.login.succeeded.trace.message", new Arg("user", user.getLogin())),
                     user.getLogin(), "/System/Access", null, null, user.getLogin(), user.getId(), Level.INFO, token.getIpAddress());
             UPA.getPersistenceUnit().invokePrivileged(new VoidAction() {
                 @Override
@@ -221,14 +221,19 @@ class CorePluginBodySecurityAuthenticator extends CorePluginBody {
         return user;
     }
 
+    //wont call core.findUser to avoid StackOverflowError
+    protected AppUser findUser(int id) {
+        return getContext().getCacheService().getList(AppUser.class).getByKey(id);
+    }
+
     protected void buildToken(UserToken token) {
-        AppUser user = getContext().getCorePlugin().findUser(token.getUserId());
+        AppUser user = findUser(token.getUserId());
         token.setUserLogin(user.getLogin());
         if (token.getRootUserId() != null) {
             AppUser user1 = UPA.getContext().invokePrivileged(new Action<AppUser>() {
                 @Override
                 public AppUser run() {
-                    return getContext().getCorePlugin().findUser(token.getRootUserId());
+                    return findUser(token.getRootUserId());
                 }
             });
             token.setRootLogin(user1 == null ? null : user1.getLogin());
@@ -291,8 +296,8 @@ class CorePluginBodySecurityAuthenticator extends CorePluginBody {
         if (login != null) {
 
             if (s.getRootUserId() != null) {
-                getContext().getTrace().trace("logout", 
-                        I18n.get().get("System.logout-back.succeeded.trace.message", new Arg("user",login), new Arg("oldUser",s.getRootLogin())),
+                getContext().getTrace().trace("logout",
+                        I18n.get().get("System.logout-back.succeeded.trace.message", new Arg("user", login), new Arg("oldUser", s.getRootLogin())),
                         login + " => "
                         + s.getRootLogin(),
                         "/System/Access", null, null, login, id, Level.INFO, s.getIpAddress()
@@ -300,8 +305,8 @@ class CorePluginBodySecurityAuthenticator extends CorePluginBody {
                 s.setUserId(s.getRootUserId());
                 s.setRootUserId(null);
                 buildToken(s);
-            } else { 
-                getContext().getTrace().trace("System.logout", I18n.get().get("System.logout.succeeded.trace.message", new Arg("user",login)),
+            } else {
+                getContext().getTrace().trace("System.logout", I18n.get().get("System.logout.succeeded.trace.message", new Arg("user", login)),
                         login,
                         "/System/Access", null, null, login, id, Level.INFO, s.getIpAddress()
                 );
@@ -332,7 +337,7 @@ class CorePluginBodySecurityAuthenticator extends CorePluginBody {
             int id = t == null || t.getUserId() == null ? -1 : t.getUserId();
             if (t != null) {
                 if (login != null) {
-                    getContext().getTrace().trace("logout", I18n.get().get("System.logout.succeeded.trace.message", new Arg("user",login)),
+                    getContext().getTrace().trace("logout", I18n.get().get("System.logout.succeeded.trace.message", new Arg("user", login)),
                             login,
                             "/System/Access", null, null, login, id, Level.INFO, t.getIpAddress()
                     );
@@ -398,7 +403,7 @@ class CorePluginBodySecurityAuthenticator extends CorePluginBody {
     }
 
     public UserToken getCurrentToken() {
-        if(!getContext().getCorePlugin().isStarted()){
+        if (!getContext().getCorePlugin().isStarted()) {
             //in start method
             return null;
         }
@@ -429,7 +434,7 @@ class CorePluginBodySecurityAuthenticator extends CorePluginBody {
         if (i.getUserLogin() == null) {
             i.setUserLogin(login);
             i.setSessionId(t.getSessionId());
-            AppUser u = userId == null ? null : getContext().getCorePlugin().findUser(userId);
+            AppUser u = userId == null ? null : findUser(userId);
             i.setUserFullTitle(u == null ? null : u.getFullTitle());
             i.setUserFullName(u == null ? null : u.getFullName());
             i.setFemale(t.isFemale());
@@ -562,7 +567,9 @@ class CorePluginBodySecurityAuthenticator extends CorePluginBody {
         if (t == null || t.getUserId() == null) {
             return null;
         }
-        return getContext().getCorePlugin().findUser(t.getUserId());
+        return findUser(t.getUserId());
+//        return getContext().getCacheService().getList(AppUser.class).getByKey(t.getUserId())
+//                getContext().getCorePlugin().findUser(t.getUserId());
     }
 
     public Integer getCurrentUserId() {
@@ -614,7 +621,7 @@ class CorePluginBodySecurityAuthenticator extends CorePluginBody {
     }
 
     public boolean isCurrentSessionAdmin() {
-        if(!getContext().getCorePlugin().isStarted()){
+        if (!getContext().getCorePlugin().isStarted()) {
             //in start method
             return true;
         }
@@ -776,7 +783,6 @@ class CorePluginBodySecurityAuthenticator extends CorePluginBody {
 //        }
 //        return us != null && us.isAdmin();
 //    }
-
     public boolean isCurrentSessionAdminOrProfile(String profileName) {
         if (StringUtils.isEmpty(profileName)) {
             return isCurrentSessionAdmin();

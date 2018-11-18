@@ -5,13 +5,17 @@ package net.vpc.app.vainruling.core.service.content;
  */
 public interface CmsTextDisposition {
 
-    public int getId();
+    int getId();
 
-    public String getName();
+    String getName();
 
-    public String getTitle();
+    String getTitle();
 
-    public String getSubTitle();
+    String getSubTitle();
 
-    public String getDescription();
+    String getDescription();
+
+    String getActionName();
+
+    boolean isEnabled();
 }

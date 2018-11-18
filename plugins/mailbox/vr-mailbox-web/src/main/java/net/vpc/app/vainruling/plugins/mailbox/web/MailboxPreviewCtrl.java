@@ -45,6 +45,11 @@ public class MailboxPreviewCtrl implements PollAware,MessageTextService {
         onRefresh();
     }
 
+    @Override
+    public int getSupport(String name) {
+        return "Mailbox".equals(name)?1:-1;
+    }
+
     @OnPageLoad
 //    @PostConstruct
     public void onRefresh() {

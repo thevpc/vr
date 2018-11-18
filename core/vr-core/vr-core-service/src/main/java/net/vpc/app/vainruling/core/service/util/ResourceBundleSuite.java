@@ -20,7 +20,7 @@ public class ResourceBundleSuite {
     private Properties map = new Properties();
     private PropertyPlaceholderHelper placeholderHelper = new PropertyPlaceholderHelper("%{", "}");
 
-    public void add(Properties r) {
+    public void add(Properties r,String label) {
         all.add(new I18n.PropertiesResourceBundle(r));
         map.putAll(r);
     }

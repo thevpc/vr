@@ -161,38 +161,39 @@ class CorePluginBodyDAOManager extends CorePluginBody {
     public DataType getEntityAutoFilterDataType(AutoFilterData a) {
         String expr = a.getExpr();
         if (!expr.matches("[a-zA-Z0-9.]+")) {
-            throw new IllegalArgumentException("Invalid Auto Filter Expr " + expr);
+            throw new IllegalArgumentException("Invalid Auto Filter Expr " + expr + " for Entity " + a.getEntityName());
         }
-        Entity entity = UPA.getPersistenceUnit().getEntity(a.getEntityName());
-        I18n i18n = VrApp.getBean(I18n.class);
-        DataType curr = entity.getDataType();
-        String evalLabel = entity.getTitle();
-        String[] splitted = expr.split("\\.");
-        for (int i = 0; i < splitted.length; i++) {
-            String s = splitted[i];
-            if (i == 0 && s.equals("this")) {
-                //ignore
-            } else if (curr instanceof KeyType) {
-                Field field = ((KeyType) curr).getEntity().getField(s);
-                evalLabel = field.getTitle();
-                if (field.isManyToOne()) {
-                    Entity targetEntity = field.getManyToOneRelationship().getTargetEntity();
-                    if (targetEntity.isHierarchical()) {
-                        //TODO process hierarchical search
+        try {
+            Entity entity = UPA.getPersistenceUnit().getEntity(a.getEntityName());
+//            I18n i18n = VrApp.getBean(I18n.class);
+            DataType curr = entity.getDataType();
+            String evalLabel = entity.getTitle();
+            String[] splitted = expr.split("\\.");
+            for (int i = 0; i < splitted.length; i++) {
+                String s = splitted[i];
+                if (i == 0 && s.equals("this")) {
+                    //ignore
+                } else if (curr instanceof KeyType) {
+                    Field field = ((KeyType) curr).getEntity().getField(s);
+                    evalLabel = field.getTitle();
+                    if (field.isManyToOne()) {
+                        Entity targetEntity = field.getManyToOneRelationship().getTargetEntity();
+                        if (targetEntity.isHierarchical()) {
+                            //TODO process hierarchical search
+                        }
+                        curr = (KeyType) targetEntity.getDataType();
+                    } else if (field.getDataType() instanceof EnumType) {
+                        curr = field.getDataType();
+                    } else {
+                        curr = field.getDataType();
                     }
-                    curr = (KeyType) targetEntity.getDataType();
-                } else if (field.getDataType() instanceof EnumType) {
-                    curr = field.getDataType();
                 } else {
-                    curr = field.getDataType();
+                    throw new IllegalArgumentException("Unsupported entity auto filter expression " + expr + " for entity auto filter " + a.getEntityName() + "." + a.getName());
                 }
-            } else {
-                throw new IllegalArgumentException("Unsupported entity auto filter expression " + expr + " for entity auto filter " + a.getEntityName() + "." + a.getName());
             }
-        }
-        if (StringUtils.isEmpty(a.getLabel())) {
+            if (StringUtils.isEmpty(a.getLabel())) {
 //            String label = i18n.getOrNull("UI.Entity." + entity.getName() + ".ui.auto-filter.class");
-            a.setLabel(evalLabel);
+                a.setLabel(evalLabel);
 //                        if(StringUtils.isEmpty(label)){
 //                            if(curr instanceof KeyType){
 //                                autoFilterData.setLabel(i18n.get(((KeyType) curr).getEntity()));
@@ -200,8 +201,11 @@ class CorePluginBodyDAOManager extends CorePluginBody {
 //                                autoFilterData.setLabel(autoFilterData.getName());
 //                            }
 //                        }
+            }
+            return curr;
+        } catch (Exception ex) {
+            throw new IllegalArgumentException("Invalid Auto Filter Expr " + expr + " for Entity " + a.getEntityName(),ex);
         }
-        return curr;
     }
 
     public List<NamedId> getFieldValues(String entityName, String fieldName, Map<String, Object> constraints, Object currentInstance) {
@@ -312,7 +316,7 @@ class CorePluginBodyDAOManager extends CorePluginBody {
     public RemoveTrace remove(Class entityType, Object id) {
         return remove(UPA.getPersistenceUnit().getEntity(entityType).getName(), id);
     }
-    
+
     public RemoveTrace remove(String entityName, Object id) {
         if (entityName == null) {
             //TODO REMOVE THIS!!!!

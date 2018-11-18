@@ -69,6 +69,13 @@ class CorePluginBodySecurityManager extends CorePluginBody {
     }
 
     public AppUser findUser(int id) {
+        CorePluginSecurity.requireUser(id);
+        return getContext().getCacheService().getList(AppUser.class).getByKey(id);
+//        PersistenceUnit pu = UPA.getPersistenceUnit();
+//        return (AppUser) pu.findById(AppUser.class, id);
+    }
+    
+    public AppUser findUser0(int id) {
         return getContext().getCacheService().getList(AppUser.class).getByKey(id);
 //        PersistenceUnit pu = UPA.getPersistenceUnit();
 //        return (AppUser) pu.findById(AppUser.class, id);
@@ -549,7 +556,7 @@ class CorePluginBodySecurityManager extends CorePluginBody {
         Map<Integer, Set<String>> uniformProfileCodesMapByUserId = findUniformProfileCodesMapByUserId(includeLogin, expandProfiles);
         Set<String> profiles = uniformProfileCodesMapByUserId.get(userId);
         if (profiles == null) {
-            AppUser u = findUser(userId);
+            AppUser u = findUser0(userId);
             if (u == null) {
                 return null;
             }
@@ -561,7 +568,7 @@ class CorePluginBodySecurityManager extends CorePluginBody {
             profiles.addAll(expandProfileCodes(profiles));
         } else {
             profiles = new HashSet(profiles);
-            AppUser u = findUser(userId);
+            AppUser u = findUser0(userId);
             if (u == null) {
                 return null;
             }
@@ -1314,7 +1321,23 @@ class CorePluginBodySecurityManager extends CorePluginBody {
         if (ln == null) {
             ln = "";
         }
-        return StringUtils.normalize(fn.toLowerCase()).replace(" ", "") + "." + StringUtils.normalize(ln.toLowerCase()).replace(" ", "");
+        return StringUtils.normalizeString(fn.toLowerCase()).replace(" ", "") + "." + StringUtils.normalizeString(ln.toLowerCase()).replace(" ", "");
+    }
+
+    public String resolveLoginProposal(String fn, String ln) {
+        if (fn == null) {
+            fn = "";
+        }
+        if (ln == null) {
+            ln = "";
+        }
+        if (fn.isEmpty()) {
+            fn = Integer.toHexString((int) (Math.random() * 1000)).toLowerCase();
+        }
+        if (ln.isEmpty()) {
+            ln = Integer.toHexString((int) (Math.random() * 1000)).toLowerCase();
+        }
+        return StringUtils.normalizeString(fn.toLowerCase()).replace(" ", "") + "." + StringUtils.normalizeString(ln.toLowerCase()).replace(" ", "");
     }
 
 //    public AppUser findUserByContact(int contactId) {

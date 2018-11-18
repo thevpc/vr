@@ -100,14 +100,14 @@ public class EventsCalendarsCtrl {
     protected AppCalendar getMySelectedWriteCalendar() {
         boolean allCalendars = isAllCalendarsSelected();
         if (allCalendars) {
-            return cals.findMyPrivateEventCalendar();
+            return cals.findMyDefaultEditEventCalendar();
         }
         AppCalendar cal = cals.findMyEventCalendar(getModel().getCalendar());
         if (cal == null) {
-            cal = cals.findMyPrivateEventCalendar();
+            cal = cals.findMyDefaultEditEventCalendar();
         }
         if (!cals.isEventCalendarWriteAllowed(cal)) {
-            cal = cals.findMyPrivateEventCalendar();
+            cal = cals.findMyDefaultEditEventCalendar();
         }
         return cal;
     }

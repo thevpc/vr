@@ -76,8 +76,10 @@ public class AcademicPluginBodyStudents extends AcademicPluginBody {
     public List<AcademicStudent> findStudents(Integer department, AcademicStudentStage stage) {
         CorePluginSecurity.requireRight(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_STUDENTS);
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        return pu.createQuery("Select a from AcademicStudent a where a.user.departmentId=:department and a.stage=:stage")
-                .setParameter("department", department)
+        return pu.createQuery("Select a from AcademicStudent a where a.stage=:stage "
+                    +(department==null?"":"and a.user.departmentId=:department")
+        )
+                .setParameter("department", department,department!=null)
                 .setParameter("stage", stage)
                 .getResultList();
     }

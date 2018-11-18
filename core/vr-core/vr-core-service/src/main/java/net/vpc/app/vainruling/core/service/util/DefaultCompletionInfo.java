@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 public class DefaultCompletionInfo implements CompletionInfo {
+
     private String category;
     private Object objectId;
 
@@ -15,18 +16,19 @@ public class DefaultCompletionInfo implements CompletionInfo {
     private float completion;
 
     private String message;
+    private String content;
     private String objectTypeName;
     private String categoryName;
 
     private Level messageLevel;
 
-    private List<CompletionInfoAction> actions=new ArrayList<>();
-    private String[] filters=new String[0];
+    private List<CompletionInfoAction> actions = new ArrayList<>();
+    private String[] filters = new String[0];
 
     public DefaultCompletionInfo() {
     }
 
-    public DefaultCompletionInfo(String category, String categoryName, Object objectId, String objectName, String objectType, String objectTypeName, float completion, String message, Level messageLevel, String[] filters, List<CompletionInfoAction> actions) {
+    public DefaultCompletionInfo(String category, String categoryName, Object objectId, String objectName, String objectType, String objectTypeName, float completion, String message, String content, Level messageLevel, String[] filters, List<CompletionInfoAction> actions) {
         this.categoryName = categoryName;
         this.category = category;
         this.filters = filters;
@@ -36,6 +38,7 @@ public class DefaultCompletionInfo implements CompletionInfo {
         this.objectTypeName = objectTypeName;
         this.completion = completion;
         this.message = message;
+        this.content = content;
         this.messageLevel = messageLevel;
         this.actions = actions;
     }
@@ -95,7 +98,7 @@ public class DefaultCompletionInfo implements CompletionInfo {
 
     @Override
     public String getFilter(int index) {
-        return (filters==null || filters.length<=index) ? null : filters[index];
+        return (filters == null || filters.length <= index) ? null : filters[index];
     }
 
     public void setCategory(String category) {
@@ -141,4 +144,13 @@ public class DefaultCompletionInfo implements CompletionInfo {
     public void setFilters(String[] filters) {
         this.filters = filters;
     }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
 }

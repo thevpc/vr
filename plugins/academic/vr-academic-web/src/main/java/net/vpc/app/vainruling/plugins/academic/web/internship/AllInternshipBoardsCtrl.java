@@ -5,6 +5,7 @@
  */
 package net.vpc.app.vainruling.plugins.academic.web.internship;
 
+import net.vpc.app.vainruling.plugins.academic.service.model.internship.AcademicInternshipInfo;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.VrController;

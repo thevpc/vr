@@ -15,7 +15,7 @@ import java.sql.Timestamp;
 /**
  * @author taha.bensalah@gmail.com
  */
-@Entity(listOrder = "this.name")
+@Entity(listOrder = "this.startDate desc")
 @Path("Equipment")
 @Properties(
         {

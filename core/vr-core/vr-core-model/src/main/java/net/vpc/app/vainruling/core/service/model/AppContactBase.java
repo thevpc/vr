@@ -12,7 +12,6 @@ import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 import java.sql.Timestamp;
-import java.util.Date;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -29,32 +28,11 @@ public class AppContactBase {
      */
     private String nin;
 
-    private String passportNumber;
-
-    private AppCivility civility;
-
     private String fullName;
-
-    private String firstName;
-
-    private String lastName;
-
-    @Main
-    @Formula(value = "concat(Coalesce(this.fullName,''),' - ',Coalesce(this.positionSuffix,'?'))", formulaOrder = 1)
-
-    private String fullTitle;
-
-    private String positionSuffix;
 
     @Property(name = UIConstants.Form.SPAN, value = "MAX_VALUE")
 
     private String fullName2;
-
-    private String firstName2;
-
-    private String lastName2;
-
-    private AppGender gender;
 
     @Path("Contacts")
 //    @Properties(
@@ -74,8 +52,12 @@ public class AppContactBase {
     private String phone2;
 
     @Field(protectionLevel = ProtectionLevel.PROTECTED)
-
     private String phone3;
+    
+    private String fax1;
+    
+    @Field(protectionLevel = ProtectionLevel.PROTECTED)
+    private String fax2;
 
     @Summary
 
@@ -85,15 +67,6 @@ public class AppContactBase {
     private String officePhoneNumber;
 
     @Path("Position")
-    @Summary
-
-    private String positionTitle1;
-    @Summary
-
-    private String positionTitle2;
-
-    private String positionTitle3;
-
     private AppCompany company;
 
     @Field(max = "4000")
@@ -106,13 +79,11 @@ public class AppContactBase {
     @Field(max = "4000")
     @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
     private String address;
+    private String postalCode;
 
     private AppGovernorate addressGovernorate;
-    private Date birthDate;
-
-    private String birthLocation;
-
-    private AppGovernorate birthGovernorate;
+    
+    private AppCountry country;
 
     @Path(value = "Trace", position = 100)
 //    @Properties(
@@ -136,22 +107,13 @@ public class AppContactBase {
     public AppContactBase(AppContactBase other) {
         copyFrom(other);
     }
-    
+
     public void copyFrom(AppContactBase other) {
         if (other != null) {
             this.id = other.id;
             this.nin = other.nin;
-            this.passportNumber = other.passportNumber;
-            this.civility = other.civility;
             this.fullName = other.fullName;
-            this.firstName = other.firstName;
-            this.lastName = other.lastName;
-            this.fullTitle = other.fullTitle;
-            this.positionSuffix = other.positionSuffix;
             this.fullName2 = other.fullName2;
-            this.firstName2 = other.firstName2;
-            this.lastName2 = other.lastName2;
-            this.gender = other.gender;
             this.email = other.email;
             this.email2 = other.email2;
             this.phone1 = other.phone1;
@@ -159,63 +121,49 @@ public class AppContactBase {
             this.phone3 = other.phone3;
             this.officeLocationNumber = other.officeLocationNumber;
             this.officePhoneNumber = other.officePhoneNumber;
-            this.positionTitle1 = other.positionTitle1;
-            this.positionTitle2 = other.positionTitle2;
-            this.positionTitle3 = other.positionTitle3;
             this.company = other.company;
             this.description = other.description;
             this.address = other.address;
             this.addressGovernorate = other.addressGovernorate;
-            this.birthDate = other.birthDate;
-            this.birthLocation = other.birthLocation;
-            this.birthGovernorate = other.birthGovernorate;
             this.creationDate = other.creationDate;
             this.updateDate = other.updateDate;
             this.enabled = other.enabled;
             this.deleted = other.deleted;
             this.deletedBy = other.deletedBy;
             this.deletedOn = other.deletedOn;
+            this.postalCode = other.postalCode;
+            this.country = other.country;
         }
     }
 
-    public static String getName(AppContactBase t) {
-        String n = t.getFullName();
+    public String resolveName() {
+        String n = getFullName();
         if (n != null && n.trim().length() > 0) {
             return n.trim();
         }
         StringBuilder s = new StringBuilder();
-        if (t.getFirstName() != null && t.getFirstName().trim().length() > 0) {
-            s.append(t.getFirstName().trim());
-        }
-        if (t.getLastName() != null && t.getLastName().trim().length() > 0) {
-            if (s.length() > 0) {
-                s.append(" ");
-            }
-            s.append(t.getLastName().trim());
-        }
         if (s.length() == 0) {
-            s.append("San Nom");
+            s.append("Sans Nom");
         }
         return s.toString();
     }
 
+    public static String getName(AppContactBase t) {
+        return t == null ? "Sans Nom" : t.resolveName();
+    }
+
     public static String getName2(AppContactBase t) {
-        String n = t.getFullName2();
+        return t == null ? "Sans Nom" : t.resolveName2();
+    }
+
+    public String resolveName2() {
+        String n = getFullName2();
         if (n != null && n.trim().length() > 0) {
             return n.trim();
         }
         StringBuilder s = new StringBuilder();
-        if (t.getFirstName2() != null && t.getFirstName2().trim().length() > 0) {
-            s.append(t.getFirstName2().trim());
-        }
-        if (t.getLastName2() != null && t.getLastName2().trim().length() > 0) {
-            if (s.length() > 0) {
-                s.append(" ");
-            }
-            s.append(t.getLastName2().trim());
-        }
         if (s.length() == 0) {
-            s.append(getName(t));
+            s.append(resolveName());
         }
         return s.toString();
     }
@@ -234,38 +182,6 @@ public class AppContactBase {
 
     public void setFullName(String fullName) {
         this.fullName = fullName;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public AppGender getGender() {
-        return gender;
-    }
-
-    public void setGender(AppGender gender) {
-        this.gender = gender;
-    }
-
-    public AppCivility getCivility() {
-        return civility;
-    }
-
-    public void setCivility(AppCivility civility) {
-        this.civility = civility;
     }
 
     public String getEmail() {
@@ -290,30 +206,6 @@ public class AppContactBase {
 
     public void setNin(String nin) {
         this.nin = nin;
-    }
-
-    public String getPositionTitle1() {
-        return positionTitle1;
-    }
-
-    public void setPositionTitle1(String positionTitle1) {
-        this.positionTitle1 = positionTitle1;
-    }
-
-    public String getPositionTitle2() {
-        return positionTitle2;
-    }
-
-    public void setPositionTitle2(String positionTitle2) {
-        this.positionTitle2 = positionTitle2;
-    }
-
-    public String getPositionTitle3() {
-        return positionTitle3;
-    }
-
-    public void setPositionTitle3(String positionTitle3) {
-        this.positionTitle3 = positionTitle3;
     }
 
     public boolean isDeleted() {
@@ -388,38 +280,6 @@ public class AppContactBase {
         this.fullName2 = fullName2;
     }
 
-    public String getFirstName2() {
-        return firstName2;
-    }
-
-    public void setFirstName2(String firstName2) {
-        this.firstName2 = firstName2;
-    }
-
-    public String getLastName2() {
-        return lastName2;
-    }
-
-    public void setLastName2(String lastName2) {
-        this.lastName2 = lastName2;
-    }
-
-    public String getFullTitle() {
-        return fullTitle;
-    }
-
-    public void setFullTitle(String fullTitle) {
-        this.fullTitle = fullTitle;
-    }
-
-    public String getPositionSuffix() {
-        return positionSuffix;
-    }
-
-    public void setPositionSuffix(String positionSuffix) {
-        this.positionSuffix = positionSuffix;
-    }
-
     public String getDescription() {
         return description;
     }
@@ -460,44 +320,12 @@ public class AppContactBase {
         this.officePhoneNumber = officePhoneNumber;
     }
 
-    public String getPassportNumber() {
-        return passportNumber;
-    }
-
-    public void setPassportNumber(String passportNumber) {
-        this.passportNumber = passportNumber;
-    }
-
     public String getEmail2() {
         return email2;
     }
 
     public void setEmail2(String email2) {
         this.email2 = email2;
-    }
-
-    public Date getBirthDate() {
-        return birthDate;
-    }
-
-    public void setBirthDate(Date birthDate) {
-        this.birthDate = birthDate;
-    }
-
-    public String getBirthLocation() {
-        return birthLocation;
-    }
-
-    public void setBirthLocation(String birthLocation) {
-        this.birthLocation = birthLocation;
-    }
-
-    public AppGovernorate getBirthGovernorate() {
-        return birthGovernorate;
-    }
-
-    public void setBirthGovernorate(AppGovernorate birthGovernorate) {
-        this.birthGovernorate = birthGovernorate;
     }
 
     public String getAddress() {
@@ -534,4 +362,39 @@ public class AppContactBase {
     public int hashCode() {
         return id;
     }
+
+    public String getFax1() {
+        return fax1;
+    }
+
+    public void setFax1(String fax1) {
+        this.fax1 = fax1;
+    }
+
+    public String getFax2() {
+        return fax2;
+    }
+
+    public void setFax2(String fax2) {
+        this.fax2 = fax2;
+    }
+
+    public AppCountry getCountry() {
+        return country;
+    }
+
+    public void setCountry(AppCountry country) {
+        this.country = country;
+    }
+
+    public String getPostalCode() {
+        return postalCode;
+    }
+
+    public void setPostalCode(String postalCode) {
+        this.postalCode = postalCode;
+    }
+
+    
+    
 }

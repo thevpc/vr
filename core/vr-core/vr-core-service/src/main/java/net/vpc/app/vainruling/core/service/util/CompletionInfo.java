@@ -19,6 +19,8 @@ public interface CompletionInfo {
     float getCompletion();
 
     String getMessage();
+    
+    String getContent();
 
     Level getMessageLevel();
 

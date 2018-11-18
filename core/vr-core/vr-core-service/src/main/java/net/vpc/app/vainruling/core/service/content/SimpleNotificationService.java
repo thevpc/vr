@@ -16,6 +16,11 @@ public class SimpleNotificationService implements NotificationTextService{
     List<NotificationText> notificationTexts=new ArrayList<>();
 
     @Override
+    public int getSupport(String name) {
+        return "Notification".equals(name)?1:-1;
+    }
+
+    @Override
     public void publish(NotificationText notificationText) {
         for (int i = 0; i < notificationTexts.size(); i++) {
             NotificationText text = notificationTexts.get(i);

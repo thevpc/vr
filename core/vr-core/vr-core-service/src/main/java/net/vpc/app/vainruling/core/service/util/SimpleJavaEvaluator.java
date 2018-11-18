@@ -33,7 +33,7 @@ public class SimpleJavaEvaluator implements InSetEvaluator {
     public SimpleJavaEvaluator(Set<String> set) {
         this.items = new HashSet<>();
         for (String string : set) {
-            this.items.add(StringUtils.normalize(string).toLowerCase());
+            this.items.add(StringUtils.normalizeString(string).toLowerCase());
         }
         evaluator = new DefaultExpressionEvaluator();
         ExpressionStreamTokenizerConfig tokenizerConfig = new ExpressionStreamTokenizerConfig();
@@ -117,7 +117,7 @@ public class SimpleJavaEvaluator implements InSetEvaluator {
 
     @Override
     public boolean evaluateExpression(String expression) {
-        expression = StringUtils.normalize(expression).toLowerCase();
+        expression = StringUtils.normalizeString(expression).toLowerCase();
         try {
             return JeepUtils.convertToBoolean(evaluator.evaluate(expression));
         } catch (Exception ex) {

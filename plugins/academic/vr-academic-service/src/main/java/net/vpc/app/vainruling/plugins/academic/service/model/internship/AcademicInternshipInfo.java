@@ -1,4 +1,4 @@
-package net.vpc.app.vainruling.plugins.academic.web.internship;
+package net.vpc.app.vainruling.plugins.academic.service.model.internship;
 
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.service.model.internship.config.AcademicInternshipStatus;
@@ -31,7 +31,7 @@ public class AcademicInternshipInfo {
     public AcademicInternshipInfo() {
     }
 
-    public AcademicInternshipInfo(AcademicInternshipExt internship,AcademicTeacher teacher) {
+    public AcademicInternshipInfo(AcademicInternshipExt internship, AcademicTeacher teacher) {
         setInternship(internship.getInternship());
         setInternshipExt(internship);
         rewrap(teacher);
@@ -125,8 +125,8 @@ public class AcademicInternshipInfo {
         this.internshipExt = internshipExt;
     }
 
-    protected AcademicInternshipInfo rewrap(AcademicTeacher tt) {
-        AcademicInternshipInfo i=this;
+    public AcademicInternshipInfo rewrap(AcademicTeacher tt) {
+        AcademicInternshipInfo i = this;
         i.setFlags(new ArrayList<>());
         i.setAssigned(false);
         i.setAssignedToMe(false);
@@ -136,7 +136,6 @@ public class AcademicInternshipInfo {
         i.setSelectable(true);
 
 //        AcademicTeacher tt = getCurrentTeacher();
-
         AcademicInternshipStatus status = i.getInternship().getInternshipStatus();
 
         i.setSelectable(status.isSupervisorRequestable());
@@ -210,4 +209,71 @@ public class AcademicInternshipInfo {
         return i;
     }
 
+    public static List<String> checkErrors(AcademicInternship i) {
+        List<String> errors = new ArrayList<>();
+        if (StringUtils.isEmpty(i.getName())) {
+            errors.add("Titre manquant");
+        } else if (i.getName().length() < 10) {
+            errors.add("Titre trop court");
+        }
+        if (StringUtils.isEmpty(i.getDescription())) {
+            errors.add("Description manquante");
+        } else if (i.getDescription().length() < 50) {
+            errors.add("Description trop courte");
+        }
+        if (i.getCompany() == null && StringUtils.isEmpty(i.getCompanyOther())) {
+            errors.add("Entreprise manquante");
+        } else if (i.getCompany() == null) {
+            errors.add("Contacter le directeur de département pour inscrire l'entreprise");
+        }
+        if (StringUtils.isEmpty(i.getCompanyMentorOtherEmail())) {
+            errors.add("Email Encadrant Entreprise manquant");
+        }
+        if (StringUtils.isEmpty(i.getCompanyMentorOtherPhone())) {
+            errors.add("Tel Encadrant Entreprise manquant");
+        }
+        if (StringUtils.isEmpty(i.getMainDiscipline())) {
+            errors.add("Discipline manquante");
+        }
+        if (StringUtils.isEmpty(i.getTechnologies())) {
+            errors.add("Technologies manquantes");
+        }
+        if (i.getStartDate() == null) {
+            errors.add("Date début manquantes");
+        }
+        if (i.getEndDate() == null) {
+            errors.add("Date fin manquantes");
+        }
+        if (i.getStartDate() != null && i.getEndDate() != null && i.getEndDate().before(i.getStartDate())) {
+            errors.add("Dates incorrectes");
+        }
+        if (i.getInternshipStatus().isEnabledReport1() && StringUtils.isEmpty(i.getSpecFilePath())) {
+            errors.add("Cahier des charges manquant");
+        }
+
+        if (i.getInternshipStatus().isEnabledReport2() && StringUtils.isEmpty(i.getMidTermReportFilePath())) {
+            errors.add("Rapport mi-parcours manquant");
+        }
+        if (i.getInternshipStatus().isEnabledReport3() && StringUtils.isEmpty(i.getReportFilePath())) {
+            errors.add("Rapport final manquant");
+        }
+        if (i.getSupervisor() == null) {
+            errors.add("Encadrant manquant");
+        }
+        if (i.getInternshipStatus().isBoardUpdatesEvaluators()) {
+            if (i.getChairExaminer() == null) {
+                errors.add("Président jury manquant");
+            }
+            if (i.getFirstExaminer() == null) {
+                errors.add("Rapporteur manquant");
+            }
+            if (i.getExamDate() == null) {
+                errors.add("Date Soutenance manquante");
+            }
+            if (i.getExamLocation() == null) {
+                errors.add("Emplacement Soutenance manquant");
+            }
+        }
+        return errors;
+    }
 }

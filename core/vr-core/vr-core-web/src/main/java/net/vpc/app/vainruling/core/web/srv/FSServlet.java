@@ -26,6 +26,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.vpc.common.io.IOUtils;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -54,7 +55,7 @@ public class FSServlet extends HttpServlet {
                 }
                 response.setBufferSize(buffezSize);
                 try {
-                    FileUtils.copy(in, response.getOutputStream(), buffezSize);
+                    IOUtils.copy(in, response.getOutputStream(), buffezSize);
                 } catch (java.io.IOException ex) {
                     if (ex.getClass().getName().endsWith(".ClientAbortException")) {
                         //this is a tomcat 'Broken pipe' handling i suppose

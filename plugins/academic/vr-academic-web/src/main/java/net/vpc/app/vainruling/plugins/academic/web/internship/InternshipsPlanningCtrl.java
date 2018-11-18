@@ -7,7 +7,6 @@ package net.vpc.app.vainruling.plugins.academic.web.internship;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.service.security.UserToken;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.VrController;
@@ -33,7 +32,6 @@ import javax.faces.model.SelectItem;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.text.ParseException;
 import java.util.*;
 import java.util.logging.Level;
 

@@ -118,7 +118,7 @@ public class HttpSessionSerializerOAuth2 implements HttpSessionSerializer {
 
             if(compress) {
                 GZIPInputStream gzip = new GZIPInputStream(new ByteArrayInputStream(bytes));
-                bytes = IOUtils.toByteArray(gzip);
+                bytes = IOUtils.loadByteArray(gzip);
             }
 
         } catch (GeneralSecurityException | IOException e ) {

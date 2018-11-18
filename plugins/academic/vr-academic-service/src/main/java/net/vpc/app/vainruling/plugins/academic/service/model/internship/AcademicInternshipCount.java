@@ -1,4 +1,4 @@
-package net.vpc.app.vainruling.plugins.academic.web.internship;
+package net.vpc.app.vainruling.plugins.academic.service.model.internship;
 
 /**
  * Created by vpc on 6/17/17.

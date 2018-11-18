@@ -47,16 +47,17 @@
     <orderEntry type="library" name="Maven: org.aspectj:aspectjweaver:1.8.9" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-jdbc:4.1.2.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-tx:4.1.2.RELEASE" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: net.vpc.upa:upa-impl:1.2.0.46.0" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: net.vpc.upa:upa-impl-core:1.2.0.46.0" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: cglib:cglib:3.2.7" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: org.ow2.asm:asm:6.2" level="project" />
+    <orderEntry type="module" module-name="upa-api" />
+    <orderEntry type="module" module-name="upa-impl" scope="RUNTIME" />
+    <orderEntry type="module" module-name="upa-impl-core" scope="RUNTIME" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: cglib:cglib:3.2.8" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.ow2.asm:asm:6.2.1" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.ant:ant:1.10.3" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.ant:ant-launcher:1.10.3" level="project" />
-    <orderEntry type="library" name="Maven: net.sourceforge.jexcelapi:jxl:2.6.10" level="project" />
+    <orderEntry type="library" name="Maven: net.sourceforge.jexcelapi:jxl:2.6.12" level="project" />
     <orderEntry type="library" name="Maven: log4j:log4j:1.2.14" level="project" />
     <orderEntry type="module" module-name="vpc-common-strings" />
-    <orderEntry type="library" name="Maven: net.vpc.common:vpc-common-utils:1.19" level="project" />
+    <orderEntry type="module" module-name="vpc-common-utils" />
     <orderEntry type="module" module-name="vpc-common-io" />
     <orderEntry type="module" module-name="vfs" />
     <orderEntry type="module" module-name="vpc-common-jeep" />
@@ -92,7 +93,6 @@
     <orderEntry type="library" name="Maven: stax:stax-api:1.0.1" level="project" />
     <orderEntry type="library" name="Maven: com.lowagie:itext:2.1.7" level="project" />
     <orderEntry type="module" module-name="gomail" />
-    <orderEntry type="module" module-name="upa-api" />
     <orderEntry type="library" name="Maven: javax.mail:mail:1.5.0-b01" level="project" />
     <orderEntry type="library" name="Maven: javax.activation:activation:1.1" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: javax:javaee-web-api:7.0" level="project" />

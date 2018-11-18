@@ -7,6 +7,12 @@ import java.util.Collections;
 import java.util.List;
 
 public class DummyTaskTextService implements TaskTextService {
+
+    @Override
+    public int getSupport(String name) {
+        return 0;
+    }
+
     @Override
     public int getActiveCount() {
         return 0;

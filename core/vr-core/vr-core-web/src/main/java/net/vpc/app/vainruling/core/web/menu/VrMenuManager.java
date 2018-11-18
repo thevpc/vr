@@ -270,7 +270,7 @@ public class VrMenuManager {
             if (obj instanceof VrActionEnabler) {
                 VrActionEnabler r = (VrActionEnabler) obj;
                 String name2 = name;
-                if(!r.isEnabled(new VrActionInfo() {
+                if (!r.isEnabled(new VrActionInfo() {
                     @Override
                     public String getMenuPath() {
                         VrController c2Ann = (VrController) targetClass.getAnnotation(VrController.class);
@@ -284,8 +284,8 @@ public class VrMenuManager {
                     public String getSource() {
                         return name2;
                     }
-                })){
-                  continue;
+                })) {
+                    continue;
                 }
             }
             VrController c2Ann = (VrController) targetClass.getAnnotation(VrController.class);
@@ -962,25 +962,23 @@ public class VrMenuManager {
                             visitedCustomMenus.add(p);
                             nonVisitedCustomMenus.add(p);
                         }
-                        children.add(p);
+                        if (p.getType() == null || !core.isInaccessibleComponent(p.getType())) {
+                            children.add(p);
+                        }
                     }
                     if (t.getPath().equals("/")) {
                         List<Entity> entities = filterEntities(UPA.getPersistenceUnit().getDefaultPackage().getEntities(), new DefaultEntityFilter().setAcceptSystem(false));
                         for (Entity ee : entities) {
-                            if (ee.getCompositionRelation() == null) {
+                            if (acceptEntityMenu(ee)) {
                                 try {
-                                    ee.getShield().checkNavigate();
-                                    if (UPA.getPersistenceGroup().getSecurityManager().isAllowedKey(
-                                            CorePluginSecurity.getEntityRightEditor(ee))) {
-                                        int order = 100;
-                                        //UCtrlData d = ;
-                                        VRMenuInfo md = new VRMenuInfo(ee.getTitle(), t.getPath(), "obj", "{entity:'" + ee.getName() + "'}", "", null, "", 100, new VRMenuLabel[0]);
-                                        VrControllerInfoAndObject uc = resolveVrControllerInfoByInstance(md.getType(), md.getCommand());
-                                        if (uc != null) {
-                                            md.setName(uc.getInfo().getTitle());
-                                        }
-                                        children.add(md);
+                                    int order = 100;
+                                    //UCtrlData d = ;
+                                    VRMenuInfo md = new VRMenuInfo(ee.getTitle(), t.getPath(), "obj", "{entity:'" + ee.getName() + "'}", "", null, "", 100, new VRMenuLabel[0]);
+                                    VrControllerInfoAndObject uc = resolveVrControllerInfoByInstance(md.getType(), md.getCommand());
+                                    if (uc != null) {
+                                        md.setName(uc.getInfo().getTitle());
                                     }
+                                    children.add(md);
                                 } catch (UPAException e) {
                                     //ignore
                                 }
@@ -992,19 +990,15 @@ public class VrMenuManager {
                         if (pp2 != null) {
                             List<Entity> entities = filterEntities(pp2.getEntities(), new DefaultEntityFilter().setAcceptSystem(false));
                             for (Entity ee : entities) {
-                                if (ee.getCompositionRelation() == null || (ee.getCompositionRelation() instanceof ManyToOneRelationship && ((ManyToOneRelationship) ee.getCompositionRelation()).getHierarchyExtension() != null)) {
+                                if (acceptEntityMenu(ee)) {
                                     try {
-                                        ee.getShield().checkNavigate();
-                                        if (UPA.getPersistenceGroup().getSecurityManager().isAllowedKey(
-                                                CorePluginSecurity.getEntityRightEditor(ee))) {
-                                            int order = 100;
-                                            VRMenuInfo md = new VRMenuInfo(ee.getTitle(), t.getPath(), "obj", "{entity:'" + ee.getName() + "'}", "", null, "", 100, new VRMenuLabel[0]);
-                                            VrControllerInfoAndObject uc = resolveVrControllerInfoByInstance(md.getType(), md.getCommand());
-                                            if (uc != null) {
-                                                md.setName(uc.getInfo().getTitle());
-                                            }
-                                            children.add(md);
+                                        int order = 100;
+                                        VRMenuInfo md = new VRMenuInfo(ee.getTitle(), t.getPath(), "obj", "{entity:'" + ee.getName() + "'}", "", null, "", 100, new VRMenuLabel[0]);
+                                        VrControllerInfoAndObject uc = resolveVrControllerInfoByInstance(md.getType(), md.getCommand());
+                                        if (uc != null) {
+                                            md.setName(uc.getInfo().getTitle());
                                         }
+                                        children.add(md);
                                     } catch (UPAException e) {
                                         //ignore
                                     }
@@ -1018,5 +1012,23 @@ public class VrMenuManager {
             return t.getChildren();
         }
 
+    }
+
+    public boolean acceptEntityMenu(Entity ee) {
+        if (ee.getCompositionRelation() == null
+                || (ee.getCompositionRelation() instanceof ManyToOneRelationship && ((ManyToOneRelationship) ee.getCompositionRelation()).getHierarchyExtension() != null)) {
+            try {
+                ee.getShield().checkNavigate();
+                if (UPA.getPersistenceGroup().getSecurityManager().isAllowedKey(
+                        CorePluginSecurity.getEntityRightEditor(ee))) {
+                    if (!core.isInaccessibleEntity(ee.getName())) {
+                        return true;
+                    }
+                }
+            } catch (UPAException e) {
+                //ignore
+            }
+        }
+        return false;
     }
 }

@@ -263,39 +263,39 @@ and open the template in the editor.
                     <div class="row">
                         <div class="col-md-4 to-animate">
                             <a class="fancybox"
-                               href="#{vr.articleImageOrDefault(vr.cmsTextService.selectedContentText.imageURL)}"
+                               href="#{vr.articleImageOrDefault(vr.cmsTextService.getSelectedContentText('About').imageURL)}"
                                data-fancybox-group="gallery"><img
-                                    src="#{vr.articleImageOrRand(vr.cmsTextService.selectedContentText.imageURL)}"
+                                    src="#{vr.articleImageOrRand(vr.cmsTextService.getSelectedContentText('About').imageURL)}"
                                     class="img-responsive img-rounded"
-                                    alt="#{vr.cmsTextService.selectedContentText.subject}"/></a>
+                                    alt="#{vr.cmsTextService.getSelectedContentText('About').subject}"/></a>
                         </div>
                         <div class="col-md-8 to-animate">
-                            <h2>#{vr.cmsTextService.selectedContentText.subject}</h2>
+                            <h2>#{vr.cmsTextService.getSelectedContentText('About').subject}</h2>
                             <div style="text-align: justify"><h:outputText escape="false"
-                                                                         value="#{(vr.lightHtml(vr.cmsTextService.selectedContentText))}"></h:outputText>
+                                                                         value="#{(vr.lightHtml(vr.cmsTextService.getSelectedContentText('About')))}"></h:outputText>
                             </div>
                             <p:separator styleClass="vr-article-separator"/>
                             <div class="row">
                                 <small style="float: right;margin-top: 0px;">
                                     <span style="font-family: Stalemate;font-size: 28px;">by</span>
-                                    <span style="">#{vr.cmsTextService.selectedContentText.user.fullName}</span>
+                                    <span style="">#{vr.cmsTextService.getSelectedContentText('About').user.fullName}</span>
                                     <span style="font-family: Stalemate;font-size: 28px;"> ,</span>
-                                    <span>#{vr.date(vr.cmsTextService.selectedContentText.publishTime,vr.getLocale('en'))}</span>
+                                    <span>#{vr.date(vr.cmsTextService.getSelectedContentText('About').publishTime,vr.getLocale('en'))}</span>
                                     <span> | </span>
                                     <span>#{articlesCtrl.model.current.visitCount+1}</span>
                                     <span> views</span>
                                     <span> | </span>
                                     <h:outputLink
-                                            value="#{vr.fullContext}/p/news?a={#{vr.strFormat('id=%d',vr.cmsTextService.selectedContentText.id)}}">
+                                            value="#{vr.fullContext}/p/news?a={#{vr.strFormat('id=%d',vr.cmsTextService.getSelectedContentText('About').id)}}">
                                         <h:graphicImage value="#{vr.strcat(vr.publicThemePath,'/images/icons/link.png')}" width="16"/>
                                     </h:outputLink>
                                 </small>
                             </div>
 
                             <h:panelGroup layout="block"
-                                          rendered="#{vr.cmsTextService.selectedContentText.attachments.size() ne 0}">
+                                          rendered="#{vr.cmsTextService.getSelectedContentText('About').attachments.size() ne 0}">
                                 <ui:repeat
-                                        value="#{vr.groupListBy(6,vr.cmsTextService.selectedContentText.attachments)}"
+                                        value="#{vr.groupListBy(6,vr.cmsTextService.getSelectedContentText('About').attachments)}"
                                         var="subList">
                                     <div class="row">
                                         <ui:repeat value="#{subList}" var="att">
@@ -327,7 +327,7 @@ and open the template in the editor.
                 </div>
             </div>
         </div>
-        <ui:fragment rendered="#{vr.cmsTextService.contentDispositionName == 'Activities'}">
+        <ui:fragment rendered="#{vr.cmsTextService.contentDisposition.name == 'Activities'}">
             #{vr.cmsTextService.loadContentTexts('Activities')}
             <div id="fh5co-our-services" data-section="news">
                 <div class="container">
@@ -373,7 +373,7 @@ and open the template in the editor.
             </div>
         </ui:fragment>
 
-        <ui:fragment rendered="#{vr.cmsTextService.contentDispositionName == 'Featured'}">
+        <ui:fragment rendered="#{vr.cmsTextService.contentDisposition.name == 'Featured'}">
             <div id="fh5co-features" data-section="features">
                 <div class="container">
                     <div class="row">
@@ -425,7 +425,7 @@ and open the template in the editor.
             </div>
         </ui:fragment>
 
-        <ui:fragment rendered="#{vr.cmsTextService.contentDispositionName == 'Testimonials'}">
+        <ui:fragment rendered="#{vr.cmsTextService.contentDisposition.name == 'Testimonials'}">
             <div id="fh5co-testimonials" data-section="testimonials">
                 <div class="container">
                     #{vr.cmsTextService.loadContentTexts('Testimonials')}
@@ -469,7 +469,7 @@ and open the template in the editor.
             </div>
         </ui:fragment>
 
-        <ui:fragment rendered="#{vr.cmsTextService.contentDispositionName == 'Education'}">
+        <ui:fragment rendered="#{vr.cmsTextService.contentDisposition.name == 'Education'}">
             <div id="fh5co-pricing" data-section="courses">
                 <div class="container">
                     <div class="row">
@@ -509,7 +509,7 @@ and open the template in the editor.
             </div>
         </ui:fragment>
 
-        <ui:fragment rendered="#{vr.cmsTextService.contentDispositionName == 'News'}">
+        <ui:fragment rendered="#{vr.cmsTextService.contentDisposition.name == 'News'}">
             <div id="fh5co-press" data-section="press">
                 <div class="container">
                     <div class="row">
@@ -557,11 +557,11 @@ and open the template in the editor.
         </ui:fragment>
 
         <ui:fragment rendered="#{
-            vr.cmsTextService.contentDispositionName != 'News'
-            and vr.cmsTextService.contentDispositionName != 'Activities'
-            and vr.cmsTextService.contentDispositionName != 'Education'
-            and vr.cmsTextService.contentDispositionName != 'Featured'
-            and vr.cmsTextService.contentDispositionName != 'Testimonials'
+            vr.cmsTextService.contentDisposition.name != 'News'
+            and vr.cmsTextService.contentDisposition.name != 'Activities'
+            and vr.cmsTextService.contentDisposition.name != 'Education'
+            and vr.cmsTextService.contentDisposition.name != 'Featured'
+            and vr.cmsTextService.contentDisposition.name != 'Testimonials'
         }">
 
             <div id="fh5co-press-other" data-section="press">
@@ -578,9 +578,9 @@ and open the template in the editor.
                     </div>
                     <div class="row">
                         <!-- Press Item -->
-                        #{vr.cmsTextService.loadContentTexts(vr.cmsTextService.contentDispositionName)}
+                        #{vr.cmsTextService.loadContentTexts(vr.cmsTextService.contentDisposition.name)}
                         <ui:repeat
-                                value="#{vr.cmsTextService.getContentTextList(vr.cmsTextService.contentDispositionName)}"
+                                value="#{vr.cmsTextService.getContentTextList(vr.cmsTextService.contentDisposition.name)}"
                                 var="listItem">
                             <div class="col-md-6">
                                 <div class="fh5co-press-item to-animate">

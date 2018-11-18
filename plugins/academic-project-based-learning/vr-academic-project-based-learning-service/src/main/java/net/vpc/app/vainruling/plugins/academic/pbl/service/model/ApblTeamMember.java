@@ -11,7 +11,7 @@ import net.vpc.upa.config.*;
 @Path("Education/Projects/Apbl")
 @Properties(
         {
-                @Property(name = "ui.auto-filter.department", value = "{expr='this.student.department',order=1}"),
+                @Property(name = "ui.auto-filter.department", value = "{expr='this.student.user.department',order=1}"),
                 @Property(name = "ui.auto-filter.session", value = "{expr='this.team.session',order=2}"),
                 @Property(name = "ui.auto-filter.team", value = "{expr='this.team',order=3}"),
                 @Property(name = "ui.auto-filter.student", value = "{expr='this.student',order=4}"),

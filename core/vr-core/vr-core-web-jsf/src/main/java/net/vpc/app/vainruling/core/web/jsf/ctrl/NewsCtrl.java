@@ -36,13 +36,13 @@ public class NewsCtrl {
         if(newsCtrlCmd!=null) {
             //TODO should check for article access!!
             if(newsCtrlCmd.getId()>0) {
-                Vr.get().getCmsTextService().setSelectedContentTextById(newsCtrlCmd.getId());
+                Vr.get().getCmsTextService().setSelectedContentTextById(newsCtrlCmd.getDisposition(),newsCtrlCmd.getId());
             }else{
                 Vr.get().getCmsTextService().setContentDisposition(StringUtils.isEmpty(newsCtrlCmd.getDisposition())?"News":newsCtrlCmd.getDisposition());
             }
         }else{
             Vr.get().getCmsTextService().setContentDisposition("News");
-            Vr.get().getCmsTextService().setSelectedContentTextById(-1);
+            Vr.get().getCmsTextService().setSelectedContentTextById("News",-1);
         }
     }
 

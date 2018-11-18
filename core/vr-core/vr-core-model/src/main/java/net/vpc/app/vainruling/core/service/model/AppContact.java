@@ -22,6 +22,6 @@ import net.vpc.upa.config.*;
 //                @Property(name = "ui.auto-filter.company", value = "{expr='this.company',order=3}")
         }
 )
-public class AppContact extends AppContactBase {
+public class AppContact extends AppPersonContactBase {
 
 }

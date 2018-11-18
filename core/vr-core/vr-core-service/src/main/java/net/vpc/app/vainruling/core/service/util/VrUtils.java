@@ -97,7 +97,7 @@ public class VrUtils {
         if (StringUtils.isEmpty(s)) {
             s = "EMPTY_NAME";
         }
-        s = StringUtils.normalize(s);
+        s = StringUtils.normalizeString(s);
         char[] ca = s.toCharArray();
         for (int i = 0; i < ca.length; i++) {
             char c = ca[i];
@@ -418,8 +418,8 @@ public class VrUtils {
         InputStream in1 = null;
         InputStream in2 = null;
         try {
-            String text1 = (file1 != null && file1.isFile() && file1.exists()) ? IOUtils.toString(in1 = file1.getInputStream()) : "";
-            String text2 = (file2 != null && file2.isFile() && file2.exists()) ? IOUtils.toString(in2 = file2.getInputStream()) : "";
+            String text1 = (file1 != null && file1.isFile() && file1.exists()) ? IOUtils.loadString(in1 = file1.getInputStream()) : "";
+            String text2 = (file2 != null && file2.isFile() && file2.exists()) ? IOUtils.loadString(in2 = file2.getInputStream()) : "";
             return diffToHtml(text1, text2, style);
         } finally {
             if (in1 != null) {
@@ -863,7 +863,7 @@ public class VrUtils {
     }
 
     public static String normalizeFilePath(String path) {
-        char[] chars = StringUtils.normalize(path).toCharArray();
+        char[] chars = StringUtils.normalizeString(path).toCharArray();
         for (int i = 0; i < chars.length; i++) {
             switch (chars[i]) {
                 case '°': {
@@ -888,7 +888,7 @@ public class VrUtils {
     }
 
     public static String normalizeFileName(String name) {
-        char[] chars = StringUtils.normalize(name).toCharArray();
+        char[] chars = StringUtils.normalizeString(name).toCharArray();
         for (int i = 0; i < chars.length; i++) {
             switch (chars[i]) {
                 case '°': {

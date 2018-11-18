@@ -253,12 +253,12 @@ public class DocumentsUtils {
         private Pattern p;
 
         public WildcardFileFilter(String str) {
-            p = Pattern.compile(wildcardToRegex(net.vpc.common.strings.StringUtils.normalize(str)));
+            p = Pattern.compile(wildcardToRegex(net.vpc.common.strings.StringUtils.normalizeString(str)));
         }
 
         @Override
         public boolean accept(VFile pathname) {
-            return p.matcher(net.vpc.common.strings.StringUtils.normalize(pathname.getName())).matches();
+            return p.matcher(net.vpc.common.strings.StringUtils.normalizeString(pathname.getName())).matches();
         }
     }
     private static class ExactFileFilter implements VFileFilter {

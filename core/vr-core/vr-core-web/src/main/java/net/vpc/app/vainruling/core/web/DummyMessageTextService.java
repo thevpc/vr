@@ -7,6 +7,12 @@ import java.util.Collections;
 import java.util.List;
 
 public class DummyMessageTextService implements MessageTextService {
+
+    @Override
+    public int getSupport(String name) {
+        return 0;
+    }
+
     @Override
     public int getUnreadCount() {
         return 0;

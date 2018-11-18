@@ -5,7 +5,7 @@
     <artifactId>vr-box</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
-    <name>net.vpc.app.vain-ruling.core.vr-toolbox</name>
+    <name>net.vpc.app.vain-ruling.core.vr-box</name>
 
     <organization>
         <name>vpc open source initiative</name>
@@ -122,6 +122,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
+                <version>3.0.2</version>
                 <configuration>
                     <archive>
                         <manifest>
@@ -161,7 +162,7 @@
         <dependency>
             <groupId>net.vpc.common</groupId>
             <artifactId>vpc-common-strings</artifactId>
-            <version>1.2.14</version>
+            <version>1.2.15</version>
         </dependency>
     
         <dependency>

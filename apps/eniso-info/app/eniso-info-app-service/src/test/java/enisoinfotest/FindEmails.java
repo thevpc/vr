@@ -42,7 +42,7 @@ public class FindEmails {
             }
             System.out.println(emails);
             System.out.println(notfound);
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

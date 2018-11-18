@@ -18,36 +18,5 @@ import java.util.Map;
  */
 @Component
 @Scope(value = "session")
-public class ArticlesModel {
-
-
-    private FullArticle current;
-    private String disposition;
-
-    private Map<String, List<FullArticle>> articles = new HashMap<>();
-
-    public FullArticle getCurrent() {
-        return current;
-    }
-
-    public void setCurrent(FullArticle current) {
-        this.current = current;
-    }
-
-    public Map<String, List<FullArticle>> getArticles() {
-        return articles;
-    }
-
-
-    public void setArticles(Map<String, List<FullArticle>> articles) {
-        this.articles = articles;
-    }
-
-    public String getDisposition() {
-        return disposition;
-    }
-
-    public void setDisposition(String disposition) {
-        this.disposition = disposition;
-    }
+public class ArticlesModel extends AbstractCmsModel{
 }

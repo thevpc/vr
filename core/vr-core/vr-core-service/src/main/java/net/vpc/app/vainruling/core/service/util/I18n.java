@@ -47,12 +47,37 @@ public class I18n implements Serializable {
         bundlesUrls.add(bundle);
     }
 
+    private static class OrderedProperties implements Comparable<OrderedProperties> {
+
+        Properties properties;
+        int index;
+        int order;
+
+        public OrderedProperties(Properties properties, int index, int order) {
+            this.properties = properties;
+            this.index = index;
+            this.order = order;
+        }
+
+        @Override
+        public int compareTo(OrderedProperties o) {
+            int x = Integer.compare(order, o.order);
+            if (x == 0) {
+                x = Integer.compare(index, o.index);
+            }
+            return x;
+        }
+
+    }
+
     public Properties loadResourceBundle(String baseName,
             Locale locale) {
         List<Plugin> plugins = VrApp.getBean(CorePlugin.class).getPlugins();
-        Properties properties = new Properties();
+        List<OrderedProperties> all = new ArrayList<>();
+        int index = 0;
+        final List<String> bundleNames = toBundleNames(baseName, locale);
         for (Plugin plugin : plugins) {
-            for (String s : toBundleNames(baseName, locale)) {
+            for (String s : bundleNames) {
                 for (PluginComponent component : plugin.getInfo().getComponents()) {
                     URL url = null;
                     try {
@@ -64,8 +89,20 @@ public class I18n implements Serializable {
                         InputStream is = null;
                         try {
                             try {
+                                Properties p = new Properties();
                                 is = url.openStream();
-                                properties.load(is);
+                                p.load(is);
+                                final String o = p.getProperty(".i18n.order");
+                                int x = 0;
+                                if (o != null) {
+                                    try {
+                                        x = Integer.parseInt(o);
+                                    } catch (Exception ex) {
+                                        //ignore
+                                    }
+                                }
+                                all.add(new OrderedProperties(p, index, x));
+                                index++;
                             } finally {
                                 if (is != null) {
                                     is.close();
@@ -79,6 +116,11 @@ public class I18n implements Serializable {
                     }
                 }
             }
+        }
+        Properties properties = new Properties();
+        Collections.sort(all);
+        for (OrderedProperties p : all) {
+            properties.putAll(p.properties);
         }
         return properties;
     }
@@ -169,7 +211,7 @@ public class I18n implements Serializable {
             b = new ResourceBundleSuite();
             for (String u : bundlesUrls) {
                 try {
-                    b.add(loadResourceBundle(u, lang));
+                    b.add(loadResourceBundle(u, lang), u + "[" + lang + "]");
 //                    b.add(ResourceBundle.getBundle(u, lang));
                 } catch (java.util.MissingResourceException e) {
                     log.log(Level.SEVERE, "Unable to load ResourceBundle {0} for lang {1} :: {2}", new Object[]{u, lang, e});
@@ -188,12 +230,13 @@ public class I18n implements Serializable {
         return s + "!!";
     }
 
-    public String get(UPAObject s, Map<String,Object> params) {
+    public String get(UPAObject s, Map<String, Object> params) {
         if (s == null) {
             return "null!!";
         }
         return get(s.getI18NTitle(), params);
     }
+
     public String get(UPAObject s, Arg... params) {
         if (s == null) {
             return "null!!";
@@ -201,7 +244,7 @@ public class I18n implements Serializable {
         return get(s.getI18NTitle(), params);
     }
 
-    public String get(I18NString s, Map<String,Object> params) {
+    public String get(I18NString s, Map<String, Object> params) {
         if (s == null) {
             return "null!!";
         }
@@ -217,6 +260,7 @@ public class I18n implements Serializable {
         }
         return d;
     }
+
     public String get(I18NString s, Arg... params) {
         if (s == null) {
             return "null!!";
@@ -243,7 +287,8 @@ public class I18n implements Serializable {
         }
         return null;
     }
-    public String getOrNull(I18NString s, Map<String,Object> params) {
+
+    public String getOrNull(I18NString s, Map<String, Object> params) {
         for (String key : s.getKeys()) {
             String v = getResourceBundleSuite().get(key, null, params);
             if (v != null) {
@@ -296,8 +341,8 @@ public class I18n implements Serializable {
     public String get(String key, Arg... params) {
         return getResourceBundleSuite().get(key, key + "!!", params);
     }
-    
-    public String get(String key, Map<String,Object> params) {
+
+    public String get(String key, Map<String, Object> params) {
         return getResourceBundleSuite().get(key, key + "!!", params);
     }
 
@@ -320,11 +365,17 @@ public class I18n implements Serializable {
 //    }
     public static class PropertiesResourceBundle extends ResourceBundle {
 
+        private String label;
         private Map<String, String> lookup;
 
         @SuppressWarnings({"unchecked", "rawtypes"})
-        public PropertiesResourceBundle(Map<String, String> lookup) {
+        public PropertiesResourceBundle(Map<String, String> lookup, String label) {
+            this.label = label;
             this.lookup = lookup;
+        }
+
+        public String getLabel() {
+            return label;
         }
 
         public PropertiesResourceBundle(Properties properties) {

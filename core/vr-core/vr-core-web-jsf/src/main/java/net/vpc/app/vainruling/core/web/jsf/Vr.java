@@ -26,7 +26,7 @@ import net.vpc.app.vainruling.core.web.menu.VrMenuManager;
 import net.vpc.app.vainruling.core.web.themes.VrTheme;
 import net.vpc.app.vainruling.core.web.util.StrLabel;
 import net.vpc.app.vainruling.core.web.util.VrWebHelper;
-import net.vpc.common.io.IOUtils;
+import net.vpc.common.io.URLUtils;
 import net.vpc.common.io.PathInfo;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
@@ -84,7 +84,7 @@ public class Vr {
     private MessageTextService messageTextService;
     private TaskTextService taskTextService;
     private NotificationTextService notificationTextService;
-    private CmsTextService cmsTextService;
+    private Map<String,CmsTextService> cmsTextServices=new HashMap<>();
     @Autowired
     private CorePlugin core;
     private WeakHashMap<String, DecimalFormat> decimalFormats = new WeakHashMap<>();
@@ -298,11 +298,11 @@ public class Vr {
                             all.add(path);
                         }
                     } else {
-                        String urlProtocol = IOUtils.getUrlProtocol(path);
+                        String urlProtocol = URLUtils.getURLProtocol(path);
                         if (urlProtocol == null) {
                             //ok;
                         } else if (urlProtocol.equals("file")) {
-                            path = IOUtils.getUrlFile(path);
+                            path = URLUtils.getURLProtocol(path);
                         } else {
                             continue;
                         }
@@ -994,13 +994,31 @@ public class Vr {
     }
 
     public CmsTextService getCmsTextService() {
-        if (cmsTextService == null) {
+        return getCmsTextService("default");
+    }
+
+    public CmsTextService getCmsTextService(String name) {
+        CmsTextService a = cmsTextServices.get(name);
+        if(a==null){
+            int bestSupport=-1;
+            CmsTextService best=null;
             for (CmsTextService s : VrApp.getBeansForType(CmsTextService.class)) {
-                return cmsTextService = s;
+                int support = s.getSupport(name);
+                if(support>=0 && support>bestSupport){
+                    best=s;
+                    bestSupport=support;
+                }
             }
+            a=best;
+            if(a!=null){
+                cmsTextServices.put(name,a);
+            }
+        }
+
+        if (a == null) {
             throw new IllegalArgumentException();
         }
-        return cmsTextService;
+        return a;
     }
 
     public NotificationTextService getNotificationTextService() {

@@ -29,6 +29,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import static java.lang.Integer.max;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Level;
@@ -41,6 +43,7 @@ import net.vpc.app.vainruling.core.service.model.content.AppArticle;
 import net.vpc.app.vainruling.core.service.model.content.FullArticle;
 import net.vpc.app.vainruling.core.service.obj.MainPhotoProvider;
 import net.vpc.app.vainruling.core.service.obj.PropertyMainPhotoProvider;
+import net.vpc.common.util.MutableDate;
 import net.vpc.upa.types.DataType;
 import org.springframework.context.annotation.DependsOn;
 
@@ -419,14 +422,14 @@ public class CorePlugin {
         return bodySecurityManager.filterUsersBysContacts(users);
     }
 
-//    public List<AppContact> filterContactsByProfileFilter(List<AppContact> contacts, String profilePattern) {
+    //    public List<AppContact> filterContactsByProfileFilter(List<AppContact> contacts, String profilePattern) {
 //        return bodySecurityManager.filterContactsByProfileFilter(contacts, profilePattern);
 //    }
     public List<AppUser> findUsersByProfileFilter(String profilePattern, Integer userType) {
         return bodySecurityManager.findUsersByProfileFilter(profilePattern, userType);
     }
 
-//    public AppUser findUserByContact(int contactId) {
+    //    public AppUser findUserByContact(int contactId) {
 //        return bodyConfig.findUserByContact(contactId);
 //    }
     public AppContact findOrCreateContact(AppContact c) {
@@ -445,7 +448,7 @@ public class CorePlugin {
         return UPA.getPersistenceUnit().findAll(AppContact.class);
     }
 
-//    public List<AppContact> findContacts(String name, String type) {
+    //    public List<AppContact> findContacts(String name, String type) {
 //        return bodySecurityManager.findContacts(name, type);
 //    }
     public String getActualLogin() {
@@ -758,7 +761,7 @@ public class CorePlugin {
         return bodyContentManager.findOrCreateArticleDisposition(name, description, actionName);
     }
 
-//    @Deprecated
+    //    @Deprecated
 //    public List<FullArticle> findFullArticlesByCategory(String disposition) {
 //        return bodyContentManager.findFullArticlesByCategory(disposition);
 //    }
@@ -956,7 +959,7 @@ public class CorePlugin {
         return bodySecurityAuth.isCurrentSessionAdminOrUser(userId);
     }
 
-//    public boolean isCurrentSessionAdminOrContact(int userId) {
+    //    public boolean isCurrentSessionAdminOrContact(int userId) {
 //        return bodySecurityAuth.isCurrentSessionAdminOrContact(userId);
 //    }
     public boolean isCurrentSessionAdminOrUser(String login) {
@@ -1049,6 +1052,10 @@ public class CorePlugin {
         return bodyConfig.getUserPhoto(id, icon);
     }
 
+    public boolean existsUserPhoto(int id) {
+        return bodyConfig.existsUserPhoto(id);
+    }
+
     public String getCurrentUserPhoto() {
         return bodyConfig.getCurrentUserPhoto();
     }
@@ -1125,7 +1132,7 @@ public class CorePlugin {
         return bodyDaoManager.getEntityAutoFilters(entityName);
     }
 
-//    public NamedId getEntityAutoFilterDefaultSelectedValue(String entityName, String autoFilterName) {
+    //    public NamedId getEntityAutoFilterDefaultSelectedValue(String entityName, String autoFilterName) {
 //        return bodyDaoManager.getEntityAutoFilterDefaultSelectedValue(entityName, autoFilterName);
 //    }
     public List<NamedId> getEntityAutoFilterValues(String entityName, String autoFilterName) {
@@ -1228,6 +1235,200 @@ public class CorePlugin {
 
     public boolean isLoggedIn() {
         return getCurrentUser() != null;
+    }
+
+    private Set<String> getInaccessibleEntitiesSet() {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        Set<String> set = pu.getProperties().getObject("InaccessibleEntities");
+        if (set == null) {
+            set = new HashSet<>();
+            pu.getProperties().setObject("InaccessibleEntities", set);
+        }
+        return set;
+    }
+
+    public boolean isInaccessibleEntity(String entity) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        return getInaccessibleEntitiesSet().contains(pu.getEntity(entity).getName());
+    }
+
+    public void addInaccessibleEntity(String entity) {
+        CorePluginSecurity.requireAdmin();
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        getInaccessibleEntitiesSet().add(pu.getEntity(entity).getName());
+    }
+
+    public void removeInaccessibleEntity(String entity) {
+        CorePluginSecurity.requireAdmin();
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        getInaccessibleEntitiesSet().remove(pu.getEntity(entity).getName());
+    }
+
+    public boolean isInaccessibleEntity(Class entity) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        return getInaccessibleEntitiesSet().contains(pu.getEntity(entity).getName());
+    }
+
+    public void removeInaccessibleEntities(Class... entities) {
+        CorePluginSecurity.requireAdmin();
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        final Set<String> s = getInaccessibleEntitiesSet();
+        for (Class entity : entities) {
+            s.remove(pu.getEntity(entity).getName());
+        }
+    }
+
+    public void addInaccessibleEntities(Class... entities) {
+        CorePluginSecurity.requireAdmin();
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        final Set<String> s = getInaccessibleEntitiesSet();
+        for (Class entity : entities) {
+            s.add(pu.getEntity(entity).getName());
+        }
+    }
+
+    public void removeInaccessibleEntities(String... entities) {
+        CorePluginSecurity.requireAdmin();
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        final Set<String> s = getInaccessibleEntitiesSet();
+        for (String entity : entities) {
+            s.remove(pu.getEntity(entity).getName());
+        }
+    }
+
+    public void addInaccessibleEntities(String... entities) {
+        CorePluginSecurity.requireAdmin();
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        final Set<String> s = getInaccessibleEntitiesSet();
+        for (String entity : entities) {
+            s.add(pu.getEntity(entity).getName());
+        }
+    }
+
+    public void addInaccessibleEntity(Class entity) {
+        CorePluginSecurity.requireAdmin();
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        getInaccessibleEntitiesSet().add(pu.getEntity(entity).getName());
+    }
+
+    public void removeInaccessibleEntity(Class entity) {
+        CorePluginSecurity.requireAdmin();
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        getInaccessibleEntitiesSet().remove(pu.getEntity(entity).getName());
+    }
+
+    private Set<String> getInaccessibleComponentsSet() {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        Set<String> set = pu.getProperties().getObject("InaccessibleComponents");
+        if (set == null) {
+            set = new HashSet<>();
+            pu.getProperties().setObject("InaccessibleComponents", set);
+        }
+        return set;
+    }
+
+    public boolean isInaccessibleComponent(String component) {
+        return getInaccessibleComponentsSet().contains(component);
+    }
+
+    public void addInaccessibleComponent(String component) {
+        CorePluginSecurity.requireAdmin();
+        getInaccessibleComponentsSet().add(component);
+    }
+
+    public void removeInaccessibleComponent(String component) {
+        CorePluginSecurity.requireAdmin();
+        getInaccessibleComponentsSet().remove(component);
+    }
+
+    public void addInaccessibleComponents(String... components) {
+        CorePluginSecurity.requireAdmin();
+        final Set<String> s = getInaccessibleComponentsSet();
+        for (String component : components) {
+            s.add(component);
+        }
+
+    }
+
+    public void removeInaccessibleComponents(String... components) {
+        CorePluginSecurity.requireAdmin();
+        final Set<String> s = getInaccessibleComponentsSet();
+        for (String component : components) {
+            s.remove(component);
+        }
+    }
+
+    public String resolveLoginProposal(String fn, String ln) {
+        return bodySecurityManager.resolveLoginProposal(fn, ln);
+    }
+
+    public String resolvePasswordProposal(AppUser user) {
+        return VrPasswordStrategyRandom.INSTANCE.generatePassword(user);
+    }
+
+    public List<Date> findLatestLogins(String user, boolean successfulOnly, boolean daysOnly, boolean includeToday, int maxDays) {
+        CorePluginSecurity.requireUser(user);
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        if (maxDays <= 0) {
+            maxDays = 10;
+        }
+        //AppTrace t;t.
+        List<AppTrace> t = pu.createQuery("Select o from AppTrace o where o.module=:module and (o.action=:action or o.action=:action2) and o.user=:user and o.time>=:firstDay order by o.time desc")
+                .setParameter("module", "/System/Access")
+                .setParameter("action", "System.login")
+                .setParameter("action2", successfulOnly ? "System.login" : "System.login.failed")
+                .setParameter("firstDay", new Timestamp(new MutableDate().addDaysOfYear(-maxDays).getTimeInMillis()))
+                .setParameter("user", user)
+                .getResultList();
+        List<Date> dates = new ArrayList<>();
+        net.vpc.upa.types.Date today = new net.vpc.upa.types.Date();
+        for (AppTrace appTrace : t) {
+            Date c = appTrace.getTime();
+            if (c != null) {
+                if (daysOnly) {
+                    c = new net.vpc.upa.types.Date(c);
+                }
+                if (includeToday || !new net.vpc.upa.types.Date(c).equals(today)) {
+                    dates.add(c);
+                }
+            }
+        }
+        Collections.sort(dates);
+        Collections.reverse(dates);
+        return dates;
+    }
+
+    public Map<Date, Integer> findLatestDayLoginsCount(String user, boolean successfulOnly, boolean includeToday, int maxDays) {
+        CorePluginSecurity.requireUser(user);
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        if (maxDays <= 0) {
+            maxDays = 10;
+        }
+        //AppTrace t;t.
+        List<AppTrace> t = pu.createQuery("Select o from AppTrace o where o.module=:module and (o.action=:action or o.action=:action2) and o.user=:user and o.time>=:firstDay order by o.time desc")
+                .setParameter("module", "/System/Access")
+                .setParameter("action", "System.login")
+                .setParameter("action2", successfulOnly ? "System.login" : "System.login.failed")
+                .setParameter("firstDay", new Timestamp(new MutableDate().addDaysOfYear(-maxDays).getTimeInMillis()))
+                .setParameter("user", user)
+                .getResultList();
+        Map<Date, Integer> dates = new TreeMap<>(Collections.reverseOrder());
+        net.vpc.upa.types.Date today = new net.vpc.upa.types.Date();
+        for (AppTrace appTrace : t) {
+            Date c = appTrace.getTime();
+            if (c != null) {
+                c = new net.vpc.upa.types.Date(c);
+                if (includeToday || !new net.vpc.upa.types.Date(c).equals(today)) {
+                    Integer i = dates.get(c);
+                    if (i == null) {
+                        i = 0;
+                    }
+                    i++;
+                    dates.put(c, i);
+                }
+            }
+        }
+        return dates;
     }
 
 }

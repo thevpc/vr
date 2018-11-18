@@ -29,7 +29,7 @@ public class AppGenderParser {
             gendersById = new HashMap<>();
             for (AppGender g : CorePlugin.get().findGenders()) {
                 gendersByCode.put(g.getCode(), g);
-                gendersByName.put(StringUtils.normalize(g.getName().trim()), g);
+                gendersByName.put(StringUtils.normalizeString(g.getName().trim()), g);
                 gendersById.put(g.getId(), g);
             }
 
@@ -48,7 +48,7 @@ public class AppGenderParser {
         } else if (genderName != null) {
             gender = gendersByCode.get(genderName);
             if (gender == null) {
-                gender = gendersByName.get(StringUtils.normalize(genderName.trim()));
+                gender = gendersByName.get(StringUtils.normalizeString(genderName.trim()));
             }
             if (gender == null && required) {
                 throw new NoSuchElementException("Gender Not Found " + genderName);

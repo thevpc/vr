@@ -416,6 +416,28 @@ class CorePluginBodyConfig extends CorePluginBody {
         });
 
     }
+    public boolean existsUserPhoto(int id) {
+        return UPA.getContext().invokePrivileged(new Action<Boolean>() {
+            @Override
+            public Boolean run() {
+                AppUser t = getContext().getCorePlugin().findUser(id);
+                if (t == null) {
+                    return false;
+                }
+                VFile userFolder = getContext().getCorePlugin().getUserFolder(t.getLogin());
+                if (userFolder != null) {
+                    for (String p : new String[]{"Config/photo.png", "Config/photo.jpg", "Config/photo.gif"}) {
+                        VFile ff = userFolder.get(p);
+                        if (ff.exists()) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }
+        });
+
+    }
 
     public String getCurrentUserPhoto() {
         UserToken token = getContext().getCorePlugin().getCurrentToken();
