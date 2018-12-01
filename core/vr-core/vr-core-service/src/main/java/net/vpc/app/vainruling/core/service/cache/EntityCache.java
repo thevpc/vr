@@ -1,5 +1,6 @@
 package net.vpc.app.vainruling.core.service.cache;
 
+import net.vpc.app.vainruling.core.service.CorePluginSecurity;
 import net.vpc.app.vainruling.core.service.util.EntityMapList;
 import net.vpc.common.util.MapList;
 import net.vpc.upa.Action;
@@ -62,5 +63,9 @@ public class EntityCache {
     public void invalidate() {
         list = null;
         properties.clear();
+    }
+
+    public void invalidateProperty(String property) {
+        properties.remove(property);
     }
 }

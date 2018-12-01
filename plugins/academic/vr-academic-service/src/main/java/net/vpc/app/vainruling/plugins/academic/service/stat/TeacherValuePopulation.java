@@ -29,7 +29,20 @@ public class TeacherValuePopulation {
         this.degree = degree;
         this.discipline = discipline;
     }
-    public void addValue(AcademicTeacher teacher,double d){
+
+    public AcademicTeacherSituation getSituation() {
+        return situation;
+    }
+
+    public AcademicTeacherDegree getDegree() {
+        return degree;
+    }
+
+    public AcademicOfficialDiscipline getDiscipline() {
+        return discipline;
+    }
+
+    public void addValue(AcademicTeacher teacher, double d){
         values.add(d);
         teachers.add(teacher);
     }

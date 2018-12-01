@@ -2,7 +2,6 @@ package net.vpc.app.vr.plugins.academicprofile.web;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.model.AppContact;
 import net.vpc.app.vainruling.core.web.*;
 import net.vpc.app.vainruling.core.web.jsf.ctrl.DocumentUploadListener;
 import net.vpc.app.vainruling.core.web.jsf.ctrl.DocumentsCtrl;
@@ -31,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.faces.bean.ManagedBean;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 
 @VrController(
@@ -43,6 +43,7 @@ import net.vpc.app.vainruling.core.service.model.AppUser;
         priority = 2
         //securityKey = "Custom.StudentProfileSettings"
 )
+@ManagedBean
 public class StudentProfileSettingsCtrl implements DocumentUploadListener, VrActionEnabler {
 
     private static final Logger log = Logger.getLogger(StudentProfileSettingsCtrl.class.getName());

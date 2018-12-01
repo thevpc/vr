@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package net.vpc.app.vainruling.plugins.academic.service.helper;
+package net.vpc.app.vainruling.plugins.academic.service.integration;
 
 import net.vpc.app.vainruling.core.service.model.AppCompany;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
@@ -16,10 +16,10 @@ import net.vpc.app.vainruling.plugins.academic.service.helper.parsers.AppGenderP
  */
 public class ImportTeacherContext {
     
-    AppPeriod mainPeriod;
-    AppCompany mainCompany;
-    AppGenderParser genders = new AppGenderParser();
-    AppCivilityParser civilities = new AppCivilityParser();
+    private AppPeriod mainPeriod;
+    private AppCompany mainCompany;
+    private AppGenderParser genders = new AppGenderParser();
+    private AppCivilityParser civilities = new AppCivilityParser();
 
     public AppPeriod getMainPeriod() {
         return mainPeriod;
@@ -38,5 +38,22 @@ public class ImportTeacherContext {
         this.mainCompany = mainCompany;
         return this;
     }
-    
+
+    public AppGenderParser getGenders() {
+        return genders;
+    }
+
+    public ImportTeacherContext setGenders(AppGenderParser genders) {
+        this.genders = genders;
+        return this;
+    }
+
+    public AppCivilityParser getCivilities() {
+        return civilities;
+    }
+
+    public ImportTeacherContext setCivilities(AppCivilityParser civilities) {
+        this.civilities = civilities;
+        return this;
+    }
 }

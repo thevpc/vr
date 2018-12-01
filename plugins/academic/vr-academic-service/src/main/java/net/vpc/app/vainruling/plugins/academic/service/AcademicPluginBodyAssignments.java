@@ -7,7 +7,7 @@ import net.vpc.app.vainruling.core.service.cache.CacheService;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.plugins.academic.service.helper.AcademicConversionTableHelper;
-import net.vpc.app.vainruling.plugins.academic.service.helper.TeacherGenerationHelper;
+import net.vpc.app.vainruling.plugins.academic.service.load.TeacherGenerationHelper;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.*;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.*;
 import net.vpc.app.vainruling.plugins.academic.service.stat.*;

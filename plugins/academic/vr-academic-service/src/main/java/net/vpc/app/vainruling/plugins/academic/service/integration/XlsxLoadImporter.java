@@ -3,7 +3,7 @@
  *
  * and open the template in the editor.
  */
-package net.vpc.app.vainruling.plugins.academic.service.helper;
+package net.vpc.app.vainruling.plugins.academic.service.integration;
 
 import net.vpc.app.vainruling.core.service.util.ColumnMappingMatcher;
 import net.vpc.app.vainruling.core.service.util.LenientArray;
@@ -361,13 +361,13 @@ public class XlsxLoadImporter {
         if (ctx == null) {
             ctx = new ImportTeacherContext();
         }
-        if (ctx.mainCompany == null) {
+        if (ctx.getMainCompany() == null) {
             AppConfig appConfig = core.getCurrentConfig();
-            ctx.mainCompany = appConfig == null ? null : appConfig.getMainCompany();
+            ctx.setMainCompany(appConfig == null ? null : appConfig.getMainCompany());
         }
-        if (ctx.mainPeriod == null) {
+        if (ctx.getMainPeriod() == null) {
             AppConfig appConfig = core.getCurrentConfig();
-            ctx.mainPeriod = appConfig == null ? null : appConfig.getMainPeriod();
+            ctx.setMainPeriod(appConfig == null ? null : appConfig.getMainPeriod());
         }
 
         AcademicTeacher academicTeacher = new AcademicTeacher();
@@ -390,7 +390,7 @@ public class XlsxLoadImporter {
                 throw new NoSuchElementException("Department Not Found " + a.getDepartmentName());
             }
         }
-        int mainPeriodId = ctx.mainPeriod.getId();
+        int mainPeriodId = ctx.getMainPeriod().getId();
         AppPeriod period = null;
         if (a.getStartPeriodId() != null) {
             period = core.findPeriod(a.getStartPeriodId());
@@ -430,8 +430,8 @@ public class XlsxLoadImporter {
             }
         }
 
-        AppGender gender = ctx.genders.resolveGender(a.getGenderId(), a.getGenderName(), true);
-        AppCivility civility = ctx.civilities.resolveCivility(a.getCivilityId(), a.getCivilityName(), gender, true);
+        AppGender gender = ctx.getGenders().resolveGender(a.getGenderId(), a.getGenderName(), true);
+        AppCivility civility = ctx.getCivilities().resolveCivility(a.getCivilityId(), a.getCivilityName(), gender, true);
 
         AcademicTeacherSituation situation = null;
         if (a.getSituationId() != null) {
@@ -446,7 +446,7 @@ public class XlsxLoadImporter {
             }
         }
 
-        user.setCompany(ctx.mainCompany);
+        user.setCompany(ctx.getMainCompany());
         user.setFirstName2(a.getFirstName2());
         user.setLastName2(a.getLastName2());
         user.setFullName2(AppContact.getName2(user));
@@ -538,7 +538,7 @@ public class XlsxLoadImporter {
             Object[] values = row.getValues();
             AcademicTeacherImport aa = parseAcademicTeacherImport(values);
             ImportTeacherContext ctx = new ImportTeacherContext();
-            ctx.mainPeriod = VrApp.getBean(CorePlugin.class).findPeriodOrMain(periodId);
+            ctx.setMainPeriod(VrApp.getBean(CorePlugin.class).findPeriodOrMain(periodId));
             if (aa != null) {
                 importTeacher(aa, ctx);
                 count++;
@@ -590,16 +590,16 @@ public class XlsxLoadImporter {
         if (ctx == null) {
             ctx = new ImportStudentContext();
         }
-        if (ctx.mainCompany == null) {
+        if (ctx.getMainCompany() == null) {
             AppConfig appConfig = core.getCurrentConfig();
-            ctx.mainCompany = appConfig == null ? null : appConfig.getMainCompany();
+            ctx.setMainCompany(appConfig == null ? null : appConfig.getMainCompany());
         }
-        if (ctx.profiles == null) {
-            ctx.profiles = new HashMap<>();
+        if (ctx.getProfiles() == null) {
+            ctx.setProfiles(new HashMap<>());
             for (AcademicClass cls : service.findAcademicClasses()) {
                 AppProfile p = core.findOrCreateCustomProfile(cls.getName(), "AcademicClass");
-                ctx.profiles.put(p.getCode(), p);
-                ctx.profiles.put(cls.getName(), p);
+                ctx.getProfiles().put(p.getCode(), p);
+                ctx.getProfiles().put(cls.getName(), p);
             }
 
         }
@@ -628,8 +628,8 @@ public class XlsxLoadImporter {
             }
         }
 
-        AppGender gender = ctx.genders.resolveGender(a.getGenderId(), a.getGenderName(), true);
-        AppCivility civility = ctx.civilities.resolveCivility(a.getCivilityId(), a.getCivilityName(), gender, true);
+        AppGender gender = ctx.getGenders().resolveGender(a.getGenderId(), a.getGenderName(), true);
+        AppCivility civility = ctx.getCivilities().resolveCivility(a.getCivilityId(), a.getCivilityName(), gender, true);
 
         AcademicBac bac = null;
         if (a.getPreClassBacId() != null) {
@@ -782,8 +782,8 @@ public class XlsxLoadImporter {
         user.setPositionTitle1("Student " + studentclass.getName());
         user.setDepartment(dept);
         user.setEnabled(true);
-        if (checkUpdatable(user.getCompany(), ctx.mainCompany, force)) {
-            user.setCompany(ctx.mainCompany);
+        if (checkUpdatable(user.getCompany(), ctx.getMainCompany(), force)) {
+            user.setCompany(ctx.getMainCompany());
         }
         if (!ctx.isSimulate()) {
             CorePlugin.get().save(null, user);
@@ -835,7 +835,7 @@ public class XlsxLoadImporter {
         CorePlugin core = VrApp.getBean(CorePlugin.class);
         ImportStudentContext importStudentContext = new ImportStudentContext();
         importStudentContext.setSimulate(simulate);
-        importStudentContext.mainPeriod = core.findPeriodOrMain(periodId);
+        importStudentContext.setMainPeriod(core.findPeriodOrMain(periodId));
         int count = 0;
         while (rows.hasNext()) {
             DataRow row = rows.readRow();

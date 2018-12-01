@@ -25,6 +25,15 @@ public class AppRightName {
     @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
     private String description;
 
+    public AppRightName() {
+    }
+
+    public AppRightName(String name, String description) {
+        this.name = name;
+        this.description = description;
+    }
+
+    
     public String getName() {
         return name;
     }

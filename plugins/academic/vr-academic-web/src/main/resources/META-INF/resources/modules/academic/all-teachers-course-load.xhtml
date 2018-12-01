@@ -275,11 +275,11 @@ and open the template in the editor.
                                 </p:column>
 
                                 <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('degree')}"
-                                          headerText="grade" width="5%" sortBy="#{i.teacher.degree.name}">
+                                          headerText="grade" width="5%" sortBy="#{i.teacherDegree.name}">
                                     <h:outputText value="#{i.teacher.degree.name}"/>
                                 </p:column>
                                 <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('situation')}"
-                                          headerText="sit." width="5%" sortBy="#{i.teacher.situation.name}">
+                                          headerText="sit." width="5%" sortBy="#{i.teacherSituation.name}">
                                     <h:outputText value="#{i.teacher.situation.name}"/>
                                 </p:column>
                                 <p:column rendered="#{allTeachersCourseLoadCtrl.containsFilter('discipline')}"

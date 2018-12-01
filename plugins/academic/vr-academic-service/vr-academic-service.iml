@@ -40,8 +40,8 @@
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.ow2.asm:asm:6.2.1" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.ant:ant:1.10.3" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.ant:ant-launcher:1.10.3" level="project" />
-    <orderEntry type="library" name="Maven: net.sourceforge.jexcelapi:jxl:2.6.12" level="project" />
-    <orderEntry type="module" module-name="vpc-common-strings" />
+    <orderEntry type="library" name="Maven: net.sourceforge.jexcelapi:jxl:2.6.10" level="project" />
+    <orderEntry type="library" name="Maven: net.vpc.common:vpc-common-strings:1.2.15" level="project" />
     <orderEntry type="module" module-name="vpc-common-utils" />
     <orderEntry type="module" module-name="vpc-common-io" />
     <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.8.5" level="project" />
@@ -77,6 +77,7 @@
     <orderEntry type="library" name="Maven: org.apache.xmlbeans:xmlbeans:2.6.0" level="project" />
     <orderEntry type="library" name="Maven: stax:stax-api:1.0.1" level="project" />
     <orderEntry type="library" name="Maven: com.lowagie:itext:2.1.7" level="project" />
+    <orderEntry type="library" name="Maven: fastutil:fastutil:5.0.9" level="project" />
     <orderEntry type="library" name="Maven: net.sf.jgap:jgap:3.4.4" level="project" />
     <orderEntry type="library" name="Maven: commons-lang:commons-lang:2.3" level="project" />
     <orderEntry type="library" name="Maven: log4j:log4j:1.2.9" level="project" />

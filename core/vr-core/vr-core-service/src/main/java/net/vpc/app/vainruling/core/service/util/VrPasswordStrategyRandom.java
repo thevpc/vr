@@ -6,9 +6,9 @@ public class VrPasswordStrategyRandom implements VrPasswordStrategy {
     public static final VrPasswordStrategy INSTANCE = new VrPasswordStrategyRandom();
 
     @Override
-    public String generatePassword(AppUser contact) {
-        String fn = contact.getFirstName();
-        String ln = contact.getLastName();
+    public String generatePassword(AppUser user) {
+        String fn = user.getFirstName();
+        String ln = user.getLastName();
         if (fn == null) {
             fn = "";
         }

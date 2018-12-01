@@ -18,11 +18,11 @@ import net.vpc.app.vainruling.plugins.academic.service.util.AcademicStudentProfi
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.Action;
 import net.vpc.upa.PersistenceUnit;
-import net.vpc.upa.QueryBuilder;
 import net.vpc.upa.UPA;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import net.vpc.app.vainruling.core.service.CreateUserInfo;
 
 public class AcademicPluginBodyStudents extends AcademicPluginBody {
 
@@ -291,25 +291,35 @@ public class AcademicPluginBodyStudents extends AcademicPluginBody {
     public boolean addUserForStudent(AcademicStudent academicStudent) {
         CorePluginSecurity.requireRight(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_CONFIG_WRITE);
         AppUserType teacherType = VrApp.getBean(CorePlugin.class).findUserType("Student");
-        AppUser u = core.createUser(academicStudent.getUser(), teacherType.getId(), academicStudent.getUser().getDepartment().getId(), false, new String[]{"Student"}, VrPasswordStrategyNin.INSTANCE);
+        CreateUserInfo ui=new CreateUserInfo()
+                .setUserId(academicStudent.getUser().getId())
+                .setFirstName(academicStudent.getUser().getFirstName())
+                .setLastName(academicStudent.getUser().getLastName())
+                .setUserTypeId(teacherType.getId())
+                .setDepartmentId(academicStudent.getUser().getDepartment().getId())
+                .setAttachToExistingUser(false)
+                .setDefaultProfiles( new String[]{"Student"})
+                .setPasswordStrategy(VrPasswordStrategyNin.INSTANCE)
+                ;
+        AppUser u = core.addUser(ui);
         academicStudent.setUser(u);
         UPA.getPersistenceUnit().merge(academicStudent);
         for (AcademicClass c : new AcademicClass[]{academicStudent.getLastClass1(), academicStudent.getLastClass2(), academicStudent.getLastClass3()}) {
             if (c != null) {
                 AppProfile p = core.findOrCreateCustomProfile(c.getName(), "AcademicClass");
-                core.userAddProfile(u.getId(), p.getCode());
+                core.addUserProfile(u.getId(), p.getCode());
             }
 
             AcademicProgram pr = academicStudent.getLastClass1() == null ? null : academicStudent.getLastClass1().getProgram();
             if (pr != null) {
                 AppProfile p = core.findOrCreateCustomProfile(pr.getName(), "AcademicClass");
-                core.userAddProfile(u.getId(), p.getCode());
+                core.addUserProfile(u.getId(), p.getCode());
             }
         }
         AppDepartment d = academicStudent.getUser().getDepartment();
         if (d != null) {
             AppProfile p = core.findOrCreateCustomProfile(d.getCode(), "Department");
-            core.userAddProfile(u.getId(), p.getCode());
+            core.addUserProfile(u.getId(), p.getCode());
         }
 
         return true;
@@ -444,11 +454,11 @@ public class AcademicPluginBodyStudents extends AcademicPluginBody {
                         goodProfiles.remove(p.getId());
                         //ok
                     } else if (p.isCustom() && (p.getCustomType() != null && managedProfileTypes.contains(p.getCustomType()))) {
-                        core.userRemoveProfile(u.getId(), p.getId());
+                        core.removeUserProfile(u.getId(), p.getId());
                     }
                 }
                 for (Integer toAdd : goodProfiles) {
-                    core.userAddProfile(u.getId(), toAdd);
+                    core.addUserProfile(u.getId(), toAdd);
                 }
             }
         }

@@ -193,8 +193,8 @@ public class EquipmentPlugin {
 //        tech2.setContact(techContact);
 //        tech2 = core.findOrCreate(tech2);
 //
-//        core.userAddProfile(tech1.getId(), "Technician");
-//        core.userAddProfile(tech2.getId(), "Technician");
+//        core.addUserProfile(tech1.getId(), "Technician");
+//        core.addUserProfile(tech2.getId(), "Technician");
     }
 
     @InstallDemo

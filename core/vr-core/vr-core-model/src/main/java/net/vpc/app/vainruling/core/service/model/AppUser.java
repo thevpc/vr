@@ -80,10 +80,12 @@ public class AppUser extends AppPersonContactBase implements Cloneable {
     @Field(protectionLevel = ProtectionLevel.PROTECTED)
     private String passwordAuto;
 
+    private int lastLoginFailures;
+
     public void copyFrom(AppContactBase other) {
         super.copyFrom(other);
         if (other instanceof AppUser) {
-            AppUser u=(AppUser)other;
+            AppUser u = (AppUser) other;
             this.login = u.login;
             this.password = u.password;
             this.department = u.department;
@@ -199,4 +201,13 @@ public class AppUser extends AppPersonContactBase implements Cloneable {
         }
         return appUser;
     }
+
+    public int getLastLoginFailures() {
+        return lastLoginFailures;
+    }
+
+    public void setLastLoginFailures(int lastLoginFailures) {
+        this.lastLoginFailures = lastLoginFailures;
+    }
+
 }

@@ -453,6 +453,9 @@ public class VrMenuManager {
                 }
             }
         }
+        if(d==null){
+            return null;
+        }
         PlatformReflector.InstanceInvoker[] mm = PlatformReflector.findInstanceByAnnotation(d.getInstance(), OnPageLoad.class);
         for (PlatformReflector.InstanceInvoker m : mm) {
             if (m.getParameterTypes().length == 0) {

@@ -63,31 +63,30 @@ public class AcademicPluginCompletionProvider implements CompletionProvider {
                 }
             }
         } else {
-//            if (core.isCurrentSessionAdminOrManager()) {
-            if (core.isCurrentSessionAdmin()) {
-                List<AcademicStudent> students = UPA.getContext().invokePrivileged(new Action<List<AcademicStudent>>() {
-                    @Override
-                    public List<AcademicStudent> run() {
-                        return AcademicPlugin.get().findStudents(null, AcademicStudentStage.ATTENDING);
-                    }
-
-                });
-
-                for (AcademicStudent student : students) {
-                    all.addAll(findCompletions(monitorUserId, "Internship", "AcademicStudent", student, minLevel));
-                }
-                List<AcademicTeacher> teachers = UPA.getContext().invokePrivileged(new Action<List<AcademicTeacher>>() {
-                    @Override
-                    public List<AcademicTeacher> run() {
-                        return AcademicPlugin.get().findTeachers();
-                    }
-
-                });
-
-                for (AcademicTeacher teacher : teachers) {
-                    all.addAll(findCompletions(monitorUserId, "Contact", "AcademicTeacher", teacher, minLevel));
-                }
-            }
+//            if (core.isCurrentSessionAdmin()) {
+//                List<AcademicStudent> students = UPA.getContext().invokePrivileged(new Action<List<AcademicStudent>>() {
+//                    @Override
+//                    public List<AcademicStudent> run() {
+//                        return AcademicPlugin.get().findStudents(null, AcademicStudentStage.ATTENDING);
+//                    }
+//
+//                });
+//
+//                for (AcademicStudent student : students) {
+//                    all.addAll(findCompletions(monitorUserId, "Internship", "AcademicStudent", student, minLevel));
+//                }
+//                List<AcademicTeacher> teachers = UPA.getContext().invokePrivileged(new Action<List<AcademicTeacher>>() {
+//                    @Override
+//                    public List<AcademicTeacher> run() {
+//                        return AcademicPlugin.get().findTeachers();
+//                    }
+//
+//                });
+//
+//                for (AcademicTeacher teacher : teachers) {
+//                    all.addAll(findCompletions(monitorUserId, "Contact", "AcademicTeacher", teacher, minLevel));
+//                }
+//            }
         }
     }
     
@@ -103,31 +102,30 @@ public class AcademicPluginCompletionProvider implements CompletionProvider {
                 }
             }
         } else {
-//            if (core.isCurrentSessionAdminOrManager()) {
-            if (core.isCurrentSessionAdmin()) {
-                List<AcademicStudent> students = UPA.getContext().invokePrivileged(new Action<List<AcademicStudent>>() {
-                    @Override
-                    public List<AcademicStudent> run() {
-                        return AcademicPlugin.get().findStudents(null, AcademicStudentStage.ATTENDING);
-                    }
-
-                });
-
-                for (AcademicStudent student : students) {
-                    all.addAll(findCompletions(monitorUserId, "Contact", "AcademicStudent", student, minLevel));
-                }
-                List<AcademicTeacher> teachers = UPA.getContext().invokePrivileged(new Action<List<AcademicTeacher>>() {
-                    @Override
-                    public List<AcademicTeacher> run() {
-                        return AcademicPlugin.get().findTeachers();
-                    }
-
-                });
-
-                for (AcademicTeacher teacher : teachers) {
-                    all.addAll(findCompletions(monitorUserId, "Contact", "AcademicTeacher", teacher, minLevel));
-                }
-            } else {
+//            if (core.isCurrentSessionAdmin()) {
+//                List<AcademicStudent> students = UPA.getContext().invokePrivileged(new Action<List<AcademicStudent>>() {
+//                    @Override
+//                    public List<AcademicStudent> run() {
+//                        return AcademicPlugin.get().findStudents(null, AcademicStudentStage.ATTENDING);
+//                    }
+//
+//                });
+//
+//                for (AcademicStudent student : students) {
+//                    all.addAll(findCompletions(monitorUserId, "Contact", "AcademicStudent", student, minLevel));
+//                }
+//                List<AcademicTeacher> teachers = UPA.getContext().invokePrivileged(new Action<List<AcademicTeacher>>() {
+//                    @Override
+//                    public List<AcademicTeacher> run() {
+//                        return AcademicPlugin.get().findTeachers();
+//                    }
+//
+//                });
+//
+//                for (AcademicTeacher teacher : teachers) {
+//                    all.addAll(findCompletions(monitorUserId, "Contact", "AcademicTeacher", teacher, minLevel));
+//                }
+//            } else {
                 AcademicTeacher t = aca.getCurrentTeacher();
                 if (t != null) {
                     objectType = "AcademicTeacher";
@@ -140,7 +138,7 @@ public class AcademicPluginCompletionProvider implements CompletionProvider {
                     objectId = s.getId();
                     findCompletionsFillContactStudent(monitorUserId, objectId, minLevel, all);
                 }
-            }
+//            }
         }
     }
 

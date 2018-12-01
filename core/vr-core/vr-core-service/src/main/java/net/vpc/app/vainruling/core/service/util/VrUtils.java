@@ -258,7 +258,7 @@ public class VrUtils {
     }
 
     public static String strcut(String value, net.vpc.upa.Entity e, String fieldName) {
-        StringType d = (StringType) e.getField("data").getDataType();
+        StringType d = (StringType) e.getField(fieldName).getDataType();
         int m = d.getMax();
         if (m <= 0) {
             m = 255;

@@ -164,7 +164,7 @@ and open the template in the editor.
                         <div class="table-responsive">
                             <h1>
                                 <ui:fragment rendered="#{myCourseLoadCtrl.model.currentTeacher ne null}">
-                                    #{myCourseLoadCtrl.model.currentTeacher.user.fullName} - #{myCourseLoadCtrl.model.stat.val.teacher.degree.name} - #{myCourseLoadCtrl.model.stat.val.teacher.situation.name} (#{myCourseLoadCtrl.teacherFilter.periodName})                            
+                                    #{myCourseLoadCtrl.model.currentTeacher.user.fullName} - #{myCourseLoadCtrl.model.stat.val.teacherDegree.name} - #{myCourseLoadCtrl.model.stat.val.teacherSituation.name} (#{myCourseLoadCtrl.teacherFilter.periodName})
                                 </ui:fragment>
 
                             </h1>
@@ -309,7 +309,7 @@ and open the template in the editor.
                                             update=":listForm" title="Clickez ici pour supprimer le voeux"/>
                                         <ui:fragment rendered="#{i.assignment.locked or i.assignment.coursePlan.locked}"><i class="fa  fa-lock"></i></ui:fragment>
                                     </p:column>
-                                    <p:column headerText="Etat" width="3%">
+                                    <p:column headerText="Etat" width="5%">
                                         <ui:fragment rendered="#{i.currentAssigned}">
                                             <span class="fa fa-check" style="color:forestgreen" title="Assigné"></span>
                                         </ui:fragment>

@@ -9,73 +9,80 @@ and open the template in the editor.
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:p="http://primefaces.org/ui"
-        >
+      >
 
-<h:head>
-</h:head>
+    <h:head>
+    </h:head>
 
-<h:body>
+    <h:body>
 
-    <!--@elvariable id="corePlugin" type="net.vpc.app.vainruling.core.service.CorePlugin"-->
-    <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.jsf.Vr"-->
+        <!--@elvariable id="corePlugin" type="net.vpc.app.vainruling.core.service.CorePlugin"-->
+        <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.jsf.Vr"-->
 
-    <ui:composition template="#{vr.privateTemplatePath}">
-        <ui:define name="content">
-            <h:form id="itemForm" enctype="multipart/form-data">
-                <p:panel header="à propos" style="margin-bottom:20px">
-                    <h:panelGrid columns="3" cellspacing="10px" cellpadding="10px">
-                        <p:outputLabel value="Utilisateur"/>
-                        <p:outputLabel style="margin-left: 10px" value=" :         "/>
-                        <h:outputText style="margin-left: 20px"
-                                      value="#{corePlugin.currentUser==null?'anonymous' : vr.strcat(corePlugin.currentUserLogin,' / ',corePlugin.currentUser.fullName) }"/>
-                        <p:outputLabel value="Version"/>
-                        <p:outputLabel style="margin-left: 10px" value=" :          "/>
-                        <h:outputText style="margin-left: 20px" value="#{corePlugin.appVersion.version}"/>
-                        <p:outputLabel value="Domaine"/>
-                        <p:outputLabel style="margin-left: 10px" value=" :          "/>
-                        <h:outputText style="margin-left: 20px" value="#{corePlugin.currentDomain}"/>
-                        <p:outputLabel value="Date Publication"/>
-                        <p:outputLabel style="margin-left: 10px" value=" :          "/>
-                        <h:outputText style="margin-left: 20px" value="#{corePlugin.appVersion.buildDate}"/>
-                        <p:outputLabel value="Code Construction"/>
-                        <p:outputLabel style="margin-left: 10px" value=" :          "/>
-                        <h:outputText style="margin-left: 20px" value="#{corePlugin.appVersion.buildNumber}"/>
-                        <p:outputLabel value="Auteur"/>
-                        <p:outputLabel style="margin-left: 10px" value=" :          "/>
-                        <h:outputText style="margin-left: 20px" value="#{corePlugin.appVersion.author}"/>
-                        <p:outputLabel value="Nombre de Plugins"/>
-                        <p:outputLabel style="margin-left: 10px" value=" :          "/>
-                        <h:outputText style="margin-left: 20px" value="#{corePlugin.plugins.size()}"/>
-                    </h:panelGrid>
-                </p:panel>
+        <ui:composition template="#{vr.privateTemplatePath}">
+            <ui:define name="content">
+                <h:form id="itemForm" enctype="multipart/form-data">
+                    <p:panel header="à propos" style="margin-bottom:20px">
+                        <h:panelGrid columns="3" cellspacing="10px" cellpadding="10px">
+                            <p:outputLabel value="Utilisateur"/>
+                            <p:outputLabel style="margin-left: 10px" value=" :         "/>
+                            <h:outputText style="margin-left: 20px"
+                                          value="#{corePlugin.currentUser==null?'anonymous' : vr.strcat(corePlugin.currentUserLogin,' / ',corePlugin.currentUser.fullName) }"/>
+                            <p:outputLabel value="Groupes"/>
+                            <p:outputLabel style="margin-left: 10px" value=" :         "/>
+                            <p:outputPanel style="margin-left: 20px;">
+                                <ui:repeat value="#{vr.currentToken.profileCodes.toArray()}" var="prCode">
+                                    <span class="label label-#{vr.hashToArr(prCode,'danger','success','info','warning','primary','default')}" title="#{corePlugin.findProfileByCode(prCode).name}">#{prCode}</span>
+                                </ui:repeat>
+                            </p:outputPanel>
+                            <p:outputLabel value="Version"/>
+                            <p:outputLabel style="margin-left: 10px" value=" :          "/>
+                            <h:outputText style="margin-left: 20px" value="#{corePlugin.appVersion.version}"/>
+                            <p:outputLabel value="Domaine"/>
+                            <p:outputLabel style="margin-left: 10px" value=" :          "/>
+                            <h:outputText style="margin-left: 20px" value="#{corePlugin.currentDomain}"/>
+                            <p:outputLabel value="Date Publication"/>
+                            <p:outputLabel style="margin-left: 10px" value=" :          "/>
+                            <h:outputText style="margin-left: 20px" value="#{corePlugin.appVersion.buildDate}"/>
+                            <p:outputLabel value="Code Construction"/>
+                            <p:outputLabel style="margin-left: 10px" value=" :          "/>
+                            <h:outputText style="margin-left: 20px" value="#{corePlugin.appVersion.buildNumber}"/>
+                            <p:outputLabel value="Auteur"/>
+                            <p:outputLabel style="margin-left: 10px" value=" :          "/>
+                            <h:outputText style="margin-left: 20px" value="#{corePlugin.appVersion.author}"/>
+                            <p:outputLabel value="Nombre de Plugins"/>
+                            <p:outputLabel style="margin-left: 10px" value=" :          "/>
+                            <h:outputText style="margin-left: 20px" value="#{corePlugin.plugins.size()}"/>
+                        </h:panelGrid>
+                    </p:panel>
 
-                <p:dataTable value="#{corePlugin.plugins}" var="p">
-                    <p:column headerText="Plugin">
-                        <p:outputLabel value="#{p.info.name}"/>
-                    </p:column>
-                    <p:column headerText="Version">
-                        <p:outputLabel value="#{p.info.version}"/>
-                    </p:column>
-                    <p:column headerText="Taille">
-                        <p:outputLabel value="#{vr.formatBytesSize(p.info.size)}"/>
-                    </p:column>
-                    <p:column headerText="Description">
-                        <p:outputLabel value="#{p.info.description}"/>
-                    </p:column>
-                    <p:column headerText="Auteur(s)">
-                        <ui:repeat value="#{p.info.developers}" var="d">
-                            <p:outputLabel value=" #{d.name} (#{d.organization eq null ? 'Independent': d.organization.name})"/>
-                        </ui:repeat>
-                    </p:column>
+                    <p:dataTable value="#{corePlugin.plugins}" var="p">
+                        <p:column headerText="Plugin">
+                            <p:outputLabel value="#{p.info.name}"/>
+                        </p:column>
+                        <p:column headerText="Version">
+                            <p:outputLabel value="#{p.info.version}"/>
+                        </p:column>
+                        <p:column headerText="Taille">
+                            <p:outputLabel value="#{vr.formatBytesSize(p.info.size)}"/>
+                        </p:column>
+                        <p:column headerText="Description">
+                            <p:outputLabel value="#{p.info.description}"/>
+                        </p:column>
+                        <p:column headerText="Auteur(s)">
+                            <ui:repeat value="#{p.info.developers}" var="d">
+                                <p:outputLabel value=" #{d.name} (#{d.organization eq null ? 'Independent': d.organization.name})"/>
+                            </ui:repeat>
+                        </p:column>
 
-                </p:dataTable>
-            </h:form>
-        </ui:define>
-
-
-    </ui:composition>
+                    </p:dataTable>
+                </h:form>
+            </ui:define>
 
 
-</h:body>
+        </ui:composition>
+
+
+    </h:body>
 
 </html>

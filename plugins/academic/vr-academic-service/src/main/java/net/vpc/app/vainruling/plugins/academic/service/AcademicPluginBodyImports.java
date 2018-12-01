@@ -5,7 +5,7 @@ import net.vpc.app.vainruling.core.service.CorePluginSecurity;
 import net.vpc.app.vainruling.core.service.TraceService;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
-import net.vpc.app.vainruling.plugins.academic.service.helper.XlsxLoadImporter;
+import net.vpc.app.vainruling.plugins.academic.service.integration.XlsxLoadImporter;
 import net.vpc.app.vainruling.plugins.academic.service.model.imp.AcademicStudentImport;
 import net.vpc.app.vainruling.plugins.academic.service.model.imp.AcademicTeacherImport;
 import net.vpc.app.vainruling.plugins.academic.service.util.ImportOptions;
@@ -18,8 +18,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.vpc.app.vainruling.plugins.academic.service.helper.ImportStudentContext;
-import net.vpc.app.vainruling.plugins.academic.service.helper.ImportTeacherContext;
+import net.vpc.app.vainruling.plugins.academic.service.integration.ImportStudentContext;
+import net.vpc.app.vainruling.plugins.academic.service.integration.ImportTeacherContext;
 
 public class AcademicPluginBodyImports extends AcademicPluginBody {
 

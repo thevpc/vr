@@ -5,6 +5,8 @@
  */
 package net.vpc.app.vainruling.plugins.academic.service.stat;
 
+import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacherSituation;
+import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicTeacherDegree;
 import net.vpc.app.vainruling.plugins.academic.service.util.CourseAssignmentFilter;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacherPeriod;
@@ -22,6 +24,26 @@ public class TeacherPeriodStat extends TeacherBaseStat {
     private TeacherSemesterStat[] semesters=new TeacherSemesterStat[0];
     private int confirmedTeacherAssignmentCount = 0;
     private LoadValue confirmedTeacherAssignment = new LoadValue();
+
+    public AcademicTeacherSituation getTeacherSituation() {
+        if(teacherPeriod!=null && teacherPeriod.getSituation()!=null){
+            return teacherPeriod.getSituation();
+        }
+        if(teacher!=null && teacher.getSituation()!=null){
+            return teacher.getSituation();
+        }
+        return null;
+    }
+
+    public AcademicTeacherDegree getTeacherDegree() {
+        if(teacherPeriod!=null && teacherPeriod.getDegree()!=null){
+            return teacherPeriod.getDegree();
+        }
+        if(teacher!=null && teacher.getDegree()!=null){
+            return teacher.getDegree();
+        }
+        return null;
+    }
 
     public AcademicTeacher getTeacher() {
         return teacher;

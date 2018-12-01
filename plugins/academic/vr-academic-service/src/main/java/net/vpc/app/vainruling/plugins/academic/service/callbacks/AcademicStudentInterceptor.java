@@ -69,7 +69,7 @@ public class AcademicStudentInterceptor {
             AppUserType t = user.getType();
             if (t != null) {
                 if ("Student".equals(AppUserType.getCodeOrName(t))) {
-                    CorePlugin.get().userAddProfile(user.getId(), "Student");
+                    CorePlugin.get().addUserProfile(user.getId(), "Student");
                 }
             }
         }

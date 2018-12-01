@@ -58,7 +58,13 @@ public class CorePlugin {
     public static final String USER_ADMIN = "admin";
     public static final String PROFILE_ADMIN = "Admin";
     public static final String PROFILE_HEAD_OF_DEPARTMENT = "HeadOfDepartment";
-    public static final Set<String> ADMIN_ENTITIES = Collections.unmodifiableSet(new HashSet<>(Arrays.asList("Trace", "User", "UserProfile", "UserProfileBinding", "UserProfileRight")));
+    public static final Set<String> ADMIN_ENTITIES = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
+            AppTrace.class.getSimpleName(),
+            AppUser.class.getSimpleName(),
+            AppProfile.class.getSimpleName(),
+            AppUserProfileBinding.class.getSimpleName(),
+            AppProfileRight.class.getSimpleName())
+    ));
     public static final SimpleDateFormat NAME_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd-HH");
     private static final java.util.logging.Logger log = java.util.logging.Logger.getLogger(CorePlugin.class.getName());
     public static String FOLDER_MY_DOCUMENTS = "Mes Documents";
@@ -222,20 +228,20 @@ public class CorePlugin {
         return bodySecurityManager.addProfileRight(profileCode, rightName);
     }
 
-    public boolean userRemoveProfile(int userId, int profileId) {
-        return bodySecurityManager.userRemoveProfile(userId, profileId);
+    public boolean removeUserProfile(int userId, int profileId) {
+        return bodySecurityManager.removeUserProfile(userId, profileId);
     }
 
-    public boolean userAddProfile(int userId, String profileCode) {
-        return bodySecurityManager.userAddProfile(userId, profileCode);
+    public boolean addUserProfile(int userId, String profileCode) {
+        return bodySecurityManager.addUserProfile(userId, profileCode);
     }
 
-    public boolean userAddProfile(int userId, int profileId) {
-        return bodySecurityManager.userAddProfile(userId, profileId);
+    public boolean addUserProfile(int userId, int profileId) {
+        return bodySecurityManager.addUserProfile(userId, profileId);
     }
 
-    public boolean userHasProfile(int userId, String profileName) {
-        return bodySecurityManager.userHasProfile(userId, profileName);
+    public boolean isUserWithProfile(int userId, String profileName) {
+        return bodySecurityManager.isUserWithProfile(userId, profileName);
     }
 
     public Set<String> findUserRightsImmediate(int userId) {
@@ -390,16 +396,16 @@ public class CorePlugin {
         return bodySecurityManager.filterByProfilePattern(in, userId, login, filter);
     }
 
-    public boolean userMatchesProfileFilter(int userId, String profileExpr) {
-        return bodySecurityManager.userMatchesProfileFilter(userId, profileExpr);
+    public boolean isUserMatchesProfileFilter(int userId, String profileExpr) {
+        return bodySecurityManager.isUserMatchesProfileFilter(userId, profileExpr);
     }
 
-    public boolean userMatchesProfileFilter(String userLogin, String profileExpr) {
-        return bodySecurityManager.userMatchesProfileFilter(userLogin, profileExpr);
+    public boolean isUserMatchesProfileFilter(String userLogin, String profileExpr) {
+        return bodySecurityManager.isUserMatchesProfileFilter(userLogin, profileExpr);
     }
 
-    public boolean userMatchesProfileFilter(Integer userId, String login, String profile, String whereClause) {
-        return bodySecurityManager.userMatchesProfileFilter(userId, login, profile, whereClause);
+    public boolean isUserMatchesProfileFilter(Integer userId, String login, String profile, String whereClause) {
+        return bodySecurityManager.isUserMatchesProfileFilter(userId, login, profile, whereClause);
     }
 
     public List<String> autoCompleteUserOrProfile(String userOrProfile) {
@@ -418,13 +424,6 @@ public class CorePlugin {
         return bodySecurityManager.filterUsersByProfileFilter(users, profilePattern, userType);
     }
 
-    public List<AppUser> filterUsersBysContacts(List<AppContact> users) {
-        return bodySecurityManager.filterUsersBysContacts(users);
-    }
-
-    //    public List<AppContact> filterContactsByProfileFilter(List<AppContact> contacts, String profilePattern) {
-//        return bodySecurityManager.filterContactsByProfileFilter(contacts, profilePattern);
-//    }
     public List<AppUser> findUsersByProfileFilter(String profilePattern, Integer userType) {
         return bodySecurityManager.findUsersByProfileFilter(profilePattern, userType);
     }
@@ -459,8 +458,8 @@ public class CorePlugin {
         return bodyConfig.getCurrentConfig();
     }
 
-    public AppUser createUser(AppUser contact, int userTypeId, int departmentId, boolean attachToExistingUser, String[] defaultProfiles, VrPasswordStrategy passwordStrategy) {
-        return bodySecurityManager.createUser(contact, userTypeId, departmentId, attachToExistingUser, defaultProfiles, passwordStrategy);
+    public AppUser addUser(CreateUserInfo userInfo) {
+        return bodySecurityManager.addUser(userInfo);
     }
 
     public void passwd(String login, String oldPassword, String newPassword) {
@@ -715,6 +714,7 @@ public class CorePlugin {
     public void invalidateCache() {
         CorePluginSecurity.requireAdmin();
         cacheService.invalidate();
+        invalidateUserProfileMap();
     }
 
     public AppArticle findArticle(int articleId) {
@@ -1431,4 +1431,11 @@ public class CorePlugin {
         return dates;
     }
 
+    public UserProfileMap getUserProfileMap() {
+        return bodySecurityManager.getUserProfileMap();
+    }
+
+    public void invalidateUserProfileMap() {
+        bodySecurityManager.invalidateUserProfileMap();
+    }
 }

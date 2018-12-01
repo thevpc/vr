@@ -61,18 +61,17 @@ import java.text.MessageFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.faces.bean.ManagedBean;
 import net.vpc.app.vainruling.core.service.util.I18n;
-import net.vpc.app.vainruling.core.web.jsf.converters.EnumConverter;
 
 /**
  * @author taha.bensalah@gmail.com
  */
 @Scope(value = "singleton")
 @Controller
+@ManagedBean
 public class Vr {
 
     public static final Object NullSelected = new Object();

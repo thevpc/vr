@@ -293,7 +293,7 @@ and open the template in the editor.
                                     action="#{vr.gotoPageObjItem('AcademicTeacher',vr.str(teacherCourseLoadCtrl.model.currentTeacher.id))}"
                                     style="font-weight: bold"
                                     rendered="#{teacherCourseLoadCtrl.model.currentTeacher ne null}"
-                                    value="#{teacherCourseLoadCtrl.model.currentTeacher.user.fullName} - #{teacherCourseLoadCtrl.model.stat.val.teacher.degree.name} - #{teacherCourseLoadCtrl.model.stat.val.teacher.situation.name}  (#{teacherCourseLoadCtrl.teacherFilter.periodName}) "/>
+                                    value="#{teacherCourseLoadCtrl.model.currentTeacher.user.fullName} - #{teacherCourseLoadCtrl.model.stat.val.teacherPeriod.degree.name} - #{teacherCourseLoadCtrl.model.stat.val.teacherPeriod.situation.name}  (#{teacherCourseLoadCtrl.teacherFilter.periodName}) "/>
                             </h1>
                             <p:panelGrid rendered="#{teacherCourseLoadCtrl.model.currentTeacher ne null}">
                                 <p:row>
@@ -338,8 +338,7 @@ and open the template in the editor.
                                 </p:row>
 
                                 <p:row>
-                                    <!--  --> <p:column styleClass="ui-widget-header"><p:outputLabel
-                                            value="Charge Annuelle"/></p:column>
+                                    <!--  --> <p:column styleClass="ui-widget-header"><p:outputLabel value="Charge Annuelle"/></p:column>
                                     <!-- Semaines --> <p:column><p:outputLabel value=""/></p:column>
                                     <!-- C --> <p:column><p:outputLabel
                                             value="#{teacherCourseLoadCtrl.model.stat.val.value.c}"><f:convertNumber
@@ -595,7 +594,7 @@ and open the template in the editor.
                                                         update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
                                         </p:menuButton>
                                     </p:column>
-                                    <p:column headerText="Etat" width="3%">
+                                    <p:column headerText="Etat" width="5%">
                                         <ui:fragment rendered="#{i.currentAssigned}">
                                             <span class="fa fa-check" style="color:forestgreen" title="Assigné"></span>
                                         </ui:fragment>

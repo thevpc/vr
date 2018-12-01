@@ -277,8 +277,15 @@ public class AcademicPluginBodyTeachers extends AcademicPluginBody {
                 }
             }
         }
-        List<AcademicTeacher> ret = new ArrayList<>(visited.values());
-        ret.sort(Comparator.comparing(AcademicTeacher::resolveFullName));
+        List<AcademicTeacher> ret = new ArrayList<>(visited.size());
+        ret.sort(new Comparator<AcademicTeacher>() {
+            @Override
+            public int compare(AcademicTeacher o1, AcademicTeacher o2) {
+                String n1 = StringUtils.trim(o1==null?null:o1.resolveFullName());
+                String n2 = StringUtils.trim(o2==null?null:o2.resolveFullName());
+                return n1.compareTo(n2);
+            }
+        });
         return ret;
     }
 
@@ -510,11 +517,11 @@ public class AcademicPluginBodyTeachers extends AcademicPluginBody {
                         goodProfiles.remove(p.getId());
                         //ok
                     } else if (p.isCustom() && ("Department".equals(p.getCustomType()) || "AcademicClass".equals(p.getCustomType()) || "AcademicProgram".equals(p.getCustomType()))) {
-                        core.userRemoveProfile(u.getId(), p.getId());
+                        core.removeUserProfile(u.getId(), p.getId());
                     }
                 }
                 for (Integer toAdd : goodProfiles) {
-                    core.userAddProfile(u.getId(), toAdd);
+                    core.addUserProfile(u.getId(), toAdd);
                 }
             }
         }

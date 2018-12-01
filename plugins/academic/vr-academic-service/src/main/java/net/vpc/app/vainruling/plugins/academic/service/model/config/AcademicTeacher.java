@@ -238,7 +238,11 @@ public class AcademicTeacher {
 
     public String resolveFullName(){
         AppUser c = getUser();
-        return c==null?String.valueOf(getId()): c.getFullName();
+        String n=null;
+        if(c!=null){
+            n=c.getFullName();
+        }
+        return n==null?String.valueOf(getId()): n;
     }
 
     public String resolveFullTitle(){

@@ -5,11 +5,15 @@
  */
 package net.vpc.app.vainruling.core.service.callbacks;
 
+import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.cache.CacheService;
+import net.vpc.app.vainruling.core.service.model.AppProfile;
+import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.upa.Entity;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.UPA;
+import net.vpc.upa.events.EntityEvent;
 import net.vpc.upa.events.PersistEvent;
 import net.vpc.upa.events.RemoveEvent;
 import net.vpc.upa.events.UpdateEvent;
@@ -28,32 +32,17 @@ public class CacheServiceCallback {
 
     @OnPersist
     public void onPersist(PersistEvent event) {
-        PersistenceUnit pu = event.getPersistenceUnit();
-        Entity entity = event.getEntity();
-        CacheService.DomainCache service = getDomainCache(pu);
-        if (service != null) {
-            service.invalidate(entity, event.getPersistedDocument());
-        }
+        invalidateCache(event, event.getPersistedDocument());
     }
 
     @OnUpdate
     public void onUpdate(UpdateEvent event) {
-        PersistenceUnit pu = event.getPersistenceUnit();
-        CacheService.DomainCache service = getDomainCache(pu);
-        Entity entity = event.getEntity();
-        if (service != null) {
-            service.invalidate(entity, event.getUpdatesDocument());
-        }
+        invalidateCache(event, event.getUpdatesDocument());
     }
 
     @OnRemove
     public void onRemove(RemoveEvent event) {
-        PersistenceUnit pu = event.getPersistenceUnit();
-        CacheService.DomainCache service = getDomainCache(pu);
-        Entity entity = event.getEntity();
-        if (service != null) {
-            service.invalidate(entity, event.getFilterExpression());
-        }
+        invalidateCache(event, event.getFilterExpression());
     }
 
 
@@ -64,7 +53,22 @@ public class CacheServiceCallback {
         } catch (Exception e) {
             //
         }
-        return trace==null?null:trace.getDomainCache(pu);
+        return trace == null ? null : trace.getDomainCache(pu);
+    }
+
+    private void invalidateCache(EntityEvent event, Object d) {
+        PersistenceUnit pu = event.getPersistenceUnit();
+        Entity entity = event.getEntity();
+        CacheService.DomainCache service = getDomainCache(pu);
+        if (service != null) {
+            service.invalidate(entity, d);
+        }
+        if (
+                entity.getClass().equals(AppProfile.class)
+                        || entity.getClass().equals(AppUser.class)
+                ) {
+            CorePlugin.get().invalidateUserProfileMap();
+        }
     }
 
 }

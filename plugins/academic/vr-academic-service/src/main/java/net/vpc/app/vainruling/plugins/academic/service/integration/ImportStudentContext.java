@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package net.vpc.app.vainruling.plugins.academic.service.helper;
+package net.vpc.app.vainruling.plugins.academic.service.integration;
 
 import java.util.Map;
 import net.vpc.app.vainruling.core.service.model.AppCompany;
@@ -18,11 +18,11 @@ import net.vpc.app.vainruling.plugins.academic.service.helper.parsers.AppGenderP
  */
 public class ImportStudentContext {
     
-    AppGenderParser genders = new AppGenderParser();
-    AppCivilityParser civilities = new AppCivilityParser();
-    Map<String, AppProfile> profiles;
-    AppCompany mainCompany;
-    AppPeriod mainPeriod;
+    private AppGenderParser genders = new AppGenderParser();
+    private AppCivilityParser civilities = new AppCivilityParser();
+    private Map<String, AppProfile> profiles;
+    private AppCompany mainCompany;
+    private AppPeriod mainPeriod;
     private boolean simulate;
 
     public Map<String, AppProfile> getProfiles() {
@@ -59,5 +59,22 @@ public class ImportStudentContext {
     public void setSimulate(boolean simulate) {
         this.simulate = simulate;
     }
-    
+
+    public AppGenderParser getGenders() {
+        return genders;
+    }
+
+    public ImportStudentContext setGenders(AppGenderParser genders) {
+        this.genders = genders;
+        return this;
+    }
+
+    public AppCivilityParser getCivilities() {
+        return civilities;
+    }
+
+    public ImportStudentContext setCivilities(AppCivilityParser civilities) {
+        this.civilities = civilities;
+        return this;
+    }
 }

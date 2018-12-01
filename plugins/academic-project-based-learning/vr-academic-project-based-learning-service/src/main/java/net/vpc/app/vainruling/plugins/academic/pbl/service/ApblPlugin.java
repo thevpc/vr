@@ -797,7 +797,7 @@ public class ApblPlugin {
                 if (!StringUtils.isEmpty(constraint.getProfiles()) && (constraint.getMinCount() > 0 || constraint.getMaxCount() > 0)) {
                     int count = 0;
                     for (Integer user : memberUsers) {
-                        if (core.userMatchesProfileFilter(user, constraint.getProfiles())) {
+                        if (core.isUserMatchesProfileFilter(user, constraint.getProfiles())) {
                             count++;
                         }
                     }
@@ -833,7 +833,7 @@ public class ApblPlugin {
                 if (!StringUtils.isEmpty(constraint.getProfiles()) && (constraint.getMinCount() > 0 || constraint.getMaxCount() > 0)) {
                     int count = 0;
                     for (Integer user : memberUsers) {
-                        if (core.userMatchesProfileFilter(user, constraint.getProfiles())) {
+                        if (core.isUserMatchesProfileFilter(user, constraint.getProfiles())) {
                             count++;
                         }
                     }
@@ -857,7 +857,7 @@ public class ApblPlugin {
                 if (!StringUtils.isEmpty(constraint.getProfiles()) && (constraint.getMinCount() > 0 || constraint.getMaxCount() > 0)) {
                     int count = 0;
                     for (Integer user : memberUsers) {
-                        if (core.userMatchesProfileFilter(user, constraint.getProfiles())) {
+                        if (core.isUserMatchesProfileFilter(user, constraint.getProfiles())) {
                             count++;
                         }
                     }
@@ -1268,25 +1268,25 @@ public class ApblPlugin {
                     return true;
                 }
                 if (currentStudent != null && currentStudent.getUser() != null) {
-                    return core.userMatchesProfileFilter(currentStudent.getUser().getId(), value.getMemberProfiles())
-                            || core.userMatchesProfileFilter(currentStudent.getUser().getId(), value.getTeamOwnerProfiles());
+                    return core.isUserMatchesProfileFilter(currentStudent.getUser().getId(), value.getMemberProfiles())
+                            || core.isUserMatchesProfileFilter(currentStudent.getUser().getId(), value.getTeamOwnerProfiles());
                 }
                 //if any other user but not teacher or student, check it fulfills any of the other profiles
                 if (currentUser != null) {
                     if (!StringUtils.isEmpty(value.getMemberProfiles())
-                            && core.userMatchesProfileFilter(currentUser.getId(), value.getMemberProfiles())) {
+                            && core.isUserMatchesProfileFilter(currentUser.getId(), value.getMemberProfiles())) {
                         return true;
                     }
                     if (!StringUtils.isEmpty(value.getTeamOwnerProfiles())
-                            && core.userMatchesProfileFilter(currentUser.getId(), value.getTeamOwnerProfiles())) {
+                            && core.isUserMatchesProfileFilter(currentUser.getId(), value.getTeamOwnerProfiles())) {
                         return true;
                     }
                     if (!StringUtils.isEmpty(value.getCoachProfiles())
-                            && core.userMatchesProfileFilter(currentUser.getId(), value.getCoachProfiles())) {
+                            && core.isUserMatchesProfileFilter(currentUser.getId(), value.getCoachProfiles())) {
                         return true;
                     }
                     if (!StringUtils.isEmpty(value.getProjectOwnerProfiles())
-                            && core.userMatchesProfileFilter(currentUser.getId(), value.getProjectOwnerProfiles())) {
+                            && core.isUserMatchesProfileFilter(currentUser.getId(), value.getProjectOwnerProfiles())) {
                         return true;
                     }
                 }

@@ -42,7 +42,7 @@ public class VrFS extends FileACLVirtualFileSystem {
 
     @Override
     public ACLPermission userMatchesProfileFilter(String login, String profile) {
-        return VrApp.getBean(CorePlugin.class).userMatchesProfileFilter(null, login, profile, null) ? ACLPermission.GRANT : ACLPermission.DENY;
+        return VrApp.getBean(CorePlugin.class).isUserMatchesProfileFilter(null, login, profile, null) ? ACLPermission.GRANT : ACLPermission.DENY;
     }
 
 }

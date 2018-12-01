@@ -7,6 +7,8 @@ package net.vpc.app.vainruling.plugins.academic.service.stat;
 
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSemester;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
+import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacherSituation;
+import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicTeacherDegree;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -19,6 +21,14 @@ public class TeacherSemesterStat extends TeacherBaseStat {
     private LoadValue confirmedTeacherAssignment = new LoadValue();
 
     public TeacherSemesterStat() {
+    }
+
+    public AcademicTeacherSituation getTeacherSituation() {
+        return teacherStat.getTeacherSituation();
+    }
+
+    public AcademicTeacherDegree getTeacherDegree() {
+        return teacherStat.getTeacherDegree();
     }
 
     public AcademicSemester getSemester() {

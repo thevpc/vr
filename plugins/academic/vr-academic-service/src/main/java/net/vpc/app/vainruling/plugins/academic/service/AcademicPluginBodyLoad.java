@@ -293,10 +293,7 @@ public class AcademicPluginBodyLoad extends AcademicPluginBody {
         if (td == null) {
             td = new AcademicTeacherDegree();
         }
-        AcademicTeacherSituation ts = teacher_stat.getTeacherPeriod().getSituation();
-        if (ts == null) {
-            ts = teacher.getSituation();
-        }
+        AcademicTeacherSituation ts = teacher_stat.getTeacherSituation();
         if (ts == null) {
             ts = new AcademicTeacherSituation();
             ts.setType(AcademicTeacherSituationType.TEMPORARY);
@@ -560,11 +557,12 @@ public class AcademicPluginBodyLoad extends AcademicPluginBody {
             //TODO
             teacherSemesterStats.add(e);
         }
-        ghost.setSemesters(teacherSemesterStats.toArray(new TeacherSemesterStat[teacherSemesterStats.size()]));
+        ghost.setSemesters(teacherSemesterStats.toArray(new TeacherSemesterStat[0]));
         ghost.setTeacherPeriod(getContext().getPlugin().findAcademicTeacherPeriod(periodId, ghost.getTeacher()));
+        AcademicTeacherPeriod trs = getContext().getPlugin().findAcademicTeacherPeriod(periodId, teacher);
         ghost.setPopulation(new TeacherValuePopulation(
-                teacher.getSituation(),
-                teacher.getDegree(),
+                trs==null || trs.getSituation() ==null ?  teacher.getSituation():trs.getSituation(),
+                trs==null || trs.getDegree() ==null ?  teacher.getDegree():trs.getDegree(),
                 teacher.getOfficialDiscipline()
         ));
         ghost.setCourseAssignmentFilter(courseAssignmentFilter);
@@ -1135,8 +1133,8 @@ public class AcademicPluginBodyLoad extends AcademicPluginBody {
                     }
                     teacherSemesterStats.add(semesterStat);
                 }
-                AcademicTeacherSituation situation = stat.getTeacher().getSituation();
-                AcademicTeacherDegree degree = stat.getTeacher().getDegree();
+                AcademicTeacherSituation situation = stat.getTeacherSituation();
+                AcademicTeacherDegree degree = stat.getTeacherDegree();
                 AcademicOfficialDiscipline discipline = stat.getTeacher().getOfficialDiscipline();
                 AppDepartment department = stat.getTeacher().getUser().getDepartment();
                 String k = "";
@@ -1198,8 +1196,8 @@ public class AcademicPluginBodyLoad extends AcademicPluginBody {
                 emptyPopulation.addValue(stat.getTeacher(), 0);
                 //should ignore it?
             } else {
-                AcademicTeacherSituation situation = stat.getTeacher().getSituation();
-                AcademicTeacherDegree degree = stat.getTeacher().getDegree();
+                AcademicTeacherSituation situation = stat.getTeacherSituation();
+                AcademicTeacherDegree degree = stat.getTeacherDegree();
                 AppDepartment department = stat.getTeacher().getUser().getDepartment();
                 AcademicOfficialDiscipline discipline = stat.getTeacher().getOfficialDiscipline();
 

@@ -238,10 +238,10 @@ class CorePluginBodyContentManager extends CorePluginBody {
             return null;
         }
         List<AppArticle> ok = filterArticles(Arrays.asList(a));
-        if(ok.isEmpty()){
+        if (ok.isEmpty()) {
             return null;
         }
-        a=ok.get(0);
+        a = ok.get(0);
 
         String aname = a.getLinkText();
         String aurl = a.getLinkURL();
@@ -336,8 +336,12 @@ class CorePluginBodyContentManager extends CorePluginBody {
 //    }
     public List<FullArticle> findFullArticlesByDisposition(String group, String disposition) {
         if (group == null) {
-            UserSession userSession = getContext().getCorePlugin().getCurrentSession();
-            group = userSession == null ? null : userSession.getSelectedSiteFilter();
+            if (!getContext().getCorePlugin().isStarted()) {
+                group = "";
+            } else {
+                UserSession userSession = getContext().getCorePlugin().getCurrentSession();
+                group = userSession == null ? null : userSession.getSelectedSiteFilter();
+            }
         }
         if (StringUtils.isEmpty(group)) {
             group = "";

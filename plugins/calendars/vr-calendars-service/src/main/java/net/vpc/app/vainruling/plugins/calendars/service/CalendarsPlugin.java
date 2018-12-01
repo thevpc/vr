@@ -25,6 +25,7 @@ import net.vpc.common.util.MutableDate;
 import net.vpc.upa.Action;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.UPA;
+import net.vpc.upa.VoidAction;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -314,7 +315,7 @@ public class CalendarsPlugin {
         return findMyPrivateEventCalendar();
     }
 
-    public AppCalendar findMyPrivateEventCalendar() {
+public AppCalendar findMyPrivateEventCalendar() {
         AppUser me = core.getCurrentUser();
         String c = (String) core.getAppPropertyValue("vr-calendars.DefaultCalendar", me.getLogin());
         if (!StringUtils.isEmpty(c)) {
@@ -332,7 +333,14 @@ public class CalendarsPlugin {
             ca.setName("Calendrier de " + me.getFullName());
             ca.setOwner(me);
             ca.setReadUserFilter(me);
-            UPA.getPersistenceUnit().persist(ca);
+            AppCalendar ca2=ca;
+            UPA.getContext().invokePrivileged(new VoidAction() {
+                @Override
+                public void run() {
+                    UPA.getPersistenceUnit().persist(ca2);
+                }
+
+            });
         }
         return ca;
     }

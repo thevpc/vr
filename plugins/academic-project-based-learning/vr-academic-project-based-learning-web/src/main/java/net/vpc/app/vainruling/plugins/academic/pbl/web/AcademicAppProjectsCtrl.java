@@ -196,7 +196,7 @@ public class AcademicAppProjectsCtrl {
             currentJoinAnyAllowed = false;
             currentLockAllowed = false;
             if (session != null) {
-                currentAddProjectAllowed = core.userMatchesProfileFilter(currentUser.getId(), session.getProjectOwnerProfiles());
+                currentAddProjectAllowed = core.isUserMatchesProfileFilter(currentUser.getId(), session.getProjectOwnerProfiles());
                 if (currentAddProjectAllowed) {
                     if (session.getStatus() != null && !session.getStatus().isAllowAddProject()) {
                         currentAddProjectAllowed = false;
@@ -207,7 +207,7 @@ public class AcademicAppProjectsCtrl {
                         currentAddProjectAllowed = false;
                     }
                 }
-                currentAddTeamAllowed = core.userMatchesProfileFilter(currentUser.getId(), session.getTeamOwnerProfiles());
+                currentAddTeamAllowed = core.isUserMatchesProfileFilter(currentUser.getId(), session.getTeamOwnerProfiles());
                 if (currentAddTeamAllowed) {
                     if (session.getStatus() != null && !session.getStatus().isAllowAddTeam()) {
                         currentAddTeamAllowed = false;
@@ -220,14 +220,14 @@ public class AcademicAppProjectsCtrl {
                 }
 
                 if (currentTeacher != null && currentTeacher.getUser() != null) {
-                    currentJoinAnyAllowed = core.userMatchesProfileFilter(currentTeacher.getUser().getId(), session.getCoachProfiles());
+                    currentJoinAnyAllowed = core.isUserMatchesProfileFilter(currentTeacher.getUser().getId(), session.getCoachProfiles());
                     if (currentJoinAnyAllowed) {
                         if (session.getStatus() != null && !session.getStatus().isAllowAddCoach()) {
                             currentJoinAnyAllowed = false;
                         }
                     }
                 } else if (currentStudent != null && currentStudent.getUser() != null) {
-                    currentJoinAnyAllowed = core.userMatchesProfileFilter(currentStudent.getUser().getId(), session.getMemberProfiles());
+                    currentJoinAnyAllowed = core.isUserMatchesProfileFilter(currentStudent.getUser().getId(), session.getMemberProfiles());
                     if (currentJoinAnyAllowed) {
                         if (session.getStatus() != null && !session.getStatus().isAllowAddMember()) {
                             currentJoinAnyAllowed = false;

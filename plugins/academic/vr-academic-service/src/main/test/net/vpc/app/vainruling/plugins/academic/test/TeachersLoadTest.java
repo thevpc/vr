@@ -9,7 +9,7 @@ import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.util.CourseAssignmentFilter;
-import net.vpc.app.vainruling.plugins.academic.service.helper.XlsxLoadImporter;
+import net.vpc.app.vainruling.plugins.academic.service.integration.XlsxLoadImporter;
 import net.vpc.upa.Action;
 import net.vpc.upa.UPA;
 import org.springframework.stereotype.Service;

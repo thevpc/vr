@@ -256,7 +256,7 @@ class CorePluginBodyFileSystem extends CorePluginBody {
                             }
                             for (VrFSEntry e : t.getEntriesByType("Profile")) {
                                 //if (isComplexProfileExpr(e.getFilterName())) {
-                                if (getContext().getCorePlugin().userMatchesProfileFilter(u.getId(), e.getFilterName())) {
+                                if (getContext().getCorePlugin().isUserMatchesProfileFilter(u.getId(), e.getFilterName())) {
                                     try {
                                         mountSubFS(mfs, e);
                                     } catch (IOException ex) {

@@ -6,7 +6,9 @@
 package net.vpc.app.vainruling.plugins.academic.service.stat;
 
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
+import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacherSituation;
 import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseAssignmentInfo;
+import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicTeacherDegree;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -183,4 +185,8 @@ public abstract class TeacherBaseStat {
     public void setAssignments(List<AcademicCourseAssignmentInfo> assignments) {
         this.assignments = assignments;
     }
+
+    public abstract AcademicTeacherSituation getTeacherSituation() ;
+
+    public abstract AcademicTeacherDegree getTeacherDegree() ;
 }
