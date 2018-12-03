@@ -924,10 +924,9 @@ class CorePluginBodySecurityManager extends CorePluginBody {
         if (foundProfileNames == null) {
             foundProfileNames = new HashSet<>();
         }
-        InSetEvaluator evaluator = createProfilesEvaluator(foundProfileNames);
         boolean b = false;
         try {
-            b = evaluator.evaluateExpression(profileExpr.getProfileListExpression());
+            b = SimpleJavaEvaluator.INSTANCE.evaluateExpression(profileExpr.getProfileListExpression(), foundProfileNames);
         } catch (Exception e) {
             //error
         }
@@ -941,10 +940,6 @@ class CorePluginBodySecurityManager extends CorePluginBody {
 
     public boolean isUserMatchesProfileFilter(Integer userId, String login, String profile, String whereClause) {
         return isUserMatchesProfileFilter(userId, login, profile, whereClause, null);
-    }
-
-    private InSetEvaluator createProfilesEvaluator(final Set<String> profiles) {
-        return new SimpleJavaEvaluator(profiles);
     }
 
     public <T> List<T> filterByProfilePattern(List<T> in, Integer userId, String login, ProfilePatternFilter<T> filter) {

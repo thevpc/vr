@@ -35,23 +35,24 @@ public class TestEval {
 //        Assert.assertFalse(s.evaluateExpression("),abdelaziz.theboss"));
 //    }
     public static void main(String[] args) {
-        int max=1000;
+        Chronometer c0 = new Chronometer();
+        int max=10000;
         for (int i = 0; i < max; i++) {
             System.out.println("============================ "+(i+1)+"/"+max);
             Chronometer c = new Chronometer();
-            SimpleJavaEvaluator s = new SimpleJavaEvaluator(new HashSet<>(Arrays.asList("theboss", "titi", "MsGT")));
-//            System.out.println("new  :"+c);
-            boolean t = s.evaluateExpression("( jamel.belhadjtaher,aref.meddeb,taha.bensalah,IA,MasterGT,MsGT ) , taha.bensalah");
+              System.out.println("new  :"+c);
+            boolean t = SimpleJavaEvaluator.INSTANCE.evaluateExpression("( jamel.belhadjtaher,aref.meddeb,taha.bensalah,IA,MasterGT,MsGT ) , taha.bensalah", new HashSet<>(Arrays.asList("theboss", "titi", "MsGT")));
             c.stop();
-            System.out.println("eval :"+c);
+            System.out.println("eval :"+c+" ==> "+t);
         }
+        c0.stop();
+        System.out.println(c0);
     }
 
     @Test
     public void testSimpleJavaEvaluator2() {
         Chronometer c = new Chronometer();
-        SimpleJavaEvaluator s = new SimpleJavaEvaluator(new HashSet<>(Arrays.asList("theboss", "titi", "MsGT")));
-        boolean t = s.evaluateExpression("( jamel.belhadjtaher,aref.meddeb,taha.bensalah,IA,MasterGT,MsGT ) , taha.bensalah");
+        boolean t = SimpleJavaEvaluator.INSTANCE.evaluateExpression("( jamel.belhadjtaher,aref.meddeb,taha.bensalah,IA,MasterGT,MsGT ) , taha.bensalah", new HashSet<>(Arrays.asList("theboss", "titi", "MsGT")));
         c.stop();
         System.out.println(c);
         Assert.assertTrue(t);

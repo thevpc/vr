@@ -26,6 +26,9 @@ public class EntityConverter implements Converter {
             return Vr.NullSelected;
         }
         Object o = VrUPAUtils.jsonToObj(value, e.getDataType());
+        if(o==null){
+            return null;
+        }
         Object oo = e.findById(e.getBuilder().objectToId(o));
         return oo;
     }

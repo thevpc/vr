@@ -1,20 +1,15 @@
 package net.vpc.app.vainruling.core.service.util;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import net.vpc.common.jeep.*;
-import net.vpc.common.jeep.nodes.ExpressionNodeVariableName;
 import net.vpc.common.strings.StringUtils;
 
 /**
  * Created by vpc on 4/16/17.
  */
 public class SimpleJavaEvaluator implements InSetEvaluator {
-
+    public static final InSetEvaluator INSTANCE=new SimpleJavaEvaluator();
     public static class ExtraHelper {
 
         public static boolean add(boolean a, boolean b) {
@@ -26,16 +21,11 @@ public class SimpleJavaEvaluator implements InSetEvaluator {
         }
     }
 
-    private final DefaultExpressionEvaluator evaluator;
+    private final DefaultExpressionManager evaluator;
 
-    private Set<String> items;
 
-    public SimpleJavaEvaluator(Set<String> set) {
-        this.items = new HashSet<>();
-        for (String string : set) {
-            this.items.add(StringUtils.normalizeString(string).toLowerCase());
-        }
-        evaluator = new DefaultExpressionEvaluator();
+    public SimpleJavaEvaluator() {
+        evaluator = new DefaultExpressionManager();
         ExpressionStreamTokenizerConfig tokenizerConfig = new ExpressionStreamTokenizerConfig();
         tokenizerConfig.setAcceptIntNumber(false);
         tokenizerConfig.setAcceptFloatNumber(false);
@@ -85,14 +75,25 @@ public class SimpleJavaEvaluator implements InSetEvaluator {
         evaluator.addResolver(new ExpressionEvaluatorResolver() {
             //if the var was not found, assume it is a 'false'
             @Override
-            public Variable resolveVariable(String name, ExpressionEvaluator context) {
-                return JeepFactory.createVar(name, false);
+            public Variable resolveVariable(String name, ExpressionManager context) {
+                return new ReadOnlyVariable(name) {
+                    @Override
+                    public Class getType() {
+                        return Boolean.TYPE;
+                    }
+
+                    @Override
+                    public Object getValue(ExpressionEvaluator evaluator) {
+                        Set<String> set=(Set<String>) evaluator.getUserProperties().get("set");
+                        return set.contains(name);
+                    }
+                };
             }
 
             //if the function was not found, assume it is an 'or'
             // X(Y,Z) becomes X||Y||Z
             @Override
-            public Function resolveFunction(String name, ExpressionNode[] args, ExpressionEvaluator context) {
+            public Function resolveFunction(String name, ExpressionNode[] args, ExpressionManager context) {
                 List<ExpressionNode> all = new ArrayList<ExpressionNode>();
                 all.add(JeepFactory.createNameNode(name, Boolean.TYPE));
                 all.addAll(Arrays.asList(args));
@@ -101,7 +102,7 @@ public class SimpleJavaEvaluator implements InSetEvaluator {
                     @Override
                     public Object evaluate(ExpressionNode[] args, ExpressionEvaluator evaluator) {
                         for (ExpressionNode arg : args) {
-                            if (JeepUtils.convertToBoolean(evaluator.evaluate(arg))) {
+                            if (JeepUtils.convertToBoolean(arg.evaluate(evaluator))) {
                                 return true;
                             }
                         }
@@ -110,16 +111,21 @@ public class SimpleJavaEvaluator implements InSetEvaluator {
                 };
             }
         });
-        for (String item : items) {
-            evaluator.declareVar(item, Boolean.TYPE, true);
-        }
     }
 
     @Override
-    public boolean evaluateExpression(String expression) {
+    public boolean evaluateExpression(String expression, Collection<String> set) {
+        Set<String> items = new HashSet<>();
+        for (String string : set) {
+            items.add(StringUtils.normalizeString(string).toLowerCase());
+        }
+
         expression = StringUtils.normalizeString(expression).toLowerCase();
         try {
-            return JeepUtils.convertToBoolean(evaluator.evaluate(expression));
+            ExpressionEvaluator expressionEvaluator = evaluator.createEvaluator(expression);
+            expressionEvaluator.getUserProperties().put("set",items);
+            //should i prepare var here !!
+            return JeepUtils.convertToBoolean(expressionEvaluator.evaluate());
         } catch (Exception ex) {
             return false;
         }

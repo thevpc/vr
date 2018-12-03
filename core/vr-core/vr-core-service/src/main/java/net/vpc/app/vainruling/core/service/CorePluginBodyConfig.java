@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.logging.FileHandler;
+
 import net.vpc.common.util.Convert;
 import net.vpc.common.util.IntegerParserConfig;
 
@@ -118,8 +119,8 @@ class CorePluginBodyConfig extends CorePluginBody {
         }
         String t = p.getPropertyType();
         String v = p.getPropertyValue();
-        if(StringUtils.isEmpty(t)){
-            t="string";
+        if (StringUtils.isEmpty(t)) {
+            t = "string";
         }
         if ("null".equalsIgnoreCase(t)) {
             return null;
@@ -253,12 +254,15 @@ class CorePluginBodyConfig extends CorePluginBody {
     public Object getOrCreateAppPropertyValue(String propertyName, String userLogin, Object value) {
         AppProperty p = getAppProperty(propertyName, userLogin);
         if (p != null) {
-            if (p.isEnabled()) {
-                Object v = getAppPropertyValue(p);
-                if (v != null) {
-                    return v;
-                }
+//            if (p.isEnabled()) {
+            Object v = getAppPropertyValue(p);
+            if (v instanceof String && v.toString().trim().isEmpty()) {
+                v=null;
             }
+            if (v != null) {
+                return v;
+            }
+//            }
         }
         if (value != null) {
             setAppProperty(propertyName, userLogin, value);
@@ -416,6 +420,7 @@ class CorePluginBodyConfig extends CorePluginBody {
         });
 
     }
+
     public boolean existsUserPhoto(int id) {
         return UPA.getContext().invokePrivileged(new Action<Boolean>() {
             @Override
@@ -497,11 +502,11 @@ class CorePluginBodyConfig extends CorePluginBody {
         String login = getContext().getCorePlugin().getCurrentUserLogin();
         if (login != null) {
             UPA.getContext().invokePrivileged(new VoidAction() {
-                @Override
-                public void run() {
-                    setAppProperty("System.DefaultPublicTheme", login, theme);
-                }
-            }
+                                                  @Override
+                                                  public void run() {
+                                                      setAppProperty("System.DefaultPublicTheme", login, theme);
+                                                  }
+                                              }
             );
 
         }
@@ -511,11 +516,11 @@ class CorePluginBodyConfig extends CorePluginBody {
         String login = getContext().getCorePlugin().getCurrentUserLogin();
         if (login != null) {
             UPA.getContext().invokePrivileged(new VoidAction() {
-                @Override
-                public void run() {
-                    setAppProperty("System.DefaultPrivateTheme", login, theme);
-                }
-            }
+                                                  @Override
+                                                  public void run() {
+                                                      setAppProperty("System.DefaultPrivateTheme", login, theme);
+                                                  }
+                                              }
             );
 
         }

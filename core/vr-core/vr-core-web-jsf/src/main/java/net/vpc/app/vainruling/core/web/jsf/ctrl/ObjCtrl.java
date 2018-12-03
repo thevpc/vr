@@ -1307,7 +1307,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
         if (viewContext.getProperties().get("enabled") != null && !((Boolean) viewContext.getProperties().get("enabled"))) {
             enabled0 = false;
         }
-        if (getModel().getDisabledFields().contains(field.getName())) {
+        if (getModel().getDisabledFields().contains(field.getName()) || !enabled0) {
             config.put("enabled", false);
         } else {
             String cond = UPAObjectHelper.findStringProperty(field, UIConstants.Form.ENABLED_CONDITION, null, null);
@@ -1344,33 +1344,53 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
     }
 
     public void updatePropertyViews() {
+        boolean forceDisabled=false;
+        Entity e = getEntity();
+        if (e == null) {
+            forceDisabled=true;
+        }else {
+            switch (getModel().getMode()) {
+                case PERSIST: {
+                    forceDisabled=e.getShield().isPersistSupported() && e.getShield().isPersistEnabled();
+                    break;
+                }
+                case UPDATE: {
+                    forceDisabled=e.getShield().isUpdateSupported() && e.getShield().isUpdateEnabled();
+                    break;
+                }
+            }
+        }
         for (PropertyView propertyView : getProperties()) {
-            updatePropertyView(propertyView);
+            updatePropertyView(propertyView,forceDisabled);
         }
     }
 
-    private void updatePropertyView(PropertyView p) {
+    private void updatePropertyView(PropertyView p,boolean forceDisabled) {
         Document currentDocument = getModel().getCurrentDocument();
         if (p instanceof FieldPropertyView) {
             Field field = ((FieldPropertyView) p).getField();
-            if (getModel().getDisabledFields().contains(field.getName())) {
+            if(forceDisabled){
                 p.setDisabled(true);
-            } else {
-                String cond = UPAObjectHelper.findStringProperty(field, UIConstants.Form.ENABLED_CONDITION, null, null);
-                if (!StringUtils.isEmpty(cond)) {
-                    JavascriptEvaluator jse = new JavascriptEvaluator(cond);
-                    boolean enabled = (boolean) jse.eval(currentDocument);
-                    p.setDisabled(!enabled);
+            }else {
+                if (getModel().getDisabledFields().contains(field.getName())) {
+                    p.setDisabled(true);
+                } else {
+                    String cond = UPAObjectHelper.findStringProperty(field, UIConstants.Form.ENABLED_CONDITION, null, null);
+                    if (!StringUtils.isEmpty(cond)) {
+                        JavascriptEvaluator jse = new JavascriptEvaluator(cond);
+                        boolean enabled = (boolean) jse.eval(currentDocument);
+                        p.setDisabled(!enabled);
+                    }
                 }
             }
-            {
-                String cond = UPAObjectHelper.findStringProperty(field, UIConstants.Form.VISIBLE_CONDITION, null, null);
-                if (!StringUtils.isEmpty(cond)) {
-                    JavascriptEvaluator jse = new JavascriptEvaluator(cond);
-                    boolean visible = (boolean) jse.eval(currentDocument);
-                    p.setVisible(visible);
-                }
+
+            String cond = UPAObjectHelper.findStringProperty(field, UIConstants.Form.VISIBLE_CONDITION, null, null);
+            if (!StringUtils.isEmpty(cond)) {
+                JavascriptEvaluator jse = new JavascriptEvaluator(cond);
+                boolean visible = (boolean) jse.eval(currentDocument);
+                p.setVisible(visible);
             }
+
         }
 
     }

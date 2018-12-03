@@ -715,6 +715,7 @@ public class CorePlugin {
         CorePluginSecurity.requireAdmin();
         cacheService.invalidate();
         invalidateUserProfileMap();
+        UPA.getPersistenceUnit().invalidateCache();
     }
 
     public AppArticle findArticle(int articleId) {

@@ -251,16 +251,16 @@ class CorePluginBodyFileSystem extends CorePluginBody {
                         }
 
                         for (VrFSTable t : all) {
-                            for (VrFSEntry e : t.getEntries(login, "User")) {
-                                mfs.mount("/" + e.getMountPoint(), getRootFileSystem0().subfs(e.getLinkPath()));
-                            }
-                            for (VrFSEntry e : t.getEntriesByType("Profile")) {
-                                //if (isComplexProfileExpr(e.getFilterName())) {
-                                if (getContext().getCorePlugin().isUserMatchesProfileFilter(u.getId(), e.getFilterName())) {
-                                    try {
-                                        mountSubFS(mfs, e);
-                                    } catch (IOException ex) {
-                                        log.log(Level.SEVERE, null, ex);
+                            for (VrFSEntry e : t.getEntries()) {
+                                if(login.equalsIgnoreCase(StringUtils.trim(e.getAllowedUsers()))){
+                                    mfs.mount("/" + e.getMountPoint(), getRootFileSystem0().subfs(e.getLinkPath()));
+                                }else {
+                                    if (getContext().getCorePlugin().isUserMatchesProfileFilter(u.getId(), e.getAllowedUsers())) {
+                                        try {
+                                            mountSubFS(mfs, e);
+                                        } catch (IOException ex) {
+                                            log.log(Level.SEVERE, null, ex);
+                                        }
                                     }
                                 }
                                 //}
@@ -322,7 +322,7 @@ class CorePluginBodyFileSystem extends CorePluginBody {
                         }
                         mfs = VFS.createMountableFS("profile:" + profileCode);
                         mfs.mount("/", pfs);
-                        for (VrFSEntry e : t2.getEntries(profileCode, "Profile")) {
+                        for (VrFSEntry e : t2.getEntriesByAllowedUsers(profileCode)) {
                             MountableFS finalMfs = mfs;
                             UPA.getContext().invokePrivileged(new VoidAction() {
 
@@ -388,9 +388,8 @@ class CorePluginBodyFileSystem extends CorePluginBody {
             VrFSTable table = getUserVrFSTable(userId);
             String lp = entry.getLinkPath();
             for (VrFSEntry e : table.getEntries()) {
-                if (e.getLinkPath().equals(lp)) {
-                    e.setFilterName(entry.getFilterName());
-                    e.setFilterType(entry.getFilterType());
+                if (Objects.equals(e.getLinkPath(),lp)) {
+                    e.setAllowedUsers(entry.getAllowedUsers());
                     e.setLinkPath(entry.getLinkPath());
                     e.setMountPoint(entry.getMountPoint());
                     saveUserVrFSTable(userId, table);
@@ -398,8 +397,7 @@ class CorePluginBodyFileSystem extends CorePluginBody {
                 }
             }
             VrFSEntry e = new VrFSEntry();
-            e.setFilterName(entry.getFilterName());
-            e.setFilterType(entry.getFilterType());
+            e.setAllowedUsers(entry.getAllowedUsers());
             e.setLinkPath(entry.getLinkPath());
             e.setMountPoint(entry.getMountPoint());
             table.addEntry(e);

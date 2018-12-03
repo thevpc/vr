@@ -17,6 +17,12 @@ import java.sql.Timestamp;
  */
 @Entity(listOrder = "this.propertyName")
 @Path("Admin/Config")
+@Properties(
+        {
+                @Property(name = "ui.auto-filter.propertyName", value = "{expr='this.propertyName',order=1}")
+                ,
+                @Property(name = "ui.auto-filter.user", value = "{expr='this.user',order=2}")
+        })
 public class AppProperty {
 
     @Path("Main")

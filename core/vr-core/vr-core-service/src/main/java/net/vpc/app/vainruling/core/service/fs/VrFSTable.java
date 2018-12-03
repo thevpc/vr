@@ -126,14 +126,11 @@ public class VrFSTable {
                 }
                 if (values.size() > 0) {
                     VrFSEntry e = new VrFSEntry();
-                    e.setFilterType(values.get(0));
+                    e.setMountPoint(values.get(0));
                     if (values.size() > 1) {
-                        e.setFilterName(values.get(1));
+                        e.setLinkPath(values.get(1));
                         if (values.size() > 2) {
-                            e.setMountPoint(values.get(2));
-                            if (values.size() > 3) {
-                                e.setLinkPath(values.get(3));
-                            }
+                            e.setAllowedUsers(values.get(2));
                         }
                     }
                     return e;
@@ -144,7 +141,7 @@ public class VrFSTable {
     }
 
     public VrFSEntry[] getEntries() {
-        return entries.toArray(new VrFSEntry[entries.size()]);
+        return entries.toArray(new VrFSEntry[0]);
     }
 
     public int[] findPathEntries(String path) {
@@ -167,20 +164,8 @@ public class VrFSTable {
 
     public void addEntry(VrFSEntry e) {
         if (e != null) {
-            if (StringUtils.isEmpty(e.getLinkPath())) {
-                throw new RuntimeException("Invalid Path");
-            }
-            if (StringUtils.isEmpty(e.getMountPoint()) || e.getMountPoint().contains("/")) {
-                throw new RuntimeException("Invalid Mount Point " + e.getMountPoint());
-            }
-            if (StringUtils.isEmpty(e.getFilterType()) || !VALID_FILTER_TYPES.contains(e.getFilterType().toLowerCase())) {
-                throw new RuntimeException("Invalid Filter Type " + e.getMountPoint());
-            }
-            if (StringUtils.isEmpty(e.getFilterName())) {
-                throw new RuntimeException("Invalid Filter Expression " + e.getFilterName());
-            }
+            checkEntry(e);
             int[] old = findPathEntries(e.getLinkPath());
-
             for (int i = 0; i < old.length; i++) {
                 if (entries.get(old[i]).equals(e)) {
                     return;
@@ -192,18 +177,7 @@ public class VrFSTable {
 
     public void removeEntry(VrFSEntry e) {
         if (e != null) {
-            if (StringUtils.isEmpty(e.getLinkPath())) {
-                throw new RuntimeException("Invalid Path");
-            }
-            if (StringUtils.isEmpty(e.getMountPoint()) || e.getMountPoint().contains("/")) {
-                throw new RuntimeException("Invalid Mount Point " + e.getMountPoint());
-            }
-            if (StringUtils.isEmpty(e.getFilterType()) || !VALID_FILTER_TYPES.contains(e.getFilterType().toLowerCase())) {
-                throw new RuntimeException("Invalid Filter Type " + e.getMountPoint());
-            }
-            if (StringUtils.isEmpty(e.getFilterName())) {
-                throw new RuntimeException("Invalid Filter Expression " + e.getFilterName());
-            }
+            checkEntry(e);
             int[] old = findPathEntries(e.getLinkPath());
             for (int i = 0; i < old.length; i++) {
                 if (entries.get(old[i]).equals(e)) {
@@ -214,39 +188,46 @@ public class VrFSTable {
         }
     }
 
+    private void checkEntry(VrFSEntry e) {
+        if (StringUtils.isEmpty(e.getLinkPath())) {
+            throw new RuntimeException("Invalid Path");
+        }
+        if (StringUtils.isEmpty(e.getMountPoint()) || e.getMountPoint().contains("/")) {
+            throw new RuntimeException("Invalid Mount Point " + e.getMountPoint());
+        }
+    }
+
     public void removeEntry(int index) {
         entries.remove(index);
     }
 
-    public VrFSEntry[] getEntries(String filterName, String filterType) {
+    public VrFSEntry[] getEntriesByAllowedUsers(String allowedUsers) {
+        if(allowedUsers==null){
+            allowedUsers="";
+        }
+        allowedUsers=allowedUsers.trim();
         List<VrFSEntry> lentries = new ArrayList<>();
         for (VrFSEntry e : this.entries) {
-            if (e.getFilterName() != null && e.getFilterName().equalsIgnoreCase(filterName)
-                    && e.getFilterType() != null && e.getFilterType().equalsIgnoreCase(filterType)) {
+            String aa = e.getAllowedUsers();
+            if(aa==null){
+                aa="";
+            }
+            aa=aa.trim();
+            if (aa.equalsIgnoreCase(allowedUsers)) {
                 lentries.add(e);
             }
         }
-        return lentries.toArray(new VrFSEntry[lentries.size()]);
+        return lentries.toArray(new VrFSEntry[0]);
     }
 
     public VrFSEntry[] getEntriesByLinkPath(String linkPath) {
         List<VrFSEntry> lentries = new ArrayList<>();
         for (VrFSEntry e : this.entries) {
-            if (e.getFilterType() != null && e.getLinkPath().equals(linkPath)) {
+            if (Objects.equals(e.getLinkPath(),linkPath)) {
                 lentries.add(e);
             }
         }
-        return lentries.toArray(new VrFSEntry[lentries.size()]);
-    }
-
-    public VrFSEntry[] getEntriesByType(String filterType) {
-        List<VrFSEntry> lentries = new ArrayList<>();
-        for (VrFSEntry e : this.entries) {
-            if (e.getFilterType() != null && e.getFilterType().equalsIgnoreCase(filterType)) {
-                lentries.add(e);
-            }
-        }
-        return lentries.toArray(new VrFSEntry[lentries.size()]);
+        return lentries.toArray(new VrFSEntry[0]);
     }
 
     public void store(VFile out) throws IOException {
@@ -268,17 +249,15 @@ public class VrFSTable {
         PrintStream p = new PrintStream(out);
         p.println("# file system table definition\n" +
                 "#\n" +
-                "# type name targetfoldername sourcepath\n" +
+                "# target-folder-name shared-folder allowed-users\n" +
                 "#\n" +
-                "# valid filterTypes are \"Profile\" and \"User\"\n" +
                 "# example : \n" +
-                "# Profile Student NewFolderName /Documents/ByProfile/Teacher/MyFolderToShare\n" +
+                "# NewFolderName /Documents/ByProfile/Teacher/MyFolderToShare Student\n" +
                 "# mounts a folder named NewFolderNameMyFolderToShare under MyDocument of Profile Student that points to the given MyFolderToShare\n");
         for (VrFSEntry entry : entries) {
-            p.print("\"" + entry.getFilterType() + "\"\t");
-            p.print("\"" + entry.getFilterName() + "\"\t");
             p.print("\"" + entry.getMountPoint() + "\"\t");
             p.print("\"" + entry.getLinkPath() + "\"\t");
+            p.print("\"" + entry.getAllowedUsers() + "\"\t");
             p.println();
         }
         p.flush();

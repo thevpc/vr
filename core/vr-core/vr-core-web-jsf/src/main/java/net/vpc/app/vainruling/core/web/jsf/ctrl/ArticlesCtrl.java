@@ -104,4 +104,21 @@ public class ArticlesCtrl extends AbstractCmsTextService {
     public AbstractCmsModel getModel() {
         return VrApp.getBean(ArticlesModel.class);
     }
+
+    @Override
+    public boolean isEnabledAction(String action, int id) {
+        AppUser currentUser = core.getCurrentUser();
+        if (currentUser != null) {
+            AppArticle a = core.findArticle(id);
+            if (a != null) {
+                if (a.getSender() != null && currentUser.getId() == a.getSender().getId()) {
+                    return true;
+                }
+                if (core.isCurrentSessionAdmin()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }

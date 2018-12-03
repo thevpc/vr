@@ -5,7 +5,6 @@ import net.vpc.app.vainruling.core.service.CorePluginSecurity;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.cache.CacheService;
 import net.vpc.app.vainruling.core.service.model.*;
-import net.vpc.app.vainruling.core.service.util.VrPasswordStrategyRandom;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacherPeriod;
@@ -102,17 +101,7 @@ public class AcademicPluginBodyTeachers extends AcademicPluginBody {
                 return map;
             }
         }).get(userId);
-//        return UPA.getPersistenceUnit().createQuery("Select u from AcademicTeacher u where u.userId=:userId")
-//                .setParameter("userId", userId)
-//                .getFirstResultOrNull();
     }
-
-//    public AcademicTeacher findTeacherByContact(int contactId) {
-//        CorePluginSecurity.requireContact(contactId);
-//        return UPA.getPersistenceUnit().createQuery("Select u from AcademicTeacher u where u.user.contactId=:contacId")
-//                .setParameter("contacId", contactId)
-//                .getFirstResultOrNull();
-//    }
 
     public AcademicTeacher findTeacher(StringComparator t) {
         CorePluginSecurity.requireRight(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_TEACHER);
@@ -124,10 +113,6 @@ public class AcademicPluginBodyTeachers extends AcademicPluginBody {
         return null;
     }
 
-//    public void update(Object t) {
-//        PersistenceUnit pu = UPA.getPersistenceUnit();
-//        pu.merge(t);
-//    }
     public List<AcademicTeacher> findTeachers(int period, TeacherPeriodFilter teacherFilter) {
         List<AcademicTeacher> teachers = findTeachers();
         if (teacherFilter == null) {
@@ -168,7 +153,8 @@ public class AcademicPluginBodyTeachers extends AcademicPluginBody {
 
     public List<AcademicTeacher> findEnabledTeachers(int periodId) {
         CorePluginSecurity.requireRight(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_TEACHER);
-        List<AcademicTeacher> periodId1 = UPA.getPersistenceUnit().createQuery("Select distinct u.teacher from AcademicTeacherPeriod u where u.teacher.deleted=false and u.enabled=true order by u.teacher.user.fullName and u.periodId=:periodId")
+        List<AcademicTeacher> periodId1 = UPA.getPersistenceUnit()
+                .createQuery("Select distinct u.teacher from AcademicTeacherPeriod u where u.teacher.deleted=false and u.enabled=true order by u.teacher.user.fullName and u.periodId=:periodId")
                 .setParameter("periodId", periodId)
                 .getResultList();
         //there is a bug in distinct implementation in UPA, should fix it.
@@ -186,12 +172,6 @@ public class AcademicPluginBodyTeachers extends AcademicPluginBody {
 
     public AcademicTeacher findTeacher(int t) {
         return cacheService.getList(AcademicTeacher.class).getByKey(t);
-//        return (AcademicTeacher) UPA.getPersistenceUnit()
-//                .createQuery("Select u from AcademicTeacher u where u.id=:id")
-//                .setParameter("id", t)
-//                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 5)
-//                .getEntity();
-//                .findById(AcademicTeacher.class, t);
     }
 
     public List<AcademicTeacher> findTeachers(String teacherProfileFilter) {
@@ -289,67 +269,12 @@ public class AcademicPluginBodyTeachers extends AcademicPluginBody {
         return ret;
     }
 
-//    public List<AcademicTeacher> findTeachersWithAssignmentsOrIntent(int periodId) {
-//        CorePluginSecurity.requireRight(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_ASSIGNMENTS);
-//        List<AcademicTeacher> byAssignment = findTeachersWithAssignments(periodId);
-//        List<AcademicTeacher> byIntent = findTeachersWithIntents(periodId);
-//        HashMap<Integer, AcademicTeacher> visited = new HashMap<>();
-//        for (AcademicTeacher academicTeacher : byAssignment) {
-//            if (!visited.containsKey(academicTeacher.getId())) {
-//                visited.put(academicTeacher.getId(), academicTeacher);
-//            }
-//        }
-//        for (AcademicTeacher academicTeacher : byIntent) {
-//            if (!visited.containsKey(academicTeacher.getId())) {
-//                visited.put(academicTeacher.getId(), academicTeacher);
-//            }
-//        }
-//        List<AcademicTeacher> ret = new ArrayList<>(visited.values());
-//        ret.sort(Comparator.comparing(AcademicTeacher::resolveFullName));
-//        return ret;
-//    }
-//
-//    public List<AcademicTeacher> findTeachersWithAssignments(int periodId) {
-//        CorePluginSecurity.requireRight(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_ASSIGNMENTS);
-//        return UPA.getPersistenceUnit()
-//                .createQuery("Select u from AcademicTeacher u where u.id in ("
-//                        + " Select t.id from AcademicTeacher t "
-//                        + " inner join AcademicCourseAssignment a on a.teacherId=t.id "
-//                        + " where a.coursePlan.period.id=:periodId "
-//                        + ") order by u.fullName")
-//                .setParameter("periodId", periodId)
-//                .getResultList();
-//    }
-//
-//    public List<AcademicTeacher> findTeachersWithIntents(int periodId) {
-//        CorePluginSecurity.requireRight(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_TEACHER);
-//        return UPA.getPersistenceUnit()
-//                .createQuery("Select u from AcademicTeacher u where u.id in ("
-//                        + " Select t.id from AcademicTeacher t "
-//                        + " inner join AcademicCourseIntent a on a.teacherId=t.id "
-//                        + " where a.assignment.coursePlan.period.id=:periodId "
-//                        + ") order by u.fullName")
-//                .setParameter("periodId", periodId)
-//                .getResultList();
-//    }
-//
+
     public AcademicTeacher findTeacher(String t) {
         AcademicPluginSecurity.requireTeacherOrManager(-1);
         return (AcademicTeacher) UPA.getPersistenceUnit().createQuery("Select u from AcademicTeacher u where u.user.fullName=:name").setParameter("name", t).getFirstResultOrNull();
     }
 
-//    public List<AcademicTeacher> findTeachersWithAssignmentsOrIntents() {
-//        CorePluginSecurity.requireRight(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_TEACHER);
-//        return UPA.getPersistenceUnit()
-//                .createQuery("Select u from AcademicTeacher u where u.id in ("
-//                        + " Select t.id from AcademicTeacher t "
-//                        + " left join AcademicCourseAssignment a on a.teacheId=t.id"
-//                        + " left join AcademicCourseIntent i on i.teacherId=t.id"
-//                        + " where (a is not null) or (i is not null)"
-//                        + ") order by u.fullName")
-//                .getResultList();
-//    }
-//
     public AcademicTeacherPeriod findAcademicTeacherPeriod(final int periodId, AcademicTeacher t) {
         Map<Integer, AcademicTeacherPeriod> m = cacheService.get(AcademicTeacherPeriod.class).getProperty("findAcademicTeacherPeriodByTeacher:" + periodId, new Action<Map<Integer, AcademicTeacherPeriod>>() {
             @Override
@@ -465,7 +390,7 @@ public class AcademicPluginBodyTeachers extends AcademicPluginBody {
                 myClasses.add(a.resolveAcademicClass());//not to force loading of sub class!
             }
 
-            for (AcademicClass ac : academic.findAcademicUpHierarchyList(myClasses.toArray(new AcademicClass[myClasses.size()]), academicClasses)) {
+            for (AcademicClass ac : academic.findAcademicUpHierarchyList(myClasses.toArray(new AcademicClass[0]), academicClasses)) {
                 if (ac != null) {
                     //ignore inherited profiles in suffix
 //                        classNames.add(n);

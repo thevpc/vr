@@ -30,6 +30,11 @@ and open the template in the editor.
         <ui:composition template="#{vr.privateTemplatePath}">
             <ui:define name="content">
                 <h:form id="listForm">
+                    <p:confirmDialog message="Etes vous sur de vouloir ne rien faire ?" header="Dummy"
+                                     widgetVar="confirmationDummy">
+                        <p:commandButton value="Oui en effet" onclick="PF('confirmationDummy').hide();"/>
+                        <p:commandButton value="Non" onclick="PF('confirmationDummy').hide()" type="button"/>
+                    </p:confirmDialog>
                     <p:confirmDialog message="Etes vous sur de vouloir supprimer la selection ?" header="Suppression"
                                      widgetVar="confirmationDelete">
                         <p:commandButton value="Oui en effet" onclick="PF('confirmationDelete').hide();

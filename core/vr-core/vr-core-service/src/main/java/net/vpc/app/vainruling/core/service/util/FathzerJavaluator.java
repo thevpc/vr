@@ -2,14 +2,12 @@ package net.vpc.app.vainruling.core.service.util;
 
 import com.fathzer.soft.javaluator.*;
 
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by vpc on 4/16/17.
  */
-public class FathzerJavaluator extends AbstractEvaluator<Boolean> implements InSetEvaluator {
+public class FathzerJavaluator implements InSetEvaluator {
 
     /**
      * The logical AND operator.
@@ -47,53 +45,56 @@ public class FathzerJavaluator extends AbstractEvaluator<Boolean> implements InS
         evalParams.setFunctionArgumentSeparator('\0');
     }
 
-    private Set<String> items;
+    private AbstractEvaluator<Boolean> t;
 
-    public FathzerJavaluator(Set<String> set) {
-        super(evalParams);
-        this.items = set;
+    public FathzerJavaluator() {
+
+        t = new AbstractEvaluator<Boolean>(evalParams) {
+            @Override
+            protected Boolean toValue(String item, Object evaluationContext) {
+                if (item.equals("all")) {
+                    return true;
+                }
+                Set<String> set=(Set<String>) evaluationContext;
+                return set.contains(item.toLowerCase());
+            }
+
+            @Override
+            protected Boolean evaluate(Constant constant, Object evaluationContext) {
+                if (constant.getName().equals("all")) {
+                    return true;
+                }
+                if (constant.getName().equals("none")) {
+                    return false;
+                }
+                return false;
+            }
+
+            @Override
+            protected Boolean evaluate(Operator operator, Iterator<Boolean> operands,
+                                       Object evaluationContext) {
+                Boolean o1 = operands.next();
+                Boolean o2 = operands.next();
+                Boolean result;
+                if (operator == OR || operator == OR2 || operator == OR3 || operator == OR4) {
+                    result = o1 || o2;
+                } else if (operator == AND || operator == AND2 || operator == AND3) {
+                    result = o1 && o2;
+                } else if (operator == EXCEPT) {
+                    result = o1 && (!o2);
+                } else {
+                    throw new IllegalArgumentException();
+                }
+                return result;
+            }
+        };
     }
 
-    @Override
-    protected Boolean toValue(String item, Object o) {
-        if (item.equals("all")) {
-            return true;
-        }
-        return items.contains(item.toLowerCase());
-    }
 
-    @Override
-    protected Boolean evaluate(Constant constant, Object evaluationContext) {
-        if (constant.getName().equals("all")) {
-            return true;
-        }
-        if (constant.getName().equals("none")) {
-            return false;
-        }
-        return false;
-    }
+    public boolean evaluateExpression(String expression, Collection<String> set) {
 
-    @Override
-    protected Boolean evaluate(Operator operator, Iterator<Boolean> operands,
-            Object evaluationContext) {
-        Boolean o1 = operands.next();
-        Boolean o2 = operands.next();
-        Boolean result;
-        if (operator == OR || operator == OR2 || operator == OR3 || operator == OR4) {
-            result = o1 || o2;
-        } else if (operator == AND || operator == AND2 || operator == AND3) {
-            result = o1 && o2;
-        } else if (operator == EXCEPT) {
-            result = o1 && (!o2);
-        } else {
-            throw new IllegalArgumentException();
-        }
-        return result;
-    }
-
-    public boolean evaluateExpression(String expression) {
         try {
-            return (Boolean) evaluate(expression);
+            return (Boolean) t.evaluate(expression, new HashSet<>(set));
         } catch (Exception e) {
             //error
         }

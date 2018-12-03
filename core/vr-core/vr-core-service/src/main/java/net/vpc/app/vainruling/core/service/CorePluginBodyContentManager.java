@@ -27,6 +27,8 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.*;
+import java.util.logging.Level;
+
 import net.vpc.app.vainruling.core.service.model.content.AppArticleDisposition;
 import net.vpc.app.vainruling.core.service.model.content.AppArticleDispositionGroup;
 import net.vpc.app.vainruling.core.service.model.content.AppArticleDispositionBundle;
@@ -40,6 +42,7 @@ import net.vpc.common.io.PathInfo;
 import net.vpc.common.util.MutableDate;
 
 class CorePluginBodyContentManager extends CorePluginBody {
+    private static final java.util.logging.Logger log = java.util.logging.Logger.getLogger(CorePluginBodyContentManager.class.getName());
 
     @Override
     public void onInstall() {
@@ -104,12 +107,6 @@ class CorePluginBodyContentManager extends CorePluginBody {
             AppArticle a = new AppArticle();
             a.setSubject("Featured");
             a.setDisposition(findArticleDisposition("Featured.Header"));
-            core.save(a);
-        }
-        if (core.findFullArticlesByDisposition(null, "Activities.Header").isEmpty()) {
-            AppArticle a = new AppArticle();
-            a.setSubject("Activities");
-            a.setDisposition(findArticleDisposition("Activities.Header"));
             core.save(a);
         }
         if (core.findFullArticlesByDisposition(null, "Testimonials.Header").isEmpty()) {
@@ -395,7 +392,10 @@ class CorePluginBodyContentManager extends CorePluginBody {
                         if (periodCalendarType > 0) {
                             DateTime dd = a.getSendTime();
                             MutableDate d2 = new MutableDate().addField(periodCalendarType, -d.getMaxPeriod());
-                            if (dd.compareTo(d2.getDateTime()) < 0) {
+                            if(dd==null){
+                                log.log(Level.SEVERE, "Article with null SendTime : Article.id="+a.getId());
+                            }
+                            if (dd!=null && dd.compareTo(d2.getDateTime()) < 0) {
                                 continue;
                             }
                         }

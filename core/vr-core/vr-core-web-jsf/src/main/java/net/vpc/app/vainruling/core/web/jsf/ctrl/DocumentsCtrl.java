@@ -283,9 +283,11 @@ public class DocumentsCtrl implements VRMenuProvider, VrControllerInfoResolver, 
                 String baseFile = file.getBaseFile("vrfs").getPath();
 
                 try {
-                    core.setUserLinkPathEntry(core.getCurrentUserId(), new VrFSEntry(current.getShareProfiles(), "Profile", current.getShareName(), baseFile));
-                } catch (IOException e) {
-                    e.printStackTrace();
+                    core.setUserLinkPathEntry(core.getCurrentUserId(), new VrFSEntry(current.getShareName(), baseFile, current.getShareProfiles()));
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    Logger.getLogger(DocumentsCtrl.class.getName()).log(Level.SEVERE, null, ex);
+                    FacesUtils.addErrorMessage("Could not be saved.");
                 }
             }
         }
@@ -322,7 +324,11 @@ public class DocumentsCtrl implements VRMenuProvider, VrControllerInfoResolver, 
     }
 
     public void onRefresh() {
-        getModel().setFiles(DocumentsUtils.searchFiles(getModel().getCurrent().getFile(), getModel().getSearchString()));
+        if(getModel().getCurrent()==null){
+            getModel().setFiles(new ArrayList<>());
+        }else {
+            getModel().setFiles(DocumentsUtils.searchFiles(getModel().getCurrent().getFile(), getModel().getSearchString()));
+        }
 //        if(FacesContext.getCurrentInstance()!=null) {
 //            FacesContext.getCurrentInstance().getPartialViewContext().getRenderIds().add("listForm");
 //        }
@@ -343,19 +349,23 @@ public class DocumentsCtrl implements VRMenuProvider, VrControllerInfoResolver, 
 //                    && UPA.getPersistenceGroup().getSecurityManager().isAllowedKey(CorePlugin.RIGHT_FILESYSTEM_WRITE)
 //                    && getModel().getCurrent().getFile().isAllowedCreateChild(VFileType.FILE, null);
         }
+        VFileInfo current = getModel().getCurrent();
+        if(current==null){
+            return false;
+        }
         if ("NewFolder".equals(buttonId)) {
             return UPA.getPersistenceGroup().getSecurityManager().isAllowedKey(CorePluginSecurity.RIGHT_FILESYSTEM_WRITE)
-                    && getModel().getCurrent().getFile().isAllowedCreateChild(VFileType.DIRECTORY, null);
+                    && current.getFile().isAllowedCreateChild(VFileType.DIRECTORY, null);
         }
         if ("Upload".equals(buttonId)) {
-            VFile file = getModel().getCurrent().getFile();
+            VFile file = current.getFile();
             return UPA.getPersistenceGroup().getSecurityManager().isAllowedKey(CorePluginSecurity.RIGHT_FILESYSTEM_WRITE)
                     && (file.isAllowedCreateChild(VFileType.FILE, null)
                     || file.isAllowedUpdateChild(VFileType.FILE, null));
         }
         if ("Remove".equals(buttonId)) {
             return UPA.getPersistenceGroup().getSecurityManager().isAllowedKey(CorePluginSecurity.RIGHT_FILESYSTEM_WRITE)
-                    && getModel().getCurrent().getFile().isAllowedRemoveChild(null, null);
+                    && current.getFile().isAllowedRemoveChild(null, null);
         }
 //        if ("Save".equals(buttonId)) {
 //            return getModel().getArea().equals("NewFile") || getModel().getArea().equals("NewFolder");
@@ -368,8 +378,8 @@ public class DocumentsCtrl implements VRMenuProvider, VrControllerInfoResolver, 
         }
         if ("Security".equals(buttonId)) {
             return UPA.getPersistenceGroup().getSecurityManager().isAllowedKey(CorePluginSecurity.RIGHT_FILESYSTEM_ASSIGN_RIGHTS)
-                    && !getModel().getCurrent().getFile().getACL().isReadOnly()
-                    && (core.isCurrentSessionAdmin() || core.getCurrentUserLogin().equals(getModel().getCurrent().getFile().getACL().getOwner()));
+                    && !current.getFile().getACL().isReadOnly()
+                    && (core.isCurrentSessionAdmin() || core.getCurrentUserLogin().equals(current.getFile().getACL().getOwner()));
         }
         return core.isCurrentSessionAdmin();
     }
@@ -426,7 +436,7 @@ public class DocumentsCtrl implements VRMenuProvider, VrControllerInfoResolver, 
                 VrFSEntry[] u = userVrFSTable.getEntriesByLinkPath(file.getBaseFile("vrfs").getPath());
                 if (u.length > 0) {
                     getModel().getCurrent().setShareName(u[0].getMountPoint());
-                    getModel().getCurrent().setShareProfiles(u[0].getFilterName());
+                    getModel().getCurrent().setShareProfiles(u[0].getAllowedUsers());
                 }
             } else {
                 return;
