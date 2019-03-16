@@ -1532,12 +1532,13 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
         DialogBuilder.closeCurrent();
     }
 
-    public void updateColumnSelection() {
-        if (getModel().getFieldSelection() != null) {
-            getModel().getFieldSelection().save();
-        }
-        fireEventSearchClosed();
-    }
+//    public void updateColumnSelection() {
+//        if (getModel().getFieldSelection() != null) {
+//            getModel().getFieldSelection().save();
+//        }
+//        updateView();
+//        fireEventSearchClosed();
+//    }
 
     public void fireEventClearSelection() {
         onClearFieldSelection();
@@ -1545,7 +1546,12 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
     }
 
     public void fireEventSelectionValidated() {
+        if (getModel().getFieldSelection() != null) {
+            getModel().getFieldSelection().save();
+        }
+        updateView();
         DialogBuilder.closeCurrent();
+        
     }
 
     public void fireEventSearchClosed() {
