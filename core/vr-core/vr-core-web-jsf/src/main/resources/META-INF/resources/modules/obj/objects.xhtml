@@ -126,9 +126,21 @@ and open the template in the editor.
                                 <p:menuitem rendered="#{objCtrl.isEnabledButton('Archive')}" value="Archiver"
                                             icon="fa fa-archive" onclick="PF('confirmationArchive').show();" ajax="true"/>
                                 <p:separator/>
-                                <p:menuitem rendered="#{objCtrl.isEnabledButton('ReCalc')}" value="Calc." title="Reclaculer les formules"
+                                <p:menuitem rendered="#{objCtrl.isEnabledButton('ReCalc')}" value="Calc. BD" title="Reclaculer Toutes les entités"
                                             icon="fa fa-calculator" ajax="true"
-                                            actionListener="#{objCtrl.onReCalc}"
+                                            actionListener="#{objCtrl.onReCalcAll}"
+                                            />
+                                <p:menuitem rendered="#{objCtrl.isEnabledButton('ReCalc')}" value="Calc. Entité" title="Reclaculer Toutes les lignes"
+                                            icon="fa fa-calculator" ajax="true"
+                                            actionListener="#{objCtrl.onReCalcEntity}"
+                                            />
+                                <p:menuitem rendered="#{objCtrl.isEnabledButton('ReCalc')}" value="Calc. Sel." title="Reclaculer les lignés sélectionnées"
+                                            icon="fa fa-calculator" ajax="true"
+                                            actionListener="#{objCtrl.onReCalcSelection}"
+                                            />
+                                <p:menuitem rendered="#{objCtrl.isEnabledButton('ReCalc')}" value="Re-Enregister" title="Reenregistrer les lignés sélectionnées"
+                                            icon="fa fa-calculator" ajax="true"
+                                            actionListener="#{objCtrl.onReSaveSelection}"
                                             />
                                 <p:separator/>
                             </p:splitButton>
