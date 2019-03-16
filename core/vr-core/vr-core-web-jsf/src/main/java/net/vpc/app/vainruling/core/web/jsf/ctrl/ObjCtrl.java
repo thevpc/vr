@@ -42,6 +42,7 @@ import javax.faces.context.FacesContext;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.faces.bean.ManagedBean;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -54,6 +55,7 @@ import java.util.logging.Logger;
         url = "modules/obj/objects"
 )
 @Controller
+@ManagedBean
 public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerInfoResolver {
 
     public static final String[] CSS_COLOR_ARR = {"vr-label-bg01", "vr-label-bg02", "vr-label-bg03", "vr-label-bg04", "vr-label-bg05", "vr-label-bg06", "vr-label-bg07", "vr-label-bg08", "vr-label-bg09", "vr-label-bg10", "vr-label-bg11", "vr-label-bg12", "vr-label-bg13", "vr-label-bg14", "vr-label-bg15", "vr-label-bg16", "vr-label-bg17", "vr-label-bg18", "vr-label-bg19", "vr-label-bg20"};
@@ -380,7 +382,71 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
         this.dynModel = dynModel;
     }
 
-    public void onReCalc() {
+    public void onReSaveSelection() {
+        int count = 0;
+        try {
+            if (getModel().getMode() == AccessMode.READ) {
+                for (ObjRow row : getSelectedRows()) {
+                    Object id = core.resolveId(getEntityName(), row.getDocument());
+                    Document o = core.findDocument(getEntityName(), id);
+                    if (o != null) {
+                        core.save(getEntityName(), o);
+                    }
+                    count++;
+                }
+                reloadPage(true);
+            } else {
+                onSaveCurrent();
+            }
+            if (count == 0) {
+                FacesUtils.addInfoMessage("Aucun Enregistrement enregistré");
+            } else {
+                FacesUtils.addInfoMessage(count + " Enregistrement(s) enregistrés(s)");
+            }
+        } catch (RuntimeException ex) {
+            log.log(Level.SEVERE, "Error", ex);
+            FacesUtils.addErrorMessage(count + " Erreur : " + ex);
+        }
+    }
+
+    public void onReCalcSelection() {
+        int count = 0;
+        try {
+            if (getModel().getMode() == AccessMode.READ) {
+                for (ObjRow row : getSelectedRows()) {
+
+                    Object id = core.resolveId(getEntityName(), row.getDocument());
+                    if (id != null) {
+                        CorePlugin.get().updateObjectValue(getEntityName(), id);
+                        count++;
+                    }
+                }
+                reloadPage(true);
+            } else {
+                onSaveCurrent();
+            }
+            if (count == 0) {
+                FacesUtils.addInfoMessage("Aucun Enregistrement enregistré");
+            } else {
+                FacesUtils.addInfoMessage(count + " Enregistrement(s) enregistrés(s)");
+            }
+        } catch (RuntimeException ex) {
+            log.log(Level.SEVERE, "Error", ex);
+            FacesUtils.addErrorMessage(count + " Erreur : " + ex);
+        }
+    }
+
+    public void onReCalcEntity() {
+        try {
+            CorePlugin.get().updateEntityFormulas(getEntityName());
+            FacesUtils.addInfoMessage("Realcul Réussi");
+        } catch (RuntimeException ex) {
+            log.log(Level.SEVERE, "Error", ex);
+            FacesUtils.addErrorMessage(ex);
+        }
+    }
+
+    public void onReCalcAll() {
         try {
             CorePlugin.get().updateEntityFormulas(getEntityName());
             FacesUtils.addInfoMessage("Realcul Réussi");
@@ -442,7 +508,10 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
                     break;
                 }
                 case UPDATE: {
-                    Document c = getModel().getCurrentDocument();
+                    Document c0 = getModel().getCurrentDocument();
+                    Document c = getEntity().getBuilder().createDocument();
+                    c.setAll(c0);
+                    getModel().setCurrent(createObjRow(c));
                     if (getEntity().getIdFields().size() == 1 && getEntity().getIdFields().get(0).isGeneratedId()) {
                         getEntity().getBuilder().setDocumentId(c, null);
                         core.save(getEntityName(), c);
@@ -450,6 +519,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
 //                    onCancelCurrent();
                     break;
                 }
+
             }
 //            reloadPage();
             FacesUtils.addInfoMessage("Enregistrement Réussi");
@@ -555,6 +625,29 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
         reloadPage(cmd, false);
     }
 
+    protected void reloadPageDocumentEditMode(Document curr, Object eid) {
+        if (curr == null) {
+            //should not happen though!
+            updateMode(AccessMode.READ);
+            getModel().setCurrent(null);
+            return;
+        }
+        Entity entity = getEntity();
+        UPASecurityManager sm = entity.getPersistenceUnit().getSecurityManager();
+        ObjRow r = createObjRow(curr);
+        //now should try finding row pos
+        for (ObjRow filteredObject : getModel().getList()) {
+            Object id1 = getEntity().getBuilder().documentToId(filteredObject.getDocument());
+            if (id1.equals(eid)) {
+                r.setRowPos(filteredObject.getRowPos());
+                break;
+            }
+        }
+        getModel().setCurrent(r);
+        updateMode(AccessMode.UPDATE);
+        currentModelToView();
+    }
+
     @Override
     public void reloadPage(String cmd, boolean enableCustomization) {
         enabledButtons.clear();
@@ -606,31 +699,9 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
                 //if a single row, will autoswitch to edit mode
                 if (getModel().getList().size() == 1) {
                     Entity entity = getEntity();
-                    UPASecurityManager sm = entity.getPersistenceUnit().getSecurityManager();
-                    EntityBuilder b = entity.getBuilder();
                     Object eid = resolveEntityId(cfg.id);
                     Document curr = getModel().getList().get(0).getDocument();
-                    if (curr == null) {
-                        //should not happen though!
-                        updateMode(AccessMode.READ);
-                        getModel().setCurrent(null);
-                        return;
-                    }
-                    ObjRow r = new ObjRow(idToString(eid), curr, b.documentToObject(curr));
-                    r.setRead(sm.isAllowedLoad(entity, eid, curr));
-                    r.setWrite(sm.isAllowedUpdate(entity, eid, curr));
-                    r.setRowPos(-1);
-                    //now should try finding row pos
-                    for (ObjRow filteredObject : getModel().getList()) {
-                        Object id1 = getEntity().getBuilder().documentToId(filteredObject.getDocument());
-                        if (id1.equals(eid)) {
-                            r.setRowPos(filteredObject.getRowPos());
-                            break;
-                        }
-                    }
-                    getModel().setCurrent(r);
-                    updateMode(AccessMode.UPDATE);
-                    currentModelToView();
+                    reloadPageDocumentEditMode(curr, eid);
                 } else {
                     getModel().setCurrent(null);
                 }
@@ -641,31 +712,9 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
                 getModel().setCurrent(null);
             } else {
                 Entity entity = getEntity();
-                UPASecurityManager sm = entity.getPersistenceUnit().getSecurityManager();
-                EntityBuilder b = entity.getBuilder();
                 Object eid = resolveEntityId(cfg.id);
                 Document curr = core.findDocument(getEntityName(), eid);
-                if (curr == null) {
-                    //should not happen though!
-                    updateMode(AccessMode.READ);
-                    getModel().setCurrent(null);
-                    return;
-                }
-                ObjRow r = new ObjRow(idToString(eid), curr, b.documentToObject(curr));
-                r.setRead(sm.isAllowedLoad(entity, eid, curr));
-                r.setWrite(sm.isAllowedUpdate(entity, eid, curr));
-                r.setRowPos(-1);
-                //now should try finding row pos
-                for (ObjRow filteredObject : getModel().getList()) {
-                    Object id1 = getEntity().getBuilder().documentToId(filteredObject.getDocument());
-                    if (id1.equals(eid)) {
-                        r.setRowPos(filteredObject.getRowPos());
-                        break;
-                    }
-                }
-                getModel().setCurrent(r);
-                updateMode(AccessMode.UPDATE);
-                currentModelToView();
+                reloadPageDocumentEditMode(curr, eid);
             }
         } catch (RuntimeException ex) {
             log.log(Level.SEVERE, "Error", ex);
@@ -721,9 +770,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
         for (Document rec : found) {
             Object id = b.documentToId(rec);
             if (sm.isAllowedNavigate(entity, id, rec)) {
-                ObjRow row = new ObjRow(idToString(id), rec, b.documentToObject(rec));
-                row.setRead(sm.isAllowedLoad(entity, id, rec));
-                row.setWrite(sm.isAllowedUpdate(entity, id, rec));
+                ObjRow row = createObjRow(rec);
                 row.setRowPos(filteredObjects.size());
                 filteredObjects.add(row);
             }
@@ -773,8 +820,16 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
     }
 
     public Object getPropertyColumnStyleClass(String property, ObjRow row) {
+        return getPropertyColumnCodeValue(UIConstants.Grid.COLUMN_STYLE_CLASS, property, row);
+    }
+
+    public Object getPropertyColumnStyle(String property, ObjRow row) {
+        return getPropertyColumnCodeValue(UIConstants.Grid.COLUMN_STYLE, property, row);
+    }
+
+    protected Object getPropertyColumnCodeValue(String propertyCodeName, String property, ObjRow row) {
         Field p = getEntity().getField(property);
-        String v = p.getProperties().getString(UIConstants.Grid.COLUMN_STYLE_CLASS);
+        String v = p.getProperties().getString(propertyCodeName);
         if (v != null) {
             v = v.trim();
             if (v.startsWith("#{") && v.endsWith("}")) {
@@ -793,54 +848,15 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
                 if (!expressionManager.containsFunction("hashToStringArr")) {
                     expressionManager.addFunction("hashToStringArr", DataTypeFactory.STRING, hashToStringArr);
                 }
+                //Should remove me some how, but ii'm been used!
                 if (!expressionManager.containsFunction("hashCssColor")) {
                     expressionManager.addFunction("hashCssColor", DataTypeFactory.STRING, hashCssColor);
                 }
                 Expression expression = expressionManager.simplifyExpression(expr, map);
                 QLEvaluator evaluator = expressionManager.createEvaluator();
                 evaluator.getRegistry().registerFunctionEvaluator("hashToStringArr", hashToStringArr);
+                evaluator.getRegistry().registerFunctionEvaluator("inthash", inthash);
                 evaluator.getRegistry().registerFunctionEvaluator("hashCssColor", hashCssColor);
-                evaluator.getRegistry().registerFunctionEvaluator("inthash", inthash);
-                expression = evaluator.evalObject(expression, null);
-                if (expression instanceof Literal) {
-                    Object t = ((Literal) expression).getValue();
-                    String ret = t == null ? "" : t.toString().trim();
-                    for (int i = 0; i < 20; i++) {
-                        ret = ret.replace("{bgcolor" + i + "}", table.getBgColor(i));
-                        ret = ret.replace("{fgcolor" + i + "}", table.getFgColor(i));
-                    }
-                    return ret;
-                }
-            }
-        }
-        return v;
-    }
-
-    public Object getPropertyColumnStyle(String property, ObjRow row) {
-        Field p = getEntity().getField(property);
-        String v = p.getProperties().getString(UIConstants.Grid.COLUMN_STYLE);
-        if (v != null) {
-            v = v.trim();
-            if (v.startsWith("#{") && v.endsWith("}")) {
-                VrColorTable table = VrApp.getBean(VrColorTable.class);
-                PersistenceUnit pu = UPA.getPersistenceUnit();
-                Map<String, Object> map = new HashMap<>();
-                map.put("this", row == null ? null : row.getDocument());
-                Document r = pu.getFactory().createObject(Document.class);
-                r.setObject("pos", row == null ? -1 : row.getRowPos());
-                map.put("ui", r);
-                String expr = v.substring(2, v.length() - 1);
-                ExpressionManager expressionManager = pu.getExpressionManager();
-                if (!expressionManager.containsFunction("inthash")) {
-                    expressionManager.addFunction("inthash", DataTypeFactory.INT, inthash);
-                }
-                if (!expressionManager.containsFunction("hashToStringArr")) {
-                    expressionManager.addFunction("hashToStringArr", DataTypeFactory.STRING, hashToStringArr);
-                }
-                Expression expression = expressionManager.simplifyExpression(expr, map);
-                QLEvaluator evaluator = expressionManager.createEvaluator();
-                evaluator.getRegistry().registerFunctionEvaluator("hashToStringArr", hashToStringArr);
-                evaluator.getRegistry().registerFunctionEvaluator("inthash", inthash);
                 expression = evaluator.evalObject(expression, null);
                 if (expression instanceof Literal) {
                     Object t = ((Literal) expression).getValue();
@@ -905,16 +921,13 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
                     }
                 }
                 EntityBuilder b = e.getBuilder();
-                ObjRow r = new ObjRow(null, o, b.documentToObject(o));
+                ObjRow r = createObjRow(o);
                 r.setRead(true);
                 r.setWrite(true);
                 r.setSelected(false);
-                r.setRowPos(-1);
-
                 return r;
             }
-            ObjRow r = new ObjRow(null, createInitializedDocument(), getEntity().getBuilder().createObject());
-            r.setRowPos(-1);
+            ObjRow r = createObjRow(createInitializedDocument());
             return r;
         } catch (RuntimeException ex) {
             log.log(Level.SEVERE, "Error", ex);
@@ -945,7 +958,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
                         //this is an id of another field
                         Field entityField = manyToOnePrimitiveRelationShip.getSourceRole().getEntityField();
                         Entity re = manyToOnePrimitiveRelationShip.getTargetEntity();
-                        Object v = re.findById(value);
+                        Object v = VrUPAUtils.findById2(re, value);
 //                        v=re.getBuilder().objectToDocument(v);
                         builder.setProperty(o, entityField.getName(), v);
                     }
@@ -1344,34 +1357,34 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
     }
 
     public void updatePropertyViews() {
-        boolean forceDisabled=false;
+        boolean forceDisabled = false;
         Entity e = getEntity();
         if (e == null) {
-            forceDisabled=true;
-        }else {
+            forceDisabled = true;
+        } else {
             switch (getModel().getMode()) {
                 case PERSIST: {
-                    forceDisabled=e.getShield().isPersistSupported() && e.getShield().isPersistEnabled();
+                    forceDisabled = e.getShield().isPersistSupported() && e.getShield().isPersistEnabled();
                     break;
                 }
                 case UPDATE: {
-                    forceDisabled=e.getShield().isUpdateSupported() && e.getShield().isUpdateEnabled();
+                    forceDisabled = e.getShield().isUpdateSupported() && e.getShield().isUpdateEnabled();
                     break;
                 }
             }
         }
         for (PropertyView propertyView : getProperties()) {
-            updatePropertyView(propertyView,forceDisabled);
+            updatePropertyView(propertyView, forceDisabled);
         }
     }
 
-    private void updatePropertyView(PropertyView p,boolean forceDisabled) {
+    private void updatePropertyView(PropertyView p, boolean forceDisabled) {
         Document currentDocument = getModel().getCurrentDocument();
         if (p instanceof FieldPropertyView) {
             Field field = ((FieldPropertyView) p).getField();
-            if(forceDisabled){
+            if (forceDisabled) {
                 p.setDisabled(true);
-            }else {
+            } else {
                 if (getModel().getDisabledFields().contains(field.getName())) {
                     p.setDisabled(true);
                 } else {
@@ -1474,9 +1487,9 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
         EntityBuilder b = e.getBuilder();
         Object id = b.documentToId(o);
         ObjRow r = new ObjRow(idToString(id), o, b.documentToObject(o));
-        r.setRead(true);
-        r.setWrite(true);
-        r.setSelected(false);
+        UPASecurityManager sm = e.getPersistenceUnit().getSecurityManager();
+        r.setRead(sm.isAllowedLoad(e, id, o));
+        r.setWrite(sm.isAllowedUpdate(e, id, o));
         r.setRowPos(-1);
         return r;
     }
@@ -1532,12 +1545,12 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
         DialogBuilder.closeCurrent();
     }
 
-    public void updateColumnSelection() {
-        if (getModel().getFieldSelection() != null) {
-            getModel().getFieldSelection().save();
-        }
-        fireEventSearchClosed();
-    }
+//    public void updateColumnSelection() {
+//        if (getModel().getFieldSelection() != null) {
+//            getModel().getFieldSelection().save();
+//        }
+//        fireEventSearchClosed();
+//    }
 
     public void fireEventClearSelection() {
         onClearFieldSelection();
@@ -1545,6 +1558,10 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
     }
 
     public void fireEventSelectionValidated() {
+        if (getModel().getFieldSelection() != null) {
+            getModel().getFieldSelection().save();
+        }
+        updateView();
         DialogBuilder.closeCurrent();
     }
 
@@ -1675,35 +1692,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
                 ActionDialogAdapter act = actionDialogManager.findAction(actionKey);
                 if (act != null) {
                     ActionDialogResult rr = act.invoke(getEntity().getEntityType(), c, getSelectedIdStrings(), args);
-                    if (rr != null) {
-                        ActionDialogResultPostProcess r = rr.getType();
-                        String message = rr.getMessage();
-                        if (message != null) {
-                            FacesUtils.addInfoMessage(message);
-                        }
-                        if (r != null) {
-                            switch (r) {
-                                case RELOAD_CURRENT: {
-                                    if (getModel().getMode() == AccessMode.READ) {
-                                        reloadPage(true);
-                                    } else {
-                                        onReloadCurrent();
-                                    }
-                                    break;
-                                }
-                                case RELOAD_ALL: {
-                                    if (getModel().getMode() == AccessMode.READ) {
-                                        reloadPage(true);
-                                    } else {
-                                        loadList();
-                                        updateMode(AccessMode.READ);
-                                        getModel().setCurrent(null);
-                                    }
-                                    break;
-                                }
-                            }
-                        }
-                    }
+                    applyActionDialogResult(rr);
                 }
             } catch (RuntimeException ex) {
                 log.log(Level.SEVERE, "Error", ex);
@@ -1712,9 +1701,41 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
         }
     }
 
+    private void applyActionDialogResult(ActionDialogResult rr) {
+        if (rr != null) {
+            ActionDialogResultPostProcess r = rr.getType();
+            String message = rr.getMessage();
+            if (message != null) {
+                FacesUtils.addInfoMessage(message);
+            }
+            if (r != null) {
+                switch (r) {
+                    case RELOAD_CURRENT: {
+                        if (getModel().getMode() == AccessMode.READ) {
+                            reloadPage(true);
+                        } else {
+                            onReloadCurrent();
+                        }
+                        break;
+                    }
+                    case RELOAD_ALL: {
+                        if (getModel().getMode() == AccessMode.READ) {
+                            reloadPage(true);
+                        } else {
+                            loadList();
+                            updateMode(AccessMode.READ);
+                            getModel().setCurrent(null);
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
     public void updateAllFormulas() {
         enabledButtons.clear();
-        UPA.getPersistenceUnit().updateFormulas();
+        UPA.getPersistenceUnit().updateAllFormulas();
     }
 
     public PropertyView findPropertyView(String componentId) {
@@ -1796,35 +1817,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
                         currentViewToModel();
                         Object c = getModel().getCurrentDocument();
                         ActionDialogResult rr = ed.invoke(getEntity().getEntityType(), c, getSelectedIdStrings(), args);
-                        if (rr != null) {
-                            ActionDialogResultPostProcess r = rr.getType();
-                            String message = rr.getMessage();
-                            if (message != null) {
-                                FacesUtils.addInfoMessage(message);
-                            }
-                            if (r != null) {
-                                switch (r) {
-                                    case RELOAD_CURRENT: {
-                                        if (getModel().getMode() == AccessMode.READ) {
-                                            reloadPage(true);
-                                        } else {
-                                            onReloadCurrent();
-                                        }
-                                        break;
-                                    }
-                                    case RELOAD_ALL: {
-                                        if (getModel().getMode() == AccessMode.READ) {
-                                            reloadPage(true);
-                                        } else {
-                                            loadList();
-                                            updateMode(AccessMode.READ);
-                                            getModel().setCurrent(null);
-                                        }
-                                        break;
-                                    }
-                                }
-                            }
-                        }
+                        applyActionDialogResult(rr);
                         DialogBuilder.closeCurrent();
                     } catch (RuntimeException ex) {
                         FacesUtils.addInfoMessage("Error : " + ex.getMessage());
