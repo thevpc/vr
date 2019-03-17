@@ -31,7 +31,7 @@ public class UpdateFormulasAction implements EntityViewActionInvoke {
 
     @Override
     public ActionDialogResult invoke(String actionId, Class entityType, Object obj, List<String> selectedIdStrings, Object[] args) {
-        UPA.getPersistenceUnit().updateFormulas();
+        UPA.getPersistenceUnit().updateAllFormulas();
         return new ActionDialogResult("Mise à jour réussie", ActionDialogResultPostProcess.RELOAD_ALL);
     }
 }

@@ -315,4 +315,21 @@ public class VrUPAUtils {
         return orNull;
     }
 
+    public static Object findById2(Entity ee,Object value) {
+        if(value==null){
+            return null;
+        }
+        PersistenceUnit pu = ee.getPersistenceUnit();
+        if (!ee.getIdType().isAssignableFrom(value.getClass()) && pu.containsEntity(ee.getIdType())) {
+            Entity ee2 = ee.getIdFields().get(0).getManyToOneRelationship().getTargetEntity();
+            if (ee2 == null) {
+                return ee.findById(value);
+            }
+            Object i = ee2.findById(value);
+            return ee.findById(i);
+        }else{
+            return ee.findById(value);
+        }
+
+    }
 }

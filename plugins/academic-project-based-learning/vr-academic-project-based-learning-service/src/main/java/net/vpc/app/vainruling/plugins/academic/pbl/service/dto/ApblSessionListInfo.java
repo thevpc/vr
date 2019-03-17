@@ -10,7 +10,7 @@ import java.util.*;
 public class ApblSessionListInfo {
     private List<ApblTeacherInfo> teachers=new ArrayList<>();
     private List<ApblSessionInfo> sessions=new ArrayList<>();
-    private Map<Integer,ApblProgramSession> programs=new LinkedHashMap<>();
+    private List<ApblProgramSession> programs=new ArrayList<>();
     private int teamsCount;
     private double unitLoad;
     private double maxStudentCount;
@@ -30,11 +30,11 @@ public class ApblSessionListInfo {
         return sessions;
     }
 
-    public Map<Integer, ApblProgramSession> getPrograms() {
+    public List<ApblProgramSession> getPrograms() {
         return programs;
     }
 
-    public void setPrograms(Map<Integer, ApblProgramSession> programs) {
+    public void setPrograms(List<ApblProgramSession> programs) {
         this.programs = programs;
     }
 

@@ -103,7 +103,7 @@ public class AcademicAdminToolsCtrl {
         try {
 //            AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
 //            p.validateAcademicData();
-            UPA.getPersistenceUnit().updateFormulas();
+            UPA.getPersistenceUnit().updateAllFormulas();
             FacesUtils.addInfoMessage("Successful Operation");
         } catch (Exception ex) {
             Logger.getLogger(AcademicAdminToolsCtrl.class.getName()).log(Level.SEVERE, null, ex);

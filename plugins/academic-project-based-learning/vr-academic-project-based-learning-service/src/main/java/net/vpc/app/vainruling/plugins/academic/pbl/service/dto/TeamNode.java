@@ -46,4 +46,9 @@ public class TeamNode extends ApblNode{
         this.unsatisfiedTeamConstraints = unsatisfiedTeamConstraints;
         return this;
     }
+
+    @Override
+    public String toString() {
+        return String.valueOf(team==null?"null":team.getName());
+    }
 }

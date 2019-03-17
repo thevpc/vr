@@ -52,6 +52,9 @@ public class AcademicLoadConversionRow {
     @Summary
     private double valuePM;
 
+    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
+    private String description;
+
     @Path("Trace")
 //    @Properties(
 //            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
@@ -158,6 +161,15 @@ public class AcademicLoadConversionRow {
                 ", creationDate=" + creationDate +
                 ", updateDate=" + updateDate +
                 '}';
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public AcademicLoadConversionRow setDescription(String description) {
+        this.description = description;
+        return this;
     }
 
     @Override

@@ -239,6 +239,10 @@ public class AcademicPluginBodyConfig extends AcademicPluginBody {
                 .getFirstResultOrNull();
     }
 
+    public AcademicSemester findSemester(int id) {
+        return UPA.getPersistenceUnit().findById(AcademicSemester.class,id);
+    }
+
     public AcademicCoursePlan findCoursePlan(int periodId, int courseLevelId, String courseName) {
         return UPA.getPersistenceUnit().
                 createQuery("Select a from AcademicCoursePlan a where " +
@@ -382,6 +386,19 @@ public class AcademicPluginBodyConfig extends AcademicPluginBody {
                 .getResultList();
     }
 
+
+    public List<AcademicCoursePlan> findCoursePlans(int periodId,int semesterId,int programId) {
+        return UPA.getPersistenceUnit().createQuery("Select a from AcademicCoursePlan a where 1==1 " +
+                " and a.periodId=:periodId " +
+                (programId>0?" and a.courseLevel.academicClass.programId=:programId ":"") +
+                (semesterId>0?" and a.courseLevel.semesterId=:semesterId":"")
+        )
+//                                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 5)
+                .setParameter("periodId", periodId)
+                .setParameter("programId", programId,programId>0)
+                .setParameter("semesterId", semesterId,semesterId>0)
+                .getResultList();
+    }
 
     public List<AcademicCoursePlan> findCoursePlans(int periodId) {
         return cacheService.get(AcademicCoursePlan.class)

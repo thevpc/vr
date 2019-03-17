@@ -115,7 +115,8 @@ public class XlsxLoadImporter {
         }
         TraceService trace = TraceService.get();
         ch.stop();
-        trace.trace("Academic.import-departments", "success", MapUtils.map("path", file.getPath(), "time", ch.toString(), "rows", count), JsonUtils.jsonMap("path", file.getPath(), "time", ch.toString(), "rows", count), getClass().getSimpleName(), Level.INFO);
+        trace.trace("Academic.import-departments", "success", MapUtils.map("path", file.getPath(), "time", ch.toString(), "rows", count)
+                , getClass().getSimpleName(), Level.INFO);
     }
 
     public void importTeacherDegrees(VFile file) throws IOException {
@@ -149,7 +150,10 @@ public class XlsxLoadImporter {
         }
         TraceService trace = TraceService.get();
         ch.stop();
-        trace.trace("Academic.import-teacher-degrees", "success", MapUtils.map("path", file.getPath(), "time", ch.toString(), "rows", count), JsonUtils.jsonMap("path", file.getPath(), "time", ch.toString(), "rows", count), getClass().getSimpleName(), Level.INFO);
+        trace.trace("Academic.import-teacher-degrees", "success", 
+                MapUtils.map("path", file.getPath(), "time", ch.toString(), "rows", count), 
+                
+                getClass().getSimpleName(), Level.INFO);
     }
 
     public void importLoadConversionTable(VFile file) throws IOException {
@@ -204,7 +208,9 @@ public class XlsxLoadImporter {
         }
         TraceService trace = TraceService.get();
         ch.stop();
-        trace.trace("Academic.import-load-conversion-table", "success", MapUtils.map("path", file.getPath(), "time", ch.toString(), "rows", count), JsonUtils.jsonMap("path", file.getPath(), "time", ch.toString(), "rows", count), getClass().getSimpleName(), Level.INFO);
+        trace.trace("Academic.import-load-conversion-table", "success", 
+                MapUtils.map("path", file.getPath(), "time", ch.toString(), "rows", count), 
+                getClass().getSimpleName(), Level.INFO);
     }
 
     private List<ImportFile> locateImportFile(VFile file, ImportOptions importOptions) throws IOException {
@@ -281,7 +287,7 @@ public class XlsxLoadImporter {
                 importLoadConversionTable(file);
             } else {
                 count++;
-                trace.trace("Academic.import-load-conversion-table-default", "success", null, "{}", getClass().getSimpleName(), Level.INFO);
+                trace.trace("Academic.import-load-conversion-table-default", "success", null, getClass().getSimpleName(), Level.INFO);
                 XlsxLoadImporter.this.importLoadConversionTable();
             }
         }
@@ -291,7 +297,7 @@ public class XlsxLoadImporter {
                 importTeacherDegrees(file);
             } else {
                 count++;
-                trace.trace("Academic.import-teacher-degrees-default", "success", null, "{}", "/Education/Config", Level.INFO);
+                trace.trace("Academic.import-teacher-degrees-default", "success", null, "/Education/Config", Level.INFO);
                 XlsxLoadImporter.this.importTeacherDegrees();
             }
         }
@@ -310,9 +316,9 @@ public class XlsxLoadImporter {
         long end = System.currentTimeMillis();
         String ch = Chronometer.formatPeriod(end - start);
         if (count > 0) {
-            trace.trace("Academic.import-teaching-load", "success", MapUtils.map("path", file.getPath(), "time", ch.toString(), "rows", count), JsonUtils.jsonMap("path", file.getPath(), "time", ch.toString(), "rows", count), "/Education/Config", Level.INFO);
+            trace.trace("Academic.import-teaching-load", "success", MapUtils.map("path", file.getPath(), "time", ch.toString(), "rows", count), "/Education/Config", Level.INFO);
         } else {
-            trace.trace("Academic.import-teaching-load", "error", MapUtils.map("path", file.getPath(), "time", ch.toString(), "rows", count), JsonUtils.jsonMap("path", file.getPath(), "time", ch.toString(), "rows", count), "/Education/Config", Level.INFO);
+            trace.trace("Academic.import-teaching-load", "error", MapUtils.map("path", file.getPath(), "time", ch.toString(), "rows", count), "/Education/Config", Level.INFO);
         }
         return count;
     }
@@ -546,7 +552,9 @@ public class XlsxLoadImporter {
         }
         TraceService trace = TraceService.get();
         ch.stop();
-        trace.trace("Academic.import-teachers", "success", MapUtils.map("path", file.getPath(), "time", ch.toString(), "rows", count), JsonUtils.jsonMap("path", file.getPath(), "time", ch.toString(), "rows", count), getClass().getSimpleName(), Level.INFO);
+        trace.trace("Academic.import-teachers", "success", 
+                MapUtils.map("path", file.getPath(), "time", ch.toString(), "rows", count), 
+                getClass().getSimpleName(), Level.INFO);
     }
 
     public AcademicStudentImport parseAcademicStudentImport(Object[] values2, StudentMapping sm) throws IOException {
@@ -848,7 +856,9 @@ public class XlsxLoadImporter {
         }
         TraceService trace = TraceService.get();
         ch.stop();
-        trace.trace("Academic.import-students" + (simulate ? "-simulation" : ""), "success", MapUtils.map("path", file.getPath(), "time", ch.toString(), "rows", count), JsonUtils.jsonMap("path", file.getPath(), "time", ch.toString(), "rows", count), "/Education/Import", Level.INFO);
+        trace.trace("Academic.import-students" + (simulate ? "-simulation" : ""), "success", 
+                MapUtils.map("path", file.getPath(), "time", ch.toString(), "rows", count), 
+                "/Education/Import", Level.INFO);
         return count;
     }
 
@@ -1129,7 +1139,9 @@ public class XlsxLoadImporter {
         }
         TraceService trace = TraceService.get();
         ch.stop();
-        trace.trace("Academic.import-course-assignments", "success", MapUtils.map("path", file.getPath(), "time", ch.toString(), "rows", count), JsonUtils.jsonMap("path", file.getPath(), "time", ch.toString(), "rows", count), getClass().getSimpleName(), Level.INFO);
+        trace.trace("Academic.import-course-assignments", "success", 
+                MapUtils.map("path", file.getPath(), "time", ch.toString(), "rows", count), 
+                getClass().getSimpleName(), Level.INFO);
         log.log(Level.INFO, "importCourseAssignments from {0} in {1}", new Object[]{file, ch.stop()});
         service.updateAllCoursePlanValuesByLoadValues(periodId);
     }

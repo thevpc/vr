@@ -16,12 +16,13 @@ import net.vpc.upa.config.*;
 @Path("/Education/Evaluation")
 @Properties(
         {
-                @Property(name = "ui.auto-filter.session", value = "{expr='this.session',order=1}"),
-                @Property(name = "ui.auto-filter.model", value = "{expr='this.model',order=2}"),
-                @Property(name = "ui.auto-filter.course", value = "{expr='this.course',order=3}"),
-                @Property(name = "ui.auto-filter.student", value = "{expr='this.student',order=4}"),
-        }
-)public class AcademicFeedback {
+            @Property(name = "ui.auto-filter.session", value = "{expr='this.session',order=1}"),
+            @Property(name = "ui.auto-filter.model", value = "{expr='this.model',order=2}"),
+            @Property(name = "ui.auto-filter.course", value = "{expr='this.course',order=3}"),
+            @Property(name = "ui.auto-filter.teacher", value = "{expr='this.course.teacher',order=4}"),
+            @Property(name = "ui.auto-filter.student", value = "{expr='this.student',order=5}"),}
+)
+public class AcademicFeedback {
 
     @Path("Main")
     @Id
@@ -32,7 +33,7 @@ import net.vpc.upa.config.*;
     @Summary
     private AcademicFeedbackModel model;
     @Main
-    @Formula(value = "concat(coalesce(this.session.name),' - ',this.course.fullName,' - ',Coalesce(this.student.user.fullTitle,''))",formulaOrder = 1)
+    @Formula(value = "concat(coalesce(this.session.name),' - ',this.course.fullName,' - ',Coalesce(this.student.user.fullTitle,''))", formulaOrder = 1)
     private String name;
     @Summary
     private AcademicCourseAssignment course;

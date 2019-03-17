@@ -81,11 +81,11 @@ public class TeacherProfileSettingsCtrl implements DocumentUploadListener, VrAct
             getModel().setTeacher(currentTeacher);
             getModel().setTeacherCV(app.findOrCreateAcademicTeacherCV(getModel().getTeacher().getId()));
             ///a verifier
-            getModel().setCourseSection(app.findAcademicCVSectionByName("Course"));
-            getModel().setEducationSection(app.findAcademicCVSectionByName("Education"));
-            getModel().setProjectSection(app.findAcademicCVSectionByName("Project"));
-            getModel().setExperienceSection(app.findAcademicCVSectionByName("Experience"));
-            getModel().setResearchSection(app.findAcademicCVSectionByName("Research"));
+            getModel().setCourseSection(app.findAcademicCVSectionByCode("Course"));
+            getModel().setEducationSection(app.findAcademicCVSectionByCode("Education"));
+            getModel().setProjectSection(app.findAcademicCVSectionByCode("Project"));
+            getModel().setExperienceSection(app.findAcademicCVSectionByCode("Experience"));
+            getModel().setResearchSection(app.findAcademicCVSectionByCode("Research"));
 
             getModel().setCourseList(app.findTeacherCvItemsBySection(getModel().teacherCV.getTeacher().getId(), getModel().courseSection.getId()));
             getModel().setEducationList(app.findTeacherCvItemsBySection(getModel().teacherCV.getTeacher().getId(), getModel().educationSection.getId()));
@@ -176,8 +176,8 @@ public class TeacherProfileSettingsCtrl implements DocumentUploadListener, VrAct
             @Override
             public void run() {
                 try {
-                    app.updateContactInformations(getModel().user);
-                    app.updateTeacherCVInformations(getModel().teacherCV);
+                    app.saveUserContact(getModel().user);
+                    app.saveTeacherCV(getModel().teacherCV);
                     FacesUtils.addInfoMessage("Modifications enregistrées");
                 } catch (Exception ex) {
                     log.log(Level.SEVERE, "Error", ex);
@@ -192,7 +192,7 @@ public class TeacherProfileSettingsCtrl implements DocumentUploadListener, VrAct
             @Override
             public void run() {
                 try {
-                    app.updateContactInformations(getModel().user);
+                    app.saveUserContact(getModel().user);
                     FacesUtils.addInfoMessage("Modifications enregistrées");
                 } catch (Exception ex) {
                     log.log(Level.SEVERE, "Error", ex);
@@ -207,7 +207,7 @@ public class TeacherProfileSettingsCtrl implements DocumentUploadListener, VrAct
             @Override
             public void run() {
                 try {
-                    app.updateCvItem(item);
+                    app.saveTeacherCVItem(item);
                     FacesUtils.addInfoMessage("Modifications enregistrées");
                 } catch (Exception ex) {
                     log.log(Level.SEVERE, "Error", ex);

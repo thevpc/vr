@@ -23,6 +23,7 @@ public class GlobalStat {
         public DisciplineStat create(String key) {
             return new DisciplineStat(key);
         }
+
     };
     private double teachersCount;
     private SituationTypeStat teachersLeaveStat = new SituationTypeStat();

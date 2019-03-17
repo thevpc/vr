@@ -11,10 +11,7 @@ import net.vpc.app.vainruling.core.service.plugins.Start;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
 import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
-import net.vpc.app.vr.plugins.academicprofile.service.model.AcademicCVSection;
-import net.vpc.app.vr.plugins.academicprofile.service.model.AcademicStudentCV;
-import net.vpc.app.vr.plugins.academicprofile.service.model.AcademicTeacherCV;
-import net.vpc.app.vr.plugins.academicprofile.service.model.AcademicTeacherCVItem;
+import net.vpc.app.vr.plugins.academicprofile.service.model.*;
 import net.vpc.upa.Action;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.UPA;
@@ -91,6 +88,22 @@ public class AcademicProfilePlugin {
         });
     }
 
+    public AcademicStudentCV getCurrentStudentCV() {
+        AcademicStudent s = AcademicPlugin.get().getCurrentStudent();
+        if(s!=null){
+            return findOrCreateAcademicStudentCV(s.getId());
+        }
+        return null;
+    }
+
+    public AcademicTeacherCV getCurrentTeacherCV() {
+        AcademicTeacher s = AcademicPlugin.get().getCurrentTeacher();
+        if(s!=null){
+            return findOrCreateAcademicTeacherCV(s.getId());
+        }
+        return null;
+    }
+
     public AcademicStudentCV findOrCreateAcademicStudentCV(final int studentId) {
         AcademicPluginSecurity.requireStudentOrManager(studentId);
         PersistenceUnit pu = UPA.getPersistenceUnit();
@@ -117,15 +130,15 @@ public class AcademicProfilePlugin {
         }, null);
     }
 
-    public AcademicTeacherCVItem findTeacherCVItem(int teacherId) {
-        PersistenceUnit pu = UPA.getPersistenceUnit();
-        AcademicTeacherCVItem a = pu.createQuery("Select u from AcademicTeacherCVItem u where u.academicTeacherCVId=:id")
-                .setParameter("id", teacherId).getFirstResultOrNull();
-        if (a != null) {
-            return a;
-        }
-        return null;
-    }
+//    public AcademicTeacherCVItem findTeacherCVItem(int teacherId) {
+//        PersistenceUnit pu = UPA.getPersistenceUnit();
+//        AcademicTeacherCVItem a = pu.createQuery("Select u from AcademicTeacherCVItem u where u.academicTeacherCVId=:id")
+//                .setParameter("id", teacherId).getFirstResultOrNull();
+//        if (a != null) {
+//            return a;
+//        }
+//        return null;
+//    }
 
     public List<AcademicTeacherCVItem> findTeacherCvItemsBySection(int teacherCVId, int sectionId) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
@@ -134,6 +147,26 @@ public class AcademicProfilePlugin {
                 .setParameter("sectionId", sectionId)
                 .getResultList();
 //        List<AcademicTeacherCVItem> itemList = pu.findAll(AcademicTeacherCVItem.class);
+        return itemList;
+    }
+
+    public List<AcademicTeacherCVItem> findTeacherCvItemsByTeacherAndSectionCode(int teacherId, int sectionCode) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        List<AcademicTeacherCVItem> itemList = pu
+                .createQuery("Select u from AcademicTeacherCVItem u where u.teacherCV.teacherId=:teacherId and u.section.code=:sectionCode")
+                .setParameter("teacherId", teacherId)
+                .setParameter("sectionCode", sectionCode)
+                .getResultList();
+        return itemList;
+    }
+
+    public List<AcademicStudentCVItem> findStudentCvItemsByTeacherAndSectionCode(int studentId, int sectionCode) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        List<AcademicStudentCVItem> itemList = pu
+                .createQuery("Select u from AcademicStudentCVItem u where u.studentCV.studentId=:studentId and u.section.code=:sectionCode")
+                .setParameter("studentId", studentId)
+                .setParameter("sectionCode", sectionCode)
+                .getResultList();
         return itemList;
     }
 
@@ -151,18 +184,18 @@ public class AcademicProfilePlugin {
         }
     }
 
-    public void updateTeacherCVItem(AcademicTeacherCVItem item) {
-        AcademicPluginSecurity.requireTeacherOrManager(item.getTeacherCV().getTeacher().getId());
-        PersistenceUnit pu = UPA.getPersistenceUnit();
-        pu.invokePrivileged(new VoidAction() {
-            @Override
-            public void run() {
-                pu.merge(item);
-            }
-        });
-    }
+//    public void updateTeacherCVItem(AcademicTeacherCVItem item) {
+//        AcademicPluginSecurity.requireTeacherOrManager(item.getTeacherCV().getTeacher().getId());
+//        PersistenceUnit pu = UPA.getPersistenceUnit();
+//        pu.invokePrivileged(new VoidAction() {
+//            @Override
+//            public void run() {
+//                pu.merge(item);
+//            }
+//        });
+//    }
 
-    public void updateContactInformations(AppUser user) {
+    public void saveUserContact(AppUser user) {
         CorePluginSecurity.requireUser(user.getId());
         PersistenceUnit pu = UPA.getPersistenceUnit();
         pu.invokePrivileged(new VoidAction() {
@@ -185,7 +218,7 @@ public class AcademicProfilePlugin {
         });
     }
 
-    public void updateCvItem(AcademicTeacherCVItem item) {
+    public void saveTeacherCVItem(AcademicTeacherCVItem item) {
         AcademicPluginSecurity.requireTeacherOrManager(item.getTeacherCV().getTeacher().getId());
         PersistenceUnit pu = UPA.getPersistenceUnit();
         pu.invokePrivileged(new VoidAction() {
@@ -196,7 +229,7 @@ public class AcademicProfilePlugin {
         });
     }
 
-    public void updateStudentInformations(AcademicStudent student) {
+    public void saveStudent(AcademicStudent student) {
         AcademicPluginSecurity.requireStudentOrManager(student.getId());
         PersistenceUnit pu = UPA.getPersistenceUnit();
         pu.invokePrivileged(new VoidAction() {
@@ -209,7 +242,7 @@ public class AcademicProfilePlugin {
         });
     }
 
-    public void updateTeacherCVInformations(AcademicTeacherCV teacherCV) {
+    public void saveTeacherCV(AcademicTeacherCV teacherCV) {
         AcademicPluginSecurity.requireTeacherOrManager(teacherCV.getTeacher().getId());
         PersistenceUnit pu = UPA.getPersistenceUnit();
         pu.invokePrivileged(new VoidAction() {
@@ -221,7 +254,7 @@ public class AcademicProfilePlugin {
         });
     }
 
-    public void updateStudentCVInformations(AcademicStudentCV studentCV) {
+    public void saveStudentCV(AcademicStudentCV studentCV) {
         AcademicPluginSecurity.requireStudentOrManager(studentCV.getStudent().getId());
         PersistenceUnit pu = UPA.getPersistenceUnit();
         pu.invokePrivileged(new VoidAction() {
@@ -244,20 +277,35 @@ public class AcademicProfilePlugin {
         });
     }
 
-    public AcademicCVSection findAcademicCVSectionByName(String title) {
+    public AcademicCVSection findAcademicCVSectionByCode(String code) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        AcademicCVSection s = pu.createQuery("Select u from AcademicCVSection u where u.title=:title")
-                .setParameter("title", title).getFirstResultOrNull();
+        AcademicCVSection s = pu.createQuery("Select u from AcademicCVSection u where u.code=:code")
+                .setParameter("code", code).getFirstResultOrNull();
+        if(s==null){
+            s = pu.createQuery("Select u from AcademicCVSection u where u.title=:code")
+                    .setParameter("code", code).getFirstResultOrNull();
+            if(s!=null){
+                s.setCode(code);
+                AcademicCVSection finalS = s;
+                pu.invokePrivileged(new VoidAction() {
+                    @Override
+                    public void run() {
+                        pu.persist(finalS);
+                    }
+                });
+            }
+        }
         return s;
     }
 
-    public AcademicCVSection findOrCreateAcademicCVSection(String title) {
+    public AcademicCVSection findOrCreateAcademicCVSection(String code) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        AcademicCVSection s = pu.createQuery("Select u from AcademicCVSection u where u.title=:title")
-                .setParameter("title", title).getFirstResultOrNull();
+        AcademicCVSection s = pu.createQuery("Select u from AcademicCVSection u where u.code=:code")
+                .setParameter("code", code).getFirstResultOrNull();
         if (s == null) {
             s = new AcademicCVSection();
-            s.setTitle(title);
+            s.setCode(code);
+            s.setTitle(code);
             pu.persist(s);
         }
         return s;

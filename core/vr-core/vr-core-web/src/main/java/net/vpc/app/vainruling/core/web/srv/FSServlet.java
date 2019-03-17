@@ -8,6 +8,7 @@ package net.vpc.app.vainruling.core.web.srv;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.common.io.FileUtils;
+import net.vpc.common.io.RuntimeIOException;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.vfs.VFile;
 import net.vpc.common.vfs.VirtualFileSystem;
@@ -56,13 +57,12 @@ public class FSServlet extends HttpServlet {
                 response.setBufferSize(buffezSize);
                 try {
                     IOUtils.copy(in, response.getOutputStream(), buffezSize);
+                    response.getOutputStream().flush();
                 } catch (java.io.IOException ex) {
-                    if (ex.getClass().getName().endsWith(".ClientAbortException")) {
-                        //this is a tomcat 'Broken pipe' handling i suppose
-                        log.log(Level.SEVERE, "Error serving file " + file.getPath() + ". " + ex.getMessage());
-                    } else {
-                        log.log(Level.SEVERE, "Error serving file " + file.getPath() + ". " + ex.getMessage(), ex);
-                    }
+                    logAbortException(file, ex);
+                } catch (RuntimeIOException ex) {
+                    IOException ex2=(IOException) ex.getCause();
+                    logAbortException(file, ex2);
                 }
             } finally {
                 if (in != null) {
@@ -71,6 +71,15 @@ public class FSServlet extends HttpServlet {
             }
         } else {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
+        }
+    }
+
+    private void logAbortException(VFile file, IOException ex) {
+        if (ex.getClass().getName().endsWith(".ClientAbortException")) {
+            //this is a tomcat 'Broken pipe' handling i suppose
+            log.log(Level.SEVERE, "Error serving file " + file.getPath() + ". " + ex.getMessage());
+        } else {
+            log.log(Level.SEVERE, "Error serving file " + file.getPath() + ". " + ex.getMessage(), ex);
         }
     }
 

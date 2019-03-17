@@ -5,7 +5,6 @@
  */
 package net.vpc.app.vainruling.plugins.academic.service.model.config;
 
-import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.FormulaType;
 import net.vpc.upa.UserFieldModifier;
@@ -27,8 +26,13 @@ public class AcademicOfficialDiscipline {
     @Sequence
 
     private int id;
-    @Main
     private String name;
+    private AcademicOfficialDisciplineArea area;
+    
+    @Main
+    @Formula("concat(coalesce(this.area.name,''),' - ',coalesce(this.name,'')")
+    private String fullName;
+    
     @Summary
     private String name2;
     @Summary
@@ -119,4 +123,21 @@ public class AcademicOfficialDiscipline {
     public int hashCode() {
         return id;
     }
+
+    public AcademicOfficialDisciplineArea getArea() {
+        return area;
+    }
+
+    public void setArea(AcademicOfficialDisciplineArea area) {
+        this.area = area;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+    
 }

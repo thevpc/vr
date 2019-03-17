@@ -4,7 +4,7 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       >
-
+<!--@elvariable id="teacherProfileSettingsCtrl" type="net.vpc.app.vr.plugins.academicprofile.web.TeacherProfileSettingsCtrl"-->
     <!--@elvariable id="corePlugin" type="net.vpc.app.vainruling.core.service.CorePlugin"-->
     <h:head>
     </h:head>
@@ -42,19 +42,20 @@
                                                             <div class="col-md-6">
                                                                 <hr/>
                                                                 <strong class="text-blue"><i class="fa fa-envelope margin-r-5"></i>Email</strong>
-                                                                <p>#{teacherProfileSettingsCtrl.model.email}</p>
+                                                                <p>
+                                                                #{teacherProfileSettingsCtrl.model.user.email}</p>
                                                                 <hr/>
                                                                 <strong class="text-blue"><i class="fa fa-globe margin-r-5"></i>Site Web</strong>
                                                                 <p>#{teacherProfileSettingsCtrl.model.teacherCV.wwwURL}</p>
                                                                 <hr/>
                                                                 <strong class="text-blue"><i class="fa fa-phone-square margin-r-5"></i>Tél 1</strong>
-                                                                <p>#{teacherProfileSettingsCtrl.model.phone1}</p>
+                                                                <p>#{teacherProfileSettingsCtrl.model.user.phone1}</p>
                                                                 <hr/>
                                                                 <strong class="text-blue"><i class="fa fa-phone-square margin-r-5"></i>Tél 2</strong>
-                                                                <p>#{teacherProfileSettingsCtrl.model.phone2}</p>
+                                                                <p>#{teacherProfileSettingsCtrl.model.user.phone2}</p>
                                                                 <hr/>
                                                                 <strong class="text-blue"><i class="fa fa-phone-square margin-r-5"></i>Tél 3</strong>
-                                                                <p>#{teacherProfileSettingsCtrl.model.phone3}</p>
+                                                                <p>#{teacherProfileSettingsCtrl.model.user.phone3}</p>
                                                                 <hr/>
                                                             </div>
                                                             <div class="col-md-6">
@@ -78,10 +79,10 @@
                                                                 </p>
                                                                 <hr/>
                                                                 <strong class="text-blue"><i class="fa fa-map-marker margin-r-5"></i>Numéro du bureau</strong>
-                                                                <p>#{teacherProfileSettingsCtrl.model.officeLocationNumber}</p>
+                                                                <p>#{teacherProfileSettingsCtrl.model.user.officeLocationNumber}</p>
                                                                 <hr/>
                                                                 <strong class="text-blue"><i class="fa fa-phone margin-r-5"></i>Numéro de téléphone du bureau</strong>
-                                                                <p>#{teacherProfileSettingsCtrl.model.officePhoneNumber}</p>
+                                                                <p>#{teacherProfileSettingsCtrl.model.user.officePhoneNumber}</p>
                                                                 <hr/>
                                                             </div>
                                                         </div>

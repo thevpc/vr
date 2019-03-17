@@ -104,7 +104,7 @@ public class ApblPluginCompletionProvider implements CompletionProvider {
                     messages.add("Aucune Equipé n'est définie");
                 }
                 if (ff.isErrTooManyTeams()) {
-                    messages.add("Vous faites parties de plusieurs équipes à la fois :" + ff.getTeams());
+                    messages.add("Vous faites partie de plusieurs équipes à la fois :" + ff.getTeams());
                 }
                 if (Level.SEVERE.intValue() >= minLevel.intValue() && !messages.isEmpty()) {
                     StringBuilder details = new StringBuilder();

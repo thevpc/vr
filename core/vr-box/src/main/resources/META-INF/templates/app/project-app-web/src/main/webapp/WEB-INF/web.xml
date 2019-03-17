@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.1" xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>
+            /WEB-INF/applicationContext.xml
+        </param-value>
+    </context-param>
+    <context-param>
+        <param-name>javax.faces.PROJECT_STAGE</param-name>
+        <param-value>Development</param-value>
+    </context-param>
+    <context-param>
+        <param-name>primefaces.THEME</param-name>
+        <param-value>#{vr.privateTheme.components}</param-value>
+    </context-param>
+
+    <filter>
+        <filter-name>javamelody</filter-name>
+        <filter-class>net.bull.javamelody.MonitoringFilter</filter-class>
+        <async-supported>true</async-supported>
+    </filter>
+    <filter-mapping>
+        <filter-name>javamelody</filter-name>
+        <url-pattern>/*</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+        <dispatcher>ASYNC</dispatcher>
+    </filter-mapping>
+    <context-param>
+        <param-name>javamelody.locale</param-name>
+        <param-value>en</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>upa.web.context-url-filter</param-name>
+        <param-value>*.xhtml|/fs/*|/p/*|/u/*|/ws/*|/services/rss/*</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>upa.web.context-switch</param-name>
+        <param-value>net.vpc.app.vainruling.core.web.util.VrWebContextSwitch</param-value>
+    </context-param>
+
+    <filter>
+        <filter-name>TokenFilter</filter-name>
+        <filter-class>net.vpc.app.vainruling.core.web.srv.TokenManagerFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>TokenFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+
+    <listener>
+        <listener-class>net.vpc.upa.web.UPAServletContextListener</listener-class>
+    </listener>
+
+
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+    <listener>
+        <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
+    </listener>
+
+
+    <servlet>
+        <servlet-name>Faces Servlet</servlet-name>
+        <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+
+    <filter>
+        <filter-name>security</filter-name>
+        <filter-class>net.vpc.app.vainruling.core.web.srv.VrWebSecurityFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>security</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <servlet-mapping>
+        <servlet-name>Faces Servlet</servlet-name>
+        <url-pattern>/r/*</url-pattern>
+    </servlet-mapping>
+
+
+    <!-- Java Melody -->
+
+    <listener>
+        <listener-class>net.bull.javamelody.SessionListener</listener-class>
+    </listener>
+    <!-- End Java Melody -->
+
+    <session-config>
+        <session-timeout>
+            30
+        </session-timeout>
+        <!--<tracking-mode>SSL</tracking-mode>-->
+        <!--<tracking-mode>COOKIE</tracking-mode>-->
+    </session-config>
+    <welcome-file-list>
+        <welcome-file>r/index.xhtml</welcome-file>
+    </welcome-file-list>
+    <error-page>
+        <exception-type>javax.faces.application.ViewExpiredException</exception-type>
+        <location>/index.xhtml</location>
+    </error-page>
+    <!--<error-page>-->
+    <!--<error-code>404</error-code>-->
+    <!--<location>/r/login.xhtml</location>-->
+    <!--</error-page>-->
+</web-app>

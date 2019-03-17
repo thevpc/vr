@@ -5,7 +5,6 @@
  */
 package net.vpc.app.vainruling.plugins.academic.service.model.current;
 
-import net.vpc.app.vainruling.core.service.model.AppContact;
 import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.service.util.UIConstants;

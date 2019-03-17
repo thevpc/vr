@@ -253,9 +253,11 @@ class CorePluginBodyConfig extends CorePluginBody {
 
     public Object getOrCreateAppPropertyValue(String propertyName, String userLogin, Object value) {
         AppProperty p = getAppProperty(propertyName, userLogin);
+        Object v0=null;
         if (p != null) {
 //            if (p.isEnabled()) {
             Object v = getAppPropertyValue(p);
+            v0 = v;
             if (v instanceof String && v.toString().trim().isEmpty()) {
                 v=null;
             }
@@ -265,7 +267,9 @@ class CorePluginBodyConfig extends CorePluginBody {
 //            }
         }
         if (value != null) {
-            setAppProperty(propertyName, userLogin, value);
+            if(!value.equals(v0)) {
+                setAppProperty(propertyName, userLogin, value);
+            }
         }
         return value;
     }

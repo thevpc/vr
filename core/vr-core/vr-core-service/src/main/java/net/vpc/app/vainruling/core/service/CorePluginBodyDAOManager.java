@@ -23,8 +23,6 @@ import java.util.*;
 import java.util.logging.Level;
 import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.app.vainruling.core.service.model.AppUser;
-import net.vpc.app.vainruling.core.service.obj.AutoFilter;
-import net.vpc.app.vainruling.core.service.util.JsonUtils;
 import net.vpc.common.util.MapUtils;
 
 class CorePluginBodyDAOManager extends CorePluginBody {
@@ -204,7 +202,7 @@ class CorePluginBodyDAOManager extends CorePluginBody {
             }
             return curr;
         } catch (Exception ex) {
-            throw new IllegalArgumentException("Invalid Auto Filter Expr " + expr + " for Entity " + a.getEntityName(),ex);
+            throw new IllegalArgumentException("Invalid Auto Filter Expr " + expr + " for Entity " + a.getEntityName(), ex);
         }
     }
 
@@ -755,11 +753,23 @@ class CorePluginBodyDAOManager extends CorePluginBody {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity entity = pu.getEntity(type);
         checkFindMany(entity.getName());
-        DataType dt = entity.getField(field).getDataType();
-        return pu.createQueryBuilder(type).setEntityAlias("o")
-                .byExpression(new And(new Var(new Var("o"), field), new Literal(value, dt)))
-                .orderBy(entity.getListOrder())
-                .getResultList();
+        return pu.findAllByField(type, field, value);
+    }
+
+    public void updateObjectFormulas(String entityName, Object id) {
+        PersistenceUnit persistenceUnit = UPA.getPersistenceUnit();
+        persistenceUnit.updateFormulas(entityName, id);
+    }
+
+    public void updateObjectValue(String entityName, Object id) {
+        if (id != null) {
+            PersistenceUnit persistenceUnit = UPA.getPersistenceUnit();
+            Entity entity = persistenceUnit.getEntity(entityName);
+            final Document doc = entity.findDocumentById(id);
+            if (doc != null) {
+                entity.merge(doc);
+            }
+        }
     }
 
     public void updateEntityFormulas(String entityName) {
@@ -767,16 +777,29 @@ class CorePluginBodyDAOManager extends CorePluginBody {
         PersistenceUnit persistenceUnit = UPA.getPersistenceUnit();
         Entity entity = persistenceUnit.getEntity(entityName);
         Map<String, Object> msg = MapUtils.map("name", entityName, "title", entity.getTitle());
-        String data = JsonUtils.jsonMap("name", entityName);
-        TraceService.get().trace("System.entities.entity-updated-formulas", "start", msg, data,
+        TraceService.get().trace("System.entities.entity-updated-formulas", "start", msg,
                 entity.getParent().getPath(), Level.INFO);
         try {
-            persistenceUnit.updateFormulas(EntityFilters.byName(entityName), null);
-            TraceService.get().trace("System.entities.entity-updated-formulas", "success", msg, data, entity.getParent().getPath(), Level.INFO);
+            persistenceUnit.updateAllFormulas(EntityFilters.byName(entityName), null);
+            TraceService.get().trace("System.entities.entity-updated-formulas", "success", msg, entity.getParent().getPath(), Level.INFO);
         } catch (RuntimeException ex) {
             msg = MapUtils.map("name", entityName, "title", entity.getTitle(), "error", ex.getMessage());
-            data = JsonUtils.jsonMap("name", entityName, "error", ex.getMessage());
-            TraceService.get().trace("System.entities.entity-updated-formulas", "error", msg, data, entity.getParent().getPath(), Level.WARNING);
+            TraceService.get().trace("System.entities.entity-updated-formulas", "error", msg, entity.getParent().getPath(), Level.WARNING);
+            throw ex;
+        }
+    }
+
+    public void updateAllEntitiesFormulas() {
+        CorePluginSecurity.requireAdmin();
+        PersistenceUnit persistenceUnit = UPA.getPersistenceUnit();
+        Map<String, Object> msg = MapUtils.map();
+        TraceService.get().trace("System.entities.entity-updated-formulas", "start", msg,
+                "/System", Level.INFO);
+        try {
+            persistenceUnit.updateAllFormulas();
+            TraceService.get().trace("System.entities.entity-updated-formulas", "success", msg, "/System", Level.INFO);
+        } catch (RuntimeException ex) {
+            TraceService.get().trace("System.entities.entity-updated-formulas", "error", msg, "/System", Level.WARNING);
             throw ex;
         }
     }
@@ -955,7 +978,7 @@ class CorePluginBodyDAOManager extends CorePluginBody {
                 break;
             }
             case "string": {
-                List<String> values = UPA.getPersistenceUnit().createQuery("Select distinct " + a.getExpr() + " from " + a.getEntityName())
+                List<String> values = UPA.getPersistenceUnit().createQuery("Select distinct(" + a.getExpr() + ") from " + a.getEntityName())
                         .getResultList();
                 Collections.sort(values, VrUtils.NULL_AS_EMPTY_STRING_COMPARATOR);
                 for (String value : values) {
@@ -971,7 +994,7 @@ class CorePluginBodyDAOManager extends CorePluginBody {
                 break;
             }
             case "year": {
-                List<java.util.Date> values = UPA.getPersistenceUnit().createQuery("Select distinct " + a.getExpr() + " from " + a.getEntityName())
+                List<java.util.Date> values = UPA.getPersistenceUnit().createQuery("Select distinct(" + a.getExpr() + ") from " + a.getEntityName())
                         .getResultList();
                 SortedSet<net.vpc.upa.types.Year> values2 = new TreeSet<net.vpc.upa.types.Year>();
                 for (java.util.Date value : values) {
@@ -989,7 +1012,7 @@ class CorePluginBodyDAOManager extends CorePluginBody {
                 break;
             }
             case "month": {
-                List<java.util.Date> values = UPA.getPersistenceUnit().createQuery("Select distinct " + a.getExpr() + " from " + a.getEntityName())
+                List<java.util.Date> values = UPA.getPersistenceUnit().createQuery("Select distinct(" + a.getExpr() + ") from " + a.getEntityName())
                         .getResultList();
                 SortedSet<net.vpc.upa.types.Month> values2 = new TreeSet<net.vpc.upa.types.Month>();
                 for (java.util.Date value : values) {
@@ -1007,7 +1030,7 @@ class CorePluginBodyDAOManager extends CorePluginBody {
                 break;
             }
             case "date": {
-                List<java.util.Date> values = UPA.getPersistenceUnit().createQuery("Select distinct " + a.getExpr() + " from " + a.getEntityName())
+                List<java.util.Date> values = UPA.getPersistenceUnit().createQuery("Select distinct(" + a.getExpr() + ") from " + a.getEntityName())
                         .getResultList();
                 SortedSet<net.vpc.upa.types.Date> values2 = new TreeSet<net.vpc.upa.types.Date>();
                 for (java.util.Date value : values) {
@@ -1025,7 +1048,7 @@ class CorePluginBodyDAOManager extends CorePluginBody {
                 break;
             }
             case "time": {
-                List<java.util.Date> values = UPA.getPersistenceUnit().createQuery("Select distinct " + a.getExpr() + " from " + a.getEntityName())
+                List<java.util.Date> values = UPA.getPersistenceUnit().createQuery("Select distinct(" + a.getExpr() + ") from " + a.getEntityName())
                         .getResultList();
                 SortedSet<net.vpc.upa.types.Time> values2 = new TreeSet<net.vpc.upa.types.Time>();
                 for (java.util.Date value : values) {
@@ -1043,7 +1066,7 @@ class CorePluginBodyDAOManager extends CorePluginBody {
                 break;
             }
             case "temporal": {
-                List<java.util.Date> values = UPA.getPersistenceUnit().createQuery("Select distinct " + a.getExpr() + " from " + a.getEntityName())
+                List<java.util.Date> values = UPA.getPersistenceUnit().createQuery("Select distinct(" + a.getExpr() + ") from " + a.getEntityName())
                         .getResultList();
                 SortedSet<net.vpc.upa.types.Date> values2 = new TreeSet<net.vpc.upa.types.Date>();
                 for (java.util.Date value : values) {

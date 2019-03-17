@@ -79,7 +79,7 @@ public class AcademicPluginBodyHistory extends AcademicPluginBody {
         UPA.getPersistenceUnit().createQuery("delete from AcademicHistCoursePlan a where a.academiYear=:y").setParameter("y", year).executeNonQuery();
         UPA.getPersistenceUnit().createQuery("delete from AcademicHistCourseGroup a where a.courseLevel.program.academiYear=:y").setParameter("y", year).executeNonQuery();
         UPA.getPersistenceUnit().createQuery("delete from AcademicHistProgram a where a.academiYear=:y").setParameter("y", year).executeNonQuery();
-        trace.trace("Academic.history-reset-year", "success", MapUtils.map("year", year), JsonUtils.jsonMap("year", year), "/Education", Level.FINE);
+        trace.trace("Academic.history-reset-year", "success", MapUtils.map("year", year), "/Education", Level.FINE);
     }
 
     public void resetHistAcademicYears() {
@@ -91,7 +91,7 @@ public class AcademicPluginBodyHistory extends AcademicPluginBody {
         UPA.getPersistenceUnit().createQuery("delete from AcademicHistCoursePlan").executeNonQuery();
         UPA.getPersistenceUnit().createQuery("delete from AcademicHistCourseGroup").executeNonQuery();
         UPA.getPersistenceUnit().createQuery("delete from AcademicHistProgram").executeNonQuery();
-        trace.trace("Academic.history-reset-years", "success", null, "{}", "/Education", Level.FINE);
+        trace.trace("Academic.history-reset-years", "success", null, "/Education", Level.FINE);
     }
 
     public List<AcademicHistTeacherAnnualLoad> findHistTeacherAnnualLoads(int year) {

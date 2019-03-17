@@ -34,6 +34,13 @@ and open the template in the editor.
                             <p:ajax event="change" listener="#{academicAppStatusCtrl.onChangeSelectedSession}"
                                     update="@form"/>
                         </p:selectBooleanCheckbox>
+                        <p:selectOneMenu styleClass="vr-toolbox-select-one"
+                                              filter="true" filterMatchMode="startsWith" panelStyle="width:250px"
+                                              label="Periodes"
+                                              value="#{academicAppStatusCtrl.model.currentPeriodId}">
+                            <p:ajax listener="#{academicAppStatusCtrl.onChangeSelectedPeriod}" update=":listForm"/>
+                            <f:selectItems value="#{academicAppStatusCtrl.model.periods}"/>
+                        </p:selectOneMenu>
                         <p:outputLabel value="Selection Multiple"></p:outputLabel>
                         <p:selectCheckboxMenu rendered="#{academicAppStatusCtrl.model.multipleSessionSelection}"
                                               styleClass="vr-toolbox-select-one"
@@ -65,10 +72,28 @@ and open the template in the editor.
                                          ajax="false"
                                          actionListener="#{academicAppStatusCtrl.reloadTeacherAndStudentInfos}"
                         />
-                        <p:commandButton rendered="#{academicAppStatusCtrl.isEnabledButton('ApplyLoad')}" value="Appliquer Charge"
+                        <p:commandButton rendered="#{academicAppStatusCtrl.isEnabledButton('ApplyLoad')}" value="Appliquer Charge Selection"
                                          styleClass="btn btn-default vr-toolbox-long-button"
                                          ajax="false"
+                                         actionListener="#{academicAppStatusCtrl.onApplyLoadAllSelected}"
+                                         update=":messagesForm"
+                        />
+                        <p:commandButton rendered="#{academicAppStatusCtrl.isEnabledButton('RemoveLoad')}" value="Supprimer Charge Selection"
+                                         styleClass="btn btn-warn vr-toolbox-long-button"
+                                         ajax="false"
+                                         actionListener="#{academicAppStatusCtrl.onRemoveLoadAllSelected}"
+                                         update=":messagesForm"
+                        />
+                        <p:commandButton rendered="#{academicAppStatusCtrl.isEnabledButton('ApplyLoad')}" value="Appliquer Charge TOUT"
+                                         styleClass="btn btn-info vr-toolbox-long-button"
+                                         ajax="false"
                                          actionListener="#{academicAppStatusCtrl.onApplyLoadAll}"
+                                         update=":messagesForm"
+                        />
+                        <p:commandButton rendered="#{academicAppStatusCtrl.isEnabledButton('RemoveLoad')}" value="Supprimer Charge TOUT"
+                                         styleClass="btn btn-danger vr-toolbox-long-button"
+                                         ajax="false"
+                                         actionListener="#{academicAppStatusCtrl.onRemoveLoadAll}"
                                          update=":messagesForm"
                         />
                     </div>
@@ -220,7 +245,7 @@ and open the template in the editor.
                                         <p:outputLabel styleClass="vr-center-text"
                                                        value="#{vr.dblCustomFormat(e.getStudentsCountByProgram('MC'),'0.00')}"/>
                                     </p:column>
-                                    <p:columns var="cc" value="#{academicAppStatusCtrl.model.teachers.programs.values()}" headerText="#{cc.name}">
+                                    <p:columns var="cc" value="#{academicAppStatusCtrl.model.teachers.programs}" headerText="#{cc.name}">
                                         <p:outputLabel styleClass="vr-center-text"
                                                        value="#{(vr.dblCustomFormat(e.getProgramSessionLoadById(cc.id),'0.00'))}"/>
                                     </p:columns>

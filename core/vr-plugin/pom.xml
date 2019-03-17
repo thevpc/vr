@@ -179,12 +179,12 @@
                         }
                         java.util.Map scopes=new java.util.HashMap();
                         for(dep : project.dependencies){
-                        java.util.List deps=scopes.get(dep.scope);
-                        if(deps==null){
-                        deps=new java.util.ArrayList();
-                        scopes.put(dep.scope,deps);
+                        java.util.List dependencies=scopes.get(dep.scope);
+                        if(dependencies==null){
+                        dependencies=new java.util.ArrayList();
+                        scopes.put(dep.scope,dependencies);
                         }
-                        deps.add(dep.groupId+":"+dep.artifactId+":"+dep.version);
+                        dependencies.add(dep.groupId+":"+dep.artifactId+":"+dep.version);
                         }
                         for(scope : scopes.entrySet()){
                         printlnfc("project.dependencies.%s=%s",scope.key,strlist(";",scope.value));

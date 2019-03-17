@@ -5,7 +5,6 @@
  */
 package net.vpc.app.vainruling.plugins.academic.service.model.config;
 
-import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.FormulaType;
 import net.vpc.upa.UserFieldModifier;
@@ -29,7 +28,6 @@ public class AcademicDiscipline {
     private int id;
     @Summary
     private String code;
-    @Main
     private String name;
     @Summary
     private String name2;

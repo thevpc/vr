@@ -77,6 +77,7 @@ public class InternshipBoardsStatsCtrl /*extends MyInternshipBoardsCtrl*/ {
     }
 
     public AcademicInternshipBoard getSelectedInternshipBoard() {
+        getModel().setEnabledNavigateToIntenship(CorePlugin.get().isCurrentSessionAdminOrManager());
         String ii = getModel().getBoardId();
         if (ii != null && ii.length() > 0) {
             AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
@@ -551,6 +552,7 @@ public class InternshipBoardsStatsCtrl /*extends MyInternshipBoardsCtrl*/ {
     public class Model {
 
         private boolean boardManager;
+        private boolean enabledNavigateToIntenship;
         private String boardId;
         private String periodId;
         private String filterInternshipTypeId;
@@ -567,6 +569,14 @@ public class InternshipBoardsStatsCtrl /*extends MyInternshipBoardsCtrl*/ {
         private Map<String, ChartModel> statCharts = new HashMap<>();
         private boolean filterInternshipTypeVisible = true;
         private List<StudentAcademicInternshipStatus> studentInternshipStatuses=new ArrayList<>();
+
+        public boolean isEnabledNavigateToIntenship() {
+            return enabledNavigateToIntenship;
+        }
+
+        public void setEnabledNavigateToIntenship(boolean enabledNavigateToIntenship) {
+            this.enabledNavigateToIntenship = enabledNavigateToIntenship;
+        }
 
         public List<StudentAcademicInternshipStatus> getStudentInternshipStatuses() {
             return studentInternshipStatuses;

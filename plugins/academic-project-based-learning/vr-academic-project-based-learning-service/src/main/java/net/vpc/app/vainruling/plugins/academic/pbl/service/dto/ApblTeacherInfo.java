@@ -15,7 +15,7 @@ public class ApblTeacherInfo {
     private List<TeamNode> teams=new ArrayList<>();
     private Set<AcademicStudent> students=new HashSet<>();
     private Map<Integer,Double> programSessionsLoadById =new HashMap<>();
-    private Map<String,Double> programsLoadByName=new HashMap<>();
+//    private Map<String,Double> programsLoadByName=new HashMap<>();
 
     public AcademicTeacher getTeacher() {
         return teacher;
@@ -64,30 +64,37 @@ public class ApblTeacherInfo {
         this.programSessionsLoadById = programSessionsLoadById;
     }
 
-    public double getProgramLoadByName(String programName) {
-        Double d = programsLoadByName.get(programName);
-        if(d==null){
-            return 0.0;
-        }
-        return d;
-    }
-
-    public double addProgramLoadByName(String programName,double value) {
-        Double d = programsLoadByName.get(programName);
-        if(d==null){
-            d=value;
-        }else{
-            d=d+value;
-        }
-        programsLoadByName.put(programName,d);
-        return d;
-    }
+//    public double getProgramLoadByName(String programName) {
+//        Double d = programsLoadByName.get(programName);
+//        if(d==null){
+//            return 0.0;
+//        }
+//        return d;
+//    }
+//
+//    public double addProgramLoadByName(String programName,double value) {
+//        Double d = programsLoadByName.get(programName);
+//        if(d==null){
+//            d=value;
+//        }else{
+//            d=d+value;
+//        }
+//        programsLoadByName.put(programName,d);
+//        return d;
+//    }
+//    public void setProgramLoadByName(String programName,double value) {
+//        programsLoadByName.put(programName,value);
+//    }
+//    public Map<String, Double> getProgramsLoadByName() {
+//        return programsLoadByName;
+//    }
+//
+//    public void setProgramsLoadByName(Map<String, Double> programsLoadByName) {
+//        this.programsLoadByName = programsLoadByName;
+//    }
 
     public void setProgramSessionLoadById(int id, double value) {
         programSessionsLoadById.put(id,value);
-    }
-    public void setProgramLoadByName(String programName,double value) {
-        programsLoadByName.put(programName,value);
     }
 
     public double getProgramSessionLoadById(int id) {
@@ -98,7 +105,7 @@ public class ApblTeacherInfo {
         return d;
     }
 
-    public double addProgramSessionLoadByName(int id, double value) {
+    public double addProgramSessionLoadById(int id, double value) {
         Double d = programSessionsLoadById.get(id);
         if(d==null){
             d=value;
@@ -109,13 +116,6 @@ public class ApblTeacherInfo {
         return d;
     }
 
-    public Map<String, Double> getProgramsLoadByName() {
-        return programsLoadByName;
-    }
-
-    public void setProgramsLoadByName(Map<String, Double> programsLoadByName) {
-        this.programsLoadByName = programsLoadByName;
-    }
 
     public void setStudentsCount(double studentsCount) {
         this.studentsCount = studentsCount;

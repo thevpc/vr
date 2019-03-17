@@ -5,6 +5,7 @@
  */
 package net.vpc.app.vainruling.core.service.model;
 
+import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.upa.RelationshipType;
 import net.vpc.upa.config.*;
 
@@ -13,6 +14,12 @@ import net.vpc.upa.config.*;
  */
 @Entity
 @Path("Admin/Security")
+@Properties(
+        {
+            @Property(name = "ui.auto-filter.user", value = "{expr='this.user',order=1}")
+            ,
+                @Property(name = "ui.auto-filter.profile", value = "{expr='this.profile',order=2}")
+        })
 public class AppUserProfileBinding {
 
     @Path("Main")

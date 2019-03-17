@@ -150,7 +150,6 @@ public class VrUtils {
                         e.replaceWith(e.childNode(0));
                     } catch (java.lang.IndexOutOfBoundsException ex) {
                         //why
-                        System.out.print("");
                     }
                 } else {
                     e.remove();

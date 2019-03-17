@@ -92,8 +92,8 @@ public class StudentProfileSettingsCtrl implements DocumentUploadListener, VrAct
             @Override
             public void run() {
                 try {
-                    app.updateContactInformations(getModel().user);
-                    app.updateStudentInformations(getModel().student);
+                    app.saveUserContact(getModel().user);
+                    app.saveStudent(getModel().student);
                     FacesUtils.addInfoMessage("Modifications enregistrées");
                 } catch (Exception ex) {
                     log.log(Level.SEVERE, "Error", ex);
@@ -108,8 +108,8 @@ public class StudentProfileSettingsCtrl implements DocumentUploadListener, VrAct
             @Override
             public void run() {
                 try {
-                    app.updateContactInformations(getModel().user);
-                    app.updateStudentCVInformations(getModel().studentCV);
+                    app.saveUserContact(getModel().user);
+                    app.saveStudentCV(getModel().studentCV);
                     FacesUtils.addInfoMessage("Modifications enregistrées");
                 } catch (Exception ex) {
                     log.log(Level.SEVERE, "Error", ex);
@@ -155,7 +155,7 @@ public class StudentProfileSettingsCtrl implements DocumentUploadListener, VrAct
             @Override
             public void run() {
                 try {
-                    app.updateContactInformations(getModel().user);
+                    app.saveUserContact(getModel().user);
                     FacesUtils.addInfoMessage("Modifications enregistrées");
                 } catch (Exception ex) {
                     log.log(Level.SEVERE, "Error", ex);
@@ -262,7 +262,7 @@ public class StudentProfileSettingsCtrl implements DocumentUploadListener, VrAct
             @Override
             public void run() {
                 try {
-                    app.updateStudentInformations(getModel().student);
+                    app.saveStudent(getModel().student);
                     FacesUtils.addInfoMessage("Modifications enregistrées");
                 } catch (Exception ex) {
                     log.log(Level.SEVERE, "Error", ex);

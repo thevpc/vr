@@ -28,6 +28,7 @@ public class AppContactBase {
      */
     private String nin;
 
+    @Main
     private String fullName;
 
     @Property(name = UIConstants.Form.SPAN, value = "MAX_VALUE")

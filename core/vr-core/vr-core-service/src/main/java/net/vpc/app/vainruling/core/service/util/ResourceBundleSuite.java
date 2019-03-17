@@ -21,7 +21,7 @@ public class ResourceBundleSuite {
     private PropertyPlaceholderHelper placeholderHelper = new PropertyPlaceholderHelper("%{", "}");
 
     public void add(Properties r,String label) {
-        all.add(new I18n.PropertiesResourceBundle(r));
+        all.add(new I18n.PropertiesResourceBundle(r,label));
         map.putAll(r);
     }
 

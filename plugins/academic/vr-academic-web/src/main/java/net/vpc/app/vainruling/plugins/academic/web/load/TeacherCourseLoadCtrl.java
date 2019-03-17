@@ -19,6 +19,7 @@ import net.vpc.common.jsf.FacesUtils;
 import javax.faces.model.SelectItem;
 import java.util.ArrayList;
 import java.util.List;
+import javax.faces.bean.ManagedBean;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -32,6 +33,7 @@ import java.util.List;
         menu = "/Education/Load",
         securityKey = AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_TEACHER_COURSE_LOAD
 )
+@ManagedBean
 public class TeacherCourseLoadCtrl extends AbstractCourseLoadCtrl {
 
     public TeacherCourseLoadCtrl() {

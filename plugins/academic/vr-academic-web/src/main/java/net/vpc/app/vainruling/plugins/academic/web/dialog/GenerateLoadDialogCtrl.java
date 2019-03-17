@@ -108,7 +108,7 @@ public class GenerateLoadDialogCtrl {
             //}
         }
         getModel().setPeriod(String.valueOf(curr.getId()));
-
+        onChangePeriod();
     }
 
     public void onChangePeriod() {

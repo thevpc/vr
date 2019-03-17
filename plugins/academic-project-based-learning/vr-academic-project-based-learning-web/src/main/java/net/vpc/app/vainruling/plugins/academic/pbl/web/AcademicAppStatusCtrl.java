@@ -7,6 +7,7 @@ package net.vpc.app.vainruling.plugins.academic.pbl.web;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.model.AppDepartment;
+import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.web.OnPageLoad;
 import net.vpc.app.vainruling.core.web.UPathItem;
@@ -31,10 +32,9 @@ import net.vpc.upa.filters.ObjectFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.faces.model.SelectItem;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Logger;
+import javax.faces.bean.ManagedBean;
 import net.vpc.app.vainruling.plugins.academic.pbl.service.dto.ApblTeamInfo;
 import net.vpc.common.util.IntegerParserConfig;
 
@@ -50,6 +50,7 @@ import net.vpc.common.util.IntegerParserConfig;
         securityKey = "Custom.Education.Apbl.AppStatus",
         declareSecurityKeys = "Custom.Education.Apbl.ApplyLoad"
 )
+@ManagedBean
 public class AcademicAppStatusCtrl {
 
     public static final String RIGHT_FILESYSTEM_WRITE = "Custom.FileSystem.Write";
@@ -180,15 +181,17 @@ public class AcademicAppStatusCtrl {
 
     @OnPageLoad
     private void onPageLoad() {
-        reloadSessions();
+        reloadPeriods();
     }
 
     public void reloadSessions() {
         getModel().getSessions().clear();
+        String id = getModel().getCurrentPeriodId();
         for (ApblSession session : apbl.findAvailableSessions()) {
-            getModel().getSessions().add(FacesUtils.createSelectItem(String.valueOf(session.getId()), session.getName()));
+            if(String.valueOf(session.getPeriod().getId()).equals(id)) {
+                getModel().getSessions().add(FacesUtils.createSelectItem(String.valueOf(session.getId()), session.getName()));
+            }
         }
-
         getModel().getDepartments().clear();
         for (AppDepartment dep : core.findDepartments()) {
             getModel().getDepartments().add(FacesUtils.createSelectItem(String.valueOf(dep.getId()), dep.getName()));
@@ -197,8 +200,34 @@ public class AcademicAppStatusCtrl {
         reloadTeacherAndStudentInfos();
     }
 
+    public void reloadPeriods() {
+        getModel().getPeriods().clear();
+        Map<Integer,AppPeriod> p=new LinkedHashMap<>() ;
+        String old=getModel().getCurrentPeriodId();
+        getModel().setCurrentPeriodId(null);
+        for (ApblSession session : apbl.findAvailableSessions()) {
+            p.put(session.getPeriod().getId(),session.getPeriod());
+            if(String.valueOf(session.getPeriod().getId()).equals(old)){
+                getModel().setCurrentPeriodId(old);
+            }
+        }
+        if(getModel().getCurrentPeriodId()==null){
+            for (AppPeriod value : p.values()) {
+                getModel().setCurrentPeriodId(String.valueOf(value.getId()));
+                break;
+            }
+        }
+        for (AppPeriod value : p.values()) {
+            getModel().getPeriods().add(FacesUtils.createSelectItem(String.valueOf(value.getId()), value.getName()));
+        }
+        reloadSessions();
+    }
+
     public void onChangeSelectedSession() {
         reloadTeacherAndStudentInfos();
+    }
+    public void onChangeSelectedPeriod() {
+        reloadSessions();
     }
 
     public void reloadTeacherAndStudentInfos() {
@@ -288,44 +317,95 @@ public class AcademicAppStatusCtrl {
         );
     }
 
-    public void onApplyLoadAll() {
+    public void onRemoveLoadAllSelected() {
         String[] selectedSessions = getSelectedSessions();
-        if (selectedSessions.length == 1) {
+        for (String selectedSession : selectedSessions) {
+            Integer sessionId = Convert.toInt(selectedSession, IntegerParserConfig.LENIENT_F);
+            apbl.removeSessionLoad(sessionId);
+        }
+        if (selectedSessions.length > 0) {
+            FacesUtils.addInfoMessage("Application reussie");
+        }
+    }
+
+    public void onRemoveLoadAll() {
+        List<SelectItem> selectedSessions = getModel().getSessions();
+        for (SelectItem selectedSession : selectedSessions) {
+            Integer sessionId = Convert.toInt(selectedSession.getValue(), IntegerParserConfig.LENIENT_F);
+            apbl.removeSessionLoad(sessionId);
+        }
+        if (selectedSessions.size() > 0) {
+            FacesUtils.addInfoMessage("Application reussie");
+        }
+    }
+
+    public void onApplyLoadAllSelected() {
+        String[] selectedSessions = getSelectedSessions();
+        for (String selectedSession : selectedSessions) {
             HashSet<Integer> accepted = new HashSet<>();
             for (ApblTeacherInfo t : getModel().getTeachers().getTeachers()) {
                 if (t.getTeacher() != null) {
                     accepted.add(t.getTeacher().getId());
                 }
             }
-            apbl.applyTeacherLoad(Convert.toInt(selectedSessions[0], IntegerParserConfig.LENIENT_F), new ObjectFilter<AcademicTeacher>() {
+            Integer sessionId = Convert.toInt(selectedSession, IntegerParserConfig.LENIENT_F);
+            apbl.removeSessionLoad(sessionId);
+            apbl.applyTeacherLoad(sessionId, new ObjectFilter<AcademicTeacher>() {
                 @Override
                 public boolean accept(AcademicTeacher value) {
                     return accepted.contains(value.getId());
                 }
             });
+        }
+        if (selectedSessions.length > 0) {
+            FacesUtils.addInfoMessage("Application reussie");
+        }
+    }
+
+    public void onApplyLoadAll() {
+        List<SelectItem> selectedSessions = getModel().getSessions();
+        for (SelectItem selectedSession : selectedSessions) {
+//            HashSet<Integer> accepted = new HashSet<>();
+//            for (ApblTeacherInfo t : getModel().getTeachers().getTeachers()) {
+//                if (t.getTeacher() != null) {
+//                    accepted.add(t.getTeacher().getId());
+//                }
+//            }
+            Integer sessionId = Convert.toInt(selectedSession.getValue(), IntegerParserConfig.LENIENT_F);
+            apbl.removeSessionLoad(sessionId);
+            apbl.applyTeacherLoad(sessionId, null);
+        }
+        if (selectedSessions.size() > 0) {
             FacesUtils.addInfoMessage("Application reussie");
         }
     }
 
     public void onApplyLoad(int teacherId) {
         String[] selectedSessions = getSelectedSessions();
-        if (selectedSessions.length == 1) {
+        HashSet<String> names=new HashSet<>();
+        for (String selectedSession : selectedSessions) {
             AcademicTeacher t = academic.findTeacher(teacherId);
             if (t != null) {
-                apbl.applyTeacherLoad(Convert.toInt(selectedSessions[0], IntegerParserConfig.LENIENT_F), new ObjectFilter<AcademicTeacher>() {
+                apbl.applyTeacherLoad(Convert.toInt(selectedSession, IntegerParserConfig.LENIENT_F), new ObjectFilter<AcademicTeacher>() {
                     @Override
                     public boolean accept(AcademicTeacher value) {
                         return value.getId() == teacherId;
                     }
                 });
-                FacesUtils.addInfoMessage("Application reussie : " + t.resolveFullName());
+                names.add(t.resolveFullName());
             }
+        }
+        if (selectedSessions.length > 0) {
+            FacesUtils.addInfoMessage("Application reussie : " + names);
         }
     }
 
     public boolean isEnabledButton(String id) {
         switch (StringUtils.trim(id)) {
             case "ApplyLoad": {
+                return UPA.getPersistenceUnit().getSecurityManager().isAllowedKey(ApblPluginSecurity.RIGHT_CUSTOM_EDUCATION_APBL_APPLY_LOAD);
+            }
+            case "RemoveLoad": {
                 return UPA.getPersistenceUnit().getSecurityManager().isAllowedKey(ApblPluginSecurity.RIGHT_CUSTOM_EDUCATION_APBL_APPLY_LOAD);
             }
         }
@@ -339,9 +419,11 @@ public class AcademicAppStatusCtrl {
         private List<ApblTeacherInfo> filteredTeachers = new ArrayList<>();
         private List<ApblStudentInfo> filteredStudents = new ArrayList<>();
         private List<ApblTeamInfo> filteredTeams = new ArrayList<>();
+        private List<SelectItem> periods = new ArrayList<>();
         private List<SelectItem> sessions = new ArrayList<>();
         private List<SelectItem> departments = new ArrayList<>();
         private String[] selectedSessions = new String[0];
+        private String currentPeriodId = null;
         private String currentSessionId = null;
         private String selectedDepartment = null;
         private String studentsFilterText = null;
@@ -352,6 +434,22 @@ public class AcademicAppStatusCtrl {
         private boolean filterStudentsNoTeam = false;
         private boolean filterStudentsMultiTeam = false;
         private boolean filterStudentsNoProject = false;
+
+        public List<SelectItem> getPeriods() {
+            return periods;
+        }
+
+        public void setPeriods(List<SelectItem> periods) {
+            this.periods = periods;
+        }
+
+        public String getCurrentPeriodId() {
+            return currentPeriodId;
+        }
+
+        public void setCurrentPeriodId(String currentPeriodId) {
+            this.currentPeriodId = currentPeriodId;
+        }
 
         public List<ApblTeamInfo> getFilteredTeams() {
             return filteredTeams;

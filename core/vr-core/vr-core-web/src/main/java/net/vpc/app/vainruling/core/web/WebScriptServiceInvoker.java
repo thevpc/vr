@@ -6,6 +6,7 @@ import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.TraceService;
 import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.service.plugins.Plugin;
 import net.vpc.app.vainruling.core.service.security.UserToken;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.service.util.VrPlatformUtils;
@@ -72,7 +73,7 @@ public class WebScriptServiceInvoker {
         try {
             try {
                 String firstLineOfScript = new BufferedReader(new StringReader(script)).readLine();
-                TraceService.get().trace("System.actions.web-script", null,MapUtils.map("script", firstLineOfScript), script, "web-script", Level.WARNING);
+                TraceService.get().trace("System.actions.web-script", null,MapUtils.map("script", firstLineOfScript), "web-script", Level.WARNING);
                 scriptEngine.eval(script);
                 Map m = (Map) scriptEngine.get("out");
                 for (Object k : m.keySet().toArray(new Object[m.size()])) {
@@ -103,6 +104,15 @@ public class WebScriptServiceInvoker {
         engine.put("app", new VrJs());
         engine.put("pu", UPA.getPersistenceUnit());
         engine.put("privateVrReturnCount", 0);
+        for (Plugin plugin : CorePlugin.get().getPlugins()) {
+            for (String beanName : plugin.getBeanNames()) {
+                Object bean = VrApp.getBean(beanName);
+                engine.put(beanName, bean);
+                if(beanName.endsWith("Plugin")){
+                    engine.put(beanName.substring(0,beanName.length()-"Plugin".length()), bean);
+                }
+            }
+        }
         try {
             engine.eval("function Return(x) { privateVrReturnCount=privateVrReturnCount+1; out['$'+privateVrReturnCount]=x; }");
             engine.eval("function ReturnVar(v,x) { privateVrReturnCount=privateVrReturnCount+1; out[v]=x; }");

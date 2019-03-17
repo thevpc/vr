@@ -39,7 +39,7 @@
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.ant:ant-launcher:1.10.3" level="project" />
     <orderEntry type="library" name="Maven: net.sourceforge.jexcelapi:jxl:2.6.10" level="project" />
     <orderEntry type="library" name="Maven: log4j:log4j:1.2.14" level="project" />
-    <orderEntry type="library" name="Maven: net.vpc.common:vpc-common-strings:1.2.15" level="project" />
+    <orderEntry type="module" module-name="vpc-common-strings" />
     <orderEntry type="module" module-name="vpc-common-utils" />
     <orderEntry type="module" module-name="vpc-common-io" />
     <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.8.5" level="project" />

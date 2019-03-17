@@ -11,7 +11,7 @@
         <module>core/vr-plugin</module>
 
         <module>core/vr-core</module>
-        <module>core/vr-toolbox</module>
+        <module>core/vr-box</module>
         <module>plugins/calendars</module>
         <module>plugins/tasks</module>
         <module>plugins/blog</module>

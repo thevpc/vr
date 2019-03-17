@@ -1,0 +1,19 @@
+generate vain ruling (vr) project
+
+@@SYNOPSIS:@@
+##vr-box## [COMMAND] [OPTIONS]...
+
+change file mode bits
+
+@@COMMANDS:@@
+    --generate-project
+    --generate-module
+    --generate-page
+    --load-properties <FILE>
+    --store-properties <FILE>
+
+
+@@EXAMPLES:@@
+
+##vr-box## --generate-project
+   generates a new project

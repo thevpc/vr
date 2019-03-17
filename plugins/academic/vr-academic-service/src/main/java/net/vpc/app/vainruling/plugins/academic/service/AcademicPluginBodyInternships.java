@@ -511,8 +511,8 @@ public class AcademicPluginBodyInternships extends AcademicPluginBody {
             }
         }
         if (generatedCount > 0) {
-            TraceService.get().trace("Academic.generated-internships", "success", MapUtils.map("name", internship.getBoard().getName(), "count", generatedCount, "oldCount", alreadyFoundCount),
-                    JsonUtils.jsonMap("name", internship.getBoard().getName(), "count", generatedCount, "oldCount", alreadyFoundCount),
+            TraceService.get().trace("Academic.generated-internships", "success", 
+                    MapUtils.map("name", internship.getBoard().getName(), "count", generatedCount, "oldCount", alreadyFoundCount),
                     "/Education/Internships", Level.INFO
             );
         }

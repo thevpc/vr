@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.vpc.app.vain-ruling.core</groupId>
     <artifactId>vr-core-service</artifactId>
-    <version>1.13.11</version>
+    <version>1.13.13</version>
     <name>net.vpc.app.vain-ruling.core.vr-core-service</name>
     <packaging>jar</packaging>
     <url>https://github.com/thevpc/vr/wiki</url>
@@ -24,7 +24,7 @@
         <dependency>
             <groupId>net.vpc.app.vain-ruling.core</groupId>
             <artifactId>vr-core-model</artifactId>
-            <version>1.13.11</version>
+            <version>1.13.13</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
@@ -67,12 +67,12 @@
         <dependency>
             <groupId>net.vpc.upa</groupId>
             <artifactId>upa-api</artifactId>
-            <version>1.2.0.48</version>
+            <version>1.2.0.49</version>
         </dependency>
         <dependency>
             <groupId>net.vpc.upa</groupId>
             <artifactId>upa-impl</artifactId>
-            <version>1.2.0.48.1</version>
+            <version>1.2.0.49.0</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
@@ -83,17 +83,17 @@
         <dependency>
             <groupId>net.vpc.common</groupId>
             <artifactId>vpc-common-strings</artifactId>
-            <version>1.2.15</version>
+            <version>1.2.16</version>
         </dependency>
         <dependency>
             <groupId>net.vpc.common</groupId>
             <artifactId>vpc-common-utils</artifactId>
-            <version>1.22.0</version>
+            <version>1.22.4</version>
         </dependency>
         <dependency>
             <groupId>net.vpc.common</groupId>
             <artifactId>vpc-common-io</artifactId>
-            <version>1.3.6</version>
+            <version>1.3.10</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>

@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.vpc.app.vain-ruling.core</groupId>
     <artifactId>vr-core-rest-client</artifactId>
-    <version>1.13.11</version>
+    <version>1.13.13</version>
     <packaging>jar</packaging>
     <name>net.vpc.app.vain-ruling.core.vr-core-rest-client</name>
     <url>https://github.com/thevpc/vr/wiki</url>

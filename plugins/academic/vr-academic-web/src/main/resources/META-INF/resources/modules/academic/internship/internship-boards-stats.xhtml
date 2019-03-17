@@ -133,7 +133,7 @@ and open the template in the editor.
                                             <p:outputLabel value="#{di.count}"/>
                                         </p:column>
                                         <p:column headerText="">
-                                            <p:commandLink id="go1"
+                                            <p:commandLink id="go1" disabled="#{!internshipBoardsStatsCtrl.model.enabledNavigateToIntenship}"
                                                            action="#{vr.gotoPageObjItem('AcademicInternship',di.userValue.get(0).id)}"
                                                            value="#{di.userValue.get(0).code}"
                                             />
@@ -173,6 +173,7 @@ and open the template in the editor.
                                         </p:column>
                                         <p:column headerText="">
                                             <p:commandLink id="go2"
+                                                           disabled="#{!internshipBoardsStatsCtrl.model.enabledNavigateToIntenship}"
                                                            action="#{vr.gotoPageObjItem('AcademicInternship',di.userValue.get(0).id)}"
                                                            value="#{di.userValue.get(0).code}"
                                             />
@@ -238,6 +239,7 @@ and open the template in the editor.
                                         </p:column>
                                         <p:column headerText="">
                                             <p:commandLink id="go3"
+                                                           disabled="#{!internshipBoardsStatsCtrl.model.enabledNavigateToIntenship}"
                                                            action="#{vr.gotoPageObjItem('AcademicInternship',di.userValue.get(0).id)}"
                                                            value="#{di.userValue.get(0).code}"
                                             />
@@ -277,6 +279,7 @@ and open the template in the editor.
                                         </p:column>
                                         <p:column headerText="">
                                             <p:commandLink id="go"
+                                                           disabled="#{!internshipBoardsStatsCtrl.model.enabledNavigateToIntenship}"
                                                            action="#{vr.gotoPageObjItem('AcademicInternship',di.userValue.get(0).id)}"
                                                            value="#{di.userValue.get(0).code}"
                                             />
@@ -310,6 +313,7 @@ and open the template in the editor.
                                         </p:column>
                                         <p:column headerText="">
                                             <p:commandLink id="go4"
+                                                           disabled="#{!internshipBoardsStatsCtrl.model.enabledNavigateToIntenship}"
                                                            action="#{vr.gotoPageObjItem('AcademicInternship',di.userValue.get(0).id)}"
                                                            value="#{di.userValue.get(0).code}"
                                             />

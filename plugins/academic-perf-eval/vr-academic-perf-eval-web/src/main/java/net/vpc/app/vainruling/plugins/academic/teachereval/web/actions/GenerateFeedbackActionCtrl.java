@@ -47,23 +47,10 @@ public class GenerateFeedbackActionCtrl {
         if (config == null) {
             config = new Config();
         }
-        getModel().setFilter("");
-
         String t = config.getTitle();
-
         getModel().setPeriodName(core.getCurrentPeriod().getName());
         getModel().setTitle((StringUtils.isEmpty(t) ? "Générer Feedbacks" : t) + " - " + getModel().getPeriodName());
         getModel().setSelectedSession(String.valueOf(config.getSessionId()));
-        getModel().setSelectedModel(String.valueOf(config.getModelId()));
-
-        getModel().setModels(new ArrayList<>());
-        List<AcademicFeedbackModel> models = UPA.getPersistenceUnit().<AcademicFeedbackModel>findAll(AcademicFeedbackModel.class);
-        for (AcademicFeedbackModel item : models) {
-            getModel().getModels().add(FacesUtils.createSelectItem(String.valueOf(item.getId()), item.getName(), null));
-        }
-        if (models.size() > 0) {
-            getModel().setSelectedModel(String.valueOf(models.get(0).getId()));
-        }
 
         new DialogBuilder("/modules/academic/perfeval/generate-feedback-dialog")
                 .setResizable(true)
@@ -82,12 +69,7 @@ public class GenerateFeedbackActionCtrl {
 
     public void fireEventExtraDialogApply() {
         int sessionId = Convert.toInt(getModel().getSelectedSession(), IntegerParserConfig.LENIENT_F);
-        int modelId = Convert.toInt(getModel().getSelectedModel(), IntegerParserConfig.LENIENT_F);
-        VrApp.getBean(AcademicPerfEvalPlugin.class).generateStudentsFeedbackForm(
-                modelId,
-                sessionId,
-                getModel().getFilter()
-        );
+        VrApp.getBean(AcademicPerfEvalPlugin.class).generateStudentsFeedbackForm(sessionId);
         RequestContext.getCurrentInstance().closeDialog(null);
     }
 
@@ -142,11 +124,8 @@ public class GenerateFeedbackActionCtrl {
     public static class Model {
 
         private String title;
-        private String filter;
         private String periodName;
         private String selectedSession;
-        private String selectedModel;
-        private List<SelectItem> models = new ArrayList<>();
 
         public String getTitle() {
             return title;
@@ -154,14 +133,6 @@ public class GenerateFeedbackActionCtrl {
 
         public void setTitle(String title) {
             this.title = title;
-        }
-
-        public String getFilter() {
-            return filter;
-        }
-
-        public void setFilter(String filter) {
-            this.filter = filter;
         }
 
         public String getPeriodName() {
@@ -179,22 +150,5 @@ public class GenerateFeedbackActionCtrl {
         public void setSelectedSession(String selectedSemester) {
             this.selectedSession = selectedSemester;
         }
-
-        public String getSelectedModel() {
-            return selectedModel;
-        }
-
-        public void setSelectedModel(String selectedModel) {
-            this.selectedModel = selectedModel;
-        }
-
-        public List<SelectItem> getModels() {
-            return models;
-        }
-
-        public void setModels(List<SelectItem> models) {
-            this.models = models;
-        }
     }
-
 }

@@ -3,6 +3,8 @@ package net.vpc.app.vr.plugins.academicprofile.service.model;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.upa.config.*;
 
+import java.util.Objects;
+
 /**
  * Created by vpc on 7/19/17.
  */
@@ -13,6 +15,7 @@ public class AcademicCVSection {
     @Id
     @Sequence
     private int id;
+    private String code;
     @Main
     private String title;
 
@@ -42,5 +45,28 @@ public class AcademicCVSection {
 
     public void setDetails(String details) {
         this.details = details;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public AcademicCVSection setCode(String code) {
+        this.code = code;
+        return this;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AcademicCVSection that = (AcademicCVSection) o;
+        return id == that.id &&
+                Objects.equals(code, that.code);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, code);
     }
 }

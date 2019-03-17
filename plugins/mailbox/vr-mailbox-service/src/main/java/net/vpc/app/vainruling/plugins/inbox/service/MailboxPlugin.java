@@ -1033,7 +1033,7 @@ public class MailboxPlugin {
     }
 
     public Set<String> findCategories() {
-        return UPA.getPersistenceUnit().createQuery("Select distinct a.category from MailboxSent a order by a.category").getValueSet(0);
+        return UPA.getPersistenceUnit().createQuery("Select distinct(a.category) from MailboxSent a order by a.category").getValueSet(0);
     }
 
     public List<String> autoCompleteCategory(String catName) {

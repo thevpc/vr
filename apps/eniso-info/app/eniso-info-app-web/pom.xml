@@ -47,20 +47,20 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <github.global.server>github</github.global.server>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
-        <version.vr-core-web-jsf>1.13.11</version.vr-core-web-jsf>
+        <version.vr-core-web-jsf>1.13.13</version.vr-core-web-jsf>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>net.vpc.app.vain-ruling.apps.eniso-info.plugins</groupId>
             <artifactId>eniso-info-main-web</artifactId>
-            <version>1.13.11</version>
+            <version>1.13.13</version>
         </dependency>
 
         <dependency>
             <groupId>net.vpc.app.vain-ruling.apps.eniso-info</groupId>
             <artifactId>eniso-info-app-service</artifactId>
-            <version>1.13.11</version>
+            <version>1.13.13</version>
         </dependency>
         <dependency>
             <groupId>org.apache.tomcat</groupId>

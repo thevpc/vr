@@ -198,9 +198,6 @@ public class CopyAcademicDataHelper {
                 TraceService.get().trace("Academic.copy-academic-assignments", "error", MapUtils.map(
                         "from", fromPeriodObj.getName(),
                         "to", toPeriod.getName(),
-                        "error", error.toString()), JsonUtils.jsonMap(
-                        "from", fromPeriodObj.getName(),
-                        "to", toPeriod.getName(),
                         "error", error.toString()), "Academic", Level.SEVERE);
                 throw new IllegalArgumentException("Some Course Assignments have similar names. Check log for details");
             }
@@ -236,9 +233,6 @@ public class CopyAcademicDataHelper {
             TraceService.get().trace("Academic.copy-academic-assignments", "error", MapUtils.map(
                     "from", fromPeriodObj.getName(),
                     "to", toPeriod.getName(),
-                    "error", error.toString()), JsonUtils.jsonMap(
-                    "from", fromPeriodObj.getName(),
-                    "to", toPeriod.getName(),
                     "error", error.toString()), "Academic", Level.SEVERE);
             throw new IllegalArgumentException("Some Course Assignments have similar names. Check log for details");
         }
@@ -256,9 +250,6 @@ public class CopyAcademicDataHelper {
             }
         }
         TraceService.get().trace("Academic.copy-academic-assignments", "success", MapUtils.map(
-                "from", fromPeriodObj.getName(),
-                "to", toPeriod.getName()
-        ), JsonUtils.jsonMap(
                 "from", fromPeriodObj.getName(),
                 "to", toPeriod.getName()
         ), "Academic", Level.SEVERE);

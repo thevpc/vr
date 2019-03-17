@@ -21,6 +21,11 @@ class CorePluginBodySecurityManager extends CorePluginBody {
         validateRightsDefinitions();
     }
 
+    @Override
+    public void onStart() {
+        validateRightsDefinitions();
+    }
+
     protected void validateRightsDefinitions() {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         CorePlugin core = getContext().getCorePlugin();
@@ -34,7 +39,7 @@ class CorePluginBodySecurityManager extends CorePluginBody {
                         true,
                         true
                 )) {
-                    core.findOrCreate(new AppRightName(rname,rname));
+                    core.findOrCreate(new AppRightName(rname, rname));
                 }
             }
         }
@@ -388,7 +393,7 @@ class CorePluginBodySecurityManager extends CorePluginBody {
         }
 
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        List<String> rights = pu.createQuery("Select distinct n.rightName from AppProfileRight n where n.profileId in ( "
+        List<String> rights = pu.createQuery("Select distinct(n.rightName) from AppProfileRight n where n.profileId in ( "
                 + VrUtils.strcatsep(",", a.stream().map(AppProfile::getId).toArray())
                 + " )")
                 .getValueList(0);

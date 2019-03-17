@@ -5,7 +5,6 @@
  */
 package net.vpc.app.vainruling.plugins.academic.service.model.current;
 
-import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.FormulaType;
 import net.vpc.upa.UserFieldModifier;

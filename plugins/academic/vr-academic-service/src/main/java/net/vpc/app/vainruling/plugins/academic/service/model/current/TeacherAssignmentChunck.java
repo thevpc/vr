@@ -16,8 +16,9 @@ public class TeacherAssignmentChunck {
     boolean proposal;
 
     public TeacherAssignmentChunck() {
-        
+
     }
+
     public TeacherAssignmentChunck(int teacherId, String teacherName) {
         this.teacherId = teacherId;
         this.teacherName = teacherName;

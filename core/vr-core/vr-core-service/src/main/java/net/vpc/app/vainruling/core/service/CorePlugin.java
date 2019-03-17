@@ -29,7 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import static java.lang.Integer.max;
+
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -699,7 +699,13 @@ public class CorePlugin {
     }
 
     public AppUser findHeadOfDepartment(int depId) {
-        for (AppUser u : findUsersByProfile(CorePlugin.PROFILE_HEAD_OF_DEPARTMENT)) {
+        List<AppUser> usersByProfile = UPA.getPersistenceUnit().invokePrivileged(new Action<List<AppUser>>() {
+            @Override
+            public List<AppUser> run() {
+                return findUsersByProfile(CorePlugin.PROFILE_HEAD_OF_DEPARTMENT);
+            }
+        });
+        for (AppUser u : usersByProfile) {
             if (u.getDepartment() != null && u.getDepartment().getId() == depId) {
                 return u;
             }
@@ -900,8 +906,25 @@ public class CorePlugin {
         return bodyDaoManager.findByField(entityName, field, value);
     }
 
+    /**
+     * load an then re save the object!
+     * @param entityName
+     * @param id 
+     */
+    public void updateObjectValue(String entityName,Object id) {
+        bodyDaoManager.updateObjectValue(entityName,id);
+    }
+    
+    public void updateObjectFormulas(String entityName,Object id) {
+        bodyDaoManager.updateObjectFormulas(entityName,id);
+    }
+
     public void updateEntityFormulas(String entityName) {
         bodyDaoManager.updateEntityFormulas(entityName);
+    }
+    
+    public void updateAllEntitiesFormulas() {
+        bodyDaoManager.updateAllEntitiesFormulas();
     }
 
     public List<String> getAllCompletionLists(int monitorUserId) {
@@ -913,11 +936,16 @@ public class CorePlugin {
     }
 
     public List<CompletionInfo> findAllCompletions(int monitorUserId, String category, String objectType, Object objectId, Level minLevel) {
-        List<CompletionInfo> cats = new ArrayList<>();
-        for (CompletionProvider bean : VrApp.getBeansForType(CompletionProvider.class)) {
-            cats.addAll(bean.findCompletions(monitorUserId, category, objectType, objectId, minLevel));
-        }
-        return new ArrayList<>(cats);
+        return UPA.getPersistenceUnit().invokePrivileged(new Action<List<CompletionInfo>>() {
+            @Override
+            public List<CompletionInfo> run() {
+                List<CompletionInfo> cats = new ArrayList<>();
+                for (CompletionProvider bean : VrApp.getBeansForType(CompletionProvider.class)) {
+                    cats.addAll(bean.findCompletions(monitorUserId, category, objectType, objectId, minLevel));
+                }
+                return new ArrayList<>(cats);
+            }
+        });
     }
 
     public PersistenceUnitInfo getPersistenceUnitInfo() {
@@ -929,7 +957,12 @@ public class CorePlugin {
     }
 
     public List<NamedId> getFieldValues(String entityName, String fieldName, Map<String, Object> constraints, Object currentInstance) {
-        return bodyDaoManager.getFieldValues(entityName, fieldName, constraints, currentInstance);
+        return UPA.getPersistenceUnit().invokePrivileged(new Action<List<NamedId>>() {
+            @Override
+            public List<NamedId> run() {
+                return bodyDaoManager.getFieldValues(entityName, fieldName, constraints, currentInstance);
+            }
+        });
     }
 
     private TraceService getTrace() {

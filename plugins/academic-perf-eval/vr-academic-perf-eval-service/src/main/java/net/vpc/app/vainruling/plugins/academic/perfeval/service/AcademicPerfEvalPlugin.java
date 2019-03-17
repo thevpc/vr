@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import net.vpc.app.vainruling.core.service.plugins.VrPlugin;
 import net.vpc.app.vainruling.core.service.util.JsonUtils;
 import net.vpc.common.util.MapUtils;
@@ -153,7 +154,7 @@ public class AcademicPerfEvalPlugin {
         PersistenceUnit pu = UPA.getPersistenceUnit();
 //        if (!checkEnableTeacherFeedbacks(enabled)) return Collections.EMPTY_LIST;
 //        return pu.createQuery("Select u from AcademicCourseAssignment u where u.teacherId=:teacherId and exists(Select f from AcademicFeedback f where f.courseId= u.id) "
-        return pu.createQuery("Select distinct u.teacher from AcademicCourseAssignment u where u.coursePlan.periodId=:periodId and u.id in (Select f.courseId from AcademicFeedback f where u.teacherId != null and 1=1 "
+        return pu.createQuery("Select distinct(u.teacher) from AcademicCourseAssignment u where u.coursePlan.periodId=:periodId and u.id in (Select f.courseId from AcademicFeedback f where u.teacherId != null and 1=1 "
                 + (validated != null ? (" and f.validated=" + validated) : "")
                 + (archived != null ? (" and f.archived=" + archived) : "")
                 + ")"
@@ -167,8 +168,8 @@ public class AcademicPerfEvalPlugin {
     public List<AcademicClass> findClassesWithFeedbacks(int periodId, Boolean validated, Boolean archived, Boolean enabled) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
 //        if (!checkEnableTeacherFeedbacks(enabled)) return Collections.EMPTY_LIST;
-//        return pu.createQuery("Select distinct u.coursePlan.courseLevel.academicClass from AcademicCourseAssignment u where u.coursePlan.periodId=:periodId and u.id in (Select f.courseId from AcademicFeedback f where u.teacherId != null and 1=1 "
-        return pu.createQuery("Select distinct u.coursePlan.courseLevel.academicClass from AcademicCourseAssignment u where u.coursePlan.periodId=:periodId and u.id in (Select f.courseId from AcademicFeedback f where u.teacherId != null and 1=1 "
+//        return pu.createQuery("Select distinct(u.coursePlan.courseLevel.academicClass) from AcademicCourseAssignment u where u.coursePlan.periodId=:periodId and u.id in (Select f.courseId from AcademicFeedback f where u.teacherId != null and 1=1 "
+        return pu.createQuery("Select distinct(u.coursePlan.courseLevel.academicClass) from AcademicCourseAssignment u where u.coursePlan.periodId=:periodId and u.id in (Select f.courseId from AcademicFeedback f where u.teacherId != null and 1=1 "
                 + (validated != null ? (" and f.validated=" + validated) : "")
                 + (archived != null ? (" and f.archived=" + archived) : "")
                 + ")"
@@ -466,32 +467,59 @@ public class AcademicPerfEvalPlugin {
                 .getResultList();
     }
 
-    public void generateStudentsFeedbackForm(final int academicFeedbackModelId, int academicFeedbackSessionId, final String studentProfileFilter) {
+    public List<AcademicFeedbackModelGroupBinding> findModelGroupBindingByGroup(int groupId) {
         final PersistenceUnit pu = UPA.getPersistenceUnit();
-        final AcademicFeedbackModel academicFeedbackModel = pu.findById(AcademicFeedbackModel.class, academicFeedbackModelId);
+        return pu.createQuery("Select b from AcademicFeedbackModelGroupBinding b where b.modelGroupId=:sid").setParameter("sid", groupId).<AcademicFeedbackModelGroupBinding>getResultList();
+    }
+
+    public List<AcademicFeedbackQuestion> findQuestionsByModel(int modelId) {
+        final PersistenceUnit pu = UPA.getPersistenceUnit();
+        return pu.createQuery("Select u from AcademicFeedbackQuestion u where u.parent.modelId=:id")
+                .setParameter("id", modelId)
+                .getResultList();
+    }
+
+    public void generateStudentsFeedbackForm(int academicFeedbackSessionId) {
+        final PersistenceUnit pu = UPA.getPersistenceUnit();
+
         final AcademicFeedbackSession academicFeedbackSession = pu.findById(AcademicFeedbackSession.class, academicFeedbackSessionId);
-        if (academicFeedbackModel == null) {
-            return;
-        }
         if (academicFeedbackSession == null) {
             return;
         }
+        String studentProfileFilter = academicFeedbackSession.getStudentsFilter();
+
+        final AcademicFeedbackModelGroup academicFeedbackModelGroup = academicFeedbackSession.getModelGroup();
+        if (academicFeedbackModelGroup == null) {
+            return;
+        }
+        Map<Integer, AcademicFeedbackModel> modelsByCourseType = new HashMap<>();
+        Map<Integer, List<AcademicFeedbackQuestion>> questionsByModel = new HashMap<>();
+
+        for (AcademicFeedbackModelGroupBinding b : findModelGroupBindingByGroup(academicFeedbackModelGroup.getId())) {
+            if (b.getCourseType() != null && b.getModel() != null) {
+                modelsByCourseType.put(b.getCourseType().getId(), b.getModel());
+                if (!questionsByModel.containsKey(b.getModel().getId())) {
+                    List<AcademicFeedbackQuestion> academicFeedbackQuestions = findQuestionsByModel(b.getModel().getId());
+                    questionsByModel.put(b.getModel().getId(), academicFeedbackQuestions);
+                }
+            }
+        }
+
         TraceService traceService = TraceService.get();
-        Map<String, Object> traceParams = MapUtils.map("model", academicFeedbackModel.getName(), "filter", studentProfileFilter);
-        String traceData = JsonUtils.jsonMap("model", academicFeedbackModel.getName(), "filter", studentProfileFilter);
+        final String modelNames = modelsByCourseType.values().stream().map(m -> m.toString()).collect(Collectors.joining(","));
+        Map<String, Object> traceParams = MapUtils.map("model", modelNames, "filter", studentProfileFilter);
         try {
-            traceService.trace("Academic.generate-students-feedback-form", "start", traceParams, traceData,
+            traceService.trace("Academic.generate-students-feedback-form", "start", traceParams,
                     "/Education/Evaluation",
                     java.util.logging.Level.INFO
             );
             TraceService.makeSilenced(new VoidAction() {
                 @Override
                 public void run() {
-                    List<AcademicFeedbackQuestion> academicFeedbackQuestions = pu.createQuery("Select u from AcademicFeedbackQuestion u where u.parent.modelId=:id")
-                            .setParameter("id", academicFeedbackModelId)
-                            .getResultList();
 
-                    for (AcademicStudent s : academic.findStudents(studentProfileFilter, AcademicStudentStage.ATTENDING, "x.allowCourseFeedback=true")) {
+                    final List<AcademicStudent> availableStudents = academic.findStudents(studentProfileFilter, AcademicStudentStage.ATTENDING, "x.allowCourseFeedback=true");
+
+                    for (AcademicStudent s : availableStudents) {
                         //allowCourseFeedback
                         boolean allowCourseFeedback;
 
@@ -512,15 +540,25 @@ public class AcademicPerfEvalPlugin {
                                 .getValueSet(0);
                         for (AcademicCourseAssignment assignement : assignements) {
                             //if(myClasses.contains(assignement.resolveAcademicClass().getId())){
+                            if (assignement.getCourseType() == null) {
+                                //log error?
+                                continue;
+                            }
                             if (!existingAssignementIds.contains(assignement.getId())) {
                                 if (!"PFE-PFE".equals(assignement.getName())) {
+                                    AcademicFeedbackModel model = modelsByCourseType.get(assignement.getCourseType().getId());
+                                    if (model == null) {
+                                        continue;
+                                    }
+                                    List<AcademicFeedbackQuestion> academicFeedbackQuestions = questionsByModel.get(model.getId());
+
                                     //AcademicCoursePlan
                                     //check if feedback is still there:
                                     AcademicFeedback f = new AcademicFeedback();
                                     f.setArchived(false);
                                     f.setCourse(assignement);
                                     f.setStudent(s);
-                                    f.setModel(academicFeedbackModel);
+                                    f.setModel(model);
                                     f.setSession(academicFeedbackSession);
                                     pu.persist(f);
 
@@ -545,14 +583,12 @@ public class AcademicPerfEvalPlugin {
             }
             ).run();
             traceService.trace("Academic.generateStudentsFeedbackForm", "success", traceParams,
-                    traceData,
                     "/Education/Evaluation",
                     java.util.logging.Level.INFO
             );
         } catch (Exception ex) {
-            traceParams = MapUtils.map("model", academicFeedbackModel.getName(), "filter", studentProfileFilter, "error", ex.getMessage());
-            traceData = JsonUtils.jsonMap("model", academicFeedbackModel.getName(), "filter", studentProfileFilter, "error", ex.getMessage());
-            traceService.trace("Academic.generateStudentsFeedbackForm", "error", traceParams, traceData,
+            traceParams = MapUtils.map("model", modelNames, "filter", studentProfileFilter, "error", ex.getMessage());
+            traceService.trace("Academic.generateStudentsFeedbackForm", "error", traceParams,
                     "/Education/Evaluation",
                     java.util.logging.Level.SEVERE
             );

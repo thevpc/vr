@@ -43,11 +43,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.io.IOException;
 import java.util.*;
 import java.util.logging.Logger;
+
 import net.vpc.app.vainruling.core.service.plugins.VrPlugin;
+import net.vpc.app.vainruling.core.service.util.DefaultObjectToMapConverter;
+import net.vpc.app.vainruling.core.service.util.ObjectToMapConverter;
+import net.vpc.app.vainruling.core.service.util.TextSearchFilter;
 import net.vpc.app.vainruling.plugins.academic.service.dto.TeacherLoadInfoFilter;
 import net.vpc.app.vainruling.plugins.academic.service.dto.TeacherLoadInfo;
 import net.vpc.app.vainruling.plugins.academic.service.dto.TeacherPeriodStatExt;
 import net.vpc.app.vainruling.plugins.academic.service.util.DefaultCourseAssignmentFilter;
+import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.UPA;
 
@@ -322,7 +327,7 @@ public class AcademicPlugin {
         return teachers.findTeacherByUser(userId);
     }
 
-//    public AcademicTeacher findTeacherByContact(int contactId) {
+    //    public AcademicTeacher findTeacherByContact(int contactId) {
 //        return teachers.findTeacherByContact(contactId);
 //    }
     public AcademicTeacher findTeacher(StringComparator t) {
@@ -331,6 +336,10 @@ public class AcademicPlugin {
 
     public List<AcademicTeacher> findTeachers(int period, TeacherPeriodFilter teacherFilter) {
         return teachers.findTeachers(period, teacherFilter);
+    }
+
+    public List<AcademicTeacherStrict> findActiveTeachersStrict() {
+        return teachers.findActiveTeachersStrict();
     }
 
     public List<AcademicTeacher> findTeachers() {
@@ -357,7 +366,7 @@ public class AcademicPlugin {
         return teachers.filterTeachers(objects, studentProfileFilter);
     }
 
-//    public List<AcademicTeacher> findTeachersWithAssignmentsOrIntent(int periodId) {
+    //    public List<AcademicTeacher> findTeachersWithAssignmentsOrIntent(int periodId) {
 //        return teachers.findTeachersWithAssignmentsOrIntent(periodId);
 //    }
 //
@@ -372,6 +381,10 @@ public class AcademicPlugin {
         return teachers.findTeacher(t);
     }
 
+    public List<AcademicCoursePlan> findCoursePlansWithAssignmentsOrIntents(int periodId, int semesterId, int programId, boolean includeAssignments, boolean includeIntents, int assignmentDepId) {
+        return teachers.findCoursePlansWithAssignmentsOrIntents(periodId, semesterId, programId, includeAssignments, includeIntents, assignmentDepId);
+    }
+
     public List<AcademicTeacher> findTeachersWithAssignmentsOrIntents(int periodId, int semesterId, boolean includeAssignments, boolean includeIntents, int teacherDepId, int assignmentDepId) {
         return teachers.findTeachersWithAssignmentsOrIntents(periodId, semesterId, includeAssignments, includeIntents, teacherDepId, assignmentDepId);
     }
@@ -380,7 +393,7 @@ public class AcademicPlugin {
         return students.findStudentByUser(userId);
     }
 
-//    public AcademicStudent findStudentByContact(int contactId) {
+    //    public AcademicStudent findStudentByContact(int contactId) {
 //        return students.findStudentByContact(contactId);
 //    }
     public List<AcademicStudent> findStudents(Integer department, AcademicStudentStage stage) {
@@ -470,7 +483,7 @@ public class AcademicPlugin {
         return imports.importFile(periodId, folder, importOptions);
     }
 
-//    public void add(Object t) {
+    //    public void add(Object t) {
 //        if (t instanceof AppPeriod) {
 //            AppPeriod a = (AppPeriod) t;
 //            a.setCreationTime(new DateTime());
@@ -910,6 +923,10 @@ public class AcademicPlugin {
         return config.findSemester(code);
     }
 
+    public AcademicSemester findSemester(int id) {
+        return config.findSemester(id);
+    }
+
     public AcademicCoursePlan findCoursePlan(int periodId, int courseLevelId, String courseName) {
         return config.findCoursePlan(periodId, courseLevelId, courseName);
     }
@@ -976,6 +993,10 @@ public class AcademicPlugin {
 
     public List<AcademicCourseType> findCourseTypes() {
         return config.findCourseTypes();
+    }
+
+    public List<AcademicCoursePlan> findCoursePlans(int periodId, int semesterId, int programId) {
+        return config.findCoursePlans(periodId, semesterId, programId);
     }
 
     public List<AcademicCoursePlan> findCoursePlans(int periodId) {
@@ -1276,7 +1297,7 @@ public class AcademicPlugin {
     }
 
     public TeacherLoadInfo getTeacherLoadInfo(TeacherLoadInfoFilter f) {
-        TeacherLoadInfo result = new TeacherLoadInfo();
+        TeacherLoadInfo result = new TeacherLoadInfo(f.getPeriodId());
         Map<Integer, AcademicCourseAssignmentInfoByVisitor> all = new HashMap<>();
         DefaultCourseAssignmentFilter otherCourseAssignmentsFilter = f.getOtherCourseAssignmentFilter();
         otherCourseAssignmentsFilter.setAcceptAssignments(true).setAcceptIntents(true).setAcceptNoTeacher(true);
@@ -1328,7 +1349,6 @@ public class AcademicPlugin {
             filterLocked = true;
             filterUnlocked = true;
         }
-
 
         for (AcademicCourseAssignmentInfo c : othersAssignmentsAndIntents) {
             if (!visitedAssignmentId.contains(c.getAssignment().getId())) {
@@ -1388,4 +1408,215 @@ public class AcademicPlugin {
         return assignments;
     }
 
+    public TeacherLoadInfo teacherLoadInfoAssignmentsToIntentsAll(TeacherLoadInfo info) {
+        ArrayList<AcademicCourseAssignmentInfoByVisitor> assignmentInfos = new ArrayList<>();
+        assignmentInfos.addAll(info.getStat().getAssignments());
+        assignmentInfos.addAll(info.getOthers());
+        for (AcademicCourseAssignmentInfoByVisitor aa : assignmentInfos) {
+            AcademicCourseAssignment assignment = aa.getValue().getAssignment();
+            AcademicTeacher t = assignment.getTeacher();
+            if (t != null) {
+                if (teacherLoadInfoIsAllowedUpdateMineIntents(info,assignment.getId())) {
+                    this.addIntent(t.getId(), assignment.getId());
+                    this.removeCourseAssignment(assignment.getId(), false, false);
+                }
+            }
+        }
+        return info;
+    }
+
+    public boolean teacherLoadInfoIsAllowedUpdateMineIntents(TeacherLoadInfo info, Integer assignmentId) {
+        CorePlugin core = VrApp.getBean(CorePlugin.class);
+        Integer userId = core.getCurrentUserId();
+        if (userId == null) {
+            return false;
+        }
+        if (core.isCurrentSessionAdmin()) {
+            return true;
+        }
+
+        AppPeriod period = core.findPeriod(info.getPeriodId());
+        if (period == null || period.isReadOnly()) {
+            return false;
+        }
+        AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
+        AcademicTeacher teacher = a.findTeacherByUser(userId);
+        if (teacher == null) {
+            return false;
+        }
+        if (assignmentId != null) {
+            AcademicCourseAssignmentInfoByVisitor t0 = info.getAll().get(assignmentId);
+            AcademicCourseAssignment t = t0 == null ? null : t0.getValue().getAssignment();
+            if (t != null) {
+                AppUser user = core.findUser(userId);
+                if (user != null) {
+                    AppDepartment d = t.getOwnerDepartment();
+                    if (d != null) {
+                        if (core.isCurrentAllowed(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_COURSE_LOAD_UPDATE_INTENTS)) {
+                            AppDepartment d2 = user.getDepartment();
+                            if (d2 != null && d2.getId() == d.getId()) {
+                                return true;
+                            }
+                        }
+                    }
+                    d = t.resolveDepartment();
+                    if (d != null) {
+                        if (core.isCurrentAllowed(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_COURSE_LOAD_UPDATE_INTENTS)) {
+                            AppDepartment d2 = user.getDepartment();
+                            if (d2 != null && d2.getId() == d.getId()) {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    public TeacherLoadInfo teacherLoadInfoApplyTextFilter(TeacherLoadInfo info, String filter) {
+        if (StringUtils.isEmpty(filter)) {
+            info.setOthers(new ArrayList<>(info.getNonFilteredOthers()));
+        } else {
+            info.setOthers(new TextSearchFilter(filter,
+                    new ObjectToMapConverter() {
+                @Override
+                public Map<String, Object> convert(Object o) {
+                    Map<String, Object> m = new HashMap();
+//                        m.putAll(DefaultObjectToMapConverter.INSTANCE.convert(o));
+                    AcademicCourseAssignmentInfoByVisitor sa = (AcademicCourseAssignmentInfoByVisitor) o;
+                    m.putAll(DefaultObjectToMapConverter.INSTANCE.convert(sa.getValue().getAssignment()));
+                    int keyIndex = 1;
+                    for (TeacherAssignmentChunck chunck : sa.getValue().getAssignmentChunck().getChuncks().values()) {
+                        m.put("key" + keyIndex, chunck.getTeacherName());
+                        keyIndex++;
+                    }
+                    for (TeacherAssignmentChunck chunck : sa.getValue().getCourseChunck().getChuncks().values()) {
+                        m.put("key" + keyIndex, chunck.getTeacherName());
+                        keyIndex++;
+                    }
+                    return m;
+                }
+            }
+            ).filterList(info.getNonFilteredOthers()));
+        }
+        info.setLoadSum(new LoadValue());
+        AcademicConversionTableHelper conversionTableByPeriodId = findConversionTableByPeriodId(info.getPeriodId());
+        AcademicTeacherDegree dd = findTeacherDegree("MA");
+        for (AcademicCourseAssignmentInfoByVisitor other : info.getOthers()) {
+            AcademicCourseAssignment a = other.getAssignment();
+            info.getLoadSum().add(
+                    new LoadValue(a.getValueC(), a.getValueTD(), a.getValueTP(), a.getValuePM())
+            );
+
+        }
+        info.setMaLoad(evalValueEquiv(info.getLoadSum(), dd, conversionTableByPeriodId)/9.5/28);
+        return info;
+    }
+    
+    public boolean teacherLoadInfoIsAllowedUpdateMineAssignments(TeacherLoadInfo info, Integer assignementId) {
+        CorePlugin core = VrApp.getBean(CorePlugin.class);
+        Integer userId = core.getCurrentUserId();
+        if (userId == null) {
+            return false;
+        }
+        AppPeriod period = core.findPeriod(info.getPeriodId());
+
+        if (core.isCurrentSessionAdmin()) {
+            return true;
+        }
+
+        if (period == null || period.isReadOnly()) {
+            return false;
+        }
+
+        if (assignementId != null) {
+            AcademicCourseAssignmentInfoByVisitor t0 = info.getAll().get(assignementId);
+            AcademicCourseAssignment t = t0 == null ? null : t0.getValue().getAssignment();
+            AppUser u = core.findUser(userId);
+            if (u != null && t != null) {
+                AppDepartment d = t.getOwnerDepartment();
+                if (d != null) {
+                    if (core.isCurrentAllowed(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_COURSE_LOAD_UPDATE_ASSIGNMENTS)) {
+                        AppDepartment d2 = u.getDepartment();
+                        if (d2 != null && d2.getId() == d.getId()) {
+                            return true;
+                        }
+                    }
+                }
+                d = t.resolveDepartment();
+                if (d != null) {
+                    if (core.isCurrentAllowed(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_COURSE_LOAD_UPDATE_ASSIGNMENTS)) {
+                        AppDepartment d2 = u.getDepartment();
+                        if (d2 != null && d2.getId() == d.getId()) {
+                            return true;
+                        }
+                    }
+
+                }
+            }
+        }
+        return false;
+    }
+    
+    public boolean teacherLoadInfoDoAssignByIntent(TeacherLoadInfo info,Integer assignementId) {
+        if (assignementId != null) {
+            AcademicCourseAssignmentInfoByVisitor rr = info.getAll().get(assignementId);
+            if (rr != null) {
+                final Set<Integer> s0 = rr.getValue().getAssignmentChunck().getChuncks().keySet();
+                if (s0.size() > 0) {
+                    List<Integer> s = new ArrayList<>(s0);
+                    AcademicTeacher oldTeacher = rr.getValue().getAssignment().getTeacher();
+                    int newTeacherId = -1;
+                    if (oldTeacher == null) {
+                        newTeacherId = s.get(0);
+                    } else {
+                        int lastPos = s.indexOf(oldTeacher.getId());
+                        if (lastPos < 0) {
+                            lastPos = 0;
+                        } else {
+                            lastPos = (lastPos + 1) % s.size();
+                        }
+                        newTeacherId = s.get(lastPos);
+                    }
+                    this.addCourseAssignment(newTeacherId, assignementId);
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public boolean teacherLoadInfoDoAssignByIntentSelected(TeacherLoadInfo info) {
+        for (AcademicCourseAssignmentInfoByVisitor s : info.getAll().values()) {
+            if (s.isSelected()) {
+                int assignementId = s.getValue().getAssignment().getId();
+                AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
+
+                AcademicCourseAssignmentInfoByVisitor rr = info.getAll().get(assignementId);
+                if (rr != null) {
+                    final Set<Integer> s0 = rr.getValue().getAssignmentChunck().getChuncks().keySet();
+                    if (s0.size() > 0) {
+                        List<Integer> selId = new ArrayList<>(s0);
+                        AcademicTeacher oldTeacher = rr.getValue().getAssignment().getTeacher();
+                        int newTeacherId = -1;
+                        if (oldTeacher == null) {
+                            newTeacherId = selId.get(0);
+                        } else {
+                            int lastPos = selId.indexOf(oldTeacher.getId());
+                            if (lastPos < 0) {
+                                lastPos = 0;
+                            } else {
+                                lastPos = (lastPos + 1) % selId.size();
+                            }
+                            newTeacherId = selId.get(lastPos);
+                        }
+                        a.addCourseAssignment(newTeacherId, assignementId);
+                    }
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }

@@ -26,17 +26,14 @@ import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSeme
 @Path("Education/StudyPlan")
 @Properties(
         {
-            @Property(name = "ui.auto-filter.period", value = "{expr='this.period',order=1}")
-            ,
-            @Property(name = "ui.auto-filter.department", value = "{expr='this.courseLevel.academicClass.program.department',order=2}")
-            ,
-            @Property(name = "ui.auto-filter.program", value = "{expr='this.courseLevel.academicClass.program',order=3}")
-            ,
-            @Property(name = "ui.auto-filter.programType", value = "{expr='this.courseLevel.academicClass.program.programType',order=4}")
-            ,
-            @Property(name = "ui.auto-filter.semester", value = "{expr='this.courseLevel.semester',order=5}")
-            ,
-            @Property(name = "ui.auto-filter.class", value = "{expr='this.courseLevel.academicClass',order=6}")
+            @Property(name = "ui.auto-filter.period", value = "{expr='this.period',order=1}"),
+            @Property(name = "ui.auto-filter.department", value = "{expr='this.courseLevel.academicClass.program.department',order=2}"),
+            @Property(name = "ui.auto-filter.program", value = "{expr='this.courseLevel.academicClass.program',order=3}"),
+            @Property(name = "ui.auto-filter.programType", value = "{expr='this.courseLevel.academicClass.program.programType',order=4}"),
+            @Property(name = "ui.auto-filter.semester", value = "{expr='this.courseLevel.semester',order=5}"),
+            @Property(name = "ui.auto-filter.class", value = "{expr='this.courseLevel.academicClass',order=6}"),
+            @Property(name = "ui.auto-filter.responsible", value = "{expr='this.responsible',order=7}"),
+            @Property(name = "ui.auto-filter.officialDiscipline", value = "{expr='this.officialDiscipline',order=8}")
         }
 )
 public class AcademicCoursePlan {
@@ -126,7 +123,7 @@ public class AcademicCoursePlan {
     )
     @Field(defaultValue = "0")
     private double credits;
-    
+
     @Summary
     @Properties(
             @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:40px")
@@ -143,7 +140,7 @@ public class AcademicCoursePlan {
     )
     @ManyToOne(filter = "that.period.id=this.period.id and that.academicClass.id=this.courseLevel.academicClass.id")
     private AcademicCourseGroup courseGroup;
-    
+
     private int groupCountC = 1;
     private int groupCountTD = 1;
     private int groupCountTP = 2;
@@ -183,9 +180,9 @@ public class AcademicCoursePlan {
 
     @Properties(
             {
-//                @Property(name = UIConstants.Form.SEPARATOR, value = "Contenu")
-//                ,
-                    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
+                //                @Property(name = UIConstants.Form.SEPARATOR, value = "Contenu")
+                //                ,
+                @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
             }
     )
     @Field(max = "max")
@@ -403,7 +400,6 @@ public class AcademicCoursePlan {
 //    public void setValueTPPM(double valueTPPM) {
 //        this.valueTPPM = valueTPPM;
 //    }
-
 //    public int getGroupCountTPPM() {
 //        return groupCountTPPM;
 //    }
@@ -411,7 +407,6 @@ public class AcademicCoursePlan {
 //    public void setGroupCountTPPM(int groupCountTPPM) {
 //        this.groupCountTPPM = groupCountTPPM;
 //    }
-
     public int getWeeksC() {
         return weeksC;
     }
@@ -597,23 +592,23 @@ public class AcademicCoursePlan {
     }
 
     public AcademicClass resolveAcademicClass() {
-        return getCourseLevel()== null ? null : getCourseLevel().getAcademicClass();
+        return getCourseLevel() == null ? null : getCourseLevel().getAcademicClass();
     }
 
     public AcademicProgram resolveProgram() {
-        return getCourseLevel()== null ? null : getCourseLevel().resolveProgram();
+        return getCourseLevel() == null ? null : getCourseLevel().resolveProgram();
     }
 
     public AcademicProgramType resolveProgramType() {
-        return getCourseLevel()== null ? null : getCourseLevel().resolveProgramType();
+        return getCourseLevel() == null ? null : getCourseLevel().resolveProgramType();
     }
 
     public AppDepartment resolveDepartment() {
-        return getCourseLevel()== null ? null : getCourseLevel().resolveDepartment();
+        return getCourseLevel() == null ? null : getCourseLevel().resolveDepartment();
     }
-    
+
     public AcademicSemester resolveSemester() {
-        return getCourseLevel()== null ? null : getCourseLevel().getSemester();
+        return getCourseLevel() == null ? null : getCourseLevel().getSemester();
     }
 
     public boolean isLocked() {
@@ -698,8 +693,12 @@ public class AcademicCoursePlan {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         AcademicCoursePlan that = (AcademicCoursePlan) o;
 
@@ -742,5 +741,5 @@ public class AcademicCoursePlan {
     public void setValidationErrors(String validationErrors) {
         this.validationErrors = validationErrors;
     }
-    
+
 }

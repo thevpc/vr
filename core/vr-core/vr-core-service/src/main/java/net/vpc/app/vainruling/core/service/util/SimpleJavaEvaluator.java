@@ -72,7 +72,7 @@ public class SimpleJavaEvaluator implements InSetEvaluator {
 
         evaluator.importType(PlatformHelper.class);
         evaluator.importType(ExtraHelper.class);
-        evaluator.addResolver(new ExpressionEvaluatorResolver() {
+        evaluator.addResolver(new AbstractExpressionEvaluatorResolver() {
             //if the var was not found, assume it is a 'false'
             @Override
             public Variable resolveVariable(String name, ExpressionManager context) {

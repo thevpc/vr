@@ -11,7 +11,7 @@ import java.util.Date;
 /**
  * Created by vpc on 9/19/16.
  */
-@Entity(listOrder = "this.startDate desc,this.name desc")
+@Entity(listOrder = "this.startDate desc,this.name asc")
 @Path("Education/Projects/Apbl")
 @Properties(
         {

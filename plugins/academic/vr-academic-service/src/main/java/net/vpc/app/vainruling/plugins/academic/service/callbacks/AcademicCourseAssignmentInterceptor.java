@@ -30,7 +30,6 @@ import net.vpc.upa.exceptions.UPAException;
 @Callback
 public class AcademicCourseAssignmentInterceptor {
 
-
     @NamedFormula
     public String academicCoursePlan_validationErrors_Formula(CustomFormulaContext ctx) {
         AcademicCoursePlan d = (AcademicCoursePlan) ctx.reloadUpdateObject();
@@ -47,33 +46,46 @@ public class AcademicCourseAssignmentInterceptor {
         }
 
         if (d.getValueTD() < 0) {
-            errors.add("Course Error : TD < 0");
+            errors.add("Course TD < 0");
         } else if (d.getValueTD() > 0 && d.getGroupCountTD() == 0) {
-            errors.add("Course Error : Groupe(TD) = 0");
+            errors.add("Course Group(TD) = 0");
         } else if (d.getGroupCountTD() < 0) {
-            errors.add("Course Error : Groupe(TD) < 0");
+            errors.add("Course Group(TD) < 0");
         }
 
         if (d.getValueTP() < 0) {
-            errors.add("Course Error : TP < 0");
+            errors.add("Course TP < 0");
         } else if (d.getValueTP() > 0 && d.getGroupCountTP() == 0) {
-            errors.add("Course Error : Groupe(TP) = 0");
+            errors.add("Course Group(TP) = 0");
         } else if (d.getGroupCountTP() < 0) {
-            errors.add("Course Error : Groupe(TP) < 0");
+            errors.add("Course Group(TP) < 0");
         }
 
         if (d.getValuePM() < 0) {
-            errors.add("Course Error : PM < 0");
+            errors.add("Course PM < 0");
         } else if (d.getValuePM() > 0 && d.getGroupCountPM() == 0) {
-            errors.add("Course Error : Groupe(PM) = 0");
+            errors.add("Course Group(PM) = 0");
         } else if (d.getGroupCountPM() < 0) {
-            errors.add("Course Error : Groupe(PM) < 0");
+            errors.add("Course Group(PM) < 0");
         }
 
         double c = 0;
         double td = 0;
         double tp = 0;
         double pm = 0;
+
+        double t_c = 0;
+        double t_td = 0;
+        double t_tp = 0;
+        double t_pm = 0;
+
+        double u_c = 0;
+        double u_td = 0;
+        double u_tp = 0;
+        double u_pm = 0;
+        int zeroAssignmentsCount = 0;
+        int noTeacherAssignementsCount = 0;
+
         for (AcademicCourseAssignment assignment : assignments) {
             double ac = assignment.getValueC();
             double atd = assignment.getValueTD();
@@ -82,33 +94,115 @@ public class AcademicCourseAssignmentInterceptor {
             double g = assignment.getGroupCount();
             double s = assignment.getShareCount();
             if (g <= 0) {
-                errors.add("Assignment Error : group<=0");
-            } else if (s < 1) {
-                errors.add("Assignment Error : share<1");
-            } else {
+                errors.add("Assignement group<=0");
+            }
+            if (s < 1) {
+                errors.add("Assignement share<1");
+            } 
+            if (ac<0) {
+                errors.add("Assignement (C) <0");
+            } 
+            if (atd<0) {
+                errors.add("Assignement (TD) <0");
+            } 
+            if (atp<0) {
+                errors.add("Assignement (TP) <0");
+            } 
+            if (apm<0) {
+                errors.add("Assignement (PM) <0");
+            } 
+            if(g>0 && s>=1 && ac>=0 && atd>=0 && atp>=0 && apm>=0){
                 c += ac * g / s;
                 td += atd * g / s;
                 tp += atp * g / s;
                 pm += apm * g / s;
+                if (assignment.getTeacher() != null) {
+                    t_c += ac * g / s;
+                    t_td += atd * g / s;
+                    t_tp += atp * g / s;
+                    t_pm += apm * g / s;
+                } else {
+                    if (ac == 0 && atd == 0 && atp == 0 && apm == 0) {
+                        zeroAssignmentsCount++;
+                    } else {
+                        u_c += ac * g / s;
+                        u_td += atd * g / s;
+                        u_tp += atp * g / s;
+                        u_pm += apm * g / s;
+                        noTeacherAssignementsCount++;
+                    }
+                }
             }
         }
         double epsilon = 1E-3;
         double err = 1E-3;
         if ((err = VrUtils.compareLenientV(d.getValueC() * d.getGroupCountC(), c, epsilon)) != 0) {
-            errors.add("Assignment Error : delta(C) = " + err);
+            if (err < 0) {
+                errors.add("Assignement extra (C) detected = " + (-err));
+            } else {
+                errors.add("Assignement missing (C) detected = " + err);
+            }
         }
         if ((err = VrUtils.compareLenientV(d.getValueTD() * d.getGroupCountTD(), td, epsilon)) != 0) {
-            errors.add("Assignment Error :  delta(TD) = " + err);
+            if (err < 0) {
+                errors.add("Assignement extra (TD) detected = " + (-err));
+            } else {
+                errors.add("Assignement missing (TD) detected = " + err);
+            }
         }
         if ((err = VrUtils.compareLenientV(d.getValueTP() * d.getGroupCountTP(), tp, epsilon)) != 0) {
-            errors.add("Assignment Error :  delta(TP) = " + err);
+            if (err < 0) {
+                errors.add("Assignement extra (TP) detected = " + (-err));
+            } else {
+                errors.add("Assignement missing (TP) detected = " + err);
+            }
         }
         if ((err = VrUtils.compareLenientV(d.getValuePM() * d.getGroupCountPM(), pm, epsilon)) != 0) {
-            errors.add("Assignment Error :  delta(PM) = " + err);
+            if (err < 0) {
+                errors.add("Assignement extra (PM) detected = " + (-err));
+            } else {
+                errors.add("Assignement missing (PM) detected = " + err);
+            }
         }
-        return StringUtils.join("\n", errors);
+        if ((err = VrUtils.compareLenientV(d.getValueC() * d.getGroupCountC(), t_c, epsilon)) != 0) {
+            if (err < 0) {
+                errors.add("Assignement extra Teacher (C) detected = " + (-err));
+            } else {
+                errors.add("Assignement missing Teacher (C) detected = " + err);
+            }
+        }
+        if ((err = VrUtils.compareLenientV(d.getValueTD() * d.getGroupCountTD(), t_td, epsilon)) != 0) {
+            if (err < 0) {
+                errors.add("Assignement extra Teacher (TD) detected = " + (-err));
+            } else {
+                errors.add("Assignement missing Teacher (TD) detected = " + err);
+            }
+        }
+        if ((err = VrUtils.compareLenientV(d.getValueTP() * d.getGroupCountTP(), t_tp, epsilon)) != 0) {
+            if (err < 0) {
+                errors.add("Assignement extra Teacher (TP) detected = " + (-err));
+            } else {
+                errors.add("Assignement missing Teacher (TP) detected = " + err);
+            }
+        }
+        if ((err = VrUtils.compareLenientV(d.getValuePM() * d.getGroupCountPM(), t_pm, epsilon)) != 0) {
+            if (err < 0) {
+                errors.add("Assignement extra Teacher (PM) detected = " + (-err));
+            } else {
+                errors.add("Assignement missing Teacher (PM) detected = " + err);
+            }
+        }
+        if (noTeacherAssignementsCount > 0) {
+            errors.add("Assignements without teachers detected = " + err);
+        }
+        if (zeroAssignmentsCount > 0) {
+            errors.add("Assignements without load detected = " + err);
+        }
+        if(errors.size()>0){
+            return ""+StringUtils.join(";\n", errors);
+        }
+        return "";
     }
-
 
     @OnPrePersist
     public void onPrePersist(PersistEvent event) throws UPAException {

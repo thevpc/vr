@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TeacherLoadFilterComponent {
+
     private Model model = new Model();
 
     public Model getModel() {
@@ -55,15 +56,22 @@ public class TeacherLoadFilterComponent {
         AcademicPlugin academicPlugin = VrApp.getBean(AcademicPlugin.class);
         List<AppPeriod> navigatablePeriods = core.findNavigatablePeriods();
         AppPeriod mainPeriod = core.getCurrentPeriod();
+        String oldPeriod = getModel().getSelectedPeriod();
+        boolean oldPeriodFound = false;
         getModel().setSelectedPeriod(null);
         getModel().getPeriodItems().clear();
         for (AppPeriod p : navigatablePeriods) {
             getModel().getPeriodItems().add(FacesUtils.createSelectItem(String.valueOf(p.getId()), p.getName()));
+            if (String.valueOf(p.getId()).equals(oldPeriod)) {
+                oldPeriodFound = true;
+            }
             if (mainPeriod != null && p.getId() == mainPeriod.getId()) {
                 getModel().setSelectedPeriod(String.valueOf(p.getId()));
             }
         }
-
+        if (oldPeriodFound) {
+            getModel().setSelectedPeriod(oldPeriod);
+        }
 
         getModel().getTeacherDisciplineItems().clear();
         for (AcademicOfficialDiscipline item : academicPlugin.findOfficialDisciplines()) {
@@ -112,11 +120,11 @@ public class TeacherLoadFilterComponent {
         return defaultTeacherFilter;
     }
 
-    public String getPeriodName(){
-        String n=getModel().getSelectedPeriod();
+    public String getPeriodName() {
+        String n = getModel().getSelectedPeriod();
         for (SelectItem selectItem : getModel().getPeriodItems()) {
-            String v=StringUtils.nonNull(selectItem.getValue());
-            if(n.equals(v)){
+            String v = StringUtils.nonNull(selectItem.getValue());
+            if (n.equals(v)) {
                 return selectItem.getLabel();
             }
         }
@@ -127,9 +135,9 @@ public class TeacherLoadFilterComponent {
 //        String[] f = getModel().getRefreshFilterSelected();
 //        return Arrays.asList(f).indexOf(s) >= 0;
 //    }
-
     public static class Model {
 //        String[] refreshFilter = {};
+
         List<SelectItem> refreshFilterItems;
 
         List<SelectItem> teacherDisciplineItems = new ArrayList<>();
@@ -227,11 +235,9 @@ public class TeacherLoadFilterComponent {
 //        public String[] getRefreshFilterSelected() {
 //            return refreshFilter;
 //        }
-
 //        public void setRefreshFilterSelected(String[] refreshFilter) {
 //            this.refreshFilter = refreshFilter;
 //        }
-
         public List<SelectItem> getRefreshFilterItems() {
             return refreshFilterItems;
         }

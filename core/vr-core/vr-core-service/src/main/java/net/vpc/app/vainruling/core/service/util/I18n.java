@@ -378,8 +378,9 @@ public class I18n implements Serializable {
             return label;
         }
 
-        public PropertiesResourceBundle(Properties properties) {
+        public PropertiesResourceBundle(Properties properties, String label) {
             this.lookup = new HashMap(properties);
+            this.label = label;
         }
 
         // Implements java.util.ResourceBundle.handleGetObject; inherits javadoc specification.
