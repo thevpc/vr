@@ -1549,6 +1549,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
 //        if (getModel().getFieldSelection() != null) {
 //            getModel().getFieldSelection().save();
 //        }
+//        updateView();
 //        fireEventSearchClosed();
 //    }
 
@@ -1563,6 +1564,7 @@ public class ObjCtrl extends AbstractObjectCtrl<ObjRow> implements VrControllerI
         }
         updateView();
         DialogBuilder.closeCurrent();
+        
     }
 
     public void fireEventSearchClosed() {
