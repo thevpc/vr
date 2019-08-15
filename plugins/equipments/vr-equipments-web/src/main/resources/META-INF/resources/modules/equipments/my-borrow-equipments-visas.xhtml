@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+
+      >
+
+    <h:head>
+
+    </h:head>
+
+    <h:body>
+        <ui:composition template="#{vr.privateTemplatePath}">
+            <ui:define name="content">
+                <h:form id="listForm">
+                    <p:dataTable id="equipementsTable" var="i" value="#{myBorrowEquipmentsVisasCtrl.model.equipments}"
+                                 class="table table-bordered table-hover"
+                                 paginatorAlwaysVisible="false"
+                                 paginator="true"
+                                 paginatorPosition="bottom"
+                                 rows="1000"
+                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 rowsPerPageTemplate="1000,2000,5000,1000"
+                                 widgetVar="othersTable"
+                                 emptyMessage="Aucune prêt"
+                                 >
+                        <p:column exportable="false" headerText="" style="width: 65px;">
+                            <img src="#{vr.getIconUrl(i.photo,null)}"
+                                 style="width: 40px ; height: 40px; margin-right: 10px;"
+                                 alt="Image"
+                                 onclick="document.getElementById('mainPhotoImg').src = '#{vr.getImageUrl(i.photo,null)}';
+                                         $('#' + PF('photodlg').id).find('.ui-dialog-title')[0].textContent = '#{i.name}';
+                                         PF('photodlg').show();"/>
+                        </p:column>
+                        <p:column headerText="# Serie" style="width: 200px;">
+                            <p:outputLabel value="#{i.serial}"/>
+                        </p:column>
+                        <p:column headerText="Type" style="width: 200px;">
+                            <p:outputLabel value="#{i.equipment.type.name}"/>
+                        </p:column>
+                        <p:column headerText="Marque">
+                            <p:outputLabel value="#{i.equipment.brandLine.name}"/>
+                        </p:column>
+                        <p:column headerText="Libellé" >
+                            <p:outputLabel value="#{i.name}" />
+                        </p:column>
+                        <p:column headerText="Quantité"  style="width: 80px;">
+                            <p:outputLabel value="#{i.borrowQuantity}" />
+                        </p:column>
+                        <p:column headerText="Département">
+                            <p:outputLabel value="#{i.equipment.department.name}"  style="width: 200px;"/>
+                        </p:column>
+                        <p:column headerText="Etat"  style="width: 200px;">
+                            <p:outputLabel value="#{vr.str(i.status)}" />
+                        </p:column>
+                        <p:column headerText="De">
+                            <p:outputLabel value="#{i.fromDate}" />
+                        </p:column>
+                        <p:column headerText="A">
+                            <p:outputLabel value="#{i.toDate}" />
+                        </p:column>
+                        <p:column headerText="Visa">
+                            <p:outputLabel value="#{vr.str(i.visaUser.fullName)} : #{vr.str(i.request.visaUserStatus)}" />
+                            <p:commandButton rendered="#{myBorrowEquipmentsVisasCtrl.model.visa}" value="accept" action="#{myBorrowEquipmentsVisasCtrl.onAcceptVisa(true)}" update=":listForm"/>
+                            <p:commandButton rendered="#{myBorrowEquipmentsVisasCtrl.model.visa}" value="reject" action="#{myBorrowEquipmentsVisasCtrl.onAcceptVisa(false)}" update=":listForm"/>
+                        </p:column>
+                        <p:column headerText="Technicien">
+                            <p:outputLabel value="#{vr.str(i.request.operatorUser.fullName)} : #{vr.str(i.request.operatorUserStatus)}" />
+                            <p:commandButton rendered="#{myBorrowEquipmentsVisasCtrl.model.operator}" value="accept" action="#{myBorrowEquipmentsVisasCtrl.onAcceptOperator(true)}" update=":listForm"/>
+                            <p:commandButton rendered="#{myBorrowEquipmentsVisasCtrl.model.operator}" value="reject" action="#{myBorrowEquipmentsVisasCtrl.onAcceptOperator(false)}" update=":listForm"/>
+                        </p:column>
+                        <p:column headerText="Direction">
+                            <p:outputLabel value="#{vr.str(i.request.superOperator.fullName)} : #{vr.str(i.request.superOperatorUserStatus)}" />
+                            <p:commandButton rendered="#{myBorrowEquipmentsVisasCtrl.model.superOperator}" value="accept" action="#{myBorrowEquipmentsVisasCtrl.onAcceptSuperOperator(true)}" update=":listForm"/>
+                            <p:commandButton rendered="#{myBorrowEquipmentsVisasCtrl.model.superOperator}" value="reject" action="#{myBorrowEquipmentsVisasCtrl.onAcceptSuperOperator(false)}" update=":listForm"/>
+                        </p:column>
+                        <f:facet name="footer">
+                            <p:outputLabel value="Total #{myBorrowEquipmentsVisasCtrl.model.equipments.size()}"/>
+
+                            <div style="float: right;">
+                                <h:commandLink>
+                                    <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-xls16.png"
+                                                    width="16"/>
+                                    <p:dataExporter type="xls" target="equipementsTable"
+                                                    fileName="#{corePlugin.getPreferredFileName('my-borrowed')}"
+                                                    postProcessor="#{vr.postProcessDataExporterXLS}"/>
+                                </h:commandLink>
+
+                                <h:commandLink>
+                                    <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-pdf16.png"
+                                                    width="16"/>
+                                    <p:dataExporter type="pdf" target="equipementsTable"
+                                                    fileName="#{corePlugin.getPreferredFileName('my-borrowed')}"/>
+                                </h:commandLink>
+
+                                <h:commandLink>
+                                    <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-csv16.png"
+                                                    width="16"/>
+                                    <p:dataExporter type="csv" target="equipementsTable"
+                                                    fileName="#{corePlugin.getPreferredFileName('my-borrowed')}"/>
+                                </h:commandLink>
+
+                                <h:commandLink>
+                                    <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-xml16.png"
+                                                    width="16"/>
+                                    <p:dataExporter type="xml" target="equipementsTable"
+                                                    fileName="#{corePlugin.getPreferredFileName('my-borrowed')}"/>
+                                </h:commandLink>
+                            </div>
+                        </f:facet>
+                    </p:dataTable>
+                </h:form>
+                <p:dialog header="Photo" widgetVar="photodlg" modal="true" height="400">
+                    <img id="mainPhotoImg" src=""
+                         style="width: 400px ; height: 400px; margin-right: 10px;"
+                         alt="Image"/>
+                </p:dialog>
+            </ui:define>
+        </ui:composition>
+
+
+    </h:body>
+
+</html>

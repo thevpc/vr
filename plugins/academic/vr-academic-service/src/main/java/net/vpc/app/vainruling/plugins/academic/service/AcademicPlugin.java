@@ -5,6 +5,54 @@
  */
 package net.vpc.app.vainruling.plugins.academic.service;
 
+import net.vpc.app.vainruling.plugins.academic.model.internship.current.AcademicInternshipBoard;
+import net.vpc.app.vainruling.plugins.academic.model.internship.config.AcademicInternshipBoardMessage;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCoursePlan;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCourseAssignment;
+import net.vpc.app.vainruling.plugins.academic.model.internship.config.AcademicInternshipDuration;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCourseLevel;
+import net.vpc.app.vainruling.plugins.academic.model.internship.current.AcademicInternship;
+import net.vpc.app.vainruling.plugins.academic.model.history.AcademicHistTeacherSemestrialLoad;
+import net.vpc.app.vainruling.plugins.academic.model.internship.config.AcademicInternshipBoardTeacher;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacherSituationType;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicStudent;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicBac;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicPreClass;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicStudentStage;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicLoadConversionTable;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCourseType;
+import net.vpc.app.vainruling.plugins.academic.model.history.AcademicHistCourseAssignment;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicDiscipline;
+import net.vpc.app.vainruling.plugins.academic.model.internship.current.AcademicInternshipSessionType;
+import net.vpc.app.vainruling.plugins.academic.model.internship.current.AcademicInternshipGroup;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCourseIntent;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicPreClassType;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicTeacherDegree;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicClass;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicProgramType;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacherSituation;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicFormerStudent;
+import net.vpc.app.vainruling.plugins.academic.model.history.AcademicHistCoursePlan;
+import net.vpc.app.vainruling.plugins.academic.model.history.AcademicHistTeacherAnnualLoad;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacherPeriod;
+import net.vpc.app.vainruling.plugins.academic.model.internship.config.AcademicInternshipVariant;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicProgram;
+import net.vpc.app.vainruling.plugins.academic.model.internship.current.AcademicInternshipSupervisorIntent;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicLoadConversionRule;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicOfficialDiscipline;
+import net.vpc.app.vainruling.plugins.academic.model.current.TeacherAssignmentChunck;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicSemester;
+import net.vpc.app.vainruling.plugins.academic.model.internship.config.AcademicInternshipType;
+import net.vpc.app.vainruling.plugins.academic.model.internship.config.AcademicInternshipStatus;
+import net.vpc.app.vainruling.plugins.academic.model.history.AcademicHistTeacherDegree;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicTeacherSemestrialLoad;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCourseAssignmentInfo;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCourseGroup;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacherStrict;
+import net.vpc.app.vainruling.plugins.academic.model.history.AcademicHistProgram;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicLoadConversionRow;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCourseAssignmentInfoByVisitor;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.CorePluginSecurity;
 import net.vpc.app.vainruling.core.service.TraceService;
@@ -18,19 +66,14 @@ import net.vpc.app.vainruling.core.service.stats.KPIGroupBy;
 import net.vpc.app.vainruling.core.service.stats.KPIProcessProcessor;
 import net.vpc.app.vainruling.core.service.stats.KPIResult;
 import net.vpc.app.vainruling.core.service.util.NamedValueCount;
-import net.vpc.app.vainruling.plugins.academic.service.helper.AcademicConversionTableHelper;
-import net.vpc.app.vainruling.plugins.academic.service.helper.CopyAcademicDataHelper;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.*;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.*;
-import net.vpc.app.vainruling.plugins.academic.service.model.history.*;
-import net.vpc.app.vainruling.plugins.academic.service.model.imp.AcademicStudentImport;
-import net.vpc.app.vainruling.plugins.academic.service.model.imp.AcademicTeacherImport;
-import net.vpc.app.vainruling.plugins.academic.service.model.internship.config.*;
-import net.vpc.app.vainruling.plugins.academic.service.model.internship.current.*;
-import net.vpc.app.vainruling.plugins.academic.service.model.internship.ext.AcademicInternshipExtList;
+import net.vpc.app.vainruling.plugins.academic.service.integration.AcademicConversionTableHelper;
+import net.vpc.app.vainruling.plugins.academic.service.integration.CopyAcademicDataHelper;
+import net.vpc.app.vainruling.plugins.academic.model.imp.AcademicStudentImport;
+import net.vpc.app.vainruling.plugins.academic.model.imp.AcademicTeacherImport;
+import net.vpc.app.vainruling.plugins.academic.model.internship.ext.AcademicInternshipExtList;
 import net.vpc.app.vainruling.plugins.academic.service.stat.*;
 import net.vpc.app.vainruling.plugins.academic.service.util.CourseAssignmentFilter;
-import net.vpc.app.vainruling.plugins.academic.service.util.ImportOptions;
+import net.vpc.app.vainruling.plugins.academic.service.integration.ImportOptions;
 import net.vpc.app.vainruling.plugins.academic.service.util.TeacherPeriodFilter;
 import net.vpc.common.strings.StringComparator;
 import net.vpc.common.util.*;
@@ -137,46 +180,8 @@ public class AcademicPlugin {
         assignments.generateTeacherAssignmentDocumentsFolder(periodId, path);
     }
 
-    public TeacherPeriodStat evalTeacherStat(
-            int periodId,
-            int teacherId,
-            CourseAssignmentFilter courseAssignmentFilter,
-            DeviationConfig deviationConfig,
-            ProgressMonitor mon
-    ) {
-        return loads.evalTeacherStat(periodId, teacherId, courseAssignmentFilter, deviationConfig, mon);
-    }
-
-    public TeacherPeriodStat evalTeacherStat0(
-            int periodId,
-            int teacherId,
-            AcademicTeacher teacher,
-            List<AcademicTeacherSemestrialLoad> findTeacherSemestrialLoads,
-            List<AcademicCourseAssignmentInfo> assignments,
-            CourseAssignmentFilter filter,
-            DeviationConfig deviationConfig
-    ) {
-        return this.loads.evalTeacherStat0(periodId, teacherId, teacher, findTeacherSemestrialLoads, assignments, filter, deviationConfig);
-    }
-
-    public LoadValue getAssignmentLoadValue(AcademicCourseAssignment assignment, AcademicTeacherDegree degree, AcademicConversionTableHelper conversionTable) {
-        return loads.getAssignmentLoadValue(assignment, degree, conversionTable);
-    }
-
     public ModuleStat evalModuleStat(int periodId, int courseAssignmentId, Integer forTeacherId) {
         return loads.evalModuleStat(periodId, courseAssignmentId, forTeacherId);
-    }
-
-    public double evalValueEquiv(LoadValue value, String degree, AcademicConversionTableHelper table) {
-        return loads.evalValueEquiv(value, degree, table);
-    }
-
-    public double evalValueEquiv(LoadValue v, AcademicTeacherDegree dd, AcademicConversionTableHelper table) {
-        return loads.evalValueEquiv(v, dd, table);
-    }
-
-    public LoadValue evalValueEquiv(double v, AcademicTeacherDegree dd, AcademicConversionTableHelper table) {
-        return loads.evalValueEquiv(v, dd, table);
     }
 
     public AcademicCourseAssignment findCourseAssignment(int courseAssignmentId) {
@@ -225,10 +230,6 @@ public class AcademicPlugin {
 
     public void splitGroupCourseAssignment(int assignmentId) {
         assignments.splitGroupCourseAssignment(assignmentId);
-    }
-
-    public void splitShareCourseAssignment(int assignmentId) {
-        assignments.splitShareCourseAssignment(assignmentId);
     }
 
     public void addCourseAssignment(AcademicCourseAssignment assignment) {
@@ -327,9 +328,6 @@ public class AcademicPlugin {
         return teachers.findTeacherByUser(userId);
     }
 
-    //    public AcademicTeacher findTeacherByContact(int contactId) {
-//        return teachers.findTeacherByContact(contactId);
-//    }
     public AcademicTeacher findTeacher(StringComparator t) {
         return teachers.findTeacher(t);
     }
@@ -707,8 +705,8 @@ public class AcademicPlugin {
         return internships.findInternshipTeacherIntent(internship, teacherId);
     }
 
-    public AcademicTeacherPeriod findAcademicTeacherPeriod(int periodId, AcademicTeacher t) {
-        return teachers.findAcademicTeacherPeriod(periodId, t);
+    public AcademicTeacherPeriod findTeacherPeriod(int periodId, int teacherId) {
+        return teachers.findAcademicTeacherPeriod(periodId, teacherId);
     }
 
     public String getValidName(AcademicTeacher t) {
@@ -1091,39 +1089,15 @@ public class AcademicPlugin {
         return config.createAcademicYear(academicYearName, snapshot);
     }
 
-    public List<AcademicClass> findAcademicUpHierarchyList(AcademicClass[] classes, Map<Integer, AcademicClass> allClasses) {
-        return config.findAcademicUpHierarchyList(classes, allClasses);
-    }
-
-    public Set<Integer> findAcademicDownHierarchyIdList(int classId, Map<Integer, AcademicClass> allClasses) {
-        return config.findAcademicDownHierarchyIdList(classId, allClasses);
-    }
-
-    public Set<Integer> findAcademicDownHierarchyIdList0(int classId, Map<Integer, AcademicClass> allClasses) {
-        return config.findAcademicDownHierarchyIdList0(classId, allClasses);
-    }
-
-    public List<AcademicClass> findAcademicDownHierarchyList(AcademicClass[] classes, Map<Integer, AcademicClass> allClasses) {
-        return config.findAcademicDownHierarchyList(classes, allClasses);
-    }
-
-    public List<AcademicPreClass> findAcademicDownHierarchyList(AcademicPreClass[] classes, Map<Integer, AcademicPreClass> allClasses) {
-        return config.findAcademicDownHierarchyList(classes, allClasses);
-    }
-
-    public List<AcademicBac> findAcademicDownHierarchyList(AcademicBac[] classes, Map<Integer, AcademicBac> allClasses) {
-        return config.findAcademicDownHierarchyList(classes, allClasses);
-    }
-
     public void validateAcademicData(int periodId) {
         config.validateAcademicData(periodId);
     }
 
-    public Document getAppDepartmentPeriodRecord(int periodId, int departmentId) {
+    public Document getDepartmentPeriodDocument(int periodId, int departmentId) {
         return config.getAppDepartmentPeriodRecord(periodId, departmentId);
     }
 
-    public AppDepartmentPeriod getAppDepartmentPeriod(int periodId, int departmentId) {
+    public AppDepartmentPeriod getDepartmentPeriod(int periodId, int departmentId) {
         return config.getAppDepartmentPeriod(periodId, departmentId);
     }
 
@@ -1207,7 +1181,6 @@ public class AcademicPlugin {
             double atp = assignment.getValueTP();
             double apm = assignment.getValuePM();
             double g = assignment.getGroupCount();
-            double s = assignment.getShareCount();
             if (g < 0) {
                 g = 0;
                 assignment.setGroupCount(g);
@@ -1222,24 +1195,10 @@ public class AcademicPlugin {
                     saveMe = true;
                 }
             }
-            if (s < 1) {
-                s = 1;
-                assignment.setShareCount(s);
-                saveMe = true;
-            }
-            if (s <= 1) {
-                if (assignment.getValueC() > 0 || assignment.getValueTD() > 0) {
-                    assignment.setShareCount(1);
-                    saveMe = true;
-                } else if (assignment.getValueTP() > 0 || assignment.getValuePM() > 0) {
-                    assignment.setShareCount(1);
-                    saveMe = true;
-                }
-            }
-            c += ac * g / s;
-            td += atd * g / s;
-            tp += atp * g / s;
-            pm += apm * g / s;
+            c += ac * g;
+            td += atd * g;
+            tp += atp * g;
+            pm += apm * g;
             if (saveMe) {
                 pu.merge(assignment);
             }
@@ -1296,15 +1255,37 @@ public class AcademicPlugin {
         return uid.equals(tid);
     }
 
+    public int getTeacherWeeks(int periodId, int teacherId) {
+        int maxWeeks = 0;
+        List<AcademicTeacherSemestrialLoad> aa = findTeacherSemestrialLoadsByTeacher(periodId, teacherId);
+        for (AcademicTeacherSemestrialLoad a : aa) {
+            if (a.getWeeksLoad() > 0) {
+                maxWeeks += a.getWeeksLoad();
+            }
+        }
+        if (maxWeeks <= 0) {
+            maxWeeks = getSemesterMaxWeeks();
+        }
+        if (maxWeeks <= 0) {
+            maxWeeks = 14;
+        }
+        return maxWeeks;
+    }
+
     public TeacherLoadInfo getTeacherLoadInfo(TeacherLoadInfoFilter f) {
         TeacherLoadInfo result = new TeacherLoadInfo(f.getPeriodId());
+
         Map<Integer, AcademicCourseAssignmentInfoByVisitor> all = new HashMap<>();
         DefaultCourseAssignmentFilter otherCourseAssignmentsFilter = f.getOtherCourseAssignmentFilter();
-        otherCourseAssignmentsFilter.setAcceptAssignments(true).setAcceptIntents(true).setAcceptNoTeacher(true);
+        otherCourseAssignmentsFilter.setAcceptAssignments(null).setAcceptIntents(true).setAcceptNoTeacher(true);
 //        boolean includeIntents = !isFiltered("no-current-intents");
         List<AcademicCourseAssignmentInfo> othersAssignmentsAndIntents = findCourseAssignmentsAndIntents(f.getPeriodId(), null, otherCourseAssignmentsFilter);
+        AcademicConversionTableHelper conversionTable = findConversionTableByPeriodId(f.getPeriodId());
+        AcademicTeacherPeriod tp = findTeacherPeriod(f.getPeriodId(), f.getTeacherId());
+        int maxWeeks = getTeacherWeeks(f.getPeriodId(), f.getTeacherId());
+//        AcademicTeacherDegree dd = findTeacherDegree("MA");
         for (AcademicCourseAssignmentInfo b : othersAssignmentsAndIntents) {
-            all.put(b.getAssignment().getId(), new AcademicCourseAssignmentInfoByVisitor(b, f.getTeacherId()));
+            all.put(b.getAssignment().getId(), new AcademicCourseAssignmentInfoByVisitor(b, f.getTeacherId(), tp == null ? 0 : evalValueEquiv(b.getLoadValue(), tp.getDegree(), conversionTable) / maxWeeks));
         }
         result.setAll(all);
         HashSet<Integer> visitedAssignmentId = new HashSet<Integer>();
@@ -1314,7 +1295,7 @@ public class AcademicPlugin {
             List<AcademicCourseAssignmentInfo> teacherAssignmentsAndIntents = findCourseAssignmentsAndIntents(f.getPeriodId(), f.getTeacherId(), courseAssignmentFilter);
             for (AcademicCourseAssignmentInfo b : teacherAssignmentsAndIntents) {
                 if (!all.containsKey(b.getAssignment().getId())) {
-                    all.put(b.getAssignment().getId(), new AcademicCourseAssignmentInfoByVisitor(b, f.getTeacherId()));
+                    all.put(b.getAssignment().getId(), new AcademicCourseAssignmentInfoByVisitor(b, f.getTeacherId(), tp == null ? 0 : evalValueEquiv(b.getLoadValue(), tp.getDegree(), conversionTable) / maxWeeks));
                 }
             }
 
@@ -1416,7 +1397,7 @@ public class AcademicPlugin {
             AcademicCourseAssignment assignment = aa.getValue().getAssignment();
             AcademicTeacher t = assignment.getTeacher();
             if (t != null) {
-                if (teacherLoadInfoIsAllowedUpdateMineIntents(info,assignment.getId())) {
+                if (teacherLoadInfoIsAllowedUpdateMineIntents(info, assignment.getId())) {
                     this.addIntent(t.getId(), assignment.getId());
                     this.removeCourseAssignment(assignment.getId(), false, false);
                 }
@@ -1475,7 +1456,7 @@ public class AcademicPlugin {
     }
 
     public TeacherLoadInfo teacherLoadInfoApplyTextFilter(TeacherLoadInfo info, String filter) {
-        if (StringUtils.isEmpty(filter)) {
+        if (StringUtils.isBlank(filter)) {
             info.setOthers(new ArrayList<>(info.getNonFilteredOthers()));
         } else {
             info.setOthers(new TextSearchFilter(filter,
@@ -1510,10 +1491,10 @@ public class AcademicPlugin {
             );
 
         }
-        info.setMaLoad(evalValueEquiv(info.getLoadSum(), dd, conversionTableByPeriodId)/9.5/28);
+        info.setMaLoad(evalValueEquiv(info.getLoadSum(), dd, conversionTableByPeriodId) / 9.5 / 28);
         return info;
     }
-    
+
     public boolean teacherLoadInfoIsAllowedUpdateMineAssignments(TeacherLoadInfo info, Integer assignementId) {
         CorePlugin core = VrApp.getBean(CorePlugin.class);
         Integer userId = core.getCurrentUserId();
@@ -1558,8 +1539,8 @@ public class AcademicPlugin {
         }
         return false;
     }
-    
-    public boolean teacherLoadInfoDoAssignByIntent(TeacherLoadInfo info,Integer assignementId) {
+
+    public boolean teacherLoadInfoDoAssignByIntent(TeacherLoadInfo info, Integer assignementId) {
         if (assignementId != null) {
             AcademicCourseAssignmentInfoByVisitor rr = info.getAll().get(assignementId);
             if (rr != null) {
@@ -1586,7 +1567,7 @@ public class AcademicPlugin {
         }
         return false;
     }
-    
+
     public boolean teacherLoadInfoDoAssignByIntentSelected(TeacherLoadInfo info) {
         for (AcademicCourseAssignmentInfoByVisitor s : info.getAll().values()) {
             if (s.isSelected()) {
@@ -1618,5 +1599,202 @@ public class AcademicPlugin {
             }
         }
         return false;
+    }
+
+    public List<AcademicCourseAssignment> findNonUniqueAcademicCourseAssignments(int fromPeriodId) {
+        final AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
+        List<AcademicCourseAssignment> courseAssignments = p.findCourseAssignments(fromPeriodId);
+        HashMap<String, AcademicCourseAssignment> visited = new HashMap<>();
+        Converter<AcademicCourseAssignment, String> converter = new Converter<AcademicCourseAssignment, String>() {
+            @Override
+            public String convert(AcademicCourseAssignment value) {
+                return value.getFullName();
+            }
+        };
+        Map<Integer, AcademicCourseAssignment> toUpdate = new HashMap<>();
+        for (AcademicCourseAssignment assignment : courseAssignments) {
+            String item = converter.convert(assignment);
+            if (visited.containsKey(item)) {
+                if (!toUpdate.containsKey(visited.get(item).getId())) {
+                    toUpdate.put(visited.get(item).getId(), visited.get(item));
+                }
+                if (toUpdate.containsKey(assignment.getId())) {
+                    toUpdate.put(assignment.getId(), assignment);
+                }
+            } else {
+                visited.put(item, assignment);
+            }
+        }
+        return new ArrayList<>(toUpdate.values());
+    }
+
+    public void forceUniquenessAcademicCourseAssignment(int fromPeriodId) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        for (AcademicCourseAssignment a : findNonUniqueAcademicCourseAssignments(fromPeriodId)) {
+            if (StringUtils.isBlank(a.getDiscriminator())) {
+                a.setDiscriminator(String.valueOf(a.getId()));
+            } else {
+                a.setDiscriminator(a.getDiscriminator() + "-" + String.valueOf(a.getId()));
+            }
+            pu.merge(a);
+        }
+    }
+
+    public void generateAssignments(int coursePlanId) {
+//        AcademicCourseType td = findCourseType("TD");
+        AcademicCourseType tp = findCourseType("TP");
+        AcademicCourseType pm = findCourseType("PM");
+        AcademicCourseType c = findCourseType("C");
+        AcademicCourseType cm = findCourseType("CM");
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        AcademicCoursePlan coursePlan = findCoursePlan(coursePlanId);
+        if (coursePlan != null) {
+            List<AcademicCourseAssignment> courseAssignmentsByCoursePlan = findCourseAssignmentsByCoursePlan(coursePlan.getId());
+            if (courseAssignmentsByCoursePlan.isEmpty()) {
+                if (coursePlan.getValueC() != 0 && coursePlan.getValueTD() != 0 && c != null) {
+                    AcademicCourseAssignment a = new AcademicCourseAssignment();
+                    a.setCoursePlan(coursePlan);
+                    a.setCourseType(c);
+                    pu.persist(a);
+                } else if (coursePlan.getValueC() != 0 && cm != null) {
+                    AcademicCourseAssignment a = new AcademicCourseAssignment();
+                    a.setCoursePlan(coursePlan);
+                    a.setCourseType(cm);
+                    pu.persist(a);
+                }
+                if (coursePlan.getValueTP() != 0 && tp != null) {
+                    AcademicCourseAssignment a = new AcademicCourseAssignment();
+                    a.setCoursePlan(coursePlan);
+                    a.setCourseType(tp);
+                    pu.persist(a);
+                }
+
+                if (coursePlan.getValuePM() != 0 && pm != null) {
+                    AcademicCourseAssignment a = new AcademicCourseAssignment();
+                    a.setCoursePlan(coursePlan);
+                    a.setCourseType(pm);
+                    pu.persist(a);
+                }
+            }
+        }
+    }
+
+    public static class Extra {
+
+        public static List<AcademicCourseAssignment> filterNonUniqueAcademicCourseAssignments(List<AcademicCourseAssignment> courseAssignments) {
+            final AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
+            HashMap<String, AcademicCourseAssignment> visited = new HashMap<>();
+            Converter<AcademicCourseAssignment, String> converter = new Converter<AcademicCourseAssignment, String>() {
+                @Override
+                public String convert(AcademicCourseAssignment value) {
+                    return value.getFullName();
+                }
+            };
+            Map<Integer, AcademicCourseAssignment> toUpdate = new HashMap<>();
+            for (AcademicCourseAssignment assignment : courseAssignments) {
+                String item = converter.convert(assignment);
+                if (visited.containsKey(item)) {
+                    if (!toUpdate.containsKey(visited.get(item).getId())) {
+                        toUpdate.put(visited.get(item).getId(), visited.get(item));
+                    }
+                    if (!toUpdate.containsKey(assignment.getId())) {
+                        toUpdate.put(assignment.getId(), assignment);
+                    }
+                } else {
+                    visited.put(item, assignment);
+                }
+            }
+            return new ArrayList<>(toUpdate.values());
+        }
+
+        public static List<Document> filterNonUniqueAcademicCourseAssignmentDocuments(List<Document> courseAssignments) {
+            final AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
+            HashMap<String, Document> visited = new HashMap<>();
+            Converter<Document, String> converter = new Converter<Document, String>() {
+                @Override
+                public String convert(Document value) {
+                    return value.getString("fullName");
+                }
+            };
+            Map<Integer, Document> toUpdate = new HashMap<>();
+            for (Document assignment : courseAssignments) {
+                String item = converter.convert(assignment);
+                if (visited.containsKey(item)) {
+                    Document aa = visited.get(item);
+                    if (!toUpdate.containsKey(aa.getInt("id"))) {
+                        toUpdate.put(aa.getInt("id"), aa);
+                    }
+                    if (!toUpdate.containsKey(assignment.getInt("id"))) {
+                        toUpdate.put(assignment.getInt("id"), assignment);
+                    }
+                } else {
+                    visited.put(item, assignment);
+                }
+            }
+            return new ArrayList<>(toUpdate.values());
+        }
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////
+    public List<AcademicClass> findAcademicUpHierarchyList(AcademicClass[] classes, Map<Integer, AcademicClass> allClasses) {
+        return config.findAcademicUpHierarchyList(classes, allClasses);
+    }
+
+    public Set<Integer> findClassDownHierarchyIdList(int classId, Map<Integer, AcademicClass> allClasses) {
+        return config.findClassDownHierarchyIdList(classId, allClasses);
+    }
+
+    public Set<Integer> findClassDownHierarchyIdList0(int classId, Map<Integer, AcademicClass> allClasses) {
+        return config.findClassDownHierarchyIdList0(classId, allClasses);
+    }
+
+    public List<AcademicClass> findClassDownHierarchyList(AcademicClass[] classes, Map<Integer, AcademicClass> allClasses) {
+        return config.findClassDownHierarchyList(classes, allClasses);
+    }
+
+    public List<AcademicPreClass> findPreClassDownHierarchyList(AcademicPreClass[] classes, Map<Integer, AcademicPreClass> allClasses) {
+        return config.findPreClassDownHierarchyList(classes, allClasses);
+    }
+
+    public List<AcademicBac> findBacDownHierarchyList(AcademicBac[] classes, Map<Integer, AcademicBac> allClasses) {
+        return config.findBacDownHierarchyList(classes, allClasses);
+    }
+
+    public LoadValue getAssignmentLoadValue(AcademicCourseAssignment assignment, AcademicTeacherDegree degree, AcademicConversionTableHelper conversionTable) {
+        return loads.getAssignmentLoadValue(assignment, degree, conversionTable);
+    }
+
+    public double evalValueEquiv(LoadValue value, String degree, AcademicConversionTableHelper table) {
+        return loads.evalValueEquiv(value, degree, table);
+    }
+
+    public double evalValueEquiv(LoadValue v, AcademicTeacherDegree dd, AcademicConversionTableHelper table) {
+        return loads.evalValueEquiv(v, dd, table);
+    }
+
+    public LoadValue evalValueEquiv(double v, AcademicTeacherDegree dd, AcademicConversionTableHelper table) {
+        return loads.evalValueEquiv(v, dd, table);
+    }
+
+    public TeacherPeriodStat evalTeacherStat(
+            int periodId,
+            int teacherId,
+            CourseAssignmentFilter courseAssignmentFilter,
+            DeviationConfig deviationConfig,
+            ProgressMonitor mon
+    ) {
+        return loads.evalTeacherStat(periodId, teacherId, courseAssignmentFilter, deviationConfig, mon);
+    }
+
+    public TeacherPeriodStat evalTeacherStat0(
+            int periodId,
+            int teacherId,
+            AcademicTeacher teacher,
+            List<AcademicTeacherSemestrialLoad> findTeacherSemestrialLoads,
+            List<AcademicCourseAssignmentInfo> assignments,
+            CourseAssignmentFilter filter,
+            DeviationConfig deviationConfig
+    ) {
+        return this.loads.evalTeacherStat0(periodId, teacherId, teacher, findTeacherSemestrialLoads, assignments, filter, deviationConfig);
     }
 }

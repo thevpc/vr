@@ -4,10 +4,10 @@
  */
 package net.vpc.app.vainruling.plugins.academic.perfeval.service.callbacks;
 
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseAssignment;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCoursePlan;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicStudent;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCourseAssignment;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCoursePlan;
 import net.vpc.upa.DefaultFieldBuilder;
 import net.vpc.upa.Entity;
 import net.vpc.upa.MissingStrategy;

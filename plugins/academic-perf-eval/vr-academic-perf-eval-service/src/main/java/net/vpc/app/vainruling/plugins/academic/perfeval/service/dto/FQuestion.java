@@ -1,6 +1,6 @@
 package net.vpc.app.vainruling.plugins.academic.perfeval.service.dto;
 
-import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.AcademicFeedbackResponse;
+import net.vpc.app.vainruling.plugins.academic.perfeval.model.AcademicFeedbackResponse;
 
 public class FQuestion {
 

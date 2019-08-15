@@ -1,10 +1,9 @@
 package net.vpc.app.vainruling.core.service;
 
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
-import net.vpc.app.vainruling.core.service.obj.AutoFilterData;
-import net.vpc.app.vainruling.core.service.obj.EntityObjSearchFactory;
-import net.vpc.app.vainruling.core.service.obj.ObjSearch;
-import net.vpc.app.vainruling.core.service.obj.ObjSimpleSearch;
+import net.vpc.app.vainruling.core.service.editor.AutoFilterData;
+import net.vpc.app.vainruling.core.service.editor.EntityEditorSearch;
+import net.vpc.app.vainruling.core.service.editor.EntityEditorSimpleSearch;
 import net.vpc.app.vainruling.core.service.util.I18n;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.app.vainruling.core.service.util.VrUPAUtils;
@@ -21,9 +20,11 @@ import net.vpc.upa.types.*;
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.logging.Level;
+import net.vpc.app.vainruling.core.service.editor.EntityEditorMainPhotoProvider;
 import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.common.util.MapUtils;
+import net.vpc.app.vainruling.core.service.editor.EntityEditorSearchFactory;
 
 class CorePluginBodyDAOManager extends CorePluginBody {
 
@@ -189,10 +190,10 @@ class CorePluginBodyDAOManager extends CorePluginBody {
                     throw new IllegalArgumentException("Unsupported entity auto filter expression " + expr + " for entity auto filter " + a.getEntityName() + "." + a.getName());
                 }
             }
-            if (StringUtils.isEmpty(a.getLabel())) {
+            if (StringUtils.isBlank(a.getLabel())) {
 //            String label = i18n.getOrNull("UI.Entity." + entity.getName() + ".ui.auto-filter.class");
                 a.setLabel(evalLabel);
-//                        if(StringUtils.isEmpty(label)){
+//                        if(StringUtils.isBlank(label)){
 //                            if(curr instanceof KeyType){
 //                                autoFilterData.setLabel(i18n.get(((KeyType) curr).getEntity()));
 //                            }else {
@@ -557,7 +558,7 @@ class CorePluginBodyDAOManager extends CorePluginBody {
         return entityList;
     }
 
-    public long findCountByFilter(String entityName, String criteria, ObjSearch objSearch, Map<String, Object> parameters) {
+    public long findCountByFilter(String entityName, String criteria, EntityEditorSearch objSearch, Map<String, Object> parameters) {
         checkNavigate(entityName);
         PersistenceUnit pu = UPA.getPersistenceUnit();
         String qq = "Select count(1) from " + entityName + " o ";
@@ -588,46 +589,45 @@ class CorePluginBodyDAOManager extends CorePluginBody {
         return nn.longValue();
     }
 
-    public List<Object> findByFilter(String entityName, String criteria, ObjSearch objSearch, Map<String, Object> parameters) {
-        checkFindMany(entityName);
-        PersistenceUnit pu = UPA.getPersistenceUnit();
-        Entity entity = pu.getEntity(entityName);
-        QueryBuilder q = pu
-                .createQueryBuilder(entityName)
-                .setEntityAlias("o")
-                .orderBy(entity.getListOrder());
-        Expression filterExpression = null;
-        if (criteria != null) {
-            filterExpression = new UserExpression(criteria);
-        }
-        if (objSearch != null) {
-            String c = objSearch.createPreProcessingExpression(entityName, parameters, "os");
-            if (c != null) {
-                if (filterExpression == null) {
-                    filterExpression = new UserExpression(c);
-                } else {
-                    filterExpression = new And(filterExpression, new UserExpression(c));
-                }
-            }
-        }
-        if (filterExpression != null) {
-            q.byExpression(filterExpression);
-        }
-        if (parameters != null) {
-            for (Map.Entry<String, Object> pp : parameters.entrySet()) {
-                q.setParameter(pp.getKey(), pp.getValue());
-            }
-        }
-        List<Object> list = q.getResultList();
-        if (objSearch != null) {
-            list = objSearch.filterList(list, entityName);
-        }
-        return list;
-    }
-
+//    public List<Object> findByFilter(String entityName, String criteria, ObjSearch objSearch, Map<String, Object> parameters) {
+//        checkFindMany(entityName);
+//        PersistenceUnit pu = UPA.getPersistenceUnit();
+//        Entity entity = pu.getEntity(entityName);
+//        QueryBuilder q = pu
+//                .createQueryBuilder(entityName)
+//                .setEntityAlias("o")
+//                .orderBy(entity.getListOrder());
+//        Expression filterExpression = null;
+//        if (criteria != null) {
+//            filterExpression = new UserExpression(criteria);
+//        }
+//        if (objSearch != null) {
+//            String c = objSearch.createPreProcessingExpression(entityName, parameters, "os");
+//            if (c != null) {
+//                if (filterExpression == null) {
+//                    filterExpression = new UserExpression(c);
+//                } else {
+//                    filterExpression = new And(filterExpression, new UserExpression(c));
+//                }
+//            }
+//        }
+//        if (filterExpression != null) {
+//            q.byExpression(filterExpression);
+//        }
+//        if (parameters != null) {
+//            for (Map.Entry<String, Object> pp : parameters.entrySet()) {
+//                q.setParameter(pp.getKey(), pp.getValue());
+//            }
+//        }
+//        List<Object> list = q.getResultList();
+//        if (objSearch != null) {
+//            list = objSearch.filterList(list, entityName);
+//        }
+//        return list;
+//    }
     public List<Document> findDocumentsByAutoFilter(String entityName, Map<String, String> autoFilterValues, String textSearch, String exprFilter) {
         String _listFilter = exprFilter;
-        if (!StringUtils.isEmpty(_listFilter)) {
+        if (!StringUtils.isBlank(_listFilter)) {
             _listFilter = "(" + _listFilter + ")";
         } else {
             _listFilter = "";
@@ -637,8 +637,8 @@ class CorePluginBodyDAOManager extends CorePluginBody {
         if (autoFilterValues != null) {
             for (AutoFilterData o : getEntityAutoFilters(entityName)) {
                 String filterExpression = createEntityAutoFilterExpression(entityName, o.getName(), parameters, "af" + autoFilterIndex, autoFilterValues.get(o.getName()));
-                if (!StringUtils.isEmpty(filterExpression)) {
-                    if (!StringUtils.isEmpty(_listFilter)) {
+                if (!StringUtils.isBlank(filterExpression)) {
+                    if (!StringUtils.isBlank(_listFilter)) {
                         _listFilter += " and ";
                     }
                     _listFilter += "(" + filterExpression + ")";
@@ -649,7 +649,7 @@ class CorePluginBodyDAOManager extends CorePluginBody {
         return findDocumentsByFilter(entityName, _listFilter, null, textSearch, parameters);
     }
 
-    public List<Document> findDocumentsByFilter(String entityName, String criteria, ObjSearch objSearch, String textSearch, Map<String, Object> parameters) {
+    public List<Document> findDocumentsByFilter(String entityName, String criteria, EntityEditorSearch objSearch, String textSearch, Map<String, Object> parameters) {
         checkFindMany(entityName);
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity entity = pu.getEntity(entityName);
@@ -658,7 +658,7 @@ class CorePluginBodyDAOManager extends CorePluginBody {
                 .setEntityAlias("o")
                 .orderBy(entity.getListOrder());
         Expression filterExpression = null;
-        if (!org.apache.commons.lang.StringUtils.isEmpty(criteria)) {
+        if (!org.apache.commons.lang.StringUtils.isBlank(criteria)) {
             filterExpression = new UserExpression(criteria);
         }
         if (objSearch != null) {
@@ -687,60 +687,52 @@ class CorePluginBodyDAOManager extends CorePluginBody {
         q.setTop(Convert.toInt(appPropertyValue, IntegerParserConfig.LENIENT_F));
         List<Document> list = q.getDocumentList();
         if (objSearch != null) {
-            list = objSearch.filterList(list, entityName);
+            list = objSearch.filterDocumentList(list, entityName);
         }
-        if (!StringUtils.isEmpty(textSearch)) {
+        if (!StringUtils.isBlank(textSearch)) {
 
-            list = createSearch(null, entity.getName(), textSearch).filterList(list, entityName);
+            list = createSearch(null, entity.getName(), textSearch).filterDocumentList(list, entityName);
         }
         return list;
     }
 
-    public String createSearchHelperString(String name, String entityName) {
-        String d = "Tapez ici les mots clés de recherche.";
-        if (StringUtils.isEmpty(entityName)) {
-            return d;
-        }
-        PersistenceUnit pu = UPA.getPersistenceUnit();
-        Entity entity = pu.getEntity(entityName);
-        String f = entity.getProperties().getString(UIConstants.ENTITY_TEXT_SEARCH_FACTORY);
-        if (StringUtils.isEmpty(f)) {
-            return d;
-        }
-        EntityObjSearchFactory g = null;
-        try {
-            g = (EntityObjSearchFactory) Class.forName(f).newInstance();
-            String s = g.createHelperString(name, entity);
-            if (StringUtils.isEmpty(s)) {
-                s = d;
-            }
-            return s;
-        } catch (Exception e) {
-            throw new IllegalArgumentException(e);
-        }
+    public EntityEditorSearchFactory resolveEntityEditorSearchFactory(String entityName) {
+        return VrUPAUtils.resolveCachedEntityPropertyInstance(UPA.getPersistenceUnit().getEntity(entityName), UIConstants.ENTITY_TEXT_SEARCH_FACTORY, EntityEditorSearchFactory.class);
     }
 
-    public ObjSearch createSearch(String name, String entityName, String expression) {
-        if (StringUtils.isEmpty(expression)) {
-            return new ObjSimpleSearch(null);
+    public String createSearchHelperString(String name, String entityName) {
+        String d = "Tapez ici les mots clés de recherche.";
+        if (StringUtils.isBlank(entityName)) {
+            return d;
         }
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity entity = pu.getEntity(entityName);
-        String f = entity.getProperties().getString(UIConstants.ENTITY_TEXT_SEARCH_FACTORY);
-        if (StringUtils.isEmpty(f)) {
-            return new ObjSimpleSearch(expression);
+        EntityEditorSearchFactory g = resolveEntityEditorSearchFactory(entityName);
+        String s = null;
+        if (g != null) {
+            s = g.createHelperString(name, entity);
         }
-        EntityObjSearchFactory g = null;
-        try {
-            g = (EntityObjSearchFactory) Class.forName(f).newInstance();
-            ObjSearch objSearch = g.create(name, entity, expression);
-            if (objSearch == null) {
-                return new ObjSimpleSearch(expression);
-            }
-            return objSearch;
-        } catch (Exception e) {
-            throw new IllegalArgumentException(e);
+        if (StringUtils.isBlank(s)) {
+            s = d;
         }
+        return s;
+    }
+
+    public EntityEditorSearch createSearch(String name, String entityName, String expression) {
+        if (StringUtils.isBlank(expression)) {
+            return new EntityEditorSimpleSearch(null);
+        }
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        Entity entity = pu.getEntity(entityName);
+        EntityEditorSearchFactory g = resolveEntityEditorSearchFactory(entityName);
+        EntityEditorSearch objSearch=null;
+        if (g != null) {
+            objSearch = g.create(name, entity, expression);
+        }
+        if (objSearch == null) {
+            return new EntityEditorSimpleSearch(expression);
+        }
+        return objSearch;
     }
 
     public List<Object> findAll(String entityName) {
@@ -843,7 +835,7 @@ class CorePluginBodyDAOManager extends CorePluginBody {
             return null;
         }
         DataType dataType = getEntityAutoFilterDataType(entityName, autoFilterName);
-        if (!StringUtils.isEmpty(selectedString)) {
+        if (!StringUtils.isBlank(selectedString)) {
             switch (a.getFormatType()) {
                 case "key": {
                     int id = Convert.toInt(selectedString, IntegerParserConfig.LENIENT_F);
@@ -1114,11 +1106,11 @@ class CorePluginBodyDAOManager extends CorePluginBody {
 //                dependentPropertyViews = propertyView.getDependentPropertyViews();
 //                componentId = propertyView.getComponentId();
 //            }
-//            final ObjCtrl objCtrl = VrApp.getBean(ObjCtrl.class);
-            Document currentDoc = null;//objCtrl.getModel().getCurrentDocument();
+//            final EditorCtrl editorCtrl = VrApp.getBean(EditorCtrl.class);
+            Document currentDoc = null;//editorCtrl.getModel().getCurrentDocument();
 
             final Map<String, Object> constraints = new HashMap<>();
-//            Map<String, Object> currentValues = null;//objCtrl.currentViewToMap();
+//            Map<String, Object> currentValues = null;//editorCtrl.currentViewToMap();
 //            for (PropertyView dependentPropertyView : dependentPropertyViews) {
 //                Object v = currentValues.get(dependentPropertyView.getComponentId());
 //                if (v != null) {
@@ -1144,9 +1136,9 @@ class CorePluginBodyDAOManager extends CorePluginBody {
 //            List<PropertyView> dependentPropertyViews = propertyView.getDependentPropertyViews();
 
 //            CorePlugin core = VrApp.getBean(CorePlugin.class);
-//            final ObjCtrl objCtrl = VrApp.getBean(ObjCtrl.class);
-//            Map<String, Object> currentValues = objCtrl.currentViewToMap();
-            Document currentDoc = null;//objCtrl.getModel().getCurrentDocument();
+//            final EditorCtrl editorCtrl = VrApp.getBean(EditorCtrl.class);
+//            Map<String, Object> currentValues = editorCtrl.currentViewToMap();
+            Document currentDoc = null;//editorCtrl.getModel().getCurrentDocument();
             final Map<String, Object> constraints = new HashMap<>();
 //            for (PropertyView dependentPropertyView : dependentPropertyViews) {
 //                Object v = currentValues.get(dependentPropertyView.getComponentId());

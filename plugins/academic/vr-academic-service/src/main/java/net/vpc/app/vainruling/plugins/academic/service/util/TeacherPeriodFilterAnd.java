@@ -1,6 +1,6 @@
 package net.vpc.app.vainruling.plugins.academic.service.util;
 
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacherPeriod;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacherPeriod;
 
 import java.util.ArrayList;
 import java.util.List;

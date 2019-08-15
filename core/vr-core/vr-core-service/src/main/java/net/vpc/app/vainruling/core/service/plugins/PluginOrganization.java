@@ -20,10 +20,10 @@ public class PluginOrganization {
 
     public void updateNonNull(PluginOrganization o) {
         if (o != null) {
-            if (!StringUtils.isEmpty(o.name)) {
+            if (!StringUtils.isBlank(o.name)) {
                 this.name = o.name;
             }
-            if (!StringUtils.isEmpty(o.url)) {
+            if (!StringUtils.isBlank(o.url)) {
                 this.url = o.url;
             }
         }

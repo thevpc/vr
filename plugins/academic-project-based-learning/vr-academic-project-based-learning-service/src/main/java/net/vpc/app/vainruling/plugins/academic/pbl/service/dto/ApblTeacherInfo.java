@@ -1,7 +1,7 @@
 package net.vpc.app.vainruling.plugins.academic.pbl.service.dto;
 
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicStudent;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
 
 import java.util.*;
 

@@ -9,9 +9,8 @@ import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.model.AppProfile;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
-import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.jsf.DialogBuilder;
-import net.vpc.app.vainruling.core.web.obj.DialogResult;
+import net.vpc.app.vainruling.core.service.editor.DialogResult;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
 import org.primefaces.context.RequestContext;
@@ -23,11 +22,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import net.vpc.app.vainruling.core.service.pages.VrPage;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@VrController
+@VrPage
 public class ProfileExprDialogCtrl {
 
     @Autowired
@@ -43,7 +43,7 @@ public class ProfileExprDialogCtrl {
         getModel().setConfig(config);
         initContent();
 
-        new DialogBuilder("/modules/obj/profile-expr-dialog")
+        new DialogBuilder("/modules/editor/profile-dialog")
                 .setResizable(true)
                 .setDraggable(true)
                 .setModal(true)
@@ -57,7 +57,7 @@ public class ProfileExprDialogCtrl {
             getModel().setConfig(c);
         }
         String title = c.getTitle();
-        if (StringUtils.isEmpty(title)) {
+        if (StringUtils.isBlank(title)) {
             title = "Groupes Utilisateurs";
         }
         getModel().setTitle(title);
@@ -119,7 +119,7 @@ public class ProfileExprDialogCtrl {
 
     public void revalidateUsersList() {
         String e = getModel().getExpression();
-        List<AppUser> usersByProfileFilter = core.findUsersByProfileFilter(e, null);
+        List<AppUser> usersByProfileFilter = core.findUsersByProfileFilter(e, null,null);
         getModel().setUsers(usersByProfileFilter);
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < usersByProfileFilter.size(); i++) {

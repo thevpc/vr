@@ -3,8 +3,7 @@ package net.vpc.app.vainruling.plugins.calendars.web;
 import java.util.ArrayList;
 import java.util.Arrays;
 import net.vpc.app.vainruling.core.service.CorePlugin;
-import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.core.web.VrController;
+import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import org.primefaces.event.ScheduleEntryMoveEvent;
 import org.primefaces.event.ScheduleEntryResizeEvent;
 import org.primefaces.event.SelectEvent;
@@ -25,8 +24,9 @@ import net.vpc.app.vainruling.plugins.calendars.model.RuntimeAppCalendarProperty
 import net.vpc.app.vainruling.plugins.calendars.service.CalendarsPlugin;
 import net.vpc.common.util.MutableDate;
 import org.apache.commons.lang3.StringUtils;
+import net.vpc.app.vainruling.core.service.pages.VrPage;
 
-@VrController(
+@VrPage(
         menu = "/Calendars",
         url = "modules/calendars/my-events-calendars",
         securityKey = "vr-calendars.EventsCalendar"
@@ -141,7 +141,7 @@ public class EventsCalendarsCtrl {
             AppCalendarEvent e = (AppCalendarEvent) getModel().getEvent();
             String cn = getModel().getCalendar();
             if (e.getCalendar() == null) {
-                AppCalendar cal = (StringUtils.isEmpty(cn)) ? cals.findMyPrivateEventCalendar() : cals.findEventCalendarByCode(cn);
+                AppCalendar cal = (StringUtils.isBlank(cn)) ? cals.findMyPrivateEventCalendar() : cals.findEventCalendarByCode(cn);
                 e.setCalendar(cal);
             }
             getModel().eventModel.addEvent(e, true);

@@ -20,8 +20,8 @@ import net.vpc.app.vainruling.core.web.DummyTaskTextService;
 import net.vpc.app.vainruling.core.web.jsf.converters.EntityConverter;
 import net.vpc.app.vainruling.core.web.jsf.ctrl.*;
 import net.vpc.app.vainruling.core.web.jsf.ctrl.dialog.DocumentsUploadDialogCtrl;
-import net.vpc.app.vainruling.core.web.menu.BreadcrumbItem;
-import net.vpc.app.vainruling.core.web.menu.VRMenuInfo;
+import net.vpc.app.vainruling.core.service.pages.VrBreadcrumbItem;
+import net.vpc.app.vainruling.core.service.menu.VRMenuInfo;
 import net.vpc.app.vainruling.core.web.menu.VrMenuManager;
 import net.vpc.app.vainruling.core.web.themes.VrTheme;
 import net.vpc.app.vainruling.core.web.util.StrLabel;
@@ -64,7 +64,10 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.faces.bean.ManagedBean;
+import net.vpc.app.vainruling.core.service.pages.VrPageHistoryItem;
 import net.vpc.app.vainruling.core.service.util.I18n;
+import static net.vpc.app.vainruling.core.web.util.VrWebHelper.getPrivateThemePath;
+import static net.vpc.app.vainruling.core.web.util.VrWebHelper.getPublicThemePath;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -79,11 +82,10 @@ public class Vr {
     public static final DecimalFormat PERCENT_FORMAT = new DecimalFormat("0.00");
     public static final String NULL_VALUE_STR = "-*Aucune Valeur*-";
 
-
     private MessageTextService messageTextService;
     private TaskTextService taskTextService;
     private NotificationTextService notificationTextService;
-    private Map<String,CmsTextService> cmsTextServices=new HashMap<>();
+    private Map<String, CmsTextService> cmsTextServices = new HashMap<>();
     @Autowired
     private CorePlugin core;
     private WeakHashMap<String, DecimalFormat> decimalFormats = new WeakHashMap<>();
@@ -233,7 +235,7 @@ public class Vr {
         if (paths != null) {
             LinkedHashSet<String> all = new LinkedHashSet<>();
             for (ContentPath path : paths) {
-                if (path != null && !StringUtils.isEmpty(path.getPath())) {
+                if (path != null && !StringUtils.isBlank(path.getPath())) {
                     if (!all.contains(path.getPath())) {
                         all.add(path.getPath());
                     }
@@ -254,7 +256,7 @@ public class Vr {
         if (paths != null) {
             LinkedHashSet<String> all = new LinkedHashSet<>();
             for (ContentPath path : paths) {
-                if (path != null && !StringUtils.isEmpty(path.getPath())) {
+                if (path != null && !StringUtils.isBlank(path.getPath())) {
                     if (!all.contains(path.getPath())) {
                         all.add(path.getPath());
                     }
@@ -342,7 +344,7 @@ public class Vr {
         if (path == null) {
             path = "";
         }
-        if (StringUtils.isEmpty(path)) {
+        if (StringUtils.isBlank(path)) {
             return false;
         }
         return !(path.startsWith("http://") || path.startsWith("https://") || path.startsWith("ftp://"));
@@ -373,7 +375,7 @@ public class Vr {
     }
 
     public boolean contextTextHasDecoration(ContentText text, String decoration) {
-        if (text != null && !StringUtils.isEmpty(decoration)) {
+        if (text != null && !StringUtils.isBlank(decoration)) {
             String decoration1 = text.getDecoration();
             if (decoration1 != null) {
                 decoration1 = decoration1.toLowerCase().trim();
@@ -461,7 +463,7 @@ public class Vr {
         if (path == null) {
             path = "";
         }
-        if (StringUtils.isEmpty(path)) {
+        if (StringUtils.isBlank(path)) {
             return "";
         }
         if (path.startsWith("http://") || path.startsWith("https://") || path.startsWith("ftp://")) {
@@ -521,7 +523,7 @@ public class Vr {
         if (path == null) {
             path = "";
         }
-        if (StringUtils.isEmpty(path)) {
+        if (StringUtils.isBlank(path)) {
             return "";
         }
         path = path.trim();
@@ -544,7 +546,7 @@ public class Vr {
         if (path == null) {
             path = "";
         }
-        if (StringUtils.isEmpty(path)) {
+        if (StringUtils.isBlank(path)) {
             return "";
         }
         if (path.startsWith("http://") || path.startsWith("https://") || path.startsWith("ftp://")) {
@@ -577,7 +579,7 @@ public class Vr {
         if (a != null) {
             for (Object x : a) {
                 String s = x == null ? "" : String.valueOf(x);
-                if (!StringUtils.isEmpty(s)) {
+                if (!StringUtils.isBlank(s)) {
                     return s;
                 }
             }
@@ -589,7 +591,7 @@ public class Vr {
         for (Object x : a) {
             if (x != null) {
                 if (x instanceof String) {
-                    if (!StringUtils.isEmpty((String) x)) {
+                    if (!StringUtils.isBlank((String) x)) {
                         return x;
                     }
                 } else {
@@ -609,7 +611,7 @@ public class Vr {
         for (Object x : a) {
             if (x != null) {
                 if (x instanceof String) {
-                    if (!StringUtils.isEmpty((String) x)) {
+                    if (!StringUtils.isBlank((String) x)) {
                         sb.append((String) x);
                     }
                 } else {
@@ -671,13 +673,13 @@ public class Vr {
         String v = null;
         if (value instanceof ContentText) {
             v = ((ContentText) value).getContent();
-            if(v==null){
-                v="";
+            if (v == null) {
+                v = "";
             }
         } else {
             v = String.valueOf(value).trim();
         }
-        v=v.trim();
+        v = v.trim();
         return VrUtils.extractPureHTML(replaceCustomURLs(v));
     }
 
@@ -822,7 +824,7 @@ public class Vr {
 
     // Session Aware
     public Locale getLocale(String preferred) {
-        Locale loc = StringUtils.isEmpty(preferred) ? null : new Locale(preferred);
+        Locale loc = StringUtils.isBlank(preferred) ? null : new Locale(preferred);
         if (loc == null) {
             UserToken s = null;
             try {
@@ -841,19 +843,23 @@ public class Vr {
     }
 
     public String goBack() {
-        return VrApp.getBean(VrMenuManager.class).goBack();
+        return getMenuManager().goBack();
     }
 
     public String gotoHome() {
         return gotoPage("welcome", "");
     }
 
+    public String gotoEditor(String arguments) {
+        return gotoPage("editorCtrl", arguments);
+    }
+
     public String gotoPage(String command, String arguments) {
-        return VrApp.getBean(VrMenuManager.class).gotoPage(command, arguments);
+        return getMenuManager().gotoPage(command, arguments);
     }
 
     public String gotoPageObjItem(String entity, String id) {
-        return VrApp.getBean(VrMenuManager.class).gotoPageObjItem(entity, id);
+        return getMenuManager().gotoPageObjItem(entity, id);
     }
 
     public UserToken getCurrentToken() {
@@ -861,19 +867,19 @@ public class Vr {
     }
 
     public String buildMenu() {
-        return VrApp.getBean(VrMenuManager.class).buildMenu();
+        return getMenuManager().buildMenu();
     }
 
     public VRMenuInfo getMenu() {
-        return VrApp.getBean(VrMenuManager.class).getModel().getRoot();
+        return getMenuManager().getModel().getRoot();
     }
 
-    public List<BreadcrumbItem> getBreadcrumb() {
-        return VrApp.getBean(VrMenuManager.class).getModel().getBreadcrumb();
+    public List<VrBreadcrumbItem> getBreadcrumb() {
+        return getMenuManager().getModel().getBreadcrumb();
     }
 
-    public BreadcrumbItem getTitleCrumb() {
-        return VrApp.getBean(VrMenuManager.class).getModel().getTitleCrumb();
+    public VrBreadcrumbItem getTitleCrumb() {
+        return getMenuManager().getModel().getTitleCrumb();
     }
 
     public String logout() {
@@ -924,7 +930,7 @@ public class Vr {
         if (activeSessions != null) {
             for (UserSessionInfo userSession : activeSessions) {
                 String name = (userSession != null && userSession.getUserId() != null && userSession.getUserTypeName() != null) ? (userSession.getUserTypeName()) : null;
-                if (StringUtils.isEmpty(name)) {
+                if (StringUtils.isBlank(name)) {
                     name = "Autres";
                 }
                 List<UserSessionInfo> userSessions = r.get(name);
@@ -946,7 +952,7 @@ public class Vr {
         AppProperty property = core.getAppProperty(name, null);
         if (property != null) {
             String propertyValue = property.getPropertyValue();
-            if (!StringUtils.isEmpty(propertyValue)) {
+            if (!StringUtils.isBlank(propertyValue)) {
                 return propertyValue;
             }
         }
@@ -998,19 +1004,19 @@ public class Vr {
 
     public CmsTextService getCmsTextService(String name) {
         CmsTextService a = cmsTextServices.get(name);
-        if(a==null){
-            int bestSupport=-1;
-            CmsTextService best=null;
+        if (a == null) {
+            int bestSupport = -1;
+            CmsTextService best = null;
             for (CmsTextService s : VrApp.getBeansForType(CmsTextService.class)) {
                 int support = s.getSupport(name);
-                if(support>=0 && support>bestSupport){
-                    best=s;
-                    bestSupport=support;
+                if (support >= 0 && support > bestSupport) {
+                    best = s;
+                    bestSupport = support;
                 }
             }
-            a=best;
-            if(a!=null){
-                cmsTextServices.put(name,a);
+            a = best;
+            if (a != null) {
+                cmsTextServices.put(name, a);
             }
         }
 
@@ -1426,7 +1432,7 @@ public class Vr {
         return StringUtils.removeDuplicates(StringUtils.split(string, ",; :"));
     }
 
-    public Object[] enumValues(String enumClassName){
+    public Object[] enumValues(String enumClassName) {
         Class<?> cls;
         try {
             cls = Class.forName(enumClassName);
@@ -1441,7 +1447,7 @@ public class Vr {
             throw new IllegalArgumentException("Why");
         }
     }
-    
+
     public List<SelectItem> enumSelectItems(String enumClassName, boolean selectNone, boolean selectNull) {
         //should cache this?
         List<SelectItem> list = new ArrayList<>();
@@ -1452,7 +1458,7 @@ public class Vr {
             list.add(FacesUtils.createSelectItem(NULL_VALUE_STR, "--Valeur Nulle--"));
         }
         I18n p = I18n.get();
-        
+
         for (Object x : enumValues(enumClassName)) {
             String name = p.getEnum(x);
             String id = x.toString();
@@ -1460,7 +1466,34 @@ public class Vr {
         }
         return list;
     }
-    
+
+    public List<SelectItem> toEntitySelectItemsNullable(List objects, String entityName) {
+        return toEntitySelectItems(objects, entityName, true, false);
+    }
+
+    public List<SelectItem> toEntitySelectItems(List objects, String entityName, boolean selectNone, boolean selectNull) {
+        //should cache this?
+        List<SelectItem> list = new ArrayList<>();
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        Entity e = pu.getEntity(entityName);
+        if (selectNone) {
+            list.add(FacesUtils.createSelectItem("", "Non Spécifié"));
+        }
+        if (selectNull) {
+            list.add(FacesUtils.createSelectItem(NULL_VALUE_STR, "--Valeur Nulle--"));
+        }
+        for (Object x : objects) {
+            String name = e.getMainFieldValue(x);
+            String id = VrUPAUtils.objToJson(x, e.getDataType()).toString();
+            list.add(FacesUtils.createSelectItem(id, name));
+        }
+        return list;
+    }
+
+    public List<SelectItem> entitySelectItemsNullable(String entityName) {
+        return entitySelectItems(entityName, true, false);
+    }
+
     public List<SelectItem> entitySelectItems(String entityName, boolean selectNone, boolean selectNull) {
         //should cache this?
         List<SelectItem> list = new ArrayList<>();
@@ -1489,18 +1522,18 @@ public class Vr {
         }
         return new javax.faces.convert.EnumConverter(cls);
     }
-    
+
     public Converter entityObjConverter(String entityName) {
         return new EntityConverter(entityName);
     }
 
     public String fileExtensionPattern(String extensions) {
         HashSet<String> all = new HashSet<>();
-        if (StringUtils.isEmpty(extensions)) {
+        if (StringUtils.isBlank(extensions)) {
             return "";
         }
         for (String s : extensions.split("[ ,|]")) {
-            if (!StringUtils.isEmpty(s)) {
+            if (!StringUtils.isBlank(s)) {
                 all.add(s);
             }
         }
@@ -1532,40 +1565,40 @@ public class Vr {
     public void prepareCurrArticleType(ContentText listItem) {
         setHttpRequestAttribute("currArticleType",
                 (isEmpty(listItem.getImageURL()) ? "center"
-                        : (this.contextTextHasDecoration(listItem, "left") ? "left"
-                        : this.contextTextHasDecoration(listItem, "right") ? "right"
-                        : this.contextTextHasDecoration(listItem, "center") ? "center"
-                        : this.randomize("left", "right")))
+                : (this.contextTextHasDecoration(listItem, "left") ? "left"
+                : this.contextTextHasDecoration(listItem, "right") ? "right"
+                : this.contextTextHasDecoration(listItem, "center") ? "center"
+                : this.randomize("left", "right")))
         );
 
         this.setHttpRequestAttribute("currArticleBackground",
                 this.contextTextHasDecoration(listItem, "bg-rand-image") ? "rand-image"
-                        : this.contextTextHasDecoration(listItem, "bg-image") ? (this.isEmpty(listItem.getImageURL()) ? "rand-image" : "image")
-                        : this.contextTextHasDecoration(listItem, "bg-solid") ? "solid"
-                        : this.isEmpty(listItem.getImageURL()) ? this.randomize("solid", "solid")
-                        : "solid"
+                : this.contextTextHasDecoration(listItem, "bg-image") ? (this.isEmpty(listItem.getImageURL()) ? "rand-image" : "image")
+                : this.contextTextHasDecoration(listItem, "bg-solid") ? "solid"
+                : this.isEmpty(listItem.getImageURL()) ? this.randomize("solid", "solid")
+                : "solid"
         );
 
         this.setHttpRequestAttribute("currArticleBackgroundImage",
                 (this.getHttpRequest().getAttribute("currArticleBackground") == "rand-image")
-                        ? (this.randomizeList(this.listFlattenAndTrimAndAppend(this.strcat(this.getPublicThemeContext(), "/wplugins/crew/images/slide_5.jpg"), this.fsurlList(this.findValidImages("/Site/wplugins/crew/images/slider")))))
-                        : (this.getHttpRequest().getAttribute("currArticleBackground") == "image")
-                        ? (this.randomizeList(this.fsurlList(this.findValidImages(listItem.getImageURL()))))
-                        : ""
+                ? (this.randomizeList(this.listFlattenAndTrimAndAppend(this.strcat(this.getPublicThemeContext(), "/wplugins/crew/images/slide_5.jpg"), this.fsurlList(this.findValidImages("/Site/wplugins/crew/images/slider")))))
+                : (this.getHttpRequest().getAttribute("currArticleBackground") == "image")
+                ? (this.randomizeList(this.fsurlList(this.findValidImages(listItem.getImageURL()))))
+                : ""
         );
 
         this.setHttpRequestAttribute("currArticleCompanionImage",
                 (this.getHttpRequest().getAttribute("currArticleBackground") == "rand-image")
-                        ? this.url(listItem.getImageURL())
-                        : (this.getHttpRequest().getAttribute("currArticleBackground") == "image")
-                        ? (this.randomizeList(this.contentPathToFSUrlList(this.findImageAttachments(listItem.getImageAttachments()))))
-                        : this.url(listItem.getImageURL())
+                ? this.url(listItem.getImageURL())
+                : (this.getHttpRequest().getAttribute("currArticleBackground") == "image")
+                ? (this.randomizeList(this.contentPathToFSUrlList(this.findImageAttachments(listItem.getImageAttachments()))))
+                : this.url(listItem.getImageURL())
         );
 
         this.setHttpRequestAttribute("currArticleBackgroundSolid",
                 (this.getHttpRequest().getAttribute("currArticleBackground") == "solid")
-                        ? this.randomize("#38569f", "#352f44", "#2f4432", "#44362f", "#442f39", "#38969f")
-                        : ""
+                ? this.randomize("#38569f", "#352f44", "#2f4432", "#44362f", "#442f39", "#38969f")
+                : ""
         );
     }
 
@@ -1573,16 +1606,76 @@ public class Vr {
         DialogBuilder.closeCurrent();
         //RequestContext.getCurrentInstance().closeDialog(null);
     }
-    
-    public String strCoalesce(Object ... any){
+
+    public String strCoalesce(Object... any) {
         for (Object obj : any) {
-            if(obj!=null){
+            if (obj != null) {
                 String s = String.valueOf(obj);
-                if(!StringUtils.isEmpty(s)){
+                if (!StringUtils.isBlank(s)) {
                     return s;
                 }
             }
         }
         return "";
+    }
+
+    public String getImagePath(String iconPath, String defaultPath) {
+        return VrUtils.getImagePath(iconPath, defaultPath);
+    }
+
+    public String getIconPath(String iconPath, String defaultPath) {
+        return VrUtils.getIconPath(iconPath, defaultPath);
+    }
+
+    public String getImageUrl(String iconPath, String defaultPath) {
+        return url(getImagePath(iconPath, defaultPath));
+    }
+
+    public String getIconUrl(String iconPath, String defaultPath) {
+        return url(getIconPath(iconPath, defaultPath));
+    }
+
+    public String getPrettyURL(VRMenuInfo info) {
+        return VrWebHelper.getPrettyURL(info);
+    }
+
+    public String getPrivateThemeRelativePath() {
+        String themePath = getPrivateThemePath();
+        if (themePath.startsWith("/")) {
+            return themePath.substring(1);
+        }
+        return themePath;
+    }
+
+    public String getPublicThemeRelativePath() {
+        String themePath = getPublicThemePath();
+        if (themePath.startsWith("/")) {
+            return themePath.substring(1);
+        }
+        return themePath;
+    }
+
+    public boolean isCurrentPageId(String name) {
+        return getMenuManager().isCurrentPageId(name);
+    }
+
+    public VrMenuManager getMenuManager() {
+        return VrApp.getBean(VrMenuManager.class);
+    }
+
+    public void setCurrentPageId(String currentPageId) {
+        getMenuManager().getModel().setCurrentPageId(currentPageId);
+    }
+
+    public List<VrPageHistoryItem> getPageHistory() {
+        return getMenuManager().getPageHistory();
+    }
+
+    public String getMenuSearchText() {
+        return getMenuManager().getModel().getSearchText();
+    }
+
+    public void setMenuSearchText(String value) {
+        getMenuManager().getModel().setSearchText(value);
     }
 }

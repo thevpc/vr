@@ -2,7 +2,7 @@ package net.vpc.app.vainruling.plugins.calendars.service;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.model.AppUser;
-import net.vpc.app.vainruling.plugins.calendars.service.model.WeekCalendar;
+import net.vpc.app.vainruling.plugins.calendars.service.dto.WeekCalendar;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.vfs.VFile;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,7 +71,7 @@ public class VrDefaultWeekCalendarProvider implements AppWeekCalendarProvider {
                 return calendarsPlugin.findUserPublicWeekCalendars(user.getId(), true);
             }
         } else if ("user-calendars".equals(type)) {
-            if (!StringUtils.isEmpty(key)) {
+            if (!StringUtils.isBlank(key)) {
                 key = key.trim();
                 if (Character.isDigit(key.charAt(0))) {
                     return calendarsPlugin.findUserPublicWeekCalendars(Convert.toInt(key,IntegerParserConfig.LENIENT_F), true);

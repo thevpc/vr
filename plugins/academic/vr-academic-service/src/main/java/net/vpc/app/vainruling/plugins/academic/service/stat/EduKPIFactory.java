@@ -2,7 +2,7 @@ package net.vpc.app.vainruling.plugins.academic.service.stat;
 
 import net.vpc.app.vainruling.core.service.stats.KPI;
 import net.vpc.app.vainruling.core.service.stats.KPIGroupBy;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseAssignmentInfo;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCourseAssignmentInfo;
 import net.vpc.app.vainruling.plugins.academic.service.stat.impl.groups.*;
 import net.vpc.app.vainruling.plugins.academic.service.stat.impl.kpi.AssignedTeachersCountEduKPI;
 import net.vpc.app.vainruling.plugins.academic.service.stat.impl.kpi.ClassCountEduKPI;

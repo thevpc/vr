@@ -7,21 +7,20 @@ package net.vpc.app.vainruling.core.web.jsf.ctrl;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.CorePluginSecurity;
-import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.security.UserSession;
-import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.core.web.PageInfo;
-import net.vpc.app.vainruling.core.web.VrController;
-import net.vpc.app.vainruling.core.web.menu.VrMenuManager;
+import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
+import net.vpc.app.vainruling.core.service.pages.VrPageHistoryItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 
 import java.util.*;
+import net.vpc.app.vainruling.core.web.jsf.Vr;
+import net.vpc.app.vainruling.core.service.pages.VrPage;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@VrController(
+@VrPage(
 //        title = "Historique de Navigation",
         url = "modules/util/navigation-history",
         menu = "/Desktop",
@@ -46,7 +45,7 @@ public class NavigationHistoryCtrl  {
 
     @OnPageLoad
     public void onRefresh() {
-        ArrayList<PageInfo> historyElements = new ArrayList<>(VrApp.getBean(VrMenuManager.class).getPageHistory());
+        ArrayList<VrPageHistoryItem> historyElements = new ArrayList<>(Vr.get().getPageHistory());
         Collections.reverse(historyElements);
         model.setHistoryElements(historyElements);
     }
@@ -66,13 +65,13 @@ public class NavigationHistoryCtrl  {
 
     public static class Model {
 
-        private List<PageInfo> historyElements = new ArrayList<>();
+        private List<VrPageHistoryItem> historyElements = new ArrayList<>();
 
-        public List<PageInfo> getHistoryElements() {
+        public List<VrPageHistoryItem> getHistoryElements() {
             return historyElements;
         }
 
-        public void setHistoryElements(List<PageInfo> historyElements) {
+        public void setHistoryElements(List<VrPageHistoryItem> historyElements) {
             this.historyElements = historyElements;
         }
     }

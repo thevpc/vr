@@ -5,6 +5,9 @@
  */
 package net.vpc.app.vainruling.core.web.jsf.ctrl;
 
+import net.vpc.app.vainruling.core.service.menu.VRMenuProvider;
+import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
+import net.vpc.app.vainruling.core.service.pages.VrPageInfo;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.CorePluginSecurity;
 import net.vpc.app.vainruling.core.service.TraceService;
@@ -19,10 +22,10 @@ import net.vpc.app.vainruling.core.web.*;
 import net.vpc.app.vainruling.core.web.jsf.DialogBuilder;
 import net.vpc.app.vainruling.core.web.jsf.VrJsf;
 import net.vpc.app.vainruling.core.web.jsf.ctrl.dialog.DocumentsUploadDialogCtrl;
-import net.vpc.app.vainruling.core.web.menu.BreadcrumbItem;
-import net.vpc.app.vainruling.core.web.menu.VRMenuInfo;
-import net.vpc.app.vainruling.core.web.menu.VRMenuLabel;
-import net.vpc.app.vainruling.core.web.obj.DialogResult;
+import net.vpc.app.vainruling.core.service.pages.VrBreadcrumbItem;
+import net.vpc.app.vainruling.core.service.menu.VRMenuInfo;
+import net.vpc.app.vainruling.core.service.menu.VRMenuLabel;
+import net.vpc.app.vainruling.core.service.editor.DialogResult;
 import net.vpc.app.vainruling.core.web.util.DocumentsUtils;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
@@ -47,17 +50,19 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.vpc.common.util.MapUtils;
+import net.vpc.app.vainruling.core.service.pages.VrPageInfoResolver;
+import net.vpc.app.vainruling.core.service.pages.VrPage;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@VrController(
+@VrPage(
         //        title = "Documents", css = "fa-dashboard",
         url = "modules/files/documents"
 //        ,menu = "/FileSystem", securityKey = "Custom.FileSystem.Documents"
 )
 @Controller
-public class DocumentsCtrl implements VRMenuProvider, VrControllerInfoResolver, DocumentUploadListener {
+public class DocumentsCtrl implements VRMenuProvider, VrPageInfoResolver, DocumentUploadListener {
 
     private static final Logger log = Logger.getLogger(DocumentsCtrl.class.getName());
     @Autowired
@@ -75,14 +80,14 @@ public class DocumentsCtrl implements VRMenuProvider, VrControllerInfoResolver, 
     }
 
     @Override
-    public VrControllerInfo resolveVrControllerInfo(String cmd) {
+    public VrPageInfo resolvePageInfo(String cmd) {
         try {
             Config c = VrUtils.parseJSONObject(cmd, Config.class);
 
             if (c == null) {
                 c = new Config();
             }
-            VrControllerInfo d = new VrControllerInfo();
+            VrPageInfo d = new VrPageInfo();
             d.setControllerName("documents");
             d.setCmd(cmd);
             d.setUrl("modules/files/documents");
@@ -95,7 +100,7 @@ public class DocumentsCtrl implements VRMenuProvider, VrControllerInfoResolver, 
             } else if ("user".equals(c.getType())) {
                 d.setSecurityKey(CorePluginSecurity.RIGHT_CUSTOM_FILE_SYSTEM_MY_FILE_SYSTEM);
                 String v = c.getValue();
-                if (StringUtils.isEmpty(v)) {
+                if (StringUtils.isBlank(v)) {
                     v = login;
                 }
                 d.setTitle("Documents de " + v);
@@ -105,7 +110,7 @@ public class DocumentsCtrl implements VRMenuProvider, VrControllerInfoResolver, 
             } else if ("profile".equals(c.getType())) {
                 d.setSecurityKey(CorePluginSecurity.RIGHT_CUSTOM_FILE_SYSTEM_MY_FILE_SYSTEM);
                 String v = c.getValue();
-                if (StringUtils.isEmpty(v)) {
+                if (StringUtils.isBlank(v)) {
                     v = "user";
                 }
                 d.setTitle("Documents de " + v);
@@ -113,9 +118,9 @@ public class DocumentsCtrl implements VRMenuProvider, VrControllerInfoResolver, 
                 d.setSecurityKey(CorePluginSecurity.RIGHT_CUSTOM_FILE_SYSTEM_MY_FILE_SYSTEM);
                 d.setTitle("Tous les documents");
             }
-            List<BreadcrumbItem> items = new ArrayList<>();
-            items.add(new BreadcrumbItem(I18n.get().getOrNull("Controller.Documents"), I18n.get().getOrNull("Controller.Documents.subTitle"), "fa-dashboard", "", ""));
-            d.setBreadcrumb(items.toArray(new BreadcrumbItem[items.size()]));
+            List<VrBreadcrumbItem> items = new ArrayList<>();
+            items.add(new VrBreadcrumbItem(I18n.get().getOrNull("Controller.Documents"), I18n.get().getOrNull("Controller.Documents.subTitle"), "fa-dashboard", "", ""));
+            d.setBreadcrumb(items.toArray(new VrBreadcrumbItem[items.size()]));
             return d;
         } catch (Exception ex) {
             log.log(Level.SEVERE, "Error", ex);
@@ -139,7 +144,7 @@ public class DocumentsCtrl implements VRMenuProvider, VrControllerInfoResolver, 
         });
         VirtualFileSystem fs = null;
         String login = core.getCurrentUserLogin();
-        if (StringUtils.isEmpty(login)) {
+        if (StringUtils.isBlank(login)) {
             fs = VFS.EMPTY_FS;
         } else {
             if ("root".equals(c.getType())) {
@@ -148,13 +153,13 @@ public class DocumentsCtrl implements VRMenuProvider, VrControllerInfoResolver, 
                 fs = core.getUserHomeFileSystem(login);
             } else if ("user".equals(c.getType())) {
                 String v = c.getValue();
-                if (StringUtils.isEmpty(v)) {
+                if (StringUtils.isBlank(v)) {
                     v = login;
                 }
                 fs = core.getUserHomeFileSystem(v);
             } else if ("profile".equals(c.getType())) {
                 String v = c.getValue();
-                if (StringUtils.isEmpty(v)) {
+                if (StringUtils.isBlank(v)) {
                     v = "user";
                 }
                 fs = core.getProfileFileSystem(v);
@@ -168,7 +173,7 @@ public class DocumentsCtrl implements VRMenuProvider, VrControllerInfoResolver, 
     }
 
     public void updatePath(String path) {
-        if (StringUtils.isEmpty(path)) {
+        if (StringUtils.isBlank(path)) {
             path = "/";
         }
         VFile file = getModel().getFileSystem().get(path);

@@ -65,7 +65,7 @@ public class WebScriptServiceInvoker {
         if (s == null || s.getUserLogin() == null) {
             return buildError("SecurityException", "not connected", null);
         }
-        if (StringUtils.isEmpty(script)) {
+        if (StringUtils.isBlank(script)) {
             return new HashMap();
         }
         ScriptEngine scriptEngine = createScriptEngine();
@@ -185,7 +185,7 @@ public class WebScriptServiceInvoker {
                 formats = new String[]{"yyyy-MM-dd HH:mm:SS", "yyyy-MM-dd", "HH:mm:SS"};
             }
             for (String format : formats) {
-                if (StringUtils.isEmpty(format)) {
+                if (StringUtils.isBlank(format)) {
                     format = "yyyy-MM-dd HH:mm:SS";
                 }
                 try {

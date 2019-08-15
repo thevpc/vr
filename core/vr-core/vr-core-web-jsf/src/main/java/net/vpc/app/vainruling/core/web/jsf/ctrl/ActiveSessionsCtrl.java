@@ -15,8 +15,7 @@ import net.vpc.app.vainruling.core.service.notification.PollAware;
 import net.vpc.app.vainruling.core.service.security.UserSessionInfo;
 import net.vpc.app.vainruling.core.service.security.UserToken;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
-import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.core.web.VrController;
+import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.Chronometer;
 import net.vpc.common.util.DatePart;
@@ -26,11 +25,12 @@ import org.primefaces.model.chart.DonutChartModel;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
+import net.vpc.app.vainruling.core.service.pages.VrPage;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@VrController(
+@VrPage(
 //        title = "Utilisateurs Connectés",
         url = "modules/admin/active-sessions",
         menu = "/Social",
@@ -175,7 +175,7 @@ public class ActiveSessionsCtrl implements PollAware {
                             });
                             if(u!=null) {
                                 AppDepartment c = u.getDepartment();
-                                if (c != null && !StringUtils.isEmpty(c.getName())) {
+                                if (c != null && !StringUtils.isBlank(c.getName())) {
                                     VrUtils.incKey(circle2, c.getName());
                                 }
                             }
@@ -210,7 +210,7 @@ public class ActiveSessionsCtrl implements PollAware {
                     for (UserSessionInfo i : list) {
                         if (i.getLocale() != null) {
                             String language = new Locale(i.getLocale()).getLanguage();
-                            if (!StringUtils.isEmpty(language)) {
+                            if (!StringUtils.isBlank(language)) {
                                 VrUtils.incKey(circle1, language);
                             }
                         }

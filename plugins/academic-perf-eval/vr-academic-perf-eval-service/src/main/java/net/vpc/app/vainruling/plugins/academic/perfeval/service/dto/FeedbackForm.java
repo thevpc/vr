@@ -1,6 +1,6 @@
 package net.vpc.app.vainruling.plugins.academic.perfeval.service.dto;
 
-import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.AcademicFeedback;
+import net.vpc.app.vainruling.plugins.academic.perfeval.model.AcademicFeedback;
 
 import java.util.ArrayList;
 import java.util.List;

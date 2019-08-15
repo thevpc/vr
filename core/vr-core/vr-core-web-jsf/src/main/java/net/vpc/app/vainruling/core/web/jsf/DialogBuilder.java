@@ -1,6 +1,6 @@
 package net.vpc.app.vainruling.core.web.jsf;
 
-import net.vpc.app.vainruling.core.web.obj.DialogResult;
+import net.vpc.app.vainruling.core.service.editor.DialogResult;
 import org.primefaces.PrimeFaces;
 
 import java.util.HashMap;

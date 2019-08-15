@@ -6,7 +6,6 @@
 package net.vpc.app.vainruling.plugins.devtoolbox.web;
 
 import net.vpc.app.vainruling.core.service.CorePluginSecurity;
-import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.Document;
 import net.vpc.upa.MultiDocument;
@@ -15,11 +14,12 @@ import net.vpc.upa.persistence.QueryResult;
 import org.springframework.context.annotation.Scope;
 
 import java.util.*;
+import net.vpc.app.vainruling.core.service.pages.VrPage;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@VrController(
+@VrPage(
         //title = "Developer Tools", css = "fa-dashboard",
         url = "modules/devtoolbox/dev-ql", 
         menu = "/Admin", 
@@ -51,7 +51,7 @@ public class DevToolsCtrl {
                         final int fieldsCount = r.getColumnsCount();
                         for (int i = 0; i < fieldsCount; i++) {
                             String columnName = r.getColumnName(i);
-                            if (StringUtils.isEmpty(columnName)) {
+                            if (StringUtils.isBlank(columnName)) {
                                 columnName = "C" + (i + 1);
                             }
                             getModel().getRowNames().add(new ColDef(columnName, i));

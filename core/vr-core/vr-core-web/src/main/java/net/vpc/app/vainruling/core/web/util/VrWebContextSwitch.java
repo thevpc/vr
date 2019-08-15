@@ -28,7 +28,7 @@ public class VrWebContextSwitch implements UPAWebContextSwitch{
         }
         if(token!=null){
             String d = token.getDomain();
-            if(!StringUtils.isEmpty(d)){
+            if(!StringUtils.isBlank(d)){
                 InvokeContext invokeContext = new InvokeContext();
                 invokeContext.setPersistenceUnit(UPA.getPersistenceUnit(d));
                 return invokeContext;

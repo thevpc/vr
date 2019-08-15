@@ -1,10 +1,10 @@
 package net.vpc.app.vainruling.plugins.academic.service.util;
 
 import net.vpc.app.vainruling.core.service.model.AppDepartment;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicOfficialDiscipline;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacherPeriod;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacherSituation;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicTeacherDegree;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicOfficialDiscipline;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacherPeriod;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacherSituation;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicTeacherDegree;
 
 import java.util.HashSet;
 import java.util.Set;

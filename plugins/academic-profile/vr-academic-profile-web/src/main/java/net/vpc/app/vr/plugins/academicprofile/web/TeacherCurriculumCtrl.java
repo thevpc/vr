@@ -5,24 +5,24 @@
  */
 package net.vpc.app.vr.plugins.academicprofile.web;
 
-import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.core.web.VrController;
-import net.vpc.app.vainruling.core.web.UPathItem;
+import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.app.vainruling.core.web.jsf.Vr;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.web.AcademicCtrlUtils;
 import net.vpc.app.vr.plugins.academicprofile.service.AcademicProfilePlugin;
-import net.vpc.app.vr.plugins.academicprofile.service.model.AcademicTeacherCV;
+import net.vpc.app.vr.plugins.academicprofile.model.AcademicTeacherCV;
 import net.vpc.common.strings.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import net.vpc.app.vainruling.core.service.pages.VrPage;
+import net.vpc.app.vainruling.core.service.pages.VrPathItem;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@VrController(
+@VrPage(
         breadcrumb = {
-                @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
+                @VrPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
 //        css = "fa-table",
 //        title = "CV Teacher",
         url = "public/academic/addressbook/teacher-cv-index.xhtml"
@@ -52,9 +52,9 @@ public class TeacherCurriculumCtrl {
         String photo = t == null ? null : AcademicCtrlUtils.getTeacherAbsoluteWebPath(t.getId(), "WebSite/photo.jpg");
         getModel().setPhotoUrl(photo);
         getModel().setTeacherCV(t == null ? null : apr.findOrCreateAcademicTeacherCV(t.getId()));
-        if (StringUtils.isEmpty(getModel().getTeacherCV().getExtraImage())) {
+        if (StringUtils.isBlank(getModel().getTeacherCV().getExtraImage())) {
             String extraActivity = t == null ? null : AcademicCtrlUtils.getTeacherAbsoluteWebPath(t.getId(), "WebSite/extra-activity.jpg");
-            if (!StringUtils.isEmpty(extraActivity)) {
+            if (!StringUtils.isBlank(extraActivity)) {
                 getModel().getTeacherCV().setExtraImage(extraActivity);
             }
 

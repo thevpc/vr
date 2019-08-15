@@ -8,12 +8,11 @@ package net.vpc.app.vainruling.core.web.jsf.ctrl.dialog;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
-import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.jsf.DialogBuilder;
 import net.vpc.app.vainruling.core.web.jsf.ctrl.DocumentUploadListener;
 import net.vpc.app.vainruling.core.web.jsf.ctrl.DocumentsCtrl;
 import net.vpc.app.vainruling.core.web.jsf.ctrl.FileUploadEventHandler;
-import net.vpc.app.vainruling.core.web.obj.DialogResult;
+import net.vpc.app.vainruling.core.service.editor.DialogResult;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.vfs.VFile;
@@ -25,11 +24,12 @@ import org.springframework.stereotype.Controller;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.vpc.app.vainruling.core.service.pages.VrPage;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@VrController
+@VrPage
 @Controller
 public class DocumentsUploadDialogCtrl {
 
@@ -76,7 +76,7 @@ public class DocumentsUploadDialogCtrl {
             c = new Config();
         }
         String title = c.getTitle();
-        if (StringUtils.isEmpty(title)) {
+        if (StringUtils.isBlank(title)) {
             title = "Documents";
         }
         getModel().setTitle(title);
@@ -95,7 +95,7 @@ public class DocumentsUploadDialogCtrl {
             public void run() {
                 try {
                     String fspath = getModel().getConfig().getFspath();
-                    if(StringUtils.isEmpty(fspath)){
+                    if(StringUtils.isBlank(fspath)){
                         fspath="/Upload/";
                     }
                     if(!fspath.startsWith("/")){

@@ -5,7 +5,7 @@
  */
 package net.vpc.app.vainruling.core.web.jsf.ctrl.obj;
 
-import net.vpc.app.vainruling.core.web.obj.CustomTarget;
+import net.vpc.app.vainruling.core.service.editor.CustomTarget;
 
 /**
  * @author taha.bensalah@gmail.com

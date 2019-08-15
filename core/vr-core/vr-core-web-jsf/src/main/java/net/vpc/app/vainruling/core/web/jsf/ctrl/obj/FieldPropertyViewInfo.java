@@ -6,7 +6,7 @@
 package net.vpc.app.vainruling.core.web.jsf.ctrl.obj;
 
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.web.jsf.ctrl.ObjCtrl;
+import net.vpc.app.vainruling.core.web.jsf.ctrl.EditorCtrl;
 import net.vpc.upa.*;
 import net.vpc.upa.types.DataType;
 
@@ -48,12 +48,12 @@ public class FieldPropertyViewInfo {
             //
         }
         nullable = dataType == null ? true : dataType.isNullable();
-        ObjCtrl objCtrl = VrApp.getBean(ObjCtrl.class);
-        listMode = objCtrl.getModel().getMode() == AccessMode.READ;
-        insertMode = objCtrl.getModel().getMode() == AccessMode.PERSIST;
-        updateMode = objCtrl.getModel().getMode() == AccessMode.UPDATE;
+        EditorCtrl editorCtrl = VrApp.getBean(EditorCtrl.class);
+        listMode = editorCtrl.getModel().getMode() == AccessMode.READ;
+        insertMode = editorCtrl.getModel().getMode() == AccessMode.PERSIST;
+        updateMode = editorCtrl.getModel().getMode() == AccessMode.UPDATE;
         if (field != null) {
-            AccessLevel effectiveAccessLevel = field.getEffectiveAccessLevel(objCtrl.getModel().getMode());
+            AccessLevel effectiveAccessLevel = field.getEffectiveAccessLevel(editorCtrl.getModel().getMode());
             switch (effectiveAccessLevel) {
                 case INACCESSIBLE: {
                     visible = false;

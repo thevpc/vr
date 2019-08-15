@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.vpc.app.vain-ruling.plugins.academic-planning</groupId>
     <artifactId>vr-academic-planning-web</artifactId>
-    <version>1.13.13</version>
+    <version>1.13.15</version>
     <packaging>jar</packaging>
     <name>net.vpc.app.vain-ruling.plugins.academic-planning.vr-academic-planning-web</name>
     <url>https://github.com/thevpc/vr/wiki</url>
@@ -18,7 +18,7 @@
 
     <properties>
         <vr-plugin.component-type>web</vr-plugin.component-type>
-        <version.vr-core-web-jsf>1.13.13</version.vr-core-web-jsf>
+        <version.vr-core-web-jsf>1.13.15</version.vr-core-web-jsf>
     </properties>
 
     <dependencies>
@@ -30,17 +30,17 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>vr-academic-planning-service</artifactId>
-            <version>1.13.13</version>
+            <version>1.13.15</version>
         </dependency>
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.academic</groupId>
             <artifactId>vr-academic-web</artifactId>
-            <version>1.13.13</version>
+            <version>1.13.15</version>
         </dependency>
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.calendars</groupId>
             <artifactId>vr-calendars-web</artifactId>
-            <version>1.13.13</version>
+            <version>1.13.15</version>
         </dependency>
     </dependencies>
 

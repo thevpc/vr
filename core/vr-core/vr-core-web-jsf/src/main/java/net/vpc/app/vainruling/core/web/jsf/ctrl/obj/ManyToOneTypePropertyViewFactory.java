@@ -6,7 +6,7 @@
 package net.vpc.app.vainruling.core.web.jsf.ctrl.obj;
 
 import net.vpc.app.vainruling.core.service.util.UIConstants;
-import net.vpc.app.vainruling.core.web.obj.ViewContext;
+import net.vpc.app.vainruling.core.service.editor.ViewContext;
 import net.vpc.upa.Entity;
 import net.vpc.upa.Field;
 import net.vpc.upa.KeyType;
@@ -43,16 +43,16 @@ public class ManyToOneTypePropertyViewFactory implements PropertyViewFactory {
         }
         FieldPropertyViewInfo nfo = FieldPropertyViewInfo.build(field, datatype, configuration);
 
-//        ObjCtrl objCtrl = VrApp.getBean(ObjCtrl.class);
+//        EditorCtrl editorCtrl = VrApp.getBean(EditorCtrl.class);
 //        DataType dataType = field.getDataType();
 //        boolean main = field.getModifiers().contains(FieldModifier.MAIN);
 //        boolean id = field.getModifiers().contains(FieldModifier.ID);
 //        boolean insert = field.getModifiers().contains(FieldModifier.PERSIST_DEFAULT);
 //        boolean update = !id && field.getModifiers().contains(FieldModifier.UPDATE_DEFAULT);
 //        boolean nullable = dataType.isNullable();
-//        boolean listMode = objCtrl.getModel().getMode() == AccessMode.READ;
-//        boolean insertMode = objCtrl.getModel().getMode() == AccessMode.PERSIST;
-//        boolean updateMode = objCtrl.getModel().getMode() == AccessMode.UPDATE;
+//        boolean listMode = editorCtrl.getModel().getMode() == AccessMode.READ;
+//        boolean insertMode = editorCtrl.getModel().getMode() == AccessMode.PERSIST;
+//        boolean updateMode = editorCtrl.getModel().getMode() == AccessMode.UPDATE;
 //        boolean forceDisabled = configuration != null && configuration.get("disabled") != null && (Boolean.TRUE.equals(configuration.get("disabled")) || "true".equalsIgnoreCase(String.valueOf(configuration.get("disabled"))));
 //        boolean forceInvisible = configuration != null && configuration.get("invisible") != null && (Boolean.TRUE.equals(configuration.get("invisible")) || "true".equalsIgnoreCase(String.valueOf(configuration.get("invisible"))));
 //        boolean visible

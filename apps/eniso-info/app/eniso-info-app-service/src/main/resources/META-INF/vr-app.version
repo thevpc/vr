@@ -1,9 +1,6 @@
 short-name = ENISo info
 long-name = ENISo info
 id = eniso.info
-version = 1.2.5
-build-date = 2019-01-16
-build-number = 169
 author = Taha BEN SALAH (c)
 author-url = tahabensalah.net
 author-affiliation = ENISo
@@ -12,3 +9,16 @@ default-private-theme = crew
 config.company=ENISo
 config.country=Tunisie
 config.industry=Education
+
+version = 1.2.7
+build-date = 2019-08-01
+build-number = 171
+
+#version[OLD] = 1.2.6
+#build-date[OLD] = 2019-06-24
+#build-number[OLD] = 170
+
+
+#version[OLD] = 1.2.5
+#build-date[OLD] = 2019-01-16
+#build-number[OLD] = 169

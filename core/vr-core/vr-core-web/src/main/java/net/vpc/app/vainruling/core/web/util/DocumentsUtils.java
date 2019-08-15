@@ -73,7 +73,7 @@ public class DocumentsUtils {
 
 
     public static List<VFileInfo> searchFiles(VFile curr, String searchString) {
-        if (StringUtils.isEmpty(searchString)) {
+        if (StringUtils.isBlank(searchString)) {
             return loadFiles(curr);
         }
         VFileFilter fileFilter=null;
@@ -214,10 +214,10 @@ public class DocumentsUtils {
                         //ignore any error
                     }
                     if (format != null) {
-                        if (StringUtils.isEmpty(format.getIconCss())) {
+                        if (StringUtils.isBlank(format.getIconCss())) {
                             iconCss = format.getIconCss();
                         }
-                        if (StringUtils.isEmpty(format.getIconCss())) {
+                        if (StringUtils.isBlank(format.getIconCss())) {
                             iconCss = format.getIconCss();
                         }
                     }

@@ -1,16 +1,16 @@
 package net.vpc.app.vainruling.plugins.academic.teachereval.web;
 
-import net.vpc.app.vainruling.core.web.UPathItem;
-import net.vpc.app.vainruling.core.web.VrController;
-import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.AcademicFeedback;
-import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.AcademicFeedbackSession;
+import net.vpc.app.vainruling.plugins.academic.perfeval.model.AcademicFeedback;
+import net.vpc.app.vainruling.plugins.academic.perfeval.model.AcademicFeedbackSession;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPluginSecurity;
 
 import java.util.List;
+import net.vpc.app.vainruling.core.service.pages.VrPage;
+import net.vpc.app.vainruling.core.service.pages.VrPathItem;
 
-@VrController(
+@VrPage(
         breadcrumb = {
-                @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
+                @VrPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
 //        css = "fa-table",
 //        title = "Fiches Eval. enseignements",
         menu = "/Education/Evaluation",

@@ -1,6 +1,6 @@
 package net.vpc.app.vainruling.plugins.academic.service.util;
 
-import net.vpc.app.vainruling.plugins.academic.service.model.current.IAcademicCourseAssignment;
+import net.vpc.app.vainruling.plugins.academic.model.current.IAcademicCourseAssignment;
 
 import java.util.ArrayList;
 import java.util.List;

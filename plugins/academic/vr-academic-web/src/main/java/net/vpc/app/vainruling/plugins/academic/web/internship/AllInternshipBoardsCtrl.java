@@ -5,28 +5,28 @@
  */
 package net.vpc.app.vainruling.plugins.academic.web.internship;
 
-import net.vpc.app.vainruling.plugins.academic.service.model.internship.AcademicInternshipInfo;
+import net.vpc.app.vainruling.plugins.academic.model.internship.AcademicInternshipInfo;
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.core.web.VrController;
-import net.vpc.app.vainruling.core.web.UPathItem;
+import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPluginSecurity;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
-import net.vpc.app.vainruling.plugins.academic.service.model.internship.current.AcademicInternshipBoard;
-import net.vpc.app.vainruling.plugins.academic.service.model.internship.ext.AcademicInternshipExtList;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
+import net.vpc.app.vainruling.plugins.academic.model.internship.current.AcademicInternshipBoard;
+import net.vpc.app.vainruling.plugins.academic.model.internship.ext.AcademicInternshipExtList;
 
 import java.util.ArrayList;
 import java.util.List;
+import net.vpc.app.vainruling.core.service.pages.VrPage;
+import net.vpc.app.vainruling.core.service.pages.VrPathItem;
 
 /**
  * internships for teachers
  *
  * @author taha.bensalah@gmail.com
  */
-@VrController(
+@VrPage(
         breadcrumb = {
-                @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
+                @VrPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
 //        css = "fa-table",
 //        title = "Tous les Stages",
         menu = "/Education/Projects/Internships",

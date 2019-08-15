@@ -9,18 +9,16 @@ import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
-import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.core.web.UPathItem;
-import net.vpc.app.vainruling.core.web.VrController;
+import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.app.vainruling.plugins.academic.pbl.service.ApblPlugin;
 import net.vpc.app.vainruling.plugins.academic.pbl.service.ApblPluginSecurity;
 import net.vpc.app.vainruling.plugins.academic.pbl.service.dto.ApblSessionListInfo;
 import net.vpc.app.vainruling.plugins.academic.pbl.service.dto.ApblStudentInfo;
 import net.vpc.app.vainruling.plugins.academic.pbl.service.dto.ApblTeacherInfo;
-import net.vpc.app.vainruling.plugins.academic.pbl.service.model.ApblSession;
+import net.vpc.app.vainruling.plugins.academic.pbl.model.ApblSession;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicStudent;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringComparator;
 import net.vpc.common.strings.StringComparators;
@@ -37,14 +35,16 @@ import java.util.logging.Logger;
 import javax.faces.bean.ManagedBean;
 import net.vpc.app.vainruling.plugins.academic.pbl.service.dto.ApblTeamInfo;
 import net.vpc.common.util.IntegerParserConfig;
+import net.vpc.app.vainruling.core.service.pages.VrPage;
+import net.vpc.app.vainruling.core.service.pages.VrPathItem;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@VrController(
+@VrPage(
         breadcrumb = {
-            @UPathItem(title = "Education", css = "fa-dashboard", ctrl = ""),
-            @UPathItem(title = "APP", css = "fa-dashboard", ctrl = ""),},
+            @VrPathItem(title = "Education", css = "fa-dashboard", ctrl = ""),
+            @VrPathItem(title = "APP", css = "fa-dashboard", ctrl = ""),},
         url = "modules/academic/pbl/app-status",
         menu = "/Education/Projects/Apbl",
         securityKey = "Custom.Education.Apbl.AppStatus",
@@ -75,7 +75,7 @@ public class AcademicAppStatusCtrl {
             return getModel().getSelectedSessions();
         }
         String currentSessionId = getModel().getCurrentSessionId();
-        return StringUtils.isEmpty(currentSessionId) ? new String[0] : new String[]{currentSessionId};
+        return StringUtils.isBlank(currentSessionId) ? new String[0] : new String[]{currentSessionId};
     }
 
     public String getPreferredFileName() {
@@ -249,7 +249,7 @@ public class AcademicAppStatusCtrl {
             public boolean accept(AcademicTeacher value) {
                 AppDepartment d = value.getUser().getDepartment();
                 String selectedDepartment = getModel().getSelectedDepartment();
-                if (!(StringUtils.isEmpty(selectedDepartment) || (d != null && selectedDepartment.equals("" + d.getId())))) {
+                if (!(StringUtils.isBlank(selectedDepartment) || (d != null && selectedDepartment.equals("" + d.getId())))) {
                     return false;
                 }
                 return true;
@@ -260,7 +260,7 @@ public class AcademicAppStatusCtrl {
             public boolean accept(AcademicStudent value) {
                 AppDepartment d = value.getUser().getDepartment();
                 String selectedDepartment = getModel().getSelectedDepartment();
-                if (!(StringUtils.isEmpty(selectedDepartment) || (d != null && selectedDepartment.equals("" + d.getId())))) {
+                if (!(StringUtils.isBlank(selectedDepartment) || (d != null && selectedDepartment.equals("" + d.getId())))) {
                     return false;
                 }
                 return true;

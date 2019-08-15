@@ -5,15 +5,14 @@
  */
 package net.vpc.app.vainruling.core.web.jsf.ctrl;
 
-import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.core.web.VrController;
-import net.vpc.app.vainruling.core.web.menu.VrMenuManager;
+import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
+import net.vpc.app.vainruling.core.web.jsf.Vr;
+import net.vpc.app.vainruling.core.service.pages.VrPage;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@VrController(
+@VrPage(
 //        title = "Activités",
         url = "activities"
 )
@@ -21,7 +20,6 @@ public class ActivitiesCtrl {
 
     @OnPageLoad
     public void onLoad() {
-        VrApp.getBean(VrMenuManager.class).getModel().setCurrentPageId("activities");
-//        VrApp.getBean(VrMenuManager.class).setPageCtrl("activities");
+        Vr.get().setCurrentPageId("activities");
     }
 }

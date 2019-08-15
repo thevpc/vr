@@ -6,14 +6,12 @@
 package net.vpc.app.vainruling.plugins.academic.planning.web;
 
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.core.web.VrController;
-import net.vpc.app.vainruling.core.web.UPathItem;
+import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.app.vainruling.plugins.academic.planning.service.AcademicPlanningPlugin;
 import net.vpc.app.vainruling.plugins.academic.planning.service.AcademicPlanningPluginSecurity;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.app.vainruling.plugins.calendars.service.model.WeekCalendar;
-import net.vpc.app.vainruling.plugins.calendars.service.model.CalendarDay;
+import net.vpc.app.vainruling.plugins.calendars.service.dto.WeekCalendar;
+import net.vpc.app.vainruling.plugins.calendars.service.dto.CalendarDay;
 import net.vpc.app.vainruling.plugins.calendars.web.week.AbstractWeekCalendarCtrl;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
@@ -23,13 +21,15 @@ import javax.faces.model.SelectItem;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Controller;
+import net.vpc.app.vainruling.core.service.pages.VrPage;
+import net.vpc.app.vainruling.core.service.pages.VrPathItem;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@VrController(
+@VrPage(
         breadcrumb = {
-                @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
+                @VrPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
 //        css = "fa-table",
 //        title = "Emploi par Groupe",
         url = "modules/academic/planning/class-week-calendars",

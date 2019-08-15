@@ -1,8 +1,8 @@
 package net.vpc.app.vainruling.plugins.academic.service.stat.impl.kpi;
 
 import net.vpc.app.vainruling.core.service.stats.*;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicClass;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseAssignmentInfo;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicClass;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCourseAssignmentInfo;
 
 import java.util.HashSet;
 import java.util.Set;

@@ -7,13 +7,12 @@ package net.vpc.app.vainruling.plugins.academic.web.dialog;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
-import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.jsf.DialogBuilder;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicFormerStudent;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudentStage;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicClass;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicFormerStudent;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicStudent;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicStudentStage;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicClass;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.Convert;
@@ -26,11 +25,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.vpc.app.vainruling.core.service.pages.VrPage;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@VrController
+@VrPage
 public class UpdateStudentClassActionCtrl {
 
     public static final Logger log = Logger.getLogger(UpdateStudentClassActionCtrl.class.getName());
@@ -85,8 +85,8 @@ public class UpdateStudentClassActionCtrl {
 
     public void onGraduated() {
         if (    //xor between board and group
-                (getModel().isUserSelectedOnly() || !StringUtils.isEmpty(getModel().getSelectedClassFrom()))
-                        && !StringUtils.isEmpty(getModel().getSelectedPeriod())
+                (getModel().isUserSelectedOnly() || !StringUtils.isBlank(getModel().getSelectedClassFrom()))
+                        && !StringUtils.isBlank(getModel().getSelectedPeriod())
                 ) {
             getModel().setMessage("");
             int periodId = Convert.toInt(getModel().getSelectedPeriod(), IntegerParserConfig.LENIENT_F);
@@ -119,15 +119,15 @@ public class UpdateStudentClassActionCtrl {
         }else{
             getModel().setMessage("Merci de faire votre selection");
         }
-        if(StringUtils.isEmpty(getModel().getMessage())) {
+        if(StringUtils.isBlank(getModel().getMessage())) {
             fireEventExtraDialogClosed();
         }
     }
 
     public void onEliminated() {
         if (    //xor between board and group
-                (getModel().isUserSelectedOnly() || !StringUtils.isEmpty(getModel().getSelectedClassFrom()))
-                        && !StringUtils.isEmpty(getModel().getSelectedPeriod())
+                (getModel().isUserSelectedOnly() || !StringUtils.isBlank(getModel().getSelectedClassFrom()))
+                        && !StringUtils.isBlank(getModel().getSelectedPeriod())
                 ) {
             getModel().setMessage("");
             int periodId = Convert.toInt(getModel().getSelectedPeriod(), IntegerParserConfig.LENIENT_F);
@@ -163,15 +163,15 @@ public class UpdateStudentClassActionCtrl {
         }else{
             getModel().setMessage("Merci de faire votre selection");
         }
-        if(StringUtils.isEmpty(getModel().getMessage())) {
+        if(StringUtils.isBlank(getModel().getMessage())) {
             fireEventExtraDialogClosed();
         }
     }
 
     public void onFailure() {
         if (    //xor between board and group
-                (getModel().isUserSelectedOnly() || !StringUtils.isEmpty(getModel().getSelectedClassFrom()))
-                        && !StringUtils.isEmpty(getModel().getSelectedPeriod())
+                (getModel().isUserSelectedOnly() || !StringUtils.isBlank(getModel().getSelectedClassFrom()))
+                        && !StringUtils.isBlank(getModel().getSelectedPeriod())
                 ) {
             getModel().setMessage("");
             int periodId = Convert.toInt(getModel().getSelectedPeriod(), IntegerParserConfig.LENIENT_F);
@@ -206,7 +206,7 @@ public class UpdateStudentClassActionCtrl {
         }else{
             getModel().setMessage("Merci de faire votre selection");
         }
-        if(StringUtils.isEmpty(getModel().getMessage())) {
+        if(StringUtils.isBlank(getModel().getMessage())) {
             fireEventExtraDialogClosed();
         }
     }
@@ -216,9 +216,9 @@ public class UpdateStudentClassActionCtrl {
     }
     public void onChangeClass() {
         if (    //xor between board and group
-                (getModel().isUserSelectedOnly() || !StringUtils.isEmpty(getModel().getSelectedClassFrom()))
-                        && !StringUtils.isEmpty(getModel().getSelectedClassTo())
-                        && !StringUtils.isEmpty(getModel().getSelectedPeriod())
+                (getModel().isUserSelectedOnly() || !StringUtils.isBlank(getModel().getSelectedClassFrom()))
+                        && !StringUtils.isBlank(getModel().getSelectedClassTo())
+                        && !StringUtils.isBlank(getModel().getSelectedPeriod())
                 ) {
             getModel().setMessage("");
             int periodId = Convert.toInt(getModel().getSelectedPeriod(), IntegerParserConfig.LENIENT_F);
@@ -253,7 +253,7 @@ public class UpdateStudentClassActionCtrl {
         }else{
             getModel().setMessage("Merci de faire votre selection");
         }
-        if(StringUtils.isEmpty(getModel().getMessage())) {
+        if(StringUtils.isBlank(getModel().getMessage())) {
             fireEventExtraDialogClosed();
         }
         //
@@ -261,7 +261,7 @@ public class UpdateStudentClassActionCtrl {
     }
 
     public void fireEventExtraDialogClosed() {
-        RequestContext.getCurrentInstance().closeDialog(null);
+        DialogBuilder.closeCurrent();
     }
 
     public Model getModel() {

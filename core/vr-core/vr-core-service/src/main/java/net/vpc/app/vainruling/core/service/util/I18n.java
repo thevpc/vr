@@ -129,22 +129,22 @@ public class I18n implements Serializable {
         List<String> list = new ArrayList<>();
         if (locale != null) {
             list.add(toBundleName0(baseName, locale));
-            if (!StringUtils.isEmpty(locale.getVariant())) {
+            if (!StringUtils.isBlank(locale.getVariant())) {
                 list.add(0, toBundleName0(baseName, new Locale(locale.getLanguage(), locale.getCountry())));
-                if (!StringUtils.isEmpty(locale.getCountry())) {
+                if (!StringUtils.isBlank(locale.getCountry())) {
                     list.add(0, toBundleName0(baseName, new Locale(locale.getLanguage())));
-                    if (!StringUtils.isEmpty(locale.getLanguage())) {
+                    if (!StringUtils.isBlank(locale.getLanguage())) {
                         list.add(0, toBundleName0(baseName, Locale.ROOT));
                     }
                 }
             } else {
-                if (!StringUtils.isEmpty(locale.getCountry())) {
+                if (!StringUtils.isBlank(locale.getCountry())) {
                     list.add(0, toBundleName0(baseName, new Locale(locale.getLanguage())));
-                    if (!StringUtils.isEmpty(locale.getLanguage())) {
+                    if (!StringUtils.isBlank(locale.getLanguage())) {
                         list.add(0, toBundleName0(baseName, Locale.ROOT));
                     }
                 } else {
-                    if (!StringUtils.isEmpty(locale.getLanguage())) {
+                    if (!StringUtils.isBlank(locale.getLanguage())) {
                         list.add(0, toBundleName0(baseName, Locale.ROOT));
                     }
                 }
@@ -192,19 +192,23 @@ public class I18n implements Serializable {
 
     }
 
-    public ResourceBundleSuite getResourceBundleSuite() {
-        UserToken s = null;
-        try {
-            s = CorePlugin.get().getCurrentToken();
-        } catch (Exception e) {
-            // not in session context!
-        }
+    public ResourceBundleSuite getResourceBundleSuite(String langString) {
         Locale lang = null;
-        if (s != null && s.getUserLogin() != null && s.getLocale() != null) {
-            lang = new Locale(s.getLocale());
-        }
-        if (lang == null) {
-            lang = Locale.getDefault();
+        if (StringUtils.isBlank(langString)) {
+            UserToken s = null;
+            try {
+                s = CorePlugin.get().getCurrentToken();
+            } catch (Exception e) {
+                // not in session context!
+            }
+            if (s != null && s.getUserLogin() != null && s.getLocale() != null) {
+                lang = new Locale(s.getLocale());
+            }
+            if (lang == null) {
+                lang = Locale.getDefault();
+            }
+        } else {
+            lang = new Locale(langString);
         }
         ResourceBundleSuite b = bundles.get(lang.toString());
         if (b == null) {
@@ -223,135 +227,212 @@ public class I18n implements Serializable {
     }
 
     public String getString(String s) {
-        String v = getResourceBundleSuite().get(s, null);
-        if (v != null) {
-            return v;
-        }
-        return s + "!!";
+        return getLang(null).getString(s);
     }
 
     public String get(UPAObject s, Map<String, Object> params) {
-        if (s == null) {
-            return "null!!";
-        }
-        return get(s.getI18NTitle(), params);
+        return getLang(null).get(s, params);
     }
 
     public String get(UPAObject s, Arg... params) {
-        if (s == null) {
-            return "null!!";
-        }
-        return get(s.getI18NTitle(), params);
+        return getLang(null).get(s, params);
     }
 
     public String get(I18NString s, Map<String, Object> params) {
-        if (s == null) {
-            return "null!!";
-        }
-        for (String key : s.getKeys()) {
-            String v = getResourceBundleSuite().get(key, null, params);
-            if (v != null) {
-                return v;
-            }
-        }
-        String d = s.getDefaultValue();
-        if (d == null) {
-            return s.toString() + "!!";
-        }
-        return d;
+        return getLang(null).get(s, params);
     }
 
     public String get(I18NString s, Arg... params) {
-        if (s == null) {
-            return "null!!";
-        }
-        for (String key : s.getKeys()) {
-            String v = getResourceBundleSuite().get(key, null, params);
-            if (v != null) {
-                return v;
-            }
-        }
-        String d = s.getDefaultValue();
-        if (d == null) {
-            return s.toString() + "!!";
-        }
-        return d;
+        return getLang(null).get(s, params);
     }
 
     public String getOrNull(I18NString s, Arg... params) {
-        for (String key : s.getKeys()) {
-            String v = getResourceBundleSuite().get(key, null, params);
-            if (v != null) {
-                return v;
-            }
-        }
-        return null;
+        return getLang(null).getOrNull(s, params);
     }
 
     public String getOrNull(I18NString s, Map<String, Object> params) {
-        for (String key : s.getKeys()) {
-            String v = getResourceBundleSuite().get(key, null, params);
-            if (v != null) {
-                return v;
-            }
-        }
-        return null;
+        return getLang(null).getOrNull(s, params);
     }
 
     public String getOrDefault(String s, String defaultValue, Arg[] params) {
-        String v = getOrNull(s, params);
-        if (v != null) {
-            return v;
-        }
-        if (params == null || params.length == 0) {
-            return defaultValue;
-        }
-        return format(defaultValue, params);
+        return getLang(null).getOrDefault(s, defaultValue, params);
     }
 
     public String getOrNull(UPAObject s, Arg... params) {
-        return getOrNull(s.getI18NTitle(), params);
+        return getLang(null).getOrNull(s, params);
     }
 
     public String getOrNull(String key, Arg... params) {
-        return getResourceBundleSuite().get(key, null, params);
+        return getLang(null).getOrNull(key, params);
     }
 
     public String getEnum(Object obj) {
-        if (obj == null) {
-            return "";
-        }
-        String t = obj.getClass().getName();
-        String r = getOrNull("Enum." + t + "[" + obj + "]");
-        if (r != null) {
-            return r;
-        }
-        t = obj.getClass().getSimpleName();
-        r = getOrNull("Enum." + t + "[" + obj + "]");
-        if (r != null) {
-            return r;
-        }
-        return obj.toString();
+        return getLang(null).getEnum(obj);
     }
 
     public String get(String key) {
-        return get(key, new Arg[0]);
+        return getLang(null).get(key);
     }
 
     public String get(String key, Arg... params) {
-        return getResourceBundleSuite().get(key, key + "!!", params);
+        return getLang(null).get(key, params);
     }
 
     public String get(String key, Map<String, Object> params) {
-        return getResourceBundleSuite().get(key, key + "!!", params);
+        return getLang(null).get(key, params);
     }
 
     public String format(String message) {
-        return format(message, new Arg[0]);
+        return getLang(null).format(message);
     }
 
     public String format(String message, Arg... params) {
-        return getResourceBundleSuite().format(message, /*message + "!!", */ params);
+        return getLang(null).format(message, params);
+    }
+
+    public LangPort getLang(String lang) {
+        return new LangPort(lang);
+    }
+
+    public class LangPort {
+
+        private String lang;
+
+        public LangPort(String lang) {
+            this.lang = lang;
+        }
+
+        public String getString(String s) {
+            String v = getResourceBundleSuite(lang).get(s, null);
+            if (v != null) {
+                return v;
+            }
+            return s + "!!";
+        }
+
+        public String get(UPAObject s, Map<String, Object> params) {
+            if (s == null) {
+                return "null!!";
+            }
+            return get(s.getI18NTitle(), params);
+        }
+
+        public String get(UPAObject s, Arg... params) {
+            if (s == null) {
+                return "null!!";
+            }
+            return get(s.getI18NTitle(), params);
+        }
+
+        public String get(I18NString s, Map<String, Object> params) {
+            if (s == null) {
+                return "null!!";
+            }
+            for (String key : s.getKeys()) {
+                String v = getResourceBundleSuite(lang).get(key, null, params);
+                if (v != null) {
+                    return v;
+                }
+            }
+            String d = s.getDefaultValue();
+            if (d == null) {
+                return s.toString() + "!!";
+            }
+            return d;
+        }
+
+        public String get(I18NString s, Arg... params) {
+            if (s == null) {
+                return "null!!";
+            }
+            for (String key : s.getKeys()) {
+                String v = getResourceBundleSuite(lang).get(key, null, params);
+                if (v != null) {
+                    return v;
+                }
+            }
+            String d = s.getDefaultValue();
+            if (d == null) {
+                return s.toString() + "!!";
+            }
+            return d;
+        }
+
+        public String getOrNull(I18NString s, Arg... params) {
+            for (String key : s.getKeys()) {
+                String v = getResourceBundleSuite(lang).get(key, null, params);
+                if (v != null) {
+                    return v;
+                }
+            }
+            return null;
+        }
+
+        public String getOrNull(I18NString s, Map<String, Object> params) {
+            for (String key : s.getKeys()) {
+                String v = getResourceBundleSuite(lang).get(key, null, params);
+                if (v != null) {
+                    return v;
+                }
+            }
+            return null;
+        }
+
+        public String getOrDefault(String s, String defaultValue, Arg[] params) {
+            String v = getOrNull(s, params);
+            if (v != null) {
+                return v;
+            }
+            if (params == null || params.length == 0) {
+                return defaultValue;
+            }
+            return format(defaultValue, params);
+        }
+
+        public String getOrNull(UPAObject s, Arg... params) {
+            return getOrNull(s.getI18NTitle(), params);
+        }
+
+        public String getOrNull(String key, Arg... params) {
+            return getResourceBundleSuite(lang).get(key, null, params);
+        }
+
+        public String getEnum(Object obj) {
+            if (obj == null) {
+                return "";
+            }
+            String t = obj.getClass().getName();
+            String r = getOrNull("Enum." + t + "[" + obj + "]");
+            if (r != null) {
+                return r;
+            }
+            t = obj.getClass().getSimpleName();
+            r = getOrNull("Enum." + t + "[" + obj + "]");
+            if (r != null) {
+                return r;
+            }
+            return obj.toString();
+        }
+
+        public String get(String key) {
+            return get(key, new Arg[0]);
+        }
+
+        public String get(String key, Arg... params) {
+            return getResourceBundleSuite(lang).get(key, key + "!!", params);
+        }
+
+        public String get(String key, Map<String, Object> params) {
+            return getResourceBundleSuite(lang).get(key, key + "!!", params);
+        }
+
+        public String format(String message) {
+            return format(message, new Arg[0]);
+        }
+
+        public String format(String message, Arg... params) {
+            return getResourceBundleSuite(lang).format(message, /*message + "!!", */ params);
+        }
     }
 
     public String getConcat(String key, String keyConcat) {

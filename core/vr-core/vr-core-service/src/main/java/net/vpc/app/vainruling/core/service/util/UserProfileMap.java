@@ -9,16 +9,16 @@ public class UserProfileMap {
     private ManyToManyIntMap userToProfilesMap = new ManyToManyIntMap();
     private ManyToManyIntMap profileToParentsMap = new ManyToManyIntMap();
 
-    public static void main(String[] args) {
-        UserProfileMap m = new UserProfileMap();
-        m.addProfileParent(1, 2);
-        m.addProfileParent(3, 4);
-        m.addProfileParent(2, 3);
-        System.out.println(m.getProfileParents(1));
-        System.out.println(m.getProfileChildren(3));
-        System.out.println(m.isProfileChildrenOf(1, 4));
-        System.out.println(m.isProfileAncestorOf(3, 1));
-    }
+//    public static void main(String[] args) {
+//        UserProfileMap m = new UserProfileMap();
+//        m.addProfileParent(1, 2);
+//        m.addProfileParent(3, 4);
+//        m.addProfileParent(2, 3);
+//        System.out.println(m.getProfileParents(1));
+//        System.out.println(m.getProfileChildren(3));
+//        System.out.println(m.isProfileChildrenOf(1, 4));
+//        System.out.println(m.isProfileAncestorOf(3, 1));
+//    }
 
     public boolean isProfileChildrenOf(int profileChildId, int profileAncestorId) {
         return profileToParentsMap.contains(profileChildId, profileAncestorId);

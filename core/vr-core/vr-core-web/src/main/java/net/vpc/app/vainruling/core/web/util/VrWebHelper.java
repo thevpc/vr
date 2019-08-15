@@ -5,6 +5,7 @@
  */
 package net.vpc.app.vainruling.core.web.util;
 
+import java.io.UnsupportedEncodingException;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.security.UserToken;
@@ -27,13 +28,23 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.lang.reflect.Method;
+import java.net.URLEncoder;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.faces.model.SelectItem;
+import net.vpc.app.vainruling.core.service.pages.VrBreadcrumbItem;
+import net.vpc.app.vainruling.core.service.menu.VRMenuInfo;
+import net.vpc.app.vainruling.core.service.menu.VrPageInfoAndObject;
+import net.vpc.app.vainruling.core.service.util.VrUtils;
+import net.vpc.app.vainruling.core.web.menu.VrMenuManager;
 import net.vpc.upa.exceptions.IllegalUPAArgumentException;
 
 /**
  * @author taha.bensalah@gmail.com
  */
 public class VrWebHelper {
+
     public static final Map<String, String> extensionsToCss = new HashMap<String, String>();
 
     static {
@@ -200,10 +211,10 @@ public class VrWebHelper {
                 return (String) core.getOrCreateAppPropertyValue("System.DefaultPublicTheme", null, "");
             }
         });
-        if (StringUtils.isEmpty(oldValue)) {
+        if (StringUtils.isBlank(oldValue)) {
             oldValue = core.getAppVersion().getDefaultPublicTheme();
         }
-        if (StringUtils.isEmpty(oldValue)) {
+        if (StringUtils.isBlank(oldValue)) {
             oldValue = "default";
         }
         VrThemeFactory tfactory = VrApp.getBean(VrThemeFactory.class);
@@ -227,10 +238,10 @@ public class VrWebHelper {
                 return (String) core.getOrCreateAppPropertyValue("System.DefaultPrivateTheme", null, "");
             }
         });
-        if (StringUtils.isEmpty(oldValue)) {
+        if (StringUtils.isBlank(oldValue)) {
             oldValue = core.getAppVersion().getDefaultPrivateTheme();
         }
-        if (StringUtils.isEmpty(oldValue)) {
+        if (StringUtils.isBlank(oldValue)) {
             oldValue = "default";
         }
         VrThemeFactory tfactory = VrApp.getBean(VrThemeFactory.class);
@@ -245,7 +256,6 @@ public class VrWebHelper {
         }
         throw new IllegalArgumentException("Invalid Theme");
     }
-
 
     public static String getPublicThemeContext() {
         HttpServletRequest req = VrWebHelper.getHttpServletRequest();
@@ -267,12 +277,12 @@ public class VrWebHelper {
         if (s != null) {
             VrThemeFactory tfactory = VrApp.getBean(VrThemeFactory.class);
             String themeId = s.getPublicTheme();
-            if (StringUtils.isEmpty(themeId)) {
+            if (StringUtils.isBlank(themeId)) {
                 themeId = (String) core.getAppPropertyValue("System.DefaultPublicTheme", s.getUserLogin());
-                if (StringUtils.isEmpty(themeId)) {
+                if (StringUtils.isBlank(themeId)) {
                     themeId = getAppPublicTheme().getId();
                 }
-                if (StringUtils.isEmpty(themeId)) {
+                if (StringUtils.isBlank(themeId)) {
                     themeId = "default";
                 }
             }
@@ -291,12 +301,12 @@ public class VrWebHelper {
         if (s != null) {
             VrThemeFactory tfactory = VrApp.getBean(VrThemeFactory.class);
             String themeId = s.getPrivateTheme();
-            if (StringUtils.isEmpty(themeId)) {
+            if (StringUtils.isBlank(themeId)) {
                 themeId = (String) core.getAppPropertyValue("System.DefaultPrivateTheme", s.getUserLogin());
-                if (StringUtils.isEmpty(themeId)) {
+                if (StringUtils.isBlank(themeId)) {
                     themeId = getAppPrivateTheme().getId();
                 }
-                if (StringUtils.isEmpty(themeId)) {
+                if (StringUtils.isBlank(themeId)) {
                     themeId = "default";
                 }
             }
@@ -312,10 +322,10 @@ public class VrWebHelper {
     public static VrTheme getUserPrivateTheme(String login) {
         CorePlugin core = CorePlugin.get();
         String oldValue = (String) core.getAppPropertyValue("System.DefaultPrivateTheme", login);
-        if (StringUtils.isEmpty(oldValue)) {
+        if (StringUtils.isBlank(oldValue)) {
             oldValue = getAppPrivateTheme().getId();
         }
-        if (StringUtils.isEmpty(oldValue)) {
+        if (StringUtils.isBlank(oldValue)) {
             oldValue = "default";
         }
         VrThemeFactory tfactory = VrApp.getBean(VrThemeFactory.class);
@@ -329,10 +339,10 @@ public class VrWebHelper {
     public static VrTheme getUserPublicTheme(String login) {
         CorePlugin core = CorePlugin.get();
         String oldValue = (String) core.getAppPropertyValue("System.DefaultPublicTheme", login);
-        if (StringUtils.isEmpty(oldValue)) {
+        if (StringUtils.isBlank(oldValue)) {
             oldValue = getAppPublicTheme().getId();
         }
-        if (StringUtils.isEmpty(oldValue)) {
+        if (StringUtils.isBlank(oldValue)) {
             oldValue = "default";
         }
         VrThemeFactory tfactory = VrApp.getBean(VrThemeFactory.class);
@@ -381,5 +391,76 @@ public class VrWebHelper {
 
     public static String getFacesContextPrefix() {
         return "r";
+    }
+
+    public static boolean containsSelectItemId(List<SelectItem> all, Object old) {
+        String s2 = old == null ? "" : String.valueOf(old);
+        for (SelectItem selectItem : all) {
+            Object p = selectItem.getValue();
+            String s1 = p == null ? "" : String.valueOf(p);
+            if (s1.equals(s2)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static int revalidateSelectItemId(List<SelectItem> all, int old) {
+        for (SelectItem selectItem : all) {
+            Object p = selectItem.getValue();
+            if (p instanceof Integer) {
+                if (((Integer) p).intValue() == old) {
+                    return old;
+                }
+            } else if (p instanceof String) {
+                if (String.valueOf(old).equals(p)) {
+                    return old;
+                }
+            }
+        }
+        return -1;
+    }
+
+    public static String revalidateSelectItemId(List<SelectItem> all, String old) {
+        for (SelectItem selectItem : all) {
+            Object p = selectItem.getValue();
+            if (String.valueOf(old).equals(String.valueOf(p))) {
+                return old;
+            }
+        }
+        return null;
+    }
+
+    public static String getPrettyURL(VRMenuInfo info) {
+        String context = VrWebHelper.getContext();
+        if (context == null) {
+            context = "";
+        }
+        if (context.length() > 0 && !context.endsWith("/")) {
+            context = context + "/";
+        }
+        String p = context + "/p/" + info.getType();
+        if (!StringUtils.isBlank(info.getCommand())) {
+            try {
+                p += "?a=" + URLEncoder.encode(info.getCommand(), "UTF-8");
+            } catch (UnsupportedEncodingException ex) {
+                Logger.getLogger(VRMenuInfo.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return p;
+    }
+
+    public static VrBreadcrumbItem resolveBreadcrumbItemForBean(Object bean) {
+        VrPageInfoAndObject c = resolveVrControllerInfoForBean(bean);
+        return new VrBreadcrumbItem(c == null ? "" : c.getInfo().getTitle(),
+                 c == null ? "" : c.getInfo().getSubTitle(),
+                 c == null ? "" : c.getInfo().getCss(),
+                 "",
+                 "");
+
+    }
+
+    public static VrPageInfoAndObject resolveVrControllerInfoForBean(Object bean) {
+        return VrApp.getBean(VrMenuManager.class).resolvePageInfoAndObjectByInstance(VrUtils.getBeanName(bean), null);
     }
 }

@@ -8,7 +8,7 @@ package net.vpc.app.vainruling.core.web.jsf.ctrl.obj;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.util.I18n;
-import net.vpc.app.vainruling.core.web.jsf.ctrl.ObjCtrl;
+import net.vpc.app.vainruling.core.web.jsf.ctrl.EditorCtrl;
 import net.vpc.upa.*;
 import net.vpc.upa.types.ManyToOneType;
 
@@ -121,13 +121,13 @@ public class EntityDetailPropertyView extends PropertyView {
 
     public PrimitiveId resolveId() {
         Entity targetEntity = getRelationship().getTargetEntity();
-        ObjCtrl ctrl = VrApp.getBean(ObjCtrl.class);
+        EditorCtrl ctrl = VrApp.getBean(EditorCtrl.class);
         Document currentDocument = ctrl.getModel().getCurrentDocument();
         return targetEntity.getBuilder().objectToPrimitiveId(currentDocument);
     }
 
     public String buildActionCommand() {
-//        ObjCtrl ctrl = VrApp.getBean(ObjCtrl.class);
+//        EditorCtrl ctrl = VrApp.getBean(EditorCtrl.class);
         PrimitiveId idVal2 = resolveId();
         String cmd = getActionCommand();
         List<PrimitiveField> idPrimitiveFields = relation.getSourceRole().getEntity().getIdPrimitiveFields();

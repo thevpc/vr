@@ -34,7 +34,7 @@ class CorePluginBodyConfig extends CorePluginBody {
         mainConfig.setMainCompany(installDefaultCompany());
 
         String periodName = getContext().getCorePlugin().getAppVersion().getConfig().get("period");
-        if (StringUtils.isEmpty(periodName)) {
+        if (StringUtils.isBlank(periodName)) {
             periodName = "${year}";
         }
         periodName = periodName.replace("${year}", String.valueOf(Calendar.getInstance().get(Calendar.YEAR)));
@@ -119,7 +119,7 @@ class CorePluginBodyConfig extends CorePluginBody {
         }
         String t = p.getPropertyType();
         String v = p.getPropertyValue();
-        if (StringUtils.isEmpty(t)) {
+        if (StringUtils.isBlank(t)) {
             t = "string";
         }
         if ("null".equalsIgnoreCase(t)) {
@@ -162,7 +162,7 @@ class CorePluginBodyConfig extends CorePluginBody {
             return defaultValue;
         }
         String propertyValue = p.getPropertyValue();
-        if (StringUtils.isEmpty(propertyValue)) {
+        if (StringUtils.isBlank(propertyValue)) {
             return defaultValue;
         }
         try {
@@ -540,7 +540,7 @@ class CorePluginBodyConfig extends CorePluginBody {
     private AppCountry installDefaultCountry() {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         String countryName = getContext().getCorePlugin().getAppVersion().getConfig().get("country");
-        if (StringUtils.isEmpty(countryName)) {
+        if (StringUtils.isBlank(countryName)) {
             countryName = "Tunisia";
         }
         AppCountry defaultCountry = pu.findByMainField(AppCountry.class, countryName);
@@ -555,7 +555,7 @@ class CorePluginBodyConfig extends CorePluginBody {
     private AppIndustry installDefaultIndustry() {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         String industryName = getContext().getCorePlugin().getAppVersion().getConfig().get("industry");
-        if (StringUtils.isEmpty(industryName)) {
+        if (StringUtils.isBlank(industryName)) {
             industryName = "My Industry";
         }
 
@@ -571,7 +571,7 @@ class CorePluginBodyConfig extends CorePluginBody {
     private AppCompany installDefaultCompany() {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         String companyName = getContext().getCorePlugin().getAppVersion().getConfig().get("company");
-        if (StringUtils.isEmpty(companyName)) {
+        if (StringUtils.isBlank(companyName)) {
             companyName = "My Company";
         }
         AppCompany defaultCompany = pu.findByMainField(AppCompany.class, companyName);

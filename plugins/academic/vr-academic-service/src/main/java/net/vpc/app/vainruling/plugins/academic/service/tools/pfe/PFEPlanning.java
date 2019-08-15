@@ -1,9 +1,16 @@
 package net.vpc.app.vainruling.plugins.academic.service.tools.pfe;
 
+import net.vpc.app.vainruling.plugins.academic.model.internship.planning.PlanningSpaceTime;
+import net.vpc.app.vainruling.plugins.academic.model.internship.planning.PlanningActivity;
+import net.vpc.app.vainruling.plugins.academic.model.internship.planning.PlanningService;
+import net.vpc.app.vainruling.plugins.academic.model.internship.planning.PlanningRoom;
+import net.vpc.app.vainruling.plugins.academic.model.internship.planning.PlanningTime;
+import net.vpc.app.vainruling.plugins.academic.model.internship.planning.PlanningActivityTable;
+import net.vpc.app.vainruling.plugins.academic.model.internship.planning.PlanningResult;
+import net.vpc.app.vainruling.plugins.academic.model.internship.planning.PlanningInternship;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.app.vainruling.plugins.academic.service.model.internship.current.AcademicInternship;
-import net.vpc.app.vainruling.plugins.academic.service.model.internship.planning.*;
+import net.vpc.app.vainruling.plugins.academic.model.internship.current.AcademicInternship;
 import net.vpc.common.io.FileUtils;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.Chronometer;
@@ -70,20 +77,20 @@ public class PFEPlanning {
 
         for (PlanningActivity planningActivity : table.getActivities()) {
 
-            if (!StringUtils.isEmpty(planningActivity.getExaminer())) {
+            if (!StringUtils.isBlank(planningActivity.getExaminer())) {
                 TeacherInfo teacherInfo = resourceAllocationsTable.getTeacherInfo(planningActivity.getExaminer());
                 teacherInfo.getCounter("Examiner").inc();
                 teacherInfo.addSpaceTime(planningActivity.getSpaceTime());
                 teacherInfo.getActivities().add(planningActivity);
             }
-            if (!StringUtils.isEmpty(planningActivity.getChair())) {
+            if (!StringUtils.isBlank(planningActivity.getChair())) {
                 TeacherInfo teacherInfo = resourceAllocationsTable.getTeacherInfo(planningActivity.getChair());
                 teacherInfo.getCounter("Chair").inc();
                 teacherInfo.addSpaceTime(planningActivity.getSpaceTime());
                 teacherInfo.getActivities().add(planningActivity);
             }
             for (String s : planningActivity.getInternship().getSupervisors()) {
-                if (!StringUtils.isEmpty(s)) {
+                if (!StringUtils.isBlank(s)) {
                     TeacherInfo teacherInfo = resourceAllocationsTable.getTeacherInfo(s);
                     teacherInfo.getCounter("Supervisor").add(1.0 / planningActivity.getInternship().getSupervisors().size());
                     teacherInfo.addSpaceTime(planningActivity.getSpaceTime());
@@ -175,18 +182,18 @@ public class PFEPlanning {
                         enabled = false;
                     }
                     String room = "Salle" + (r + 1);
-                    if (!StringUtils.isEmpty(code)) {
+                    if (!StringUtils.isBlank(code)) {
                         String student = StringUtils.trimObject(values[r * window + 4]);
                         String supervisor = StringUtils.trimObject(values[r * window + 5]);
                         String chair = StringUtils.trimObject(values[r * window + 6]);
                         String examiner = StringUtils.trimObject(values[r * window + 7]);
-                        if (StringUtils.isEmpty(supervisor)) {
+                        if (StringUtils.isBlank(supervisor)) {
 //                            System.out.println("Why");
                         }
-                        if (StringUtils.isEmpty(chair)) {
+                        if (StringUtils.isBlank(chair)) {
 //                            System.out.println("Why");
                         }
-                        if (StringUtils.isEmpty(examiner)) {
+                        if (StringUtils.isBlank(examiner)) {
 //                            System.out.println("Why");
                         }
                         PlanningActivity a = new PlanningActivity();

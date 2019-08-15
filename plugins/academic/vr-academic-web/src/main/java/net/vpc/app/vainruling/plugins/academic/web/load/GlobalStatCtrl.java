@@ -8,17 +8,15 @@ package net.vpc.app.vainruling.plugins.academic.web.load;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
-import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.core.web.VrController;
-import net.vpc.app.vainruling.core.web.UPathItem;
+import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPluginSecurity;
 import net.vpc.app.vainruling.plugins.academic.service.util.CourseAssignmentFilter;
 import net.vpc.app.vainruling.plugins.academic.service.stat.StatCache;
 import net.vpc.app.vainruling.plugins.academic.service.util.TeacherPeriodFilter;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicOfficialDiscipline;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSemester;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacherSituation;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicOfficialDiscipline;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicSemester;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacherSituation;
 import net.vpc.app.vainruling.plugins.academic.service.stat.DeviationConfig;
 import net.vpc.app.vainruling.plugins.academic.service.stat.GlobalAssignmentStat;
 import net.vpc.app.vainruling.plugins.academic.service.stat.GlobalStat;
@@ -30,14 +28,18 @@ import org.primefaces.model.chart.PieChartModel;
 
 import javax.faces.model.SelectItem;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.springframework.stereotype.Controller;
+import net.vpc.app.vainruling.core.service.pages.VrPage;
+import net.vpc.app.vainruling.core.service.pages.VrPathItem;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@VrController(
+@VrPage(
         breadcrumb = {
-            @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
+            @VrPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
         //        css = "fa-table",
         //        title = "Stats Charge",
         url = "modules/academic/global-stat",
@@ -46,6 +48,7 @@ import org.springframework.stereotype.Controller;
 )
 @Controller
 public class GlobalStatCtrl {
+    private static final Logger LOG = Logger.getLogger(GlobalStatCtrl.class.getName());
 
     private Model model = new Model();
     protected TeacherLoadFilterComponent teacherFilter = new TeacherLoadFilterComponent();
@@ -64,24 +67,31 @@ public class GlobalStatCtrl {
     }
 
     public void onChangePeriod() {
-        AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
-        getTeacherFilter().onChangePeriod();
-        getCourseFilter().onChangePeriod();
+        try {
+            AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
+            getTeacherFilter().onChangePeriod();
+            getCourseFilter().onChangePeriod();
 
-        List<SelectItem> refreshableFilters = new ArrayList<>();
-        refreshableFilters.add(FacesUtils.createSelectItem("intents", "Inclure Voeux", "vr-checkbox"));
-        refreshableFilters.add(FacesUtils.createSelectItem("deviation-week", "Balance/Sem", "vr-checkbox"));
-        refreshableFilters.add(FacesUtils.createSelectItem("deviation-extra", "Balance/Supp", "vr-checkbox"));
-        refreshableFilters.add(FacesUtils.createSelectItem("extra-abs", "Supp ABS", "vr-checkbox"));
-        getCourseFilter().getModel().setRefreshFilterItems(refreshableFilters);
-        getCourseFilter().getModel().getRefreshFilterItems().add(FacesUtils.createSelectItem("x:percent", "Pourcentages", "vr-checkbox"));
+            List<SelectItem> refreshableFilters = new ArrayList<>();
+            refreshableFilters.add(FacesUtils.createSelectItem("intents", "Inclure Voeux", "vr-checkbox"));
+            refreshableFilters.add(FacesUtils.createSelectItem("proposals", "Inclure Propositions", "vr-checkbox"));
+            refreshableFilters.add(FacesUtils.createSelectItem("deviation-week", "Balance/Sem", "vr-checkbox"));
+            refreshableFilters.add(FacesUtils.createSelectItem("deviation-extra", "Balance/Supp", "vr-checkbox"));
+            refreshableFilters.add(FacesUtils.createSelectItem("extra-abs", "Supp ABS", "vr-checkbox"));
+            getCourseFilter().getModel().setRefreshFilterItems(refreshableFilters);
+            getCourseFilter().getModel().getRefreshFilterItems().add(FacesUtils.createSelectItem("x:percent", "Pourcentages", "vr-checkbox"));
 
 //        refreshableFilters = new ArrayList<>();
 //        refreshableFilters.add(FacesUtils.createSelectItem("intents", "Inclure Voeux", "vr-checkbox"));
+//        refreshableFilters.add(FacesUtils.createSelectItem("proposals", "Inclure Propositions", "vr-checkbox"));
 //
 //        getOthersCourseFilter().getModel().setRefreshFilterItems(refreshableFilters);
 //        getOthersCourseFilter().onChangePeriod();
-        onRefresh();
+            onRefresh();
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "Error", ex);
+            FacesUtils.addErrorMessage(ex);
+        }
     }
 
     private void setValue(PieChartModel m, String name, double value) {
@@ -97,6 +107,7 @@ public class GlobalStatCtrl {
     }
 
     public void onRefresh() {
+        try{
         AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
         CorePlugin c = VrApp.getBean(CorePlugin.class);
 
@@ -198,7 +209,7 @@ public class GlobalStatCtrl {
                         + stat.getTeachersOtherStat().getValue().getEquiv();
                 double s = npv + pv;
                 if (npv != 0 && tot != 0) {
-                    String category = StringUtils.isEmpty(officialDiscipline) ? "Sans Discipline" : officialDiscipline;
+                    String category = StringUtils.isBlank(officialDiscipline) ? "Sans Discipline" : officialDiscipline;
                     pie.set(category + " (" + VrUtils.dformat(npv / tot, "0.00%") + ")", npv / tot);
 //                    setValuePercent(pie, category, npv / s);
                 }
@@ -219,7 +230,7 @@ public class GlobalStatCtrl {
                 double pv = stat.getPermanentLoadValueByNonOfficialDiscipline().getOrCreate(officialDiscipline).getValue().getEquiv();
                 double s = npv + pv;
                 if (s != 0) {
-                    String category = StringUtils.isEmpty(officialDiscipline) ? "Sans Discipline" : officialDiscipline;
+                    String category = StringUtils.isBlank(officialDiscipline) ? "Sans Discipline" : officialDiscipline;
                     setValuePercent(pie, category, npv / s);
                 }
             }
@@ -238,7 +249,7 @@ public class GlobalStatCtrl {
             for (String officialDiscipline : officialDisciplines) {
                 double s = stat.getNonPermanentLoadValueByOfficialDiscipline().getOrCreate(officialDiscipline).getTeachersCount();
                 if (s != 0) {
-                    String category = StringUtils.isEmpty(officialDiscipline) ? "Sans Discipline" : officialDiscipline;
+                    String category = StringUtils.isBlank(officialDiscipline) ? "Sans Discipline" : officialDiscipline;
                     setValue(pie, category, s);
                 }
             }
@@ -256,7 +267,7 @@ public class GlobalStatCtrl {
             for (String officialDiscipline : officialDisciplines) {
                 double s = stat.getNonPermanentLoadValueByNonOfficialDiscipline().getOrCreate(officialDiscipline).getTeachersCount();
                 if (s != 0) {
-                    String category = StringUtils.isEmpty(officialDiscipline) ? "Sans Discipline" : officialDiscipline;
+                    String category = StringUtils.isBlank(officialDiscipline) ? "Sans Discipline" : officialDiscipline;
                     setValue(pie, category, s);
                 }
             }
@@ -275,7 +286,7 @@ public class GlobalStatCtrl {
                 double s = stat.getNonPermanentLoadValueByOfficialDiscipline().getOrCreate(officialDiscipline).getValue().getEquiv();
                 if (s != 0) {
                     s = stat.getReferenceTeacherDueLoad() == 0 ? 0 : s / stat.getReferenceTeacherDueLoad();
-                    String category = StringUtils.isEmpty(officialDiscipline) ? "Sans Discipline" : officialDiscipline;
+                    String category = StringUtils.isBlank(officialDiscipline) ? "Sans Discipline" : officialDiscipline;
                     setValue(pie, category, s);
                 }
             }
@@ -294,7 +305,7 @@ public class GlobalStatCtrl {
                 double s = stat.getNonPermanentLoadValueByNonOfficialDiscipline().getOrCreate(officialDiscipline).getValue().getEquiv();
                 if (s != 0) {
                     s = stat.getReferenceTeacherDueLoad() == 0 ? 0 : s / stat.getReferenceTeacherDueLoad();
-                    String category = StringUtils.isEmpty(officialDiscipline) ? "Sans Discipline" : officialDiscipline;
+                    String category = StringUtils.isBlank(officialDiscipline) ? "Sans Discipline" : officialDiscipline;
                     setValue(pie, category, s);
                 }
             }
@@ -307,6 +318,10 @@ public class GlobalStatCtrl {
         Set<String> nonOfficialDisciplines = new TreeSet<>(stat.getNonPermanentLoadValueByNonOfficialDiscipline().keySet());
         nonOfficialDisciplines.addAll(stat.getPermanentLoadValueByNonOfficialDiscipline().keySet());
         onCalcFiltersChanged();
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "Error", ex);
+            FacesUtils.addErrorMessage(ex);
+        }
     }
 
     @OnPageLoad
@@ -321,6 +336,7 @@ public class GlobalStatCtrl {
     }
 
     public void onCalcFiltersChanged() {
+        try{
         if ("situation".equalsIgnoreCase(getModel().getDetailsType())) {
             List<GlobalAssignmentStat> all = new ArrayList<>();
             for (GlobalAssignmentStat assignment : getModel().getStat().getAssignments()) {
@@ -341,6 +357,10 @@ public class GlobalStatCtrl {
             getModel().setDetails(getModel().getStat().getAssignments());
         }
         Collections.sort(getModel().getStat().getAssignments(), GlobalAssignmentStat.NAME_COMPARATOR);
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "Error", ex);
+            FacesUtils.addErrorMessage(ex);
+        }
     }
 
     public void onRefreshFiltersChanged() {

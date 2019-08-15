@@ -5,13 +5,13 @@
  */
 package net.vpc.app.vainruling.core.web.jsf.ctrl;
 
-import net.vpc.app.vainruling.core.web.VrController;
 import org.springframework.context.annotation.Scope;
+import net.vpc.app.vainruling.core.service.pages.VrPage;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@VrController(
+@VrPage(
         menu = "/Desktop",
 //        title = "Informations Systeme", css = "fa-dashboard",
         url = "modules/app-info"

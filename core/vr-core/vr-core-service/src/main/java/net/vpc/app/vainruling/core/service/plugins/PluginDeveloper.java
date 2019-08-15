@@ -37,16 +37,16 @@ public class PluginDeveloper {
 
     public void updateNonNull(PluginDeveloper other) {
         if (other != null) {
-            if (!StringUtils.isEmpty(other.id)) {
+            if (!StringUtils.isBlank(other.id)) {
                 this.id = other.id;
             }
-            if (!StringUtils.isEmpty(other.name)) {
+            if (!StringUtils.isBlank(other.name)) {
                 this.name = other.name;
             }
-            if (!StringUtils.isEmpty(other.email)) {
+            if (!StringUtils.isBlank(other.email)) {
                 this.email = other.email;
             }
-            if (!StringUtils.isEmpty(other.url)) {
+            if (!StringUtils.isBlank(other.url)) {
                 this.url = other.url;
             }
             this.organization.updateNonNull(other.organization);

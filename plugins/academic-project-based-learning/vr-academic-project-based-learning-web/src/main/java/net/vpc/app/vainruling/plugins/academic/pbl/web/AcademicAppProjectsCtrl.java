@@ -5,23 +5,28 @@
  */
 package net.vpc.app.vainruling.plugins.academic.pbl.web;
 
+import net.vpc.app.vainruling.plugins.academic.pbl.model.ApblProject;
+import net.vpc.app.vainruling.plugins.academic.pbl.model.ApblTeam;
+import net.vpc.app.vainruling.plugins.academic.pbl.model.ApblSession;
+import net.vpc.app.vainruling.plugins.academic.pbl.model.ApblCoaching;
+import net.vpc.app.vainruling.plugins.academic.pbl.model.ApblTeamMember;
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppUser;
-import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.core.web.UPathItem;
-import net.vpc.app.vainruling.core.web.VrController;
+import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.app.vainruling.core.web.jsf.DialogBuilder;
 import net.vpc.app.vainruling.core.web.jsf.Vr;
 import net.vpc.app.vainruling.core.web.jsf.VrJsf;
 import net.vpc.app.vainruling.core.web.jsf.ctrl.dialog.DocumentsDialogCtrl;
-import net.vpc.app.vainruling.core.web.obj.DialogResult;
+import net.vpc.app.vainruling.core.service.editor.DialogResult;
 import net.vpc.app.vainruling.plugins.academic.pbl.service.ApblPlugin;
 import net.vpc.app.vainruling.plugins.academic.pbl.service.dto.*;
-import net.vpc.app.vainruling.plugins.academic.pbl.service.model.*;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicStudent;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringComparators;
 import net.vpc.common.strings.StringTransforms;
@@ -41,15 +46,22 @@ import javax.faces.model.SelectItem;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import net.vpc.app.vainruling.core.service.export.VExcelWriter;
+import net.vpc.app.vainruling.core.service.fs.MirroredPath;
+import net.vpc.upa.bulk.DataWriter;
+import net.vpc.upa.bulk.SheetColumn;
+import net.vpc.upa.bulk.SheetFormatter;
+import net.vpc.app.vainruling.core.service.pages.VrPage;
+import net.vpc.app.vainruling.core.service.pages.VrPathItem;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@VrController(
+@VrPage(
         breadcrumb = {
-            @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")
-            ,
-                @UPathItem(title = "APP", css = "fa-dashboard", ctrl = ""),},
+            @VrPathItem(title = "Education", css = "fa-dashboard", ctrl = ""),
+            @VrPathItem(title = "APP", css = "fa-dashboard", ctrl = ""),},
         //        css = "fa-table",
         //        title = "Projets APP",
         url = "modules/academic/pbl/app-projects",
@@ -141,7 +153,7 @@ public class AcademicAppProjectsCtrl {
         } else {
             List<ProjectNode> projectNodes
                     = apbl.findProjectNodes(getModel().getSession().getId(),
-                            StringUtils.isEmpty(getModel().getFilterText()) ? null : StringComparators.ilikepart(getModel().getFilterText()).apply(StringTransforms.UNIFORM),
+                            StringUtils.isBlank(getModel().getFilterText()) ? null : StringComparators.ilikepart(getModel().getFilterText()).apply(StringTransforms.UNIFORM),
                             new ObjectFilter<ApblNode>() {
                         @Override
                         public boolean accept(ApblNode value) {
@@ -255,6 +267,136 @@ public class AcademicAppProjectsCtrl {
 //        if (getModel().getSession() != null) {
         onSearchByText();
 //        }
+    }
+
+    public void defensePlanif() {
+        List<List<Object>> rows = new ArrayList<>();
+        ApblSession session = getModel().getSession();
+        int maxStudents = 0;
+        boolean juryScore = true;
+        boolean coachScore = true;
+        if (currentAdmin && session != null) {
+            for (ProjectNode project : getModel().getProjects()) {
+                for (TeamNode team : project.getTeams()) {
+                    List<Object> row = new ArrayList<>();
+                    if (!team.getMembers().isEmpty()) {
+                        row.add(session.getName());
+                        if (project.getProject() == null) {
+                            row.add("");
+                            row.add("");
+                        } else {
+                            row.add(project.getProject().getCode());
+                            row.add(project.getProject().getName());
+                        }
+                        row.add(team.getTeam().getCode());
+                        row.add(team.getTeam().getName());
+                        row.add(team.getCoaches().size());
+                        row.add(team.getCoaches().stream().map(x -> x.getCoaching().getTeacher().getUser().getFullName()).collect(Collectors.joining(", ")));
+                        if (maxStudents < team.getMembers().size()) {
+                            maxStudents = team.getMembers().size();
+                        }
+                        row.add(team.getMembers().size());
+                        for (MemberNode member : team.getMembers()) {
+                            row.add(member.getMember().getStudent().getUser().getFullName());
+                            if (juryScore) {
+                                row.add("__.__/13");
+                            }
+                            if (coachScore) {
+                                if (team.getCoaches().isEmpty()) {
+                                    row.add("00.00/07");
+                                } else {
+                                    row.add("__.__/07");
+                                }
+                            }
+                        }
+                        if (!row.isEmpty()) {
+                            rows.add(row);
+                        }
+                    }
+                }
+            }
+            MirroredPath mm = CorePlugin.get().createTempUploadFolder();
+            try (VExcelWriter w = new VExcelWriter(
+                    core.getRootFileSystem().get("/Config/Import/2018-2019/templates/innovation-project-jury.xls"),
+                    core.getRootFileSystem().get("/Documents/ByProfile/HeadOfDepartmentII/Innovation/" + StringUtils.normalizeString(session.getName()) + ".xls")
+            )) {
+                for (ProjectNode project : getModel().getProjects()) {
+                    for (TeamNode team : project.getTeams()) {
+                        if (!team.getMembers().isEmpty()) {
+                            try {
+
+                                Map<String, Object> dataSet = new HashMap<>();
+                                dataSet.put("period.name", session.getPeriod().getName());
+                                dataSet.put("semester.name", session.getSemester().getName());
+                                dataSet.put("date", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+                                dataSet.put("session", session.getName());
+                                dataSet.put("project", project.getProject() == null ? "" : (project.getProject().getCode() + " - " + project.getProject().getName()));
+                                dataSet.put("project.code", project.getProject() == null ? "" : (project.getProject().getCode()));
+                                dataSet.put("project.name", project.getProject() == null ? "" : project.getProject().getName());
+                                dataSet.put("team", team.getTeam() == null ? "" : (team.getTeam().getCode() + " - " + team.getTeam().getName()));
+                                dataSet.put("team.code", team.getTeam() == null ? "" : team.getTeam().getCode());
+                                dataSet.put("team.name", team.getTeam() == null ? "" : team.getTeam().getName());
+                                dataSet.put("coaches", team.getCoaches().stream().map(x -> x.getCoaching().getTeacher().getUser().getFullName()).collect(Collectors.joining(", ")));
+                                int counter = 0;
+                                for (CoachNode coach : team.getCoaches()) {
+                                    counter++;
+                                    dataSet.put("coach." + (counter)+".name", coach.getCoaching().getTeacher().getUser().getFullName());
+                                }
+                                counter = 0;
+                                for (MemberNode member : team.getMembers()) {
+                                    counter++;
+                                    dataSet.put("member." + (counter) + ".name", member.getMember().getStudent().getUser().getFullName());
+                                    dataSet.put("member." + (counter) + ".juryScore", "__.__/13");
+                                    dataSet.put("member." + (counter) + ".coachScore", team.getCoaches().isEmpty() ? "00.00/07" : "__.__/07");
+                                }
+
+                                w.generateNextExcelSheet(0, team.getTeam().getCode(), dataSet);
+                            } catch (IOException ex) {
+                                Logger.getLogger(AcademicAppProjectsCtrl.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                        }
+                    }
+                }
+                w.removeInitialSheets();
+                w.close();
+            }
+
+            if (!rows.isEmpty()) {
+                File ff = new File(mm.getNativePath(), "defense-planif-" + StringUtils.normalizeString(session.getName()) + ".xls");
+                System.out.println(">>>>>>> " + ff.getPath());
+                System.out.println(">>>>>>> " + mm.getPath().getPath());
+                SheetFormatter sf;
+                try {
+                    sf = UPA.getPersistenceUnit().getImportExportManager().createSheetFormatter(ff);
+                    sf.setWriteHeader(true);
+                    sf.getColumns().add((SheetColumn) new SheetColumn().updateTitle("Session"));
+                    sf.getColumns().add((SheetColumn) new SheetColumn().updateTitle("Project Id"));
+                    sf.getColumns().add((SheetColumn) new SheetColumn().updateTitle("Project"));
+                    sf.getColumns().add((SheetColumn) new SheetColumn().updateTitle("Team Id"));
+                    sf.getColumns().add((SheetColumn) new SheetColumn().updateTitle("Team"));
+                    sf.getColumns().add((SheetColumn) new SheetColumn().updateTitle("# Coaches"));
+                    sf.getColumns().add((SheetColumn) new SheetColumn().updateTitle("Coach(es)"));
+                    sf.getColumns().add((SheetColumn) new SheetColumn().updateTitle("# Students"));
+                    for (int i = 0; i < maxStudents; i++) {
+                        sf.getColumns().add((SheetColumn) new SheetColumn().updateTitle("Student " + (i + 1)));
+                        if (juryScore) {
+                            sf.getColumns().add((SheetColumn) new SheetColumn().updateTitle("Jury Score Student " + (i + 1)));
+                        }
+                        if (coachScore) {
+                            sf.getColumns().add((SheetColumn) new SheetColumn().updateTitle("Coach Score Student " + (i + 1)));
+                        }
+                    }
+                    DataWriter w = sf.createWriter();
+                    for (List<Object> row : rows) {
+                        w.writeRow(row.toArray());
+                    }
+                    w.flush();
+                    w.close();
+                } catch (IOException ex) {
+                    Logger.getLogger(AcademicAppProjectsCtrl.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
     }
 
     public void onShuffleSession() {
@@ -746,7 +888,7 @@ public class AcademicAppProjectsCtrl {
 
     public void onSaveTeam() {
         if (Objects.equals(getModel().getSelectedTeam().getReport(), getModel().getSelectedPathBeforeUpload())
-                && !StringUtils.isEmpty(getModel().getSelectedPathUploaded())) {
+                && !StringUtils.isBlank(getModel().getSelectedPathUploaded())) {
             getModel().getSelectedTeam().setReport(getModel().getSelectedPathUploaded());
         }
         if (getModel().isEditMode()) {
@@ -774,7 +916,7 @@ public class AcademicAppProjectsCtrl {
 
     public void onSaveProject() {
         if (Objects.equals(getModel().getSelectedProject().getSpecFilePath(), getModel().getSelectedPathBeforeUpload())
-                && !StringUtils.isEmpty(getModel().getSelectedPathUploaded())) {
+                && !StringUtils.isBlank(getModel().getSelectedPathUploaded())) {
             getModel().getSelectedProject().setSpecFilePath(getModel().getSelectedPathUploaded());
         }
         if (getModel().isEditMode()) {
@@ -835,7 +977,7 @@ public class AcademicAppProjectsCtrl {
     }
 
     public void fireEventExtraDialogClosed() {
-        RequestContext.getCurrentInstance().closeDialog(null);
+        DialogBuilder.closeCurrent();
     }
 
     public class NodeItem {
@@ -1120,7 +1262,7 @@ public class AcademicAppProjectsCtrl {
         public void setProjects(List<ProjectNode> projects) {
             this.projects = projects;
             root = new DefaultTreeNode(new NodeItem("Root", projects.size(), "root", "", null), null);
-            boolean defaultExpand = true;// !StringUtils.isEmpty(getFilterText());
+            boolean defaultExpand = true;// !StringUtils.isBlank(getFilterText());
             for (ProjectNode i : projects) {
                 NodeItem project
                         = i.getProject() == null
@@ -1128,14 +1270,14 @@ public class AcademicAppProjectsCtrl {
                                 "<Equipes Sans Projets>", i.getTeams().size(),
                                 "project", "", i)
                         : new NodeItem(
-                                "["+i.getProject().getCode()+"] "+i.getProject().getName(), i.getTeams().size(),
+                                "[" + i.getProject().getCode() + "] " + i.getProject().getName(), i.getTeams().size(),
                                 "project", (i.getProject().getOwner() == null ? null : i.getProject().getOwner().getFullTitle()), i);
                 DefaultTreeNode n = new DefaultTreeNode(project, this.root);
                 n.setExpanded(defaultExpand);
                 HashSet<Integer> teachersByProject = new HashSet<>();
                 HashSet<Integer> studentsByProject = new HashSet<>();
                 for (TeamNode teamNode : i.getTeams()) {
-                    NodeItem team = new NodeItem("["+teamNode.getTeam().getCode()+"] "+ teamNode.getTeam().getName(), -1, "team", (teamNode.getTeam().getOwner() == null ? "" : teamNode.getTeam().getOwner().getFullTitle()), teamNode);
+                    NodeItem team = new NodeItem("[" + teamNode.getTeam().getCode() + "] " + teamNode.getTeam().getName(), -1, "team", (teamNode.getTeam().getOwner() == null ? "" : teamNode.getTeam().getOwner().getFullTitle()), teamNode);
                     HashSet<Integer> teachersByTeam = new HashSet<>();
                     HashSet<Integer> studentsByTeam = new HashSet<>();
                     DefaultTreeNode t = new DefaultTreeNode(team, n);

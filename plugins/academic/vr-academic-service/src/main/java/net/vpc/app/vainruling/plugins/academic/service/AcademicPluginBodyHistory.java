@@ -1,14 +1,24 @@
 package net.vpc.app.vainruling.plugins.academic.service;
 
+import net.vpc.app.vainruling.plugins.academic.model.history.AcademicHistCourseGroup;
+import net.vpc.app.vainruling.plugins.academic.model.history.AcademicHistTeacherDegree;
+import net.vpc.app.vainruling.plugins.academic.model.history.AcademicHistCourseAssignment;
+import net.vpc.app.vainruling.plugins.academic.model.history.AcademicHistCoursePlan;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicTeacherSemestrialLoad;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCoursePlan;
+import net.vpc.app.vainruling.plugins.academic.model.history.AcademicHistTeacherAnnualLoad;
+import net.vpc.app.vainruling.plugins.academic.model.history.AcademicHistTeacherSemestrialLoad;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicProgram;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCourseGroup;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicTeacherDegree;
+import net.vpc.app.vainruling.plugins.academic.model.history.AcademicHistProgram;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.CorePluginSecurity;
 import net.vpc.app.vainruling.core.service.TraceService;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSemester;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacherPeriod;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.*;
-import net.vpc.app.vainruling.plugins.academic.service.model.history.*;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicSemester;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacherPeriod;
 import net.vpc.upa.UPA;
 
 import java.util.ArrayList;
@@ -160,7 +170,7 @@ public class AcademicPluginBodyHistory extends AcademicPluginBody {
         for (AcademicTeacher m : academic.findTeachers()) {
             AcademicHistTeacherAnnualLoad h = new AcademicHistTeacherAnnualLoad();
             h.setAcademicYear(s);
-            AcademicTeacherPeriod ts = academic.findAcademicTeacherPeriod(periodId, m);
+            AcademicTeacherPeriod ts = academic.findTeacherPeriod(periodId, m.getId());
             h.setDegree(histTeacherDegreeMap.get(ts.getDegree() == null ? null : ts.getDegree().getName()));
             h.setSituation(ts.getSituation());
             h.setTeacher(m);

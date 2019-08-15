@@ -6,27 +6,27 @@
 package net.vpc.app.vainruling.plugins.academic.web.load;
 
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.core.web.VrController;
-import net.vpc.app.vainruling.core.web.UPathItem;
+import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPluginSecurity;
 import net.vpc.app.vainruling.plugins.academic.service.util.TeacherPeriodFilter;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacherPeriod;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacherPeriod;
 import net.vpc.common.jsf.FacesUtils;
 
 import javax.faces.model.SelectItem;
 import java.util.ArrayList;
 import java.util.List;
 import javax.faces.bean.ManagedBean;
+import net.vpc.app.vainruling.core.service.pages.VrPage;
+import net.vpc.app.vainruling.core.service.pages.VrPathItem;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@VrController(
+@VrPage(
         breadcrumb = {
-                @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
+                @VrPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
 //        css = "fa-table",
 //        title = "Charge par Enseignant",
         url = "modules/academic/teacher-course-load",
@@ -49,7 +49,7 @@ public class TeacherCourseLoadCtrl extends AbstractCourseLoadCtrl {
         int periodId = getTeacherFilter().getPeriodId();
         TeacherPeriodFilter teacherFilter = getTeacherFilter().getTeacherFilter();
         for (AcademicTeacher t : p.findTeachers()) {
-            AcademicTeacherPeriod tp = p.findAcademicTeacherPeriod(periodId, t);
+            AcademicTeacherPeriod tp = p.findTeacherPeriod(periodId, t.getId());
             if (tp.isEnabled() && teacherFilter.acceptTeacher(tp)) {
                 getModel().getTeachers().add(FacesUtils.createSelectItem(String.valueOf(t.getId()), t.resolveFullName()));
             }
@@ -95,6 +95,7 @@ public class TeacherCourseLoadCtrl extends AbstractCourseLoadCtrl {
         return null;
     }
 
+    @Override
     public ModelExt getModel() {
         return (ModelExt) super.getModel();
     }

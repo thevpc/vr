@@ -7,8 +7,8 @@ package net.vpc.app.vainruling.core.web.jsf.ctrl.obj;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.web.jsf.ctrl.ObjCtrl;
-import net.vpc.app.vainruling.core.web.obj.ViewContext;
+import net.vpc.app.vainruling.core.web.jsf.ctrl.EditorCtrl;
+import net.vpc.app.vainruling.core.service.editor.ViewContext;
 import net.vpc.upa.*;
 import net.vpc.upa.types.DataType;
 
@@ -34,8 +34,8 @@ public class KeyTypePropertyViewValuesProvider implements PropertyViewValuesProv
             componentId = propertyView.getComponentId();
         }
         CorePlugin core = VrApp.getBean(CorePlugin.class);
-        final ObjCtrl objCtrl = VrApp.getBean(ObjCtrl.class);
-        Map<String, Object> currentValues = objCtrl.currentViewToMap();
+        final EditorCtrl editorCtrl = VrApp.getBean(EditorCtrl.class);
+        Map<String, Object> currentValues = editorCtrl.currentViewToMap();
 
         final Map<String, Object> constraints = new HashMap<>();
         for (PropertyView dependentPropertyView : dependentPropertyViews) {
@@ -53,7 +53,7 @@ public class KeyTypePropertyViewValuesProvider implements PropertyViewValuesProv
         return viewContext.getCacheItem("EntityPropertyViewValuesProvider." + me.getName() + ":" + constraints, new Action<List<NamedId>>() {
             @Override
             public List<NamedId> run() {
-                return core.findAllNamedIds(mtype.getEntity().getName(), constraints, objCtrl.getModel().getCurrentDocument());
+                return core.findAllNamedIds(mtype.getEntity().getName(), constraints, editorCtrl.getModel().getCurrentDocument());
             }
         });
     }

@@ -11,7 +11,7 @@ import net.vpc.app.vainruling.core.service.model.AppConfig;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.web.jsf.DialogBuilder;
-import net.vpc.app.vainruling.core.web.obj.DialogResult;
+import net.vpc.app.vainruling.core.service.editor.DialogResult;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.util.CourseAssignmentFilter;
 import net.vpc.app.vainruling.plugins.academic.web.admin.AcademicAdminToolsCtrl;
@@ -93,7 +93,7 @@ public class GenerateLoadDialogCtrl {
             getModel().setConfig(c);
         }
         String title = c.getTitle();
-        if (StringUtils.isEmpty(title)) {
+        if (StringUtils.isBlank(title)) {
             title = "Generer Charge";
         }
         getModel().setTitle(title);
@@ -118,7 +118,7 @@ public class GenerateLoadDialogCtrl {
 
     public int getPeriodId() {
         String p = getModel().getPeriod();
-        if (StringUtils.isEmpty(p)) {
+        if (StringUtils.isBlank(p)) {
             CorePlugin core = VrApp.getBean(CorePlugin.class);
             AppConfig a = core.getCurrentConfig();
             if(a==null || a.getMainPeriod()==null){
@@ -138,7 +138,7 @@ public class GenerateLoadDialogCtrl {
                     AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
                     int periodId = getPeriodId();
                     String version = getModel().getVersion();
-                    if(StringUtils.isEmpty(version)){
+                    if(StringUtils.isBlank(version)){
                         version="temp-version";
                     }
                     setVersion(periodId, version);

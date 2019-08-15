@@ -5,10 +5,32 @@
  */
 package net.vpc.app.vainruling.plugins.academic.service.integration;
 
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicSemester;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicStudent;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicPreClass;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicBac;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicStudentStage;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicLoadConversionTable;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCourseType;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacherSituation;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicTeacherSemestrialLoad;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCourseAssignment;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCoursePlan;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCourseLevel;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacherPeriod;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicPreClassType;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicProgram;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCourseGroup;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicLoadConversionRule;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicTeacherDegree;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicOfficialDiscipline;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicClass;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicLoadConversionRow;
 import net.vpc.app.vainruling.core.service.util.ColumnMappingMatcher;
 import net.vpc.app.vainruling.core.service.util.LenientArray;
-import net.vpc.app.vainruling.plugins.academic.service.helper.mapping.StudentMapping;
-import net.vpc.app.vainruling.plugins.academic.service.helper.mapping.CourseAssignmentsMapping;
+import net.vpc.app.vainruling.plugins.academic.service.integration.mapping.StudentMapping;
+import net.vpc.app.vainruling.plugins.academic.service.integration.mapping.CourseAssignmentsMapping;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.TraceService;
 import net.vpc.app.vainruling.core.service.VrApp;
@@ -17,11 +39,8 @@ import net.vpc.app.vainruling.core.service.util.VrPasswordStrategyNin;
 import net.vpc.app.vainruling.core.service.util.VrPasswordStrategyRandom;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.app.vainruling.plugins.academic.service.util.ImportOptions;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.*;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.*;
-import net.vpc.app.vainruling.plugins.academic.service.model.imp.AcademicStudentImport;
-import net.vpc.app.vainruling.plugins.academic.service.model.imp.AcademicTeacherImport;
+import net.vpc.app.vainruling.plugins.academic.model.imp.AcademicStudentImport;
+import net.vpc.app.vainruling.plugins.academic.model.imp.AcademicTeacherImport;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.Chronometer;
 import net.vpc.common.util.Convert;
@@ -170,7 +189,7 @@ public class XlsxLoadImporter {
             Object[] values = row.getValues();
             String tableName = Convert.toString(values[0]);
             if (table == null) {
-                if (StringUtils.isEmpty(tableName)) {
+                if (StringUtils.isBlank(tableName)) {
                     tableName = "Table";
                 }
                 table = service.findLoadConversionTable(tableName);
@@ -341,7 +360,7 @@ public class XlsxLoadImporter {
         AcademicTeacherImport academicTeacherImport = new AcademicTeacherImport();
         academicTeacherImport.setFirstName(VrUtils.validateContactName(Convert.toString(values[COL_FIRST_NAME])));
         academicTeacherImport.setLastName(VrUtils.validateContactName(Convert.toString(values[COL_LAST_NAME])));
-        if (!StringUtils.isEmpty(academicTeacherImport.getNin()) || !StringUtils.isEmpty(academicTeacherImport.getFirstName()) || !StringUtils.isEmpty(academicTeacherImport.getLastName())) {
+        if (!StringUtils.isBlank(academicTeacherImport.getNin()) || !StringUtils.isBlank(academicTeacherImport.getFirstName()) || !StringUtils.isBlank(academicTeacherImport.getLastName())) {
             academicTeacherImport.setFirstName2(Convert.toString(values[COL_FIRST_NAME2]));
             academicTeacherImport.setLastName2(Convert.toString(values[COL_LAST_NAME2]));
             academicTeacherImport.setDegreeName(Convert.toString(values[COL_DEGREE]));
@@ -522,7 +541,7 @@ public class XlsxLoadImporter {
                 corePlugin.save(null, sload);
             }
         }
-        AcademicTeacherPeriod academicTeacherPeriod = service.findAcademicTeacherPeriod(mainPeriodId, academicTeacher);
+        AcademicTeacherPeriod academicTeacherPeriod = service.findTeacherPeriod(mainPeriodId, academicTeacher.getId());
         if (academicTeacherPeriod.getId() < 0) {
             //this is temp period
             service.updateTeacherPeriod(mainPeriodId, academicTeacher.getId(), -1);
@@ -562,7 +581,7 @@ public class XlsxLoadImporter {
         String fn = VrUtils.validateContactName(values.getString(sm.COL_FIRST_NAME));
         String ln = VrUtils.validateContactName(values.getString(sm.COL_LAST_NAME));
         String nin = values.getString(sm.COL_NIN);
-        if (!StringUtils.isEmpty(nin) || !StringUtils.isEmpty(fn) || !StringUtils.isEmpty(ln)) {
+        if (!StringUtils.isBlank(nin) || !StringUtils.isBlank(fn) || !StringUtils.isBlank(ln)) {
             AcademicStudentImport a = new AcademicStudentImport();
             a.setFirstName(fn);
             a.setLastName(ln);
@@ -590,7 +609,7 @@ public class XlsxLoadImporter {
     }
 
     public void importStudent(AcademicStudentImport a, ImportStudentContext ctx) throws IOException {
-        if (StringUtils.isEmpty(a.getNin())) {
+        if (StringUtils.isBlank(a.getNin())) {
             throw new NoSuchElementException("Nin Not Found " + a);
         }
         final AcademicPlugin service = VrApp.getBean(AcademicPlugin.class);
@@ -617,7 +636,7 @@ public class XlsxLoadImporter {
             if (dept == null) {
                 throw new NoSuchElementException("Department Not Found " + a.getDepartmentId());
             }
-        } else if (!StringUtils.isEmpty(a.getDepartmentName())) {
+        } else if (!StringUtils.isBlank(a.getDepartmentName())) {
             dept = core.findDepartment(a.getDepartmentName().trim());
             if (dept == null) {
                 throw new NoSuchElementException("Department Not Found " + a.getDepartmentName());
@@ -645,7 +664,7 @@ public class XlsxLoadImporter {
             if (bac == null) {
                 throw new NoSuchElementException("Bac Not Found " + a.getPreClassBacId());
             }
-        } else if (!StringUtils.isEmpty(a.getPreClassBacName())) {
+        } else if (!StringUtils.isBlank(a.getPreClassBacName())) {
             bac = service.findAcademicBac(a.getPreClassBacName().trim());
             if (bac == null) {
                 throw new NoSuchElementException("Bac Not Found " + a.getPreClassBacName());
@@ -658,7 +677,7 @@ public class XlsxLoadImporter {
             if (prep == null) {
                 throw new NoSuchElementException("Prep Not Found " + a.getPreClassBacId());
             }
-        } else if (!StringUtils.isEmpty(a.getPreClassPrepName())) {
+        } else if (!StringUtils.isBlank(a.getPreClassPrepName())) {
             prep = service.findAcademicPreClass(a.getPreClassPrepName().trim());
             if (prep == null) {
                 throw new NoSuchElementException("Prep Not Found " + a.getPreClassPrepName());
@@ -671,7 +690,7 @@ public class XlsxLoadImporter {
             if (prepType == null) {
                 throw new NoSuchElementException("Prep Type Not Found " + a.getPreClassTypeId());
             }
-        } else if (!StringUtils.isEmpty(a.getPreClassTypeName())) {
+        } else if (!StringUtils.isBlank(a.getPreClassTypeName())) {
             prepType = service.findAcademicPreClassType(a.getPreClassTypeName().trim());
             if (prepType == null) {
                 throw new NoSuchElementException("Prep Not Found " + a.getPreClassTypeName());
@@ -808,7 +827,7 @@ public class XlsxLoadImporter {
             return true;
         }
         if (oldVal instanceof String) {
-            return StringUtils.isEmpty((String) oldVal);
+            return StringUtils.isBlank((String) oldVal);
         }
         if (oldVal instanceof Integer) {
             return ((Integer) oldVal).intValue() <= 0;
@@ -927,7 +946,7 @@ public class XlsxLoadImporter {
                 List<AcademicTeacher> teacherIntents = new ArrayList<>();
                 {
                     String stringVal = values.getString(sm.DEPARTMENT_COLUMN);
-                    if (!StringUtils.isEmpty(stringVal)) {
+                    if (!StringUtils.isBlank(stringVal)) {
                         department = core.findDepartment(stringVal);
                         if (department == null) {
                             throw new IllegalArgumentException("Invalid Department " + stringVal);
@@ -936,13 +955,13 @@ public class XlsxLoadImporter {
                 }
                 {
                     String stringVal = values.getString(sm.OWNER_DEPARTMENT_COLUMN);
-                    if (!StringUtils.isEmpty(stringVal)) {
+                    if (!StringUtils.isBlank(stringVal)) {
                         ownerDepartment = core.findDepartment(stringVal);
                     }
                 }
                 {
                     String stringVal = values.getString(sm.PROGRAM_COLUMN);
-                    if (!StringUtils.isEmpty(stringVal)) {
+                    if (!StringUtils.isBlank(stringVal)) {
                         if (department != null) {
                             program = service.findProgram(department.getId(), stringVal);
                         } else {
@@ -960,7 +979,7 @@ public class XlsxLoadImporter {
                 }
                 {
                     String stringVal = values.getString(sm.STUDENT_CLASS_COLUMN);
-                    if (StringUtils.isEmpty(stringVal)) {
+                    if (StringUtils.isBlank(stringVal)) {
                         throw new IllegalArgumentException("Missing Class Name");
                     }
                     if (program == null) {
@@ -989,7 +1008,7 @@ public class XlsxLoadImporter {
                 }
                 {
                     String stringVal = values.getString(sm.STUDENT_SUBLASS_COLUMN);
-                    if (!StringUtils.isEmpty(stringVal)) {
+                    if (!StringUtils.isBlank(stringVal)) {
                         studentSubClass = service.findAcademicClass(program.getId(), stringVal);
                         if (studentSubClass == null) {
                             throw new IllegalArgumentException("Invalid Class " + stringVal);
@@ -1060,7 +1079,6 @@ public class XlsxLoadImporter {
                 double valueTP = values.getDouble(sm.LOAD_TP_COLUMN);
                 double valuePM = values.getDouble(sm.LOAD_PM_COLUMN);
                 double nbrGroups = values.getDouble(sm.NBR_GROUPS_COLUMN);
-                double nbrShares = values.getDoubleOr1(sm.NBR_SHARES_COLUMN);
                 String teacherName = values.getString(sm.TEACHER_NAME_COUMN);
                 String teacherIntentsString = values.getString(sm.TEACHER_INTENTS_COUMN);
                 if (teacherName == null && teacherIntents == null) {
@@ -1121,7 +1139,6 @@ public class XlsxLoadImporter {
                         d.setValuePM(valuePM);
                         d.setCourseType(courseType);
                         d.setGroupCount(nbrGroups);
-                        d.setShareCount(nbrShares);
                         d.setValueEffWeek(effWeek);
                         d.setTeacher(teacher);
                         CorePlugin.get().save(null, d);

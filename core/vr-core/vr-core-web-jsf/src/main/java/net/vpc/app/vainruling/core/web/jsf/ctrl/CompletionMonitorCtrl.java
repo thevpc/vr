@@ -3,19 +3,19 @@ package net.vpc.app.vainruling.core.web.jsf.ctrl;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.CorePluginSecurity;
 import net.vpc.app.vainruling.core.service.util.CompletionInfo;
-import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.core.web.UPathItem;
-import net.vpc.app.vainruling.core.web.VrController;
+import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
+import net.vpc.app.vainruling.core.service.pages.VrPage;
+import net.vpc.app.vainruling.core.service.pages.VrPathItem;
 
-@VrController(
+@VrPage(
         breadcrumb = {
-                @UPathItem(title = "Education", css = "fa-dashboard", ctrl = ""),
-                @UPathItem(title = "APP", css = "fa-dashboard", ctrl = ""),
+                @VrPathItem(title = "Education", css = "fa-dashboard", ctrl = ""),
+                @VrPathItem(title = "APP", css = "fa-dashboard", ctrl = ""),
         },
 //        css = "fa-table",
 //        title = "Projets APP",

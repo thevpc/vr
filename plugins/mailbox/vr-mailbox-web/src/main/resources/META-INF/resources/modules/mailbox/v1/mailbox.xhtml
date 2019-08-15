@@ -374,8 +374,8 @@ and open the template in the editor.
                     </p:overlayPanel>
 
                 </p:outputPanel>
-                <!--                    <p:remoteCommand name="processOnSaveCurrent" process="@form" update=":listForm :itemForm  :buttonsForm" action="# {objCtrl.onSaveCurrent()}"/>
-                                    <p:remoteCommand name="processOnDeleteCurrent" process="@form" update=":listForm :itemForm  :buttonsForm" action="# {objCtrl.onDeleteCurrent()}"/>-->
+                <!--                    <p:remoteCommand name="processOnSaveCurrent" process="@form" update=":listForm :itemForm  :buttonsForm" action="#_{editorCtrl.onSaveCurrent()}"/>
+                                    <p:remoteCommand name="processOnDeleteCurrent" process="@form" update=":listForm :itemForm  :buttonsForm" action="#_{editorCtrl.onDeleteCurrent()}"/>-->
             </h:form>
 
             <h:outputScript id="dynaFormScript" target="body">

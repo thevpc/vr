@@ -10,9 +10,9 @@ import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import net.vpc.app.vainruling.core.service.model.AppUser;
-import net.vpc.app.vainruling.plugins.calendars.service.model.CalendarDay;
-import net.vpc.app.vainruling.plugins.calendars.service.model.CalendarHour;
-import net.vpc.app.vainruling.plugins.calendars.service.model.WeekCalendar;
+import net.vpc.app.vainruling.plugins.calendars.service.dto.CalendarDay;
+import net.vpc.app.vainruling.plugins.calendars.service.dto.CalendarHour;
+import net.vpc.app.vainruling.plugins.calendars.service.dto.WeekCalendar;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.vfs.VFile;
 import org.w3c.dom.Document;
@@ -179,13 +179,13 @@ public class WeekCalendarFETParser {
                 }
             }
             String actor = "";
-            if (!StringUtils.isEmpty(ph.getStudents())) {
+            if (!StringUtils.isBlank(ph.getStudents())) {
                 if (actor.length() > 0) {
                     actor += " / ";
                 }
                 actor += ph.getStudents();
             }
-            if (!StringUtils.isEmpty(ph.getTeacher())) {
+            if (!StringUtils.isBlank(ph.getTeacher())) {
                 if (actor.length() > 0) {
                     actor += " / ";
                 }

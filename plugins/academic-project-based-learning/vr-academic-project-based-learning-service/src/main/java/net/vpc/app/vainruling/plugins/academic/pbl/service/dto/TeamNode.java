@@ -1,6 +1,6 @@
 package net.vpc.app.vainruling.plugins.academic.pbl.service.dto;
 
-import net.vpc.app.vainruling.plugins.academic.pbl.service.model.ApblTeam;
+import net.vpc.app.vainruling.plugins.academic.pbl.model.ApblTeam;
 
 import java.util.ArrayList;
 import java.util.List;

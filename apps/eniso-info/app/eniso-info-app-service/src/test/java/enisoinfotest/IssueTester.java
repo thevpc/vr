@@ -1,11 +1,15 @@
 package enisoinfotest;
 
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCourseAssignment;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCourseLevel;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicProgram;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCoursePlan;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicClass;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppContact;
 import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.*;
 import net.vpc.upa.Entity;
 import net.vpc.upa.NamedId;
 import net.vpc.upa.PersistenceUnit;

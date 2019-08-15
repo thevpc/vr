@@ -7,13 +7,11 @@ package net.vpc.app.vainruling.plugins.calendars.web.week;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.model.AppUser;
-import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.core.web.UPathItem;
-import net.vpc.app.vainruling.core.web.VrController;
+import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.app.vainruling.plugins.calendars.service.CalendarsPlugin;
 import net.vpc.app.vainruling.plugins.calendars.service.CalendarsPluginSecurity;
-import net.vpc.app.vainruling.plugins.calendars.service.model.CalendarDay;
-import net.vpc.app.vainruling.plugins.calendars.service.model.WeekCalendar;
+import net.vpc.app.vainruling.plugins.calendars.service.dto.CalendarDay;
+import net.vpc.app.vainruling.plugins.calendars.service.dto.WeekCalendar;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,13 +19,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.faces.model.SelectItem;
 import java.util.ArrayList;
 import java.util.List;
+import net.vpc.app.vainruling.core.service.pages.VrPage;
+import net.vpc.app.vainruling.core.service.pages.VrPathItem;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@VrController(
+@VrPage(
         breadcrumb = {
-                @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
+                @VrPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
 //        css = "fa-table",
 //        title = "Mon Emploi du temps",
         url = "modules/calendars/my-week-calendars",
@@ -58,7 +58,7 @@ public class MyWeekCalendarsCtrl extends AbstractWeekCalendarCtrl {
         for (int i = 0; i < plannings.size(); i++) {
             WeekCalendar data = plannings.get(i);
             String planningName = data.getPlanningName();
-            if (!StringUtils.isEmpty(data.getSourceName())) {
+            if (!StringUtils.isBlank(data.getSourceName())) {
                 planningName += " (" + data.getSourceName() + ")";
             }
             getModel().getGroups().add(FacesUtils.createSelectItem(String.valueOf(i), planningName));

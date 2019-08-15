@@ -29,7 +29,7 @@ public class FindEmails {
                 name=name.trim();
                 if(!name.isEmpty()){
                     for (AppUser appUser : CorePlugin.get().findUsersByFullTitle(name)) {
-                        if(!StringUtils.isEmpty(appUser.getEmail())){
+                        if(!StringUtils.isBlank(appUser.getEmail())){
                             if(emails.length()>0){
                                 emails.append(",");
                             }

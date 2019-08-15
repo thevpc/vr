@@ -1,5 +1,20 @@
 package net.vpc.app.vainruling.plugins.academic.pbl.service;
 
+import net.vpc.app.vainruling.plugins.academic.pbl.model.ApblProgressionLog;
+import net.vpc.app.vainruling.plugins.academic.pbl.model.ApblTeam;
+import net.vpc.app.vainruling.plugins.academic.pbl.model.ApblCoaching;
+import net.vpc.app.vainruling.plugins.academic.pbl.model.ApblTeamConstraint;
+import net.vpc.app.vainruling.plugins.academic.pbl.model.ApblProgramSession;
+import net.vpc.app.vainruling.plugins.academic.pbl.model.ApblTeamMember;
+import net.vpc.app.vainruling.plugins.academic.pbl.model.ApblProject;
+import net.vpc.app.vainruling.plugins.academic.pbl.model.ApblSession;
+import net.vpc.app.vainruling.plugins.academic.pbl.model.ApblCoachingLog;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicProgram;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCourseType;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCoursePlan;
+import net.vpc.app.vainruling.plugins.academic.model.current.IAcademicCourseAssignment;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicClass;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCourseAssignment;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppDepartment;
@@ -7,13 +22,11 @@ import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.util.NameGenerator;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.plugins.academic.pbl.service.dto.*;
-import net.vpc.app.vainruling.plugins.academic.pbl.service.model.*;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.util.CourseAssignmentFilter;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudentStage;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.*;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicStudent;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicStudentStage;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
 import net.vpc.common.strings.StringComparator;
 import net.vpc.common.strings.StringComparators;
 import net.vpc.common.strings.StringUtils;
@@ -227,7 +240,7 @@ public class ApblPlugin {
         if (team.getOwner() == null) {
             throw new RuntimeException("Missing Owner");
         }
-        if (StringUtils.isEmpty(team.getName())) {
+        if (StringUtils.isBlank(team.getName())) {
             throw new RuntimeException("Empty Name");
         }
         if (findTeam(team.getSession().getId(), team.getName()) != null) {
@@ -245,7 +258,7 @@ public class ApblPlugin {
         if (project.getOwner() == null) {
             throw new RuntimeException("Missing Owner");
         }
-        if (StringUtils.isEmpty(project.getName())) {
+        if (StringUtils.isBlank(project.getName())) {
             throw new RuntimeException("Empty Name");
         }
         ApblProject other = findProject(project.getSession().getId(), project.getName());
@@ -259,7 +272,7 @@ public class ApblPlugin {
         if (project.getOwner() == null) {
             throw new RuntimeException("Missing Owner");
         }
-        if (StringUtils.isEmpty(project.getName())) {
+        if (StringUtils.isBlank(project.getName())) {
             throw new RuntimeException("Empty Name");
         }
         if (findProject(project.getSession().getId(), project.getName()) != null) {
@@ -272,7 +285,7 @@ public class ApblPlugin {
         if (project.getOwner() == null) {
             throw new RuntimeException("Missing Owner");
         }
-        if (StringUtils.isEmpty(project.getName())) {
+        if (StringUtils.isBlank(project.getName())) {
             throw new RuntimeException("Empty Name");
         }
         ApblTeam other = findTeam(project.getSession().getId(), project.getName());
@@ -381,7 +394,6 @@ public class ApblPlugin {
                             if (val == 0) {
                                 academic.removeCourseAssignment(a.getId(), false, false);
                             } else {
-                                a.setShareCount(1);
                                 a.setGroupCount(1);
                                 a.setValueC(0);
                                 a.setValueTD(0);
@@ -394,7 +406,6 @@ public class ApblPlugin {
                         } else {
                             if (val != 0) {
                                 AcademicCourseAssignment a = new AcademicCourseAssignment();
-                                a.setShareCount(1);
                                 a.setGroupCount(1);
                                 a.setValueC(0);
                                 a.setValueTD(0);
@@ -809,7 +820,7 @@ public class ApblPlugin {
             }
             CorePlugin core = VrApp.getBean(CorePlugin.class);
             for (ApblTeamConstraint constraint : constraints) {
-                if (!StringUtils.isEmpty(constraint.getProfiles()) && (constraint.getMinCount() > 0 || constraint.getMaxCount() > 0)) {
+                if (!StringUtils.isBlank(constraint.getProfiles()) && (constraint.getMinCount() > 0 || constraint.getMaxCount() > 0)) {
                     int count = 0;
                     for (Integer user : memberUsers) {
                         if (core.isUserMatchesProfileFilter(user, constraint.getProfiles())) {
@@ -845,7 +856,7 @@ public class ApblPlugin {
             }
             CorePlugin core = VrApp.getBean(CorePlugin.class);
             for (ApblTeamConstraint constraint : constraints) {
-                if (!StringUtils.isEmpty(constraint.getProfiles()) && (constraint.getMinCount() > 0 || constraint.getMaxCount() > 0)) {
+                if (!StringUtils.isBlank(constraint.getProfiles()) && (constraint.getMinCount() > 0 || constraint.getMaxCount() > 0)) {
                     int count = 0;
                     for (Integer user : memberUsers) {
                         if (core.isUserMatchesProfileFilter(user, constraint.getProfiles())) {
@@ -869,7 +880,7 @@ public class ApblPlugin {
             }
             CorePlugin core = VrApp.getBean(CorePlugin.class);
             for (ApblTeamConstraint constraint : constraints) {
-                if (!StringUtils.isEmpty(constraint.getProfiles()) && (constraint.getMinCount() > 0 || constraint.getMaxCount() > 0)) {
+                if (!StringUtils.isBlank(constraint.getProfiles()) && (constraint.getMinCount() > 0 || constraint.getMaxCount() > 0)) {
                     int count = 0;
                     for (Integer user : memberUsers) {
                         if (core.isUserMatchesProfileFilter(user, constraint.getProfiles())) {
@@ -1100,7 +1111,7 @@ public class ApblPlugin {
         if (log.getTeam() == null) {
             throw new RuntimeException("Empty Team");
         }
-        if (StringUtils.isEmpty(log.getDescription())) {
+        if (StringUtils.isBlank(log.getDescription())) {
             throw new RuntimeException("Empty Description");
         }
         if (log.getProgressionPercent() <= 0) {
@@ -1116,7 +1127,7 @@ public class ApblPlugin {
         if (log.getCoaching() == null) {
             throw new RuntimeException("Empty Team");
         }
-        if (StringUtils.isEmpty(log.getDescription())) {
+        if (StringUtils.isBlank(log.getDescription())) {
             throw new RuntimeException("Empty Description");
         }
         if (log.getDurationMinutes() <= 0) {
@@ -1288,19 +1299,19 @@ public class ApblPlugin {
                 }
                 //if any other user but not teacher or student, check it fulfills any of the other profiles
                 if (currentUser != null) {
-                    if (!StringUtils.isEmpty(value.getMemberProfiles())
+                    if (!StringUtils.isBlank(value.getMemberProfiles())
                             && core.isUserMatchesProfileFilter(currentUser.getId(), value.getMemberProfiles())) {
                         return true;
                     }
-                    if (!StringUtils.isEmpty(value.getTeamOwnerProfiles())
+                    if (!StringUtils.isBlank(value.getTeamOwnerProfiles())
                             && core.isUserMatchesProfileFilter(currentUser.getId(), value.getTeamOwnerProfiles())) {
                         return true;
                     }
-                    if (!StringUtils.isEmpty(value.getCoachProfiles())
+                    if (!StringUtils.isBlank(value.getCoachProfiles())
                             && core.isUserMatchesProfileFilter(currentUser.getId(), value.getCoachProfiles())) {
                         return true;
                     }
-                    if (!StringUtils.isEmpty(value.getProjectOwnerProfiles())
+                    if (!StringUtils.isBlank(value.getProjectOwnerProfiles())
                             && core.isUserMatchesProfileFilter(currentUser.getId(), value.getProjectOwnerProfiles())) {
                         return true;
                     }

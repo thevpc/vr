@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.vpc.app.vain-ruling.core</groupId>
     <artifactId>vr-core-web</artifactId>
-    <version>1.13.13</version>
+    <version>1.13.15</version>
     <packaging>jar</packaging>
     <name>net.vpc.app.vain-ruling.core.vr-core-web</name>
     <url>https://github.com/thevpc/vr/wiki</url>
@@ -18,8 +18,8 @@
 
     <properties>
         <vr-plugin.component-type>web</vr-plugin.component-type>
-        <version.vr-core-service>1.13.13</version.vr-core-service>
-        <version.upa-web>1.2.0.49.0</version.upa-web>
+        <version.vr-core-service>1.13.15</version.vr-core-service>
+        <version.upa-web>1.2.0.49.1</version.upa-web>
     </properties>
 
     <dependencies>

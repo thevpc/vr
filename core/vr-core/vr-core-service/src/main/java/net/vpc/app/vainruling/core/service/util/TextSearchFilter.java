@@ -27,7 +27,7 @@ public class TextSearchFilter {
 
     private static List<String> tokenize(String expr) {
         ArrayList<String> all = new ArrayList<>();
-        if(!StringUtils.isEmpty(expr)) {
+        if(!StringUtils.isBlank(expr)) {
             int i = 0;
             StringBuilder2 ss = new StringBuilder2();
             while (i < expr.length()) {
@@ -92,7 +92,7 @@ public class TextSearchFilter {
 
     public List filterList(List list) {
         List oldList = list;
-        if (StringUtils.isEmpty(expression)) {
+        if (StringUtils.isBlank(expression)) {
             return oldList;
         }
         List newList = new ArrayList();
@@ -128,7 +128,7 @@ public class TextSearchFilter {
         Map<String, String> map2=new HashMap<>();
         for (Map.Entry<String, Object> e : map.entrySet()) {
             String v = normalize(e.getValue());
-            if (!StringUtils.isEmpty(v)) {
+            if (!StringUtils.isBlank(v)) {
                 map2.put(e.getKey(), v);
             }
         }

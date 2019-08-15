@@ -20,10 +20,10 @@ public class JsonUtils {
 
     private static Map<Class, TypeParser> delegates = new HashMap<Class, TypeParser>();
 
-    public static void main(String[] args) {
-        Integer parse = parse("\"15\"", Integer.class);
-        System.out.println(parse);
-    }
+//    public static void main(String[] args) {
+//        Integer parse = parse("\"15\"", Integer.class);
+//        System.out.println(parse);
+//    }
 
     static {
         register(String.class, new TypeParser() {

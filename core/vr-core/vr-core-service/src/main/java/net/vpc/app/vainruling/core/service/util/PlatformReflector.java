@@ -12,14 +12,21 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author taha.bensalah@gmail.com
  */
 public class PlatformReflector {
+
+    private final static Map<MethodInvokerKey, MethodInvoker[]> cachedMethodInvokers = new HashMap<>();
+
     //    invokeBean(String benName,String method,)
     public static Class getTargetClass(Object proxy) {
         if (proxy == null) {
@@ -41,15 +48,15 @@ public class PlatformReflector {
         return ii;
     }
 
-    public static InstanceInvoker[] findInstanceByAnnotation(Object obj, Class anno) {
+    public static InstanceInvoker[] findInstanceMethodsByAnnotation(Object obj, Class anno) {
         return findInstanceMethods(obj, null, anno, null);
     }
 
-    public static InstanceInvoker[] findInstanceByAnnotation(Object obj, Class anno, Class[] args) {
+    public static InstanceInvoker[] findInstanceMethodsByAnnotation(Object obj, Class anno, Class[] args) {
         return findInstanceMethods(obj, null, anno, args);
     }
 
-    public static InstanceInvoker[] findInstanceByName(Object obj, String name, Class[] args) {
+    public static InstanceInvoker[] findInstanceMethodsByName(Object obj, String name, Class[] args) {
         return findInstanceMethods(obj, name, null, args);
     }
 
@@ -62,104 +69,117 @@ public class PlatformReflector {
     }
 
     public static MethodInvoker[] findMethods(Class clz, String name, Class annoType, Class[] args) {
-        Class c = clz;
-        boolean checkDirect = false;
-        List<MethodInvoker> found = new ArrayList<>();
-        while (c != null) {
-            if (checkDirect) {
-                Method m = null;
-                if (name != null && args != null) {
-                    boolean ok = true;
-                    for (int i = 0; i < args.length; i++) {
-                        if (args[i] == null) {
-                            ok = false;
-                            break;
+        MethodInvokerKey k = new MethodInvokerKey(clz, name, annoType, args);
+        MethodInvoker[] v = cachedMethodInvokers.get(k);
+        if (v != null) {
+            return v;
+        }
+        synchronized (cachedMethodInvokers) {
+            v = cachedMethodInvokers.get(k);
+            if (v != null) {
+                return v;
+            }
+            Class c = clz;
+            boolean checkDirect = false;
+            List<MethodInvoker> found = new ArrayList<>();
+            while (c != null) {
+                if (checkDirect) {
+                    Method m = null;
+                    if (name != null && args != null) {
+                        boolean ok = true;
+                        for (int i = 0; i < args.length; i++) {
+                            if (args[i] == null) {
+                                ok = false;
+                                break;
+                            }
+                        }
+                        if (ok) {
+                            try {
+                                m = c.getDeclaredMethod(name, args);
+                            } catch (Exception ex) {
+                                //
+                            }
                         }
                     }
-                    if (ok) {
-                        try {
-                            m = c.getDeclaredMethod(name, args);
-                        } catch (Exception ex) {
-                            //
-                        }
+                    if (m != null) {
+                        return new MethodInvoker[]{new DefaultMethodInvoker(m, annoType, 0)};
                     }
-                }
-                if (m != null) {
-                    return new MethodInvoker[]{new DefaultMethodInvoker(m, annoType, 0)};
-                }
-            } else {
-                for (Method m : c.getDeclaredMethods()) {
+                } else {
+                    for (Method m : c.getDeclaredMethods()) {
 //                    if (m.getName().equals("start")) {
 //                        System.out.println("Why");
 //                    }
-                    boolean accept = false;
-                    if (name != null) {
-                        if (m.getName().equals(name)) {
+                        boolean accept = false;
+                        if (name != null) {
+                            if (m.getName().equals(name)) {
+                                accept = true;
+                            }
+                        } else if (m.getAnnotation(annoType) != null) {
                             accept = true;
                         }
-                    } else if (m.getAnnotation(annoType) != null) {
-                        accept = true;
-                    }
-                    if (accept) {
-                        if (args != null) {
-                            accept = false;
+                        if (accept) {
                             if (args != null) {
-                                Class<?>[] t = m.getParameterTypes();
-                                if (!m.isVarArgs()) {
-                                    if (t.length == args.length) {
-                                        accept = true;
-                                        for (int i = 0; i < t.length; i++) {
-                                            if (args[i] == null || t[i].isAssignableFrom(args[i])) {
-                                                //ok
-                                            } else {
-                                                accept = false;
-                                                break;
+                                accept = false;
+                                if (args != null) {
+                                    Class<?>[] t = m.getParameterTypes();
+                                    if (!m.isVarArgs()) {
+                                        if (t.length == args.length) {
+                                            accept = true;
+                                            for (int i = 0; i < t.length; i++) {
+                                                if (args[i] == null || t[i].isAssignableFrom(args[i])) {
+                                                    //ok
+                                                } else {
+                                                    accept = false;
+                                                    break;
+                                                }
                                             }
                                         }
+                                    } else {
+                                        throw new IllegalArgumentException("Not yet supported");
                                     }
-                                } else {
-                                    throw new IllegalArgumentException("Not yet supported");
                                 }
                             }
-                        }
-                        if (accept) {
-                            found.add(new DefaultMethodInvoker(m, annoType, found.size()));
-                        }
+                            if (accept) {
+                                found.add(new DefaultMethodInvoker(m, annoType, found.size()));
+                            }
 
+                        }
                     }
                 }
+                c = c.getSuperclass();
             }
-            c = c.getSuperclass();
-        }
-        Collections.sort(found, new Comparator<MethodInvoker>() {
+            Collections.sort(found, new Comparator<MethodInvoker>() {
 
-            @Override
-            public int compare(MethodInvoker o1, MethodInvoker o2) {
-                Class[] a1 = o1.getParameterTypes();
-                Class[] a2 = o2.getParameterTypes();
-                int x = a1.length - a2.length;
-                if (x != 0) {
-                    return x;
-                }
-                for (int i = 0; i < a2.length; i++) {
-                    if (a1[i].equals(a2[i])) {
-                        //ok
-                    } else if (a1[i].isAssignableFrom(a2[i])) {
-                        return -1;
-                    } else if (a2[i].isAssignableFrom(a1[i])) {
-                        return 1;
-                    }
-                    int x1 = depth(a1[i]);
-                    int x2 = depth(a2[i]);
-                    int x3 = x1 - x2;
+                @Override
+                public int compare(MethodInvoker o1, MethodInvoker o2) {
+                    Class[] a1 = o1.getParameterTypes();
+                    Class[] a2 = o2.getParameterTypes();
+                    int x = a1.length - a2.length;
                     if (x != 0) {
-                        return x3;
+                        return x;
                     }
+                    for (int i = 0; i < a2.length; i++) {
+                        if (a1[i].equals(a2[i])) {
+                            //ok
+                        } else if (a1[i].isAssignableFrom(a2[i])) {
+                            return -1;
+                        } else if (a2[i].isAssignableFrom(a1[i])) {
+                            return 1;
+                        }
+                        int x1 = depth(a1[i]);
+                        int x2 = depth(a2[i]);
+                        int x3 = x1 - x2;
+                        if (x != 0) {
+                            return x3;
+                        }
+                    }
+                    return ((DefaultMethodInvoker) o1).pos - ((DefaultMethodInvoker) o1).pos;
                 }
-                return ((DefaultMethodInvoker) o1).pos - ((DefaultMethodInvoker) o1).pos;
-            }
-        });
-        return found.toArray(new MethodInvoker[found.size()]);
+            });
+            MethodInvoker[] r = found.toArray(new MethodInvoker[found.size()]);
+            cachedMethodInvokers.put(k, v);
+            return r;
+        }
     }
 
     private static int depth(Class clz) {
@@ -186,6 +206,59 @@ public class PlatformReflector {
         } else {
             return (T) proxy; // expected to be cglib proxy then, which is simply a specialized class
         }
+    }
+
+    public static class MethodInvokerKey {
+
+        private final Class clz;
+        private final String name;
+        private final Class annoType;
+        private final Class[] args;
+
+        public MethodInvokerKey(Class clz, String name, Class annoType, Class[] args) {
+            this.clz = clz;
+            this.name = name;
+            this.annoType = annoType;
+            this.args = args;
+        }
+
+        @Override
+        public int hashCode() {
+            int hash = 5;
+            hash = 67 * hash + Objects.hashCode(this.clz);
+            hash = 67 * hash + Objects.hashCode(this.name);
+            hash = 67 * hash + Objects.hashCode(this.annoType);
+            hash = 67 * hash + Arrays.deepHashCode(this.args);
+            return hash;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null) {
+                return false;
+            }
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            final MethodInvokerKey other = (MethodInvokerKey) obj;
+            if (!Objects.equals(this.name, other.name)) {
+                return false;
+            }
+            if (!Objects.equals(this.clz, other.clz)) {
+                return false;
+            }
+            if (!Objects.equals(this.annoType, other.annoType)) {
+                return false;
+            }
+            if (!Arrays.deepEquals(this.args, other.args)) {
+                return false;
+            }
+            return true;
+        }
+
     }
 
     public interface MethodInvoker {

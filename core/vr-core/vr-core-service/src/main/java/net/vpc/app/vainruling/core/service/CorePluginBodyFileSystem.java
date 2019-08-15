@@ -1,5 +1,6 @@
 package net.vpc.app.vainruling.core.service;
 
+import net.vpc.app.vainruling.core.service.fs.MirroredPath;
 import net.vpc.app.vainruling.core.service.cache.CacheService;
 import net.vpc.app.vainruling.core.service.fs.FileInfo;
 import net.vpc.app.vainruling.core.service.fs.VrFS;
@@ -50,7 +51,7 @@ class CorePluginBodyFileSystem extends CorePluginBody {
                 String home = System.getProperty("user.home");
                 home = home.replace("\\", "/");
                 String domain = core.getCurrentDomain();
-                if (StringUtils.isEmpty(domain)) {
+                if (StringUtils.isBlank(domain)) {
                     domain = "";
                 }
                 String path = (String) core.getOrCreateAppPropertyValue("System.FileSystem", null,
@@ -382,7 +383,7 @@ class CorePluginBodyFileSystem extends CorePluginBody {
     }
 
     public void setUserLinkPathEntry(int userId, VrFSEntry entry) throws IOException {
-        if (StringUtils.isEmpty(entry.getMountPoint())) {
+        if (StringUtils.isBlank(entry.getMountPoint())) {
             removeUserLinkPathEntry(userId, entry.getLinkPath());
         } else {
             VrFSTable table = getUserVrFSTable(userId);

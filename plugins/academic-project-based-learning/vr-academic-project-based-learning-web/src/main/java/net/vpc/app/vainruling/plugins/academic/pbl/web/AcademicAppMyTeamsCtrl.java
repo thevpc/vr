@@ -5,36 +5,39 @@
  */
 package net.vpc.app.vainruling.plugins.academic.pbl.web;
 
+import net.vpc.app.vainruling.plugins.academic.pbl.model.ApblTeam;
+import net.vpc.app.vainruling.plugins.academic.pbl.model.ApblProgressionLog;
+import net.vpc.app.vainruling.plugins.academic.pbl.model.ApblCoachingLog;
+import net.vpc.app.vainruling.plugins.academic.pbl.model.ApblCoaching;
+import net.vpc.app.vainruling.plugins.academic.pbl.model.ApblTeamMember;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.model.AppUser;
-import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.core.web.UPathItem;
-import net.vpc.app.vainruling.core.web.VrController;
+import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.app.vainruling.core.web.jsf.DialogBuilder;
 import net.vpc.app.vainruling.plugins.academic.pbl.service.ApblPlugin;
 import net.vpc.app.vainruling.plugins.academic.pbl.service.ApblUtils;
-import net.vpc.app.vainruling.plugins.academic.pbl.service.model.*;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicStudent;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
-import org.primefaces.context.RequestContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.faces.model.SelectItem;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.vpc.app.vainruling.core.service.pages.VrPage;
+import net.vpc.app.vainruling.core.service.pages.VrPathItem;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@VrController(
+@VrPage(
         breadcrumb = {
-            @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")
+            @VrPathItem(title = "Education", css = "fa-dashboard", ctrl = "")
             ,
-                @UPathItem(title = "APP", css = "fa-dashboard", ctrl = ""),},
+                @VrPathItem(title = "APP", css = "fa-dashboard", ctrl = ""),},
         //        css = "fa-table",
         //        title = "Mes Equipes APP",
         url = "modules/academic/pbl/my-app-teams",
@@ -136,7 +139,7 @@ public class AcademicAppMyTeamsCtrl {
 
     public void onSaveTeam() {
         if (Objects.equals(getModel().getSelectedTeam().getReport(), getModel().getSelectedPathBeforeUpload())
-                && !StringUtils.isEmpty(getModel().getSelectedPathUploaded())) {
+                && !StringUtils.isBlank(getModel().getSelectedPathUploaded())) {
             getModel().getSelectedTeam().setReport(getModel().getSelectedPathUploaded());
         }
         if (getModel().isEditMode()) {
@@ -245,7 +248,7 @@ public class AcademicAppMyTeamsCtrl {
     }
 
     public void fireEventExtraDialogClosed() {
-        RequestContext.getCurrentInstance().closeDialog(null);
+        DialogBuilder.closeCurrent();
     }
 
     public class Model {

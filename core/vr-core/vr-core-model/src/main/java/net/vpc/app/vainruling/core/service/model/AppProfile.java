@@ -31,8 +31,10 @@ public class AppProfile {
     private String name2;
     private String name3;
 //    @Summary
+    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
     private String shortDescription;
     @Summary
+    @Property(name = UIConstants.Form.SPAN, value = "MAX_VALUE")
     private String inherited;
     /**
      * admin user(s)
@@ -41,11 +43,12 @@ public class AppProfile {
     @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.PROFILE_EXPRESSION)
     private String admin;
 
+    /**
+     * custom profiles type depends on creator plugin
+     */
+    private String customType;
     
 
-    @Field(max = "4000")
-    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
-    private String description;
     /**
      * custom profiles are managed by application
      */
@@ -57,10 +60,10 @@ public class AppProfile {
      * is meant to be part (parent) of top level groups to help composing more
      */
     private boolean composer;
-    /**
-     * custom profiles type depends on creator plugin
-     */
-    private String customType;
+
+    @Field(max = "4000")
+    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
+    private String description;
 
     @Path("Trace")
 //    @Properties(

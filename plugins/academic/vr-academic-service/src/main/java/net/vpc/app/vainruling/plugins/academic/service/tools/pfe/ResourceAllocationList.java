@@ -1,6 +1,6 @@
 package net.vpc.app.vainruling.plugins.academic.service.tools.pfe;
 
-import net.vpc.app.vainruling.plugins.academic.service.model.internship.planning.PlanningActivityTable;
+import net.vpc.app.vainruling.plugins.academic.model.internship.planning.PlanningActivityTable;
 
 import java.util.*;
 

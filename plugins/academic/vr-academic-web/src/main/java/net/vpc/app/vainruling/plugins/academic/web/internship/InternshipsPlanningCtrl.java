@@ -5,18 +5,20 @@
  */
 package net.vpc.app.vainruling.plugins.academic.web.internship;
 
+import net.vpc.app.vainruling.plugins.academic.model.internship.planning.PlanningActivity;
+import net.vpc.app.vainruling.plugins.academic.model.internship.planning.PlanningService;
+import net.vpc.app.vainruling.plugins.academic.model.internship.planning.PlanningActivityTable;
+import net.vpc.app.vainruling.plugins.academic.model.internship.planning.PlanningResult;
+import net.vpc.app.vainruling.plugins.academic.model.internship.planning.PlanningTeacherStats;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.security.UserToken;
-import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.core.web.VrController;
-import net.vpc.app.vainruling.core.web.UPathItem;
+import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
-import net.vpc.app.vainruling.plugins.academic.service.model.internship.current.AcademicInternship;
-import net.vpc.app.vainruling.plugins.academic.service.model.internship.current.AcademicInternshipGroup;
-import net.vpc.app.vainruling.plugins.academic.service.model.internship.current.AcademicInternshipSessionType;
-import net.vpc.app.vainruling.plugins.academic.service.model.internship.planning.*;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
+import net.vpc.app.vainruling.plugins.academic.model.internship.current.AcademicInternship;
+import net.vpc.app.vainruling.plugins.academic.model.internship.current.AcademicInternshipGroup;
+import net.vpc.app.vainruling.plugins.academic.model.internship.current.AcademicInternshipSessionType;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.Chronometer;
@@ -34,15 +36,17 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.*;
 import java.util.logging.Level;
+import net.vpc.app.vainruling.core.service.pages.VrPage;
+import net.vpc.app.vainruling.core.service.pages.VrPathItem;
 
 /**
  * internships for teachers
  *
  * @author taha.bensalah@gmail.com
  */
-@VrController(
+@VrPage(
         breadcrumb = {
-                @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
+                @VrPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
 //        css = "fa-table",
 //        title = "Planification de Stages",
         menu = "/Education/Projects/Internships",
@@ -97,7 +101,7 @@ public class InternshipsPlanningCtrl {
         String groupName = g.getName();
         groupName = groupName.replace(" ", "-");
         String selectedSessionType = getModel().getSelectedSessionType();
-        if (!StringUtils.isEmpty(selectedSessionType)) {
+        if (!StringUtils.isBlank(selectedSessionType)) {
             selectedSessionType = "-" + selectedSessionType.replace(" ", "-");
         }
         return new DefaultStreamedContent(stream, contentType, "planning-" + groupName + selectedSessionType + "."+extension);
@@ -224,8 +228,8 @@ public class InternshipsPlanningCtrl {
         getModel().setBestWidth(tableWidth + 10);
         boolean manager = getModel().isManager();
         for (Row row : getModel().getRows()) {
-            row.enableChairFixing = manager && !StringUtils.isEmpty(row.activity.getChair());
-            row.enableExaminerFixing = manager && !StringUtils.isEmpty(row.activity.getExaminer());
+            row.enableChairFixing = manager && !StringUtils.isBlank(row.activity.getChair());
+            row.enableExaminerFixing = manager && !StringUtils.isBlank(row.activity.getExaminer());
         }
         for (int i = getModel().getFirstJuryColumn(); i < columns.size(); i++) {
             Column column = columns.get(i);
@@ -306,7 +310,7 @@ public class InternshipsPlanningCtrl {
         if (!getModel().isShowVisibleRowsOnly()) {
             for (Row row : getModel().getRows()) {
                 if (
-                        (StringUtils.isEmpty(s) || s.equals(row.activity.getInternship().getSession()))
+                        (StringUtils.isBlank(s) || s.equals(row.activity.getInternship().getSession()))
                                 && (row.isVisible() || !getModel().isShowVisibleRowsOnly())
                         ) {
                     visibleRows.add(row);
@@ -315,7 +319,7 @@ public class InternshipsPlanningCtrl {
         } else {
             for (Row row : getModel().getRows()) {
                 if (
-                        (StringUtils.isEmpty(s) || s.equals(row.activity.getInternship().getSession()))
+                        (StringUtils.isBlank(s) || s.equals(row.activity.getInternship().getSession()))
                                 &&
                                 row.isVisible()
                         ) {
@@ -364,12 +368,12 @@ public class InternshipsPlanningCtrl {
             for (PlanningActivity activity : getModel().getTable().getActivities()) {
                 int id = activity.getInternship().getId();
                 AcademicInternship internship = getModel().getInternshipsListMap().get(id);
-                if (!StringUtils.isEmpty(activity.getChair()) && activity.isFixedChair()) {
+                if (!StringUtils.isBlank(activity.getChair()) && activity.isFixedChair()) {
                     internship.setChairExaminer(teachersByName.get(activity.getChair()));
                 } else {
                     internship.setChairExaminer(null);
                 }
-                if (!StringUtils.isEmpty(activity.getExaminer()) && activity.isFixedExaminer()) {
+                if (!StringUtils.isBlank(activity.getExaminer()) && activity.isFixedExaminer()) {
                     internship.setFirstExaminer(teachersByName.get(activity.getExaminer()));
                 } else {
                     internship.setFirstExaminer(null);
@@ -553,9 +557,9 @@ public class InternshipsPlanningCtrl {
             all.addAll(a.getInternship().getSupervisors());
         }
         String extraTeachers = getModel().getExtraTeachers();
-        if (!StringUtils.isEmpty(extraTeachers)) {
+        if (!StringUtils.isBlank(extraTeachers)) {
             for (String tn : extraTeachers.trim().split(" +")) {
-                if (!StringUtils.isEmpty(tn)) {
+                if (!StringUtils.isBlank(tn)) {
                     all.add(tn);
                 }
             }

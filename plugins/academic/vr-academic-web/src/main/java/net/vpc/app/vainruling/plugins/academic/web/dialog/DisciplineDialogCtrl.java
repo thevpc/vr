@@ -7,9 +7,9 @@ package net.vpc.app.vainruling.plugins.academic.web.dialog;
 
 import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.web.jsf.DialogBuilder;
-import net.vpc.app.vainruling.core.web.obj.DialogResult;
+import net.vpc.app.vainruling.core.service.editor.DialogResult;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicDiscipline;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicDiscipline;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
 import org.primefaces.context.RequestContext;
@@ -57,7 +57,7 @@ public class DisciplineDialogCtrl {
             getModel().setConfig(c);
         }
         String title = c.getTitle();
-        if (StringUtils.isEmpty(title)) {
+        if (StringUtils.isBlank(title)) {
             title = "Disciplines";
         }
         getModel().setTitle(title);

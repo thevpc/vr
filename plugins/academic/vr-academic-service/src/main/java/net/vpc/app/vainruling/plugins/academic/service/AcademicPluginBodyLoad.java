@@ -1,15 +1,28 @@
 package net.vpc.app.vainruling.plugins.academic.service;
 
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicSemester;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicLoadConversionTable;
+import net.vpc.app.vainruling.plugins.academic.model.current.IAcademicCourseAssignment;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacherSituation;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicTeacherSemestrialLoad;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCourseAssignment;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCoursePlan;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacherPeriod;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCourseAssignmentInfo;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicLoadConversionRule;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacherSituationType;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicTeacherDegree;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicOfficialDiscipline;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicLoadConversionRow;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.CorePluginSecurity;
 import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.service.model.AppProfile;
 import net.vpc.app.vainruling.plugins.academic.service.util.*;
-import net.vpc.app.vainruling.plugins.academic.service.helper.AcademicConversionTableHelper;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.*;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.*;
-import net.vpc.app.vainruling.plugins.academic.service.model.history.AcademicHistTeacherDegree;
+import net.vpc.app.vainruling.plugins.academic.service.integration.AcademicConversionTableHelper;
+import net.vpc.app.vainruling.plugins.academic.model.history.AcademicHistTeacherDegree;
 import net.vpc.app.vainruling.plugins.academic.service.stat.*;
 import net.vpc.common.util.*;
 import net.vpc.common.util.mon.ProgressMonitor;
@@ -193,7 +206,7 @@ public class AcademicPluginBodyLoad extends AcademicPluginBody {
                 sems[i] = s;
             }
         } else {
-            AcademicTeacherPeriod trs = getContext().getPlugin().findAcademicTeacherPeriod(periodId, teacher);
+            AcademicTeacherPeriod trs = getContext().getPlugin().findTeacherPeriod(periodId, teacher.getId());
             AcademicConversionTableHelper conversionTableByPeriodId = getContext().getPlugin().findConversionTableByPeriodId(periodId);
 
             for (int i = 0; i < semesters.size(); i++) {
@@ -201,8 +214,8 @@ public class AcademicPluginBodyLoad extends AcademicPluginBody {
                 ModuleSemesterStat s = new ModuleSemesterStat();
                 s.setSemester(ss);
                 if (module.resolveSemester().getName().equals(ss.getName())) {
-                    s.getValue().set(mod_val.copy().mul(module.getGroupCount() * module.getShareCount()));
-                    s.setValueEffWeek(module.getValueEffWeek() * module.getGroupCount() * module.getShareCount());
+                    s.getValue().set(mod_val.copy().mul(module.getGroupCount()));
+                    s.setValueEffWeek(module.getValueEffWeek() * module.getGroupCount());
                     s.getValue().setEquiv(evalValueEquiv(s.getValue(), trs.getDegree(), conversionTableByPeriodId));
                     ms.getValue().set(s.getValue());
                     ms.setValueEffWeek(s.getValueEffWeek());
@@ -284,7 +297,7 @@ public class AcademicPluginBodyLoad extends AcademicPluginBody {
         teacher_stat.setConfig(deviationConfig);
         teacher_stat.setCourseAssignmentFilter(filter);
         teacher_stat.setTeacher(teacher);
-        teacher_stat.setTeacherPeriod(getContext().getPlugin().findAcademicTeacherPeriod(periodId, teacher_stat.getTeacher()));
+        teacher_stat.setTeacherPeriod(getContext().getPlugin().findTeacherPeriod(periodId, teacher_stat.getTeacher().getId()));
 
         AcademicTeacherDegree td = teacher_stat.getTeacherPeriod().getDegree();
         if (td == null) {
@@ -558,8 +571,8 @@ public class AcademicPluginBodyLoad extends AcademicPluginBody {
             teacherSemesterStats.add(e);
         }
         ghost.setSemesters(teacherSemesterStats.toArray(new TeacherSemesterStat[0]));
-        ghost.setTeacherPeriod(getContext().getPlugin().findAcademicTeacherPeriod(periodId, ghost.getTeacher()));
-        AcademicTeacherPeriod trs = getContext().getPlugin().findAcademicTeacherPeriod(periodId, teacher);
+        ghost.setTeacherPeriod(getContext().getPlugin().findTeacherPeriod(periodId, ghost.getTeacher().getId()));
+        AcademicTeacherPeriod trs = getContext().getPlugin().findTeacherPeriod(periodId, teacher.getId());
         ghost.setPopulation(new TeacherValuePopulation(
                 trs==null || trs.getSituation() ==null ?  teacher.getSituation():trs.getSituation(),
                 trs==null || trs.getDegree() ==null ?  teacher.getDegree():trs.getDegree(),
@@ -658,7 +671,7 @@ public class AcademicPluginBodyLoad extends AcademicPluginBody {
             double td0 = load.getValueTD();
             double tp0 = load.getValueTP();
             double pm0 = load.getValuePM();
-            double g0 = load.getGroupCount() * load.getShareCount();
+            double g0 = load.getGroupCount();
             int w0 = load.getCourseType().getWeeks();
             c += c0 * g0;
             td += td0 * g0;
@@ -755,7 +768,7 @@ public class AcademicPluginBodyLoad extends AcademicPluginBody {
         int max = ts.size();
         for (TeacherPeriodStat t : ts) {
             mons[1].setProgress(i++, max);
-            AcademicTeacherPeriod trs = getContext().getPlugin().findAcademicTeacherPeriod(periodId, t.getTeacher());
+            AcademicTeacherPeriod trs = getContext().getPlugin().findTeacherPeriod(periodId, t.getTeacher().getId());
             AcademicTeacherSituation situation = trs.getSituation();
             AcademicTeacherDegree degree = trs.getDegree();
             GlobalAssignmentStat[] annStatAss = new GlobalAssignmentStat[]{
@@ -794,7 +807,7 @@ public class AcademicPluginBodyLoad extends AcademicPluginBody {
             public boolean acceptAssignment(IAcademicCourseAssignment academicCourseAssignment) {
                 AcademicTeacher t = academicCourseAssignment.getTeacher();
                 if (t != null) {
-                    return teacherFilter == null || teacherFilter.acceptTeacher(getContext().getPlugin().findAcademicTeacherPeriod(periodId, t));
+                    return teacherFilter == null || teacherFilter.acceptTeacher(getContext().getPlugin().findTeacherPeriod(periodId, t.getId()));
                 }
                 return true;
             }
@@ -817,12 +830,11 @@ public class AcademicPluginBodyLoad extends AcademicPluginBody {
             AcademicSemester semester = value.resolveSemester();
             semestersIds.add(semester.getId());
             double grp = value.getGroupCount();
-            double shr = value.getShareCount();
             LoadValue loadValue = new LoadValue(
-                    value.getValueC() * grp * shr,
-                    value.getValueTD() * grp * shr,
-                    value.getValueTP() * grp * shr,
-                    value.getValuePM() * grp * shr
+                    value.getValueC() * grp,
+                    value.getValueTD() * grp,
+                    value.getValueTP() * grp,
+                    value.getValuePM() * grp
             );
             double g = evalValueEquiv(loadValue, maitre_assistant, conversionTableByPeriodId);
             loadValue.setEquiv(g);
@@ -837,7 +849,7 @@ public class AcademicPluginBodyLoad extends AcademicPluginBody {
             boolean permanent = false;
             AcademicTeacherSituation theSituation = null;
             if (value.getTeacher() != null) {
-                AcademicTeacherPeriod pp = getContext().getPlugin().findAcademicTeacherPeriod(periodId, value.getTeacher());
+                AcademicTeacherPeriod pp = getContext().getPlugin().findTeacherPeriod(periodId, value.getTeacher().getId());
                 theSituation = pp.getSituation();
                 if (theSituation != null) {
                     permanent = theSituation.getType() == AcademicTeacherSituationType.PERMANENT;

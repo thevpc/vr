@@ -503,7 +503,7 @@ public class TraceService {
                 int rowsPerFile = rowsPerFile0 <= 9 ? 100000 : rowsPerFile0;
                 PersistenceUnit pu = UPA.getPersistenceUnit();
                 String filter0 = filter;
-                if (StringUtils.isEmpty(filter0)) {
+                if (StringUtils.isBlank(filter0)) {
                     filter0 = "";
                 } else {
                     filter0 = " AND " + filter0;
@@ -516,13 +516,13 @@ public class TraceService {
                 VFile logsFolder = VrApp.getBean(CorePlugin.class).getRootFileSystem().get("Logs");
                 logsFolder.mkdirs();
 ////                String rootFolder = VrApp.getBean(CorePlugin.class).getNativeFileSystemPath();
-////                String rootLog = (StringUtils.isEmpty(rootFolder) ? System.getProperty("user.home") : rootFolder) + VrPlatformUtils.SLASH+ "Logs";
+////                String rootLog = (StringUtils.isBlank(rootFolder) ? System.getProperty("user.home") : rootFolder) + VrPlatformUtils.SLASH+ "Logs";
 //                new File(VrPlatformUtils.validatePath(rootLog)).mkdirs();
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss.S");
                 DataWriter f = null;
                 ImportExportManager importExportManager = pu.getImportExportManager();
                 try {
-                    if (StringUtils.isEmpty(fileNamePattern)) {
+                    if (StringUtils.isBlank(fileNamePattern)) {
                         for (AppTrace t : all) {
                             pu.remove(t);
                         }

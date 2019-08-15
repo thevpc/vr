@@ -22,7 +22,7 @@ public class EnumConverter implements Converter {
     @Override
     public Object getAsObject(FacesContext context, UIComponent component,
                               String value) {
-        if (StringUtils.isEmpty(value)) {
+        if (StringUtils.isBlank(value)) {
             return null;
         }
         return Enum.valueOf(enumClass, value.trim());

@@ -6,25 +6,25 @@
 package net.vpc.app.vr.plugins.academicprofile.web;
 
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.core.web.VrController;
-import net.vpc.app.vainruling.core.web.UPathItem;
-import net.vpc.app.vainruling.core.web.menu.VrMenuManager;
+import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
 import net.vpc.app.vr.plugins.academicprofile.service.AcademicProfilePlugin;
 import net.vpc.upa.Action;
 import net.vpc.upa.UPA;
 
 import java.util.Arrays;
 import java.util.List;
+import net.vpc.app.vainruling.core.web.jsf.Vr;
+import net.vpc.app.vainruling.core.service.pages.VrPage;
+import net.vpc.app.vainruling.core.service.pages.VrPathItem;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@VrController(
+@VrPage(
         breadcrumb = {
-                @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
+                @VrPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
 //        css = "fa-table",
 //        title = "CV Teacher",
         url = "public/academic/addressbook/teacher-cv-content.xhtml"
@@ -42,7 +42,7 @@ public class TeacherCurriculumContentCtrl extends TeacherCurriculumCtrl {
         } else {
             i = (i + 1) % articles.size();
         }
-        return VrApp.getBean(VrMenuManager.class).gotoPage("teacherCurriculumContent", "{teacherId:" + cfg.teacherId + ",contentType:'" + articles.get(i) + "'}");
+        return Vr.get().gotoPage("teacherCurriculumContent", "{teacherId:" + cfg.teacherId + ",contentType:'" + articles.get(i) + "'}");
     }
 
     public String gotoPrevious() {
@@ -54,7 +54,7 @@ public class TeacherCurriculumContentCtrl extends TeacherCurriculumCtrl {
         } else {
             i = (i + 1) % articles.size();
         }
-        return VrApp.getBean(VrMenuManager.class).gotoPage("teacherCurriculumContent", "{teacherId:" + cfg.teacherId + ",contentType:'" + articles.get(i) + "'}");
+        return Vr.get().gotoPage("teacherCurriculumContent", "{teacherId:" + cfg.teacherId + ",contentType:'" + articles.get(i) + "'}");
     }
 
     @OnPageLoad

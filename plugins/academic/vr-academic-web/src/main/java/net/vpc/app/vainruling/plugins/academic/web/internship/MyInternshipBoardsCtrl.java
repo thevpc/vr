@@ -5,28 +5,31 @@
  */
 package net.vpc.app.vainruling.plugins.academic.web.internship;
 
-import net.vpc.app.vainruling.plugins.academic.service.model.internship.AcademicInternshipInfo;
-import net.vpc.app.vainruling.plugins.academic.service.model.internship.AcademicInternshipCount;
+import net.vpc.app.vainruling.plugins.academic.model.internship.config.AcademicInternshipStatus;
+import net.vpc.app.vainruling.plugins.academic.model.internship.config.AcademicInternshipBoardTeacher;
+import net.vpc.app.vainruling.plugins.academic.model.internship.config.AcademicInternshipType;
+import net.vpc.app.vainruling.plugins.academic.model.internship.config.AcademicInternshipVariant;
+import net.vpc.app.vainruling.plugins.academic.model.internship.config.AcademicInternshipDuration;
+import net.vpc.app.vainruling.plugins.academic.model.internship.config.AcademicInternshipBoardMessage;
+import net.vpc.app.vainruling.plugins.academic.model.internship.AcademicInternshipInfo;
+import net.vpc.app.vainruling.plugins.academic.model.internship.AcademicInternshipCount;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppCompany;
 import net.vpc.app.vainruling.core.service.model.AppConfig;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
-import net.vpc.app.vainruling.core.service.util.MirroredPath;
+import net.vpc.app.vainruling.core.service.fs.MirroredPath;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
-import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.core.web.VrController;
-import net.vpc.app.vainruling.core.web.UPathItem;
-import net.vpc.app.vainruling.core.web.obj.DialogResult;
+import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
+import net.vpc.app.vainruling.core.service.editor.DialogResult;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPluginSecurity;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
-import net.vpc.app.vainruling.plugins.academic.service.model.internship.config.*;
-import net.vpc.app.vainruling.plugins.academic.service.model.internship.current.AcademicInternship;
-import net.vpc.app.vainruling.plugins.academic.service.model.internship.current.AcademicInternshipBoard;
-import net.vpc.app.vainruling.plugins.academic.service.model.internship.ext.AcademicInternshipExt;
-import net.vpc.app.vainruling.plugins.academic.service.model.internship.ext.AcademicInternshipExtList;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicStudent;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
+import net.vpc.app.vainruling.plugins.academic.model.internship.current.AcademicInternship;
+import net.vpc.app.vainruling.plugins.academic.model.internship.current.AcademicInternshipBoard;
+import net.vpc.app.vainruling.plugins.academic.model.internship.ext.AcademicInternshipExt;
+import net.vpc.app.vainruling.plugins.academic.model.internship.ext.AcademicInternshipExtList;
 import net.vpc.app.vainruling.plugins.academic.web.dialog.DisciplineDialogCtrl;
 import net.vpc.common.io.PathInfo;
 import net.vpc.common.jsf.FacesUtils;
@@ -49,15 +52,17 @@ import java.sql.Timestamp;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.vpc.app.vainruling.core.service.pages.VrPage;
+import net.vpc.app.vainruling.core.service.pages.VrPathItem;
 
 /**
  * internships for teachers
  *
  * @author taha.bensalah@gmail.com
  */
-@VrController(
+@VrPage(
         breadcrumb = {
-                @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
+                @VrPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
 //        css = "fa-table",
 //        title = "Mes Comités de Stage",
         menu = "/Education/Projects/Internships",
@@ -133,7 +138,7 @@ public class MyInternshipBoardsCtrl {
     }
 
     public void onAddNewMessage() {
-        if (getModel().getInternship() != null && !StringUtils.isEmpty(getModel().getNewMessage())) {
+        if (getModel().getInternship() != null && !StringUtils.isBlank(getModel().getNewMessage())) {
             AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
             AcademicInternshipBoardTeacher b = getCurrentBoardTeacher();
             if (b != null) {
@@ -364,7 +369,7 @@ public class MyInternshipBoardsCtrl {
             int boardId = getModel().getInternshipBoard() == null ? -1 : getModel().getInternshipBoard().getId();
             int type = -1;
             if (boardId == -1) {
-                type = StringUtils.isEmpty(getModel().getFilterInternshipTypeId()) ? -1 : Integer.valueOf(getModel().getFilterInternshipTypeId());
+                type = StringUtils.isBlank(getModel().getFilterInternshipTypeId()) ? -1 : Integer.valueOf(getModel().getFilterInternshipTypeId());
             }
             internshipBoards = findEnabledInternshipBoardsByTeacherAndBoard(currentTeacher.getId(), boardId);
             if (boardId == -1 && type == -1) {
@@ -422,7 +427,7 @@ public class MyInternshipBoardsCtrl {
         for (AcademicInternshipType t : pi.findInternshipTypes()) {
             getModel().getInternshipTypes().add(FacesUtils.createSelectItem(String.valueOf(t.getId()), t.getName()));
         }
-        getModel().setFilterInternshipTypeVisible(StringUtils.isEmpty(getModel().getBoardId()));
+        getModel().setFilterInternshipTypeVisible(StringUtils.isBlank(getModel().getBoardId()));
 
         getModel().setAcademicInternshipCounts(new ArrayList<AcademicInternshipCount>());
         {
@@ -499,7 +504,7 @@ public class MyInternshipBoardsCtrl {
                 AppConfig appConfig = VrApp.getBean(CorePlugin.class).getCurrentConfig();
                 filterPeriodId = (appConfig == null || appConfig.getMainPeriod() == null) ? -1 : appConfig.getMainPeriod().getId();
                 String d = getModel().getFilterInternshipTypeId();
-                filterTypeId = StringUtils.isEmpty(d) ? -1 : Integer.valueOf(d);
+                filterTypeId = StringUtils.isBlank(d) ? -1 : Integer.valueOf(d);
             } else {
                 filterPeriodId = getModel().getInternshipBoard().getPeriod().getId();
                 filterTypeId = getModel().getInternshipBoard().getInternshipType().getId();

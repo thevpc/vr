@@ -6,9 +6,9 @@
 package net.vpc.app.vainruling.plugins.academic.web.dialog;
 
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.obj.EntityAction;
-import net.vpc.app.vainruling.core.web.obj.EntityViewActionDialog;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
+import net.vpc.app.vainruling.core.service.editor.EntityAction;
+import net.vpc.app.vainruling.core.service.editor.EntityViewActionDialog;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicStudent;
 import net.vpc.upa.AccessMode;
 
 import java.util.List;

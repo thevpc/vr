@@ -8,9 +8,7 @@ package net.vpc.app.vainruling.plugins.academic.web.admin;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppConfig;
-import net.vpc.app.vainruling.core.service.util.MirroredPath;
-import net.vpc.app.vainruling.core.web.VrController;
-import net.vpc.app.vainruling.core.web.UPathItem;
+import net.vpc.app.vainruling.core.service.fs.MirroredPath;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPluginSecurity;
 import net.vpc.app.vainruling.plugins.academic.service.util.CourseAssignmentFilter;
@@ -23,13 +21,15 @@ import org.primefaces.event.FileUploadEvent;
 import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.vpc.app.vainruling.core.service.pages.VrPage;
+import net.vpc.app.vainruling.core.service.pages.VrPathItem;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@VrController(
+@VrPage(
         breadcrumb = {
-                @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
+                @VrPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
 //        css = "fa-table",
 //        title = "Admin Tools",
         url = "modules/academic/admin-tools",

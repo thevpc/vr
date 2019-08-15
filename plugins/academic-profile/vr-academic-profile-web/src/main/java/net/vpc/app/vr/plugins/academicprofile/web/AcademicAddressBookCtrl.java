@@ -9,14 +9,14 @@ import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
-import net.vpc.app.vainruling.core.web.OnPageLoad;
+import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicFormerStudent;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudentStage;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicFormerStudent;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicStudent;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicStudentStage;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
 import net.vpc.app.vr.plugins.academicprofile.service.AcademicProfilePlugin;
-import net.vpc.app.vr.plugins.academicprofile.service.model.AcademicTeacherCV;
+import net.vpc.app.vr.plugins.academicprofile.model.AcademicTeacherCV;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.Action;
 import net.vpc.upa.UPA;
@@ -124,7 +124,7 @@ public class AcademicAddressBookCtrl {
 
     public List<Contact> loadList(ObjectFilter<Object> query, String qt) {
         List<Contact> cc = new ArrayList<>();
-        if (!StringUtils.isEmpty(qt)) {
+        if (!StringUtils.isBlank(qt)) {
             if (true) //q.length() > 0
             {
                 if (qt.equals("teachers")) {
@@ -150,16 +150,16 @@ public class AcademicAddressBookCtrl {
 
                             String disc = ap.formatDisciplinesForLocale(t.getDiscipline(), getValidLocaleCode());
 
-                            if (!StringUtils.isEmpty(disc)) {
+                            if (!StringUtils.isBlank(disc)) {
                                 ct.getTitles().add(disc);
                             }
 
                             AcademicTeacherCV cv = apr.findOrCreateAcademicTeacherCV(t.getId());
                             String t1 = getValidString(cv.getTitle1(), cv.getTitle2(), cv.getTitle3());
-                            if (!StringUtils.isEmpty(t1)) {
+                            if (!StringUtils.isBlank(t1)) {
                                 ct.getTitles().add(t1);
                             }
-                            if (!StringUtils.isEmpty(t.getUser().getEmail())) {
+                            if (!StringUtils.isBlank(t.getUser().getEmail())) {
                                 ct.getTitles().add(t.getUser().getEmail());
                             }
                             ct.setUrlCommand("teacherCurriculum");
@@ -205,7 +205,7 @@ public class AcademicAddressBookCtrl {
                                                 t.getLastClass3().getName(), t.getLastClass3().getName2(), null
                                         ));
                             }
-                            if (!StringUtils.isEmpty(t.getUser().getEmail())) {
+                            if (!StringUtils.isBlank(t.getUser().getEmail())) {
                                 ct.getTitles().add(t.getUser().getEmail());
                             }
                             ct.setUrlCommand("");
@@ -240,7 +240,7 @@ public class AcademicAddressBookCtrl {
                             if (t.getLastJobCompany() != null) {
                                 ct.getTitles().add("@ " + t.getLastJobCompany().getName());
                             }
-                            if (!StringUtils.isEmpty(t.getStudent().getUser().getEmail())) {
+                            if (!StringUtils.isBlank(t.getStudent().getUser().getEmail())) {
                                 ct.getTitles().add(t.getStudent().getUser().getEmail());
                             }
                             ct.setUrlCommand("");

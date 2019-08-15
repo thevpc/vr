@@ -11,11 +11,11 @@ import net.vpc.app.vainruling.core.web.jsf.DialogBuilder;
 import net.vpc.app.vainruling.core.web.jsf.ctrl.obj.FieldPropertyView;
 import net.vpc.app.vainruling.core.web.jsf.ctrl.obj.PropertyViewManager;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.app.vainruling.plugins.academic.service.model.internship.config.AcademicInternshipStatus;
-import net.vpc.app.vainruling.plugins.academic.service.model.internship.config.AcademicInternshipVariant;
-import net.vpc.app.vainruling.plugins.academic.service.model.internship.current.AcademicInternship;
-import net.vpc.app.vainruling.plugins.academic.service.model.internship.current.AcademicInternshipBoard;
-import net.vpc.app.vainruling.plugins.academic.service.model.internship.current.AcademicInternshipGroup;
+import net.vpc.app.vainruling.plugins.academic.model.internship.config.AcademicInternshipStatus;
+import net.vpc.app.vainruling.plugins.academic.model.internship.config.AcademicInternshipVariant;
+import net.vpc.app.vainruling.plugins.academic.model.internship.current.AcademicInternship;
+import net.vpc.app.vainruling.plugins.academic.model.internship.current.AcademicInternshipBoard;
+import net.vpc.app.vainruling.plugins.academic.model.internship.current.AcademicInternshipGroup;
 import org.primefaces.context.RequestContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -93,7 +93,7 @@ public class CreateInternshipsActionCtrl {
     }
 
     public void fireEventExtraDialogClosed() {
-        RequestContext.getCurrentInstance().closeDialog(null);
+        DialogBuilder.closeCurrent();
     }
 
     public Model getModel() {

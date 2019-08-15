@@ -5,10 +5,14 @@
  */
 package net.vpc.app.vainruling.plugins.academic.service.stat;
 
-import net.vpc.app.vainruling.plugins.academic.service.helper.AcademicConversionTableHelper;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSemester;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.*;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCourseAssignment;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCourseIntent;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicLoadConversionTable;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicTeacherDegree;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicTeacherSemestrialLoad;
+import net.vpc.app.vainruling.plugins.academic.service.integration.AcademicConversionTableHelper;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicSemester;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
 
 import java.util.HashMap;
 import java.util.List;

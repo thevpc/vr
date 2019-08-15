@@ -5,8 +5,6 @@
  */
 package net.vpc.app.vainruling.plugins.tasks.web;
 
-import net.vpc.app.vainruling.core.web.VrController;
-import net.vpc.app.vainruling.core.web.UPathItem;
 import net.vpc.app.vainruling.core.web.jsf.ctrl.AbstractNameCtrl;
 import net.vpc.app.vainruling.plugins.tasks.service.TaskPlugin;
 import net.vpc.app.vainruling.plugins.tasks.service.model.TodoList;
@@ -14,13 +12,15 @@ import net.vpc.app.vainruling.plugins.tasks.service.model.TodoStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+import net.vpc.app.vainruling.core.service.pages.VrPage;
+import net.vpc.app.vainruling.core.service.pages.VrPathItem;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@VrController(
+@VrPage(
         breadcrumb = {
-                @UPathItem(title = "Parametrage", css = "fa-dashboard", ctrl = ""),
+                @VrPathItem(title = "Parametrage", css = "fa-dashboard", ctrl = ""),
         }
         , url = "modules/todo/config-todo-status"
 )

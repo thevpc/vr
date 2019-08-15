@@ -5,7 +5,7 @@
  */
 package net.vpc.app.vainruling.core.web.jsf.ctrl.obj;
 
-import net.vpc.app.vainruling.core.web.obj.ViewContext;
+import net.vpc.app.vainruling.core.service.editor.ViewContext;
 import net.vpc.upa.Field;
 import net.vpc.upa.KeyType;
 import net.vpc.upa.NamedId;

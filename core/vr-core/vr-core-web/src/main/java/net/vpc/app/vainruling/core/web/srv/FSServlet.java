@@ -7,8 +7,6 @@ package net.vpc.app.vainruling.core.web.srv;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.common.io.FileUtils;
-import net.vpc.common.io.RuntimeIOException;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.vfs.VFile;
 import net.vpc.common.vfs.VirtualFileSystem;
@@ -23,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.logging.Level;
@@ -60,7 +59,7 @@ public class FSServlet extends HttpServlet {
                     response.getOutputStream().flush();
                 } catch (java.io.IOException ex) {
                     logAbortException(file, ex);
-                } catch (RuntimeIOException ex) {
+                } catch (UncheckedIOException ex) {
                     IOException ex2=(IOException) ex.getCause();
                     logAbortException(file, ex2);
                 }
@@ -154,13 +153,13 @@ public class FSServlet extends HttpServlet {
 
     protected VFile getFile(HttpServletRequest request) {
         String pathInfo = request.getPathInfo();
-        if (StringUtils.isEmpty(pathInfo)) {
+        if (StringUtils.isBlank(pathInfo)) {
             return null;
         }
         String type = request.getParameter("t");
         VirtualFileSystem fs = null;
         CorePlugin core = VrApp.getBean(CorePlugin.class);
-        if (StringUtils.isEmpty(type)) {
+        if (StringUtils.isBlank(type)) {
             type = "root";
             fs = UPA.getContext().invokePrivileged(new Action<VirtualFileSystem>() {
                 @Override

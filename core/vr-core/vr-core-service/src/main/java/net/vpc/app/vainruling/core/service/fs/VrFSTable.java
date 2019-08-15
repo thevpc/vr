@@ -145,7 +145,7 @@ public class VrFSTable {
     }
 
     public int[] findPathEntries(String path) {
-        if (StringUtils.isEmpty(path)) {
+        if (StringUtils.isBlank(path)) {
             return new int[0];
         }
         ArrayList<Integer> all = new ArrayList<>();
@@ -189,10 +189,10 @@ public class VrFSTable {
     }
 
     private void checkEntry(VrFSEntry e) {
-        if (StringUtils.isEmpty(e.getLinkPath())) {
+        if (StringUtils.isBlank(e.getLinkPath())) {
             throw new RuntimeException("Invalid Path");
         }
-        if (StringUtils.isEmpty(e.getMountPoint()) || e.getMountPoint().contains("/")) {
+        if (StringUtils.isBlank(e.getMountPoint()) || e.getMountPoint().contains("/")) {
             throw new RuntimeException("Invalid Mount Point " + e.getMountPoint());
         }
     }

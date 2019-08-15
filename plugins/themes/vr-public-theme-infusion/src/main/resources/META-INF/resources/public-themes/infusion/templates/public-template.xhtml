@@ -12,7 +12,6 @@ and open the template in the editor.
 >
 <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.jsf.Vr"-->
 <!--@elvariable id="loginCtrl" type="net.vpc.app.vainruling.core.web.jsf.ctrl.LoginCtrl"-->
-<!--@elvariable id="vrMenuManager" type="net.vpc.app.vainruling.core.web.menu.VrMenuManager"-->
 
 <h:head>
 
@@ -62,43 +61,43 @@ and open the template in the editor.
                 <ul class="clearfix">
                     <li>
                         <h:outputLink style="padding: 25px 43px 23px 5px;"
-                                      styleClass="#{vrMenuManager.isCurrentPageId('welcome')?'active':''}"
+                                      styleClass="#{vr.isCurrentPageId('welcome')?'active':''}"
                                       value="#{vr.context}/p/publicIndex">welcome</h:outputLink></li>
 
                     <ui:fragment rendered="#{vr.cmsTextService.isDispositionEnabled('About')}">
                         <li><h:outputLink style="padding: 25px 43px 23px 5px;"
-                                          styleClass="#{vrMenuManager.isCurrentPageId('about')?'active':''}"
+                                          styleClass="#{vr.isCurrentPageId('about')?'active':''}"
                                           value="#{vr.context}/p/activitiesTable">#{vr.cmsTextService.getDispositionActionName('About')}</h:outputLink>
                         </li>
                     </ui:fragment>
 
                     <ui:fragment rendered="#{vr.cmsTextService.isDispositionEnabled('Activities')}">
                         <li><h:outputLink style="padding: 25px 43px 23px 5px;"
-                                          styleClass="#{vrMenuManager.isCurrentPageId('activitiesTable')?'active':''}"
+                                          styleClass="#{vr.isCurrentPageId('activitiesTable')?'active':''}"
                                           value="#{vr.context}/p/activitiesTable">#{vr.cmsTextService.getDispositionActionName('Activities')}</h:outputLink>
                         </li>
                     </ui:fragment>
                     <ui:fragment rendered="#{vr.cmsTextService.isDispositionEnabled('Featured')}">
                         <li><h:outputLink style="padding: 25px 43px 23px 5px;"
-                                          styleClass="#{vrMenuManager.isCurrentPageId('featured')?'active':''}"
+                                          styleClass="#{vr.isCurrentPageId('featured')?'active':''}"
                                           value="#{vr.context}/p/activitiesTable">#{vr.cmsTextService.getDispositionActionName('Featured')}</h:outputLink>
                         </li>
                     </ui:fragment>
                     <ui:fragment rendered="#{vr.cmsTextService.isDispositionEnabled('Testimonials')}">
                         <li><h:outputLink style="padding: 25px 43px 23px 5px;"
-                                          styleClass="#{vrMenuManager.isCurrentPageId('testimonials')?'active':''}"
+                                          styleClass="#{vr.isCurrentPageId('testimonials')?'active':''}"
                                           value="#{vr.context}/p/activitiesTable">#{vr.cmsTextService.getDispositionActionName('Testimonials')}</h:outputLink>
                         </li>
                     </ui:fragment>
                     <ui:fragment rendered="#{vr.cmsTextService.isDispositionEnabled('Education')}">
                         <li><h:outputLink style="padding: 25px 43px 23px 5px;"
-                                          styleClass="#{vrMenuManager.isCurrentPageId('education')?'active':''}"
+                                          styleClass="#{vr.isCurrentPageId('education')?'active':''}"
                                           value="#{vr.context}/p/activitiesTable">#{vr.cmsTextService.getDispositionActionName('Education')}</h:outputLink>
                         </li>
                     </ui:fragment>
                     <ui:fragment rendered="#{vr.cmsTextService.isDispositionEnabled('News')}">
                         <li><h:outputLink style="padding: 25px 43px 23px 5px;"
-                                          styleClass="#{vrMenuManager.isCurrentPageId('news')?'active':''}"
+                                          styleClass="#{vr.isCurrentPageId('news')?'active':''}"
                                           value="#{vr.context}/p/activitiesTable">#{vr.cmsTextService.getDispositionActionName('News')}</h:outputLink>
                         </li>
                     </ui:fragment>
@@ -124,7 +123,7 @@ and open the template in the editor.
                     </ui:fragment>
                     <li><h:outputLink
                             style="padding: 25px 43px 23px 5px;"
-                            styleClass="#{vrMenuManager.isCurrentPageId('contacts')?'active':''}"
+                            styleClass="#{vr.isCurrentPageId('contacts')?'active':''}"
                             value="#{vr.context}/p/contacts">contact</h:outputLink></li>
                 </ul>
             </nav>

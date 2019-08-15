@@ -72,7 +72,6 @@ public class AppContactBase {
 
     @Field(max = "4000")
     @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
-
     private String description;
 
     @Path("AdminInfo")

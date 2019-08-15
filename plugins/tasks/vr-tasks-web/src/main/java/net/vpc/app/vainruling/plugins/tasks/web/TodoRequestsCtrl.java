@@ -7,9 +7,7 @@ package net.vpc.app.vainruling.plugins.tasks.web;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.model.AppUser;
-import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.core.web.VrController;
-import net.vpc.app.vainruling.core.web.UPathItem;
+import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.app.vainruling.core.web.jsf.ctrl.AbstractObjectCtrl;
 
 import net.vpc.app.vainruling.core.web.jsf.VrJsf;
@@ -22,13 +20,15 @@ import org.springframework.context.annotation.Scope;
 import javax.faces.model.SelectItem;
 import java.util.ArrayList;
 import java.util.List;
+import net.vpc.app.vainruling.core.service.pages.VrPage;
+import net.vpc.app.vainruling.core.service.pages.VrPathItem;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@VrController(
+@VrPage(
         breadcrumb = {
-                @UPathItem(title = "Parametrage", css = "fa-dashboard", ctrl = "")}, url = "modules/todo/todo-requests"
+                @VrPathItem(title = "Parametrage", css = "fa-dashboard", ctrl = "")}, url = "modules/todo/todo-requests"
 )
 @Scope(value = "session")
 public class TodoRequestsCtrl extends AbstractObjectCtrl<Todo> {

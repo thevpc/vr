@@ -1,8 +1,8 @@
 package net.vpc.app.vainruling.plugins.academic.service.stat;
 
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseAssignment;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCourseAssignment;
 import net.vpc.app.vainruling.plugins.academic.service.util.AcademicCourseAssignmentIdConverter;
 import net.vpc.common.util.DefaultMapList;
 import net.vpc.common.util.MapList;

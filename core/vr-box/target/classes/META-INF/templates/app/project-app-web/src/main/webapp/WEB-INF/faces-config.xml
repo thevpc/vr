@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<faces-config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              version="2.2"
+              xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+              xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-facesconfig_2_2.xsd">
+    <application>
+        <el-resolver>org.springframework.web.jsf.el.SpringBeanFacesELResolver</el-resolver>
+        <action-listener>org.primefaces.application.DialogActionListener</action-listener>
+        <navigation-handler>org.primefaces.application.DialogNavigationHandler</navigation-handler>
+        <view-handler>org.primefaces.application.DialogViewHandler</view-handler>
+    </application>
+    <factory>
+        <exception-handler-factory>
+            net.vpc.app.vainruling.core.web.jsf.ex.CustomExceptionHandlerFactory
+        </exception-handler-factory>
+    </factory>
+</faces-config>

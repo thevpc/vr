@@ -10,21 +10,19 @@ import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.util.ValueCountSet;
-import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.core.web.VrController;
-import net.vpc.app.vainruling.core.web.UPathItem;
+import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.AcademicPerfEvalPlugin;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.dto.GroupView;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.dto.QuestionView;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.dto.StatData;
-import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.AcademicFeedback;
+import net.vpc.app.vainruling.plugins.academic.perfeval.model.AcademicFeedback;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPluginSecurity;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicClass;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseAssignment;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCoursePlan;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseType;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicClass;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCourseAssignment;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCoursePlan;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCourseType;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
 import org.primefaces.model.chart.BarChartModel;
@@ -38,13 +36,15 @@ import java.util.logging.Logger;
 import net.vpc.common.util.Convert;
 import net.vpc.common.util.IntegerParserConfig;
 import org.springframework.stereotype.Controller;
+import net.vpc.app.vainruling.core.service.pages.VrPage;
+import net.vpc.app.vainruling.core.service.pages.VrPathItem;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@VrController(
+@VrPage(
         breadcrumb = {
-                @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
+                @VrPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
 //        css = "fa-table",
 //        title = "Stats Eval. Enseignements",
         menu = "/Education/Evaluation",
@@ -74,7 +74,7 @@ public class TeacherStatFeedbackCtrl {
 
     public int getSelectedFilterIntId() {
         String selectedFilter = getModel().getSelectedFilter();
-        if (StringUtils.isEmpty(selectedFilter)) {
+        if (StringUtils.isBlank(selectedFilter)) {
             return -1;
         }
         int pos = selectedFilter.indexOf(":");
@@ -114,7 +114,7 @@ public class TeacherStatFeedbackCtrl {
 
     public GroupCondition getSelectedGroupCondition() {
         String filterType = getModel().getSelectedFilterType();
-        if (!StringUtils.isEmpty(filterType)) {
+        if (!StringUtils.isBlank(filterType)) {
             for (GroupCondition condition : conditions) {
                 if (condition.getId().equals(filterType)) {
                     return condition;
@@ -127,7 +127,7 @@ public class TeacherStatFeedbackCtrl {
     public void onReloadFilterByType() {
         int periodId = -1;
         String selectedPeriodString = getModel().getSelectedPeriod();
-        if (!StringUtils.isEmpty(selectedPeriodString)) {
+        if (!StringUtils.isBlank(selectedPeriodString)) {
             periodId = (Integer.parseInt(selectedPeriodString));
         }
 
@@ -239,7 +239,7 @@ public class TeacherStatFeedbackCtrl {
     public int getSelectedPeriodId() {
         int periodId = -1;
         String selectedPeriodString = getModel().getSelectedPeriod();
-        if (!StringUtils.isEmpty(selectedPeriodString)) {
+        if (!StringUtils.isBlank(selectedPeriodString)) {
             periodId = (Integer.parseInt(selectedPeriodString));
         }
         return periodId;
@@ -249,7 +249,7 @@ public class TeacherStatFeedbackCtrl {
         AcademicTeacher s = null;
         if (getModel().isTeacherListEnabled()) {
             String selectedTeacherString = getModel().getSelectedTeacher();
-            if (!StringUtils.isEmpty(selectedTeacherString)) {
+            if (!StringUtils.isBlank(selectedTeacherString)) {
                 s = academic.findTeacher(Integer.parseInt(selectedTeacherString));
             }
         } else {
@@ -490,7 +490,7 @@ public class TeacherStatFeedbackCtrl {
 
     public class TeacheGroupCondition extends AbstractGroupCondition {
         public TeacheGroupCondition() {
-            super("teacher", "Enseignent");
+            super("teacher", "Enseignant");
         }
 
         @Override
@@ -603,7 +603,7 @@ public class TeacherStatFeedbackCtrl {
                     null,
                     selectedOwnerDepartmentId < 0 ? null : selectedOwnerDepartmentId,
                     null,
-                    getSelectedTeacherId(),
+                    getSelectedTeacherId()<0?null:getSelectedTeacherId(),
                     null,
                     classId < 0 ? null : classId,
                     getModel().getValidatedFilter(),

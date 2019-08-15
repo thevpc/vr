@@ -5,16 +5,15 @@
  */
 package net.vpc.app.vainruling.core.web.jsf.ctrl;
 
-import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.core.web.VrController;
-import net.vpc.app.vainruling.core.web.menu.VrMenuManager;
+import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
+import net.vpc.app.vainruling.core.web.jsf.Vr;
 import org.springframework.stereotype.Controller;
+import net.vpc.app.vainruling.core.service.pages.VrPage;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@VrController(
+@VrPage(
         title = "Accueil",
         menu = "/Desktop",
         url = "modules/welcome"
@@ -34,8 +33,7 @@ public class WelcomeCtrl {
         //Vr vr = Vr.get();
         //UserSession userSession = vr.getCurrentSession();
         //vr.gotoPublicSubSite(userSession.getSelectedDepartment()==null?null:userSession.getSelectedDepartment().getCode());
-        VrMenuManager menu = VrApp.getBean(VrMenuManager.class);
-        menu.getModel().setCurrentPageId("welcome");
+        Vr.get().setCurrentPageId("welcome");
 //        menu.setPageCtrl("welcome");
     }
 

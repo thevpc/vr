@@ -165,7 +165,7 @@ public class VrApp implements ApplicationContextAware, ApplicationListener<Conte
                 });
             }
         };
-        if (!StringUtils.isEmpty(login)) {
+        if (!StringUtils.isBlank(login)) {
             CorePlugin core = CorePlugin.get();
             core.getCurrentSession().setSessionId("custom");
             core.getCurrentSession().getToken().setSessionId("custom");

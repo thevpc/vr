@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.vpc.app.vain-ruling.plugins.calendars</groupId>
     <artifactId>vr-calendars-web</artifactId>
-    <version>1.13.13</version>
+    <version>1.13.15</version>
     <name>net.vpc.app.vain-ruling.plugins.calendars.vr-calendars-web</name>
     <packaging>jar</packaging>
     <url>https://github.com/thevpc/vr/wiki</url>
@@ -18,7 +18,7 @@
 
     <properties>
         <vr-plugin.component-type>web</vr-plugin.component-type>
-        <version.vr-core-web-jsf>1.13.13</version.vr-core-web-jsf>
+        <version.vr-core-web-jsf>1.13.15</version.vr-core-web-jsf>
     </properties>
 
     <dependencies>
@@ -36,7 +36,7 @@
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.calendars</groupId>
             <artifactId>vr-calendars-service</artifactId>
-            <version>1.13.13</version>
+            <version>1.13.15</version>
         </dependency>
     </dependencies>
 

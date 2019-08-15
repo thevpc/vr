@@ -1,9 +1,9 @@
 package net.vpc.app.vainruling.plugins.academic.service.stat;
 
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicOfficialDiscipline;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacherSituation;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicTeacherDegree;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicOfficialDiscipline;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacherSituation;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicTeacherDegree;
 
 import java.util.ArrayList;
 import java.util.Collections;

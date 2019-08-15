@@ -6,15 +6,13 @@
 package net.vpc.app.vainruling.plugins.academic.teachereval.web;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
-import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.core.web.VrController;
-import net.vpc.app.vainruling.core.web.UPathItem;
+import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.AcademicPerfEvalPlugin;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.AcademicPerfEvalPluginSecurity;
-import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.AcademicFeedbackGroup;
-import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.AcademicFeedbackModel;
-import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.AcademicFeedbackQuestion;
-import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.AcademicFeedbackResponse;
+import net.vpc.app.vainruling.plugins.academic.perfeval.model.AcademicFeedbackGroup;
+import net.vpc.app.vainruling.plugins.academic.perfeval.model.AcademicFeedbackModel;
+import net.vpc.app.vainruling.plugins.academic.perfeval.model.AcademicFeedbackQuestion;
+import net.vpc.app.vainruling.plugins.academic.perfeval.model.AcademicFeedbackResponse;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
@@ -27,13 +25,15 @@ import javax.faces.component.UIInput;
 import javax.faces.model.SelectItem;
 import java.util.*;
 import java.util.logging.Logger;
+import net.vpc.app.vainruling.core.service.pages.VrPage;
+import net.vpc.app.vainruling.core.service.pages.VrPathItem;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@VrController(
+@VrPage(
         breadcrumb = {
-                @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
+                @VrPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
 //        css = "fa-table",
 //        title = "Fiches Eval. enseignements",
         menu = "/Education/Evaluation",
@@ -97,7 +97,7 @@ public class StudentFeedbackExampleCtrl {
 
     public void onFeedbackChange() {
         List<Row> rows = new ArrayList<>();
-        if (!StringUtils.isEmpty(getModel().getSelectedFeedback())) {
+        if (!StringUtils.isBlank(getModel().getSelectedFeedback())) {
             getModel().setFeedback(feedback.findFeedbackModel(Integer.parseInt(getModel().getSelectedFeedback())));
             List<AcademicFeedbackGroup> groups = feedback.findStudentFeedbackGroups(getModel().getFeedback().getId());
             Map<Integer, Question> questionsMap = new HashMap<>();

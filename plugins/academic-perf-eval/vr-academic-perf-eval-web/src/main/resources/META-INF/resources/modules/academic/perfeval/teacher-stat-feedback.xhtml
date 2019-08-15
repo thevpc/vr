@@ -48,7 +48,21 @@ and open the template in the editor.
                     </p:selectOneMenu>
 
 
-                    <p:outputLabel value="Grouper par "
+                    <p:outputLabel rendered="#{teacherStatFeedbackCtrl.model.filterTeachersEnabled and not vr.isEmpty(teacherStatFeedbackCtrl.model.selectedPeriod)}"
+                                   value="Enseignant"
+                                   style="margin-left: 10px;margin-right: 10px;vertical-align: middle;padding-bottom: 10px;"/>
+                    <!--rendered="# {teacherStatFeedbackCtrl.model.filterTeachersEnabled and not vr.isEmpty(teacherStatFeedbackCtrl.model.selectedPeriod)}"-->
+                    <p:selectOneMenu id="teachersList"
+                                     rendered="#{teacherStatFeedbackCtrl.model.filterTeachersEnabled and not vr.isEmpty(teacherStatFeedbackCtrl.model.selectedPeriod)}"
+                                     value="#{teacherStatFeedbackCtrl.model.selectedTeacher}"
+                                     filter="true" filterMatchMode="contains"
+                    >
+                        <p:ajax listener="#{teacherStatFeedbackCtrl.onReloadFeedbacks}" update=":listForm"/>
+                        <f:selectItem itemLabel="Selectionner Enseignant..." itemValue=""/>
+                        <f:selectItems value="#{teacherStatFeedbackCtrl.model.teachersList}"/>
+                    </p:selectOneMenu>
+
+                    <p:outputLabel value="Filtrer par "
                                    style="margin-left: 10px;margin-right: 10px;vertical-align: middle;padding-bottom: 10px;"
                                    rendered="#{not vr.isEmpty(teacherStatFeedbackCtrl.model.selectedPeriod)}"
                     />
@@ -62,25 +76,6 @@ and open the template in the editor.
                         <f:selectItems value="#{teacherStatFeedbackCtrl.model.filterTypesList}"/>
                     </p:selectOneMenu>
 
-                    <p:outputLabel rendered="#{teacherStatFeedbackCtrl.model.filterTeachersEnabled and not vr.isEmpty(teacherStatFeedbackCtrl.model.selectedPeriod)}"
-                                   value="Enseignant"
-                                   style="margin-left: 10px;margin-right: 10px;vertical-align: middle;padding-bottom: 10px;"/>
-                    <!--rendered="# {teacherStatFeedbackCtrl.model.filterTeachersEnabled and not vr.isEmpty(teacherStatFeedbackCtrl.model.selectedPeriod)}"-->
-                    <p:selectOneMenu id="teachersList"
-
-                                     value="#{teacherStatFeedbackCtrl.model.selectedTeacher}"
-                                     filter="true" filterMatchMode="contains"
-                    >
-                        <p:ajax listener="#{teacherStatFeedbackCtrl.onReloadFeedbacks}" update=":listForm"/>
-                        <f:selectItem itemLabel="Selectionner Enseignant..." itemValue=""/>
-                        <f:selectItems value="#{teacherStatFeedbackCtrl.model.teachersList}"/>
-                    </p:selectOneMenu>
-
-
-                    <p:outputLabel value="Filtrer par "
-                                   style="margin-left: 10px;margin-right: 10px;vertical-align: middle;padding-bottom: 10px;"
-                                   rendered="#{not vr.isEmpty(teacherStatFeedbackCtrl.model.selectedPeriod)}"
-                    />
                     <p:selectOneMenu value="#{teacherStatFeedbackCtrl.model.selectedFilter}"
                                      rendered="#{not vr.isEmpty(teacherStatFeedbackCtrl.model.selectedPeriod)}"
                                      filter="true" filterMatchMode="contains"

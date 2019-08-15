@@ -5,18 +5,18 @@
  */
 package net.vpc.app.vainruling.plugins.tasks.web;
 
-import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.plugins.tasks.service.model.TodoPriority;
 import net.vpc.app.vainruling.plugins.tasks.service.model.TodoStatusType;
 import net.vpc.common.jsf.FacesUtils;
 import org.springframework.context.annotation.Scope;
 
 import javax.faces.model.SelectItem;
+import net.vpc.app.vainruling.core.service.pages.VrPage;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@VrController
+@VrPage
 @Scope(value = "singleton")
 public class DropDownCtrl {
 

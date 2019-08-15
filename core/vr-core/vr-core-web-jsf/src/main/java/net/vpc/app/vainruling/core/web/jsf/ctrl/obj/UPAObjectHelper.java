@@ -6,7 +6,7 @@
 package net.vpc.app.vainruling.core.web.jsf.ctrl.obj;
 
 import net.vpc.app.vainruling.core.service.util.UIConstants;
-import net.vpc.app.vainruling.core.web.obj.ViewContext;
+import net.vpc.app.vainruling.core.service.editor.ViewContext;
 import net.vpc.common.util.Convert;
 import net.vpc.common.util.IntegerParserConfig;
 import net.vpc.upa.*;

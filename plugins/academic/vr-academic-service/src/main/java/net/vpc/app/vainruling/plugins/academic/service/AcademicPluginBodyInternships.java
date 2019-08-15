@@ -1,5 +1,16 @@
 package net.vpc.app.vainruling.plugins.academic.service;
 
+import net.vpc.app.vainruling.plugins.academic.model.internship.config.AcademicInternshipType;
+import net.vpc.app.vainruling.plugins.academic.model.internship.current.AcademicInternshipBoard;
+import net.vpc.app.vainruling.plugins.academic.model.internship.config.AcademicInternshipStatus;
+import net.vpc.app.vainruling.plugins.academic.model.internship.config.AcademicInternshipBoardMessage;
+import net.vpc.app.vainruling.plugins.academic.model.internship.current.AcademicInternshipSessionType;
+import net.vpc.app.vainruling.plugins.academic.model.internship.current.AcademicInternshipGroup;
+import net.vpc.app.vainruling.plugins.academic.model.internship.config.AcademicInternshipDuration;
+import net.vpc.app.vainruling.plugins.academic.model.internship.config.AcademicInternshipVariant;
+import net.vpc.app.vainruling.plugins.academic.model.internship.current.AcademicInternship;
+import net.vpc.app.vainruling.plugins.academic.model.internship.config.AcademicInternshipBoardTeacher;
+import net.vpc.app.vainruling.plugins.academic.model.internship.current.AcademicInternshipSupervisorIntent;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.TraceService;
 import net.vpc.app.vainruling.core.service.VrApp;
@@ -9,14 +20,12 @@ import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.model.AppUserType;
 import net.vpc.app.vainruling.core.service.util.NamedValueCount;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicClass;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicProgram;
-import net.vpc.app.vainruling.plugins.academic.service.model.internship.config.*;
-import net.vpc.app.vainruling.plugins.academic.service.model.internship.current.*;
-import net.vpc.app.vainruling.plugins.academic.service.model.internship.ext.AcademicInternshipExt;
-import net.vpc.app.vainruling.plugins.academic.service.model.internship.ext.AcademicInternshipExtList;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicStudent;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicClass;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicProgram;
+import net.vpc.app.vainruling.plugins.academic.model.internship.ext.AcademicInternshipExt;
+import net.vpc.app.vainruling.plugins.academic.model.internship.ext.AcademicInternshipExtList;
 import net.vpc.app.vainruling.core.service.util.LocationInfo;
 import net.vpc.common.util.ListValueMap;
 import net.vpc.upa.PersistenceUnit;
@@ -423,7 +432,7 @@ public class AcademicPluginBodyInternships extends AcademicPluginBody {
         }
         int generatedCount = 0;
         int alreadyFoundCount = 0;
-        for (AppUser appUser : core.findUsersByProfileFilter(studentProfiles, studentType.getId())) {
+        for (AppUser appUser : core.findUsersByProfileFilter(studentProfiles, studentType.getId(), null)) {
             AcademicStudent student = acad.findStudentByUser(appUser.getId());
             if (student != null) {
                 if (validStudents.contains(student.getId())) {
@@ -511,7 +520,7 @@ public class AcademicPluginBodyInternships extends AcademicPluginBody {
             }
         }
         if (generatedCount > 0) {
-            TraceService.get().trace("Academic.generated-internships", "success", 
+            TraceService.get().trace("Academic.generated-internships", "success",
                     MapUtils.map("name", internship.getBoard().getName(), "count", generatedCount, "oldCount", alreadyFoundCount),
                     "/Education/Internships", Level.INFO
             );

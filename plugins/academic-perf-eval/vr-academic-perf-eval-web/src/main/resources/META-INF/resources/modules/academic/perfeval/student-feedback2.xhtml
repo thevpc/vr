@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+
+>
+
+<h:head>
+</h:head>
+
+<h:body>
+
+
+    <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.jsf.Vr"-->
+    <!--@elvariable id="studentFeedbackCtrl2" type="net.vpc.app.vainruling.plugins.academic.teachereval.web.StudentFeedbackCtrl2"-->
+    <ui:composition template="#{vr.privateTemplatePath}">
+        <ui:define name="content">
+            <!--                <h:form id="buttonsForm">
+
+                                 /.row
+                                <div class="row">
+                                    <p:outputLabel id="buttons">
+                                        <p:commandButton value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton " ajax="true" actionListener="# {myPlanningCtrl.onRefresh}"  update=":listForm"/>
+                                    </p:outputLabel>
+                                </div>
+
+                            </h:form>-->
+            <h:form id="listForm">
+                <p:messages id="pageMessages" showDetail="true"/>
+
+                <div>
+                    <p:selectOneMenu value="#{studentFeedbackCtrl2.model.periodId}" style="margin-bottom: 20px; margin-right: 20px;">
+                        <p:ajax listener="#{studentFeedbackCtrl2.onStudentOrPeriodChange}" update=":listForm"/>
+                        <f:selectItem itemLabel="Selectionner Période..." itemValue=""/>
+                        <f:selectItems value="#{studentFeedbackCtrl2.model.periods}"/>
+                    </p:selectOneMenu>
+                    
+                    <p:selectOneMenu value="#{studentFeedbackCtrl2.model.classId}" style="margin-bottom: 20px; margin-right: 20px;">
+                        <p:ajax listener="#{studentFeedbackCtrl2.onClassChange}" update=":listForm"/>
+                        <f:selectItem itemLabel="Selectionner Classe..." itemValue=""/>
+                        <f:selectItems value="#{studentFeedbackCtrl2.model.classes}"/>
+                    </p:selectOneMenu>
+
+                    <p:selectOneMenu value="#{studentFeedbackCtrl2.model.studentId}" style="margin-bottom: 20px; margin-right: 20px;">
+                        <p:ajax listener="#{studentFeedbackCtrl2.onStudentOrPeriodChange}" update=":listForm"/>
+                        <f:selectItem itemLabel="Selectionner Elève..." itemValue=""/>
+                        <f:selectItems value="#{studentFeedbackCtrl2.model.students}"/>
+                    </p:selectOneMenu>
+
+                    <p:selectOneMenu value="#{studentFeedbackCtrl2.model.selectedFeedback}">
+                        <p:ajax listener="#{studentFeedbackCtrl2.onFeedbackChange}" update=":listForm"/>
+                        <f:selectItem itemLabel="Selectionner Enseignement..." itemValue=""/>
+                        <f:selectItems value="#{studentFeedbackCtrl2.model.feedbacks}"/>
+                    </p:selectOneMenu>
+                </div>
+                <p:outputLabel value="Aucune fiche à renseigner"
+                               rendered="#{empty studentFeedbackCtrl2.model.rows}"/>
+                <ui:repeat var="r" value="#{studentFeedbackCtrl2.model.rows}">
+                    <div>
+                        <div class="table-responsive">
+                            <p:dataTable value="#{r.questions}" var="i" style="margin-top: 20px;">
+                                <p:column headerText="#{r.title}">
+                                    <p:outputLabel value="#{i.response.question.name}"/>
+                                </p:column>
+                                <p:column headerText="" width="20%">
+                                    <p:outputLabel id="label2"
+                                                   styleClass="#{vr.mapValue(i.response.response,'','1','label-danger','2','label-warning','3','label-info','4','label-success')}"
+                                                   value="#{vr.mapValue(i.response.response,'Je ne sais pas','1','Tout à fait en désaccord','2','Plutot en désaccord','3','Plutot en accord','4','Tout à fait en accord')}"/>
+                                </p:column>
+                            </p:dataTable>
+                        </div>
+                    </div>
+                </ui:repeat>
+                <ui:fragment rendered="#{studentFeedbackCtrl.model.rows.size() gt 0}">
+                    <div class="row" style="margin-left: 0px;margin-top: 20px;">
+                        <p:outputLabel rendered="#{!studentFeedbackCtrl.model.feedback.validated}" 
+                                       value="NOT YET VALIDATED"/>
+                    </div>
+                </ui:fragment>
+            </h:form>
+            <style>
+                .ui-slider-handle{
+                    background:var(--vr-color-main12)  !important;
+                }
+            </style>
+        </ui:define>
+
+
+    </ui:composition>
+
+
+</h:body>
+
+</html>

@@ -111,22 +111,22 @@ public class VrThemeFactory {
             for (String id : ids) {
                 VrTheme t=new VrTheme();
                 t.setId(id);
-                if(StringUtils.isEmpty(t.getName())){
+                if(StringUtils.isBlank(t.getName())){
                     t.setName(all.getProperty(themePrefix + id+".name"));
                 }
-                if(StringUtils.isEmpty(t.getName())){
+                if(StringUtils.isBlank(t.getName())){
                     t.setName(id);
                 }
                 t.setVersion(all.getProperty(themePrefix + id + ".version"));
-                if(StringUtils.isEmpty(t.getVersion())){
+                if(StringUtils.isBlank(t.getVersion())){
                     t.setVersion("1.0");
                 }
                 t.setComponents(all.getProperty(themePrefix + id + ".components"));
-                if(StringUtils.isEmpty(t.getVersion())){
+                if(StringUtils.isBlank(t.getVersion())){
                     t.setComponents("vr-default");
                 }
                 t.setAuthor(all.getProperty(themePrefix + id + ".author"));
-                if(StringUtils.isEmpty(t.getAuthor())){
+                if(StringUtils.isBlank(t.getAuthor())){
                     t.setAuthor("anonymous");
                 }
                 t.setDescription(all.getProperty(themePrefix + id + ".description"));

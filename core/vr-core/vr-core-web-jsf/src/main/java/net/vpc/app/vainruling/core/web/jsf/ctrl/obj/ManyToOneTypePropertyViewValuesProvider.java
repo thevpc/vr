@@ -8,8 +8,8 @@ package net.vpc.app.vainruling.core.web.jsf.ctrl.obj;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.util.VrUPAUtils;
-import net.vpc.app.vainruling.core.web.jsf.ctrl.ObjCtrl;
-import net.vpc.app.vainruling.core.web.obj.ViewContext;
+import net.vpc.app.vainruling.core.web.jsf.ctrl.EditorCtrl;
+import net.vpc.app.vainruling.core.service.editor.ViewContext;
 import net.vpc.upa.*;
 import net.vpc.upa.types.DataType;
 import net.vpc.upa.types.ManyToOneType;
@@ -31,8 +31,8 @@ public class ManyToOneTypePropertyViewValuesProvider implements PropertyViewValu
         List<PropertyView> dependentPropertyViews = propertyView.getDependentPropertyViews();
 
         CorePlugin core = VrApp.getBean(CorePlugin.class);
-        final ObjCtrl objCtrl = VrApp.getBean(ObjCtrl.class);
-        Map<String, Object> currentValues = objCtrl.currentViewToMap();
+        final EditorCtrl editorCtrl = VrApp.getBean(EditorCtrl.class);
+        Map<String, Object> currentValues = editorCtrl.currentViewToMap();
 
         final Map<String, Object> constraints = new HashMap<>();
         for (PropertyView dependentPropertyView : dependentPropertyViews) {
@@ -51,7 +51,7 @@ public class ManyToOneTypePropertyViewValuesProvider implements PropertyViewValu
             List<NamedId> cacheItem = viewContext.getCacheItem("EntityPropertyViewValuesProvider." + me.getName() + ":" + constraints, new Action<List<NamedId>>() {
                 @Override
                 public List<NamedId> run() {
-                    return core.findAllNamedIdsByRelationship(mtype.getRelationship().getName(), constraints, objCtrl.getModel().getCurrentDocument());
+                    return core.findAllNamedIdsByRelationship(mtype.getRelationship().getName(), constraints, editorCtrl.getModel().getCurrentDocument());
                 }
             });
             List<NamedId> cacheItem2=new ArrayList<>(cacheItem.size());
@@ -62,6 +62,6 @@ public class ManyToOneTypePropertyViewValuesProvider implements PropertyViewValu
             }
             return cacheItem2;
         }
-        return core.findAllNamedIdsByRelationship(mtype.getRelationship().getName(), constraints, objCtrl.getModel().getCurrentDocument());
+        return core.findAllNamedIdsByRelationship(mtype.getRelationship().getName(), constraints, editorCtrl.getModel().getCurrentDocument());
     }
 }

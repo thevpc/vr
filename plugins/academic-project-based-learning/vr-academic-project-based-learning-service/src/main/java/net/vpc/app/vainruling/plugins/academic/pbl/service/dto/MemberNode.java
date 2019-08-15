@@ -1,8 +1,8 @@
 package net.vpc.app.vainruling.plugins.academic.pbl.service.dto;
 
-import net.vpc.app.vainruling.plugins.academic.pbl.service.model.ApblTeamMember;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
+import net.vpc.app.vainruling.plugins.academic.pbl.model.ApblTeamMember;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicStudent;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
 
 /**
  * Created by vpc on 9/25/16.

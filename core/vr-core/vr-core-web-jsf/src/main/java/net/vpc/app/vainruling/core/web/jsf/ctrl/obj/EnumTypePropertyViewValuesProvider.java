@@ -8,7 +8,7 @@ package net.vpc.app.vainruling.core.web.jsf.ctrl.obj;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.util.I18n;
 import net.vpc.app.vainruling.core.service.util.VrUPAUtils;
-import net.vpc.app.vainruling.core.web.obj.ViewContext;
+import net.vpc.app.vainruling.core.service.editor.ViewContext;
 import net.vpc.upa.Field;
 import net.vpc.upa.NamedId;
 import net.vpc.upa.types.DataType;

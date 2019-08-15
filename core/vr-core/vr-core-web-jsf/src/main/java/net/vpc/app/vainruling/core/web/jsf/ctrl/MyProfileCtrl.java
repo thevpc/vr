@@ -5,14 +5,14 @@
  */
 package net.vpc.app.vainruling.core.web.jsf.ctrl;
 
-import net.vpc.app.vainruling.core.web.VrController;
 
 import java.util.logging.Logger;
+import net.vpc.app.vainruling.core.service.pages.VrPage;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@VrController
+@VrPage
 public class MyProfileCtrl /*implements VrControllerInfoResolver*/ {
 
     private static final Logger log = Logger.getLogger(MyProfileCtrl.class.getName());

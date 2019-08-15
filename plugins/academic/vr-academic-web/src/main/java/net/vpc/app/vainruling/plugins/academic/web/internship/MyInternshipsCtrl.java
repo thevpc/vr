@@ -10,19 +10,17 @@ import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppCompany;
 import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.app.vainruling.core.service.model.OpinionType;
-import net.vpc.app.vainruling.core.service.util.MirroredPath;
-import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.core.web.VrController;
-import net.vpc.app.vainruling.core.web.UPathItem;
+import net.vpc.app.vainruling.core.service.fs.MirroredPath;
+import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.app.vainruling.core.web.jsf.ctrl.DocumentUploadListener;
 import net.vpc.app.vainruling.core.web.jsf.ctrl.dialog.DocumentsUploadDialogCtrl;
-import net.vpc.app.vainruling.core.web.obj.DialogResult;
+import net.vpc.app.vainruling.core.service.editor.DialogResult;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
-import net.vpc.app.vainruling.plugins.academic.service.model.internship.config.AcademicInternshipDuration;
-import net.vpc.app.vainruling.plugins.academic.service.model.internship.config.AcademicInternshipVariant;
-import net.vpc.app.vainruling.plugins.academic.service.model.internship.current.AcademicInternship;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicStudent;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
+import net.vpc.app.vainruling.plugins.academic.model.internship.config.AcademicInternshipDuration;
+import net.vpc.app.vainruling.plugins.academic.model.internship.config.AcademicInternshipVariant;
+import net.vpc.app.vainruling.plugins.academic.model.internship.current.AcademicInternship;
 import net.vpc.app.vainruling.plugins.academic.web.dialog.DisciplineDialogCtrl;
 import net.vpc.common.io.PathInfo;
 import net.vpc.common.jsf.FacesUtils;
@@ -45,15 +43,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.vpc.app.vainruling.core.service.pages.VrPage;
+import net.vpc.app.vainruling.core.service.pages.VrPathItem;
 
 /**
  * internships for students
  *
  * @author taha.bensalah@gmail.com
  */
-@VrController(
+@VrPage(
         breadcrumb = {
-                @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
+                @VrPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
 //        css = "fa-table",
 //        title = "Mes Stages",
         menu = "/Education/Projects/Internships",

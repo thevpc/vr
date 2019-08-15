@@ -290,7 +290,7 @@ and open the template in the editor.
                                                 <ul class="nav nav-third-level">
                                                     <ui:repeat value="#{p1.resolveLeaves()}" var="p2">
                                                         <li>
-                                                            <h:outputLink value="#{p2.prettyURL}">
+                                                            <h:outputLink value="#{vr.getPrettyURL(p2)}">
                                                                 <h:outputText class="fa vr-menu-link"
                                                                               value="      #{p2.name}"/>
                                                             </h:outputLink>
@@ -302,7 +302,7 @@ and open the template in the editor.
                                         <ui:repeat value="#{p0.resolveLeaves()}" var="p1">
                                             <li>
 
-                                                <h:outputLink value="#{p1.prettyURL}">
+                                                <h:outputLink value="#{vr.getPrettyURL(p1)}">
                                                     <h:outputText value="      #{p1.name}"/>
                                                 </h:outputLink>
                                             </li>
@@ -312,7 +312,7 @@ and open the template in the editor.
                             </ui:repeat>
                             <ui:repeat value="#{vr.menu.resolveLeaves()}" var="p1">
                                 <li>
-                                    <h:outputLink value="#{p1.prettyURL}">
+                                    <h:outputLink value="#{vr.getPrettyURL(p1)}">
                                         <h:outputText value="      #{p1.name}"/>
                                     </h:outputLink>
                                 </li>

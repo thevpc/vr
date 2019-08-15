@@ -1,5 +1,5 @@
 
-import net.vpc.app.vainruling.plugins.equipments.service.model.EquipmentStatusType;
+import net.vpc.app.vainruling.plugins.equipments.core.model.EquipmentStatusType;
 
 /*
  * To change this license header, choose License Headers in Project Properties.

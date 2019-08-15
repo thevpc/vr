@@ -42,6 +42,14 @@ import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
+import net.vpc.common.strings.StringConverter;
+import net.vpc.upa.Action;
+import net.vpc.upa.UPA;
+import org.springframework.context.expression.BeanFactoryResolver;
+import org.springframework.expression.Expression;
+import org.springframework.expression.ExpressionParser;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.expression.spel.support.StandardEvaluationContext;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -94,7 +102,7 @@ public class VrUtils {
     }
 
     public static String toValidFileName(String s) {
-        if (StringUtils.isEmpty(s)) {
+        if (StringUtils.isBlank(s)) {
             s = "EMPTY_NAME";
         }
         s = StringUtils.normalizeString(s);
@@ -157,7 +165,7 @@ public class VrUtils {
             }
             for (Element e : d.select("span")) {
                 String s = e.attr("style");
-                if (!StringUtils.isEmpty(s)) {
+                if (!StringUtils.isBlank(s)) {
                     e.attributes().remove("style");
                 }
             }
@@ -320,21 +328,21 @@ public class VrUtils {
             if (pt.equals(String.class)) {
                 arg = cmd;
             } else if (pt.equals(Boolean.class)) {
-                arg = StringUtils.isEmpty(cmd) ? null : Boolean.parseBoolean(cmd);
+                arg = StringUtils.isBlank(cmd) ? null : Boolean.parseBoolean(cmd);
             } else if (pt.equals(Boolean.TYPE)) {
-                arg = StringUtils.isEmpty(cmd) ? Boolean.FALSE : Boolean.parseBoolean(cmd);
+                arg = StringUtils.isBlank(cmd) ? Boolean.FALSE : Boolean.parseBoolean(cmd);
             } else if (pt.equals(Integer.class)) {
-                arg = StringUtils.isEmpty(cmd) ? null : Integer.parseInt(cmd);
+                arg = StringUtils.isBlank(cmd) ? null : Integer.parseInt(cmd);
             } else if (pt.equals(Integer.TYPE)) {
-                arg = StringUtils.isEmpty(cmd) ? 0 : Integer.parseInt(cmd);
+                arg = StringUtils.isBlank(cmd) ? 0 : Integer.parseInt(cmd);
             } else if (pt.equals(Double.class)) {
-                arg = StringUtils.isEmpty(cmd) ? null : Double.parseDouble(cmd);
+                arg = StringUtils.isBlank(cmd) ? null : Double.parseDouble(cmd);
             } else if (pt.equals(Double.TYPE)) {
-                arg = StringUtils.isEmpty(cmd) ? 0.0 : Double.parseDouble(cmd);
+                arg = StringUtils.isBlank(cmd) ? 0.0 : Double.parseDouble(cmd);
             } else if (pt.equals(Long.class)) {
-                arg = StringUtils.isEmpty(cmd) ? null : Long.parseLong(cmd);
+                arg = StringUtils.isBlank(cmd) ? null : Long.parseLong(cmd);
             } else if (pt.equals(Long.TYPE)) {
-                arg = StringUtils.isEmpty(cmd) ? 0L : Long.parseLong(cmd);
+                arg = StringUtils.isBlank(cmd) ? 0L : Long.parseLong(cmd);
             } else if (pt.isPrimitive()) {
                 throw new IllegalArgumentException("Not yet supported");
             } else if (pt.isInstance(Number.class)) {
@@ -348,7 +356,7 @@ public class VrUtils {
 
     public static String getFirstNonNull(String... vals) {
         for (String val : vals) {
-            if (!StringUtils.isEmpty(val)) {
+            if (!StringUtils.isBlank(val)) {
                 return val;
             }
         }
@@ -432,16 +440,16 @@ public class VrUtils {
 
     public static String diffToHtml(String text1, String text2, DiffHtmlStyle style) {
         DiffHtmlStyle d = style == null ? new DiffHtmlStyle() : style.copy();
-        if (StringUtils.isEmpty(d.getInsertedClass())) {
+        if (StringUtils.isBlank(d.getInsertedClass())) {
             d.setInsertedClass("diff-inserted");
         }
-        if (StringUtils.isEmpty(d.getDeletedClass())) {
+        if (StringUtils.isBlank(d.getDeletedClass())) {
             d.setDeletedClass("diff-deleted");
         }
-        if (StringUtils.isEmpty(d.getLineClass())) {
+        if (StringUtils.isBlank(d.getLineClass())) {
             d.setLineClass("diff-line");
         }
-        if (StringUtils.isEmpty(d.getDivClass())) {
+        if (StringUtils.isBlank(d.getDivClass())) {
             d.setDivClass("diff-div");
         }
         StringBuilder html = new StringBuilder();
@@ -494,7 +502,7 @@ public class VrUtils {
                     }
                 } else {
                     html.append("<span");
-                    if (!StringUtils.isEmpty(cls)) {
+                    if (!StringUtils.isBlank(cls)) {
                         html.append(" class='" + cls + "'");
                     }
                     html.append(">");
@@ -823,8 +831,8 @@ public class VrUtils {
     }
 
     public static String combineAndProfile(String oldProfile, String newProfile) {
-        boolean empty1 = StringUtils.isEmpty(oldProfile);
-        boolean empty2 = StringUtils.isEmpty(newProfile);
+        boolean empty1 = StringUtils.isBlank(oldProfile);
+        boolean empty2 = StringUtils.isBlank(newProfile);
         if (empty1 && empty2) {
             return null;
         } else if (empty1) {
@@ -837,8 +845,8 @@ public class VrUtils {
     }
 
     public static String combineOrProfile(String oldProfile, String newProfile) {
-        boolean empty1 = StringUtils.isEmpty(oldProfile);
-        boolean empty2 = StringUtils.isEmpty(newProfile);
+        boolean empty1 = StringUtils.isBlank(oldProfile);
+        boolean empty2 = StringUtils.isBlank(newProfile);
         if (empty1 && empty2) {
             return null;
         } else if (empty1) {
@@ -1105,14 +1113,14 @@ public class VrUtils {
     }
 
     public static String strcatsep(String sep, Object... a) {
-        if (StringUtils.isEmpty(sep)) {
+        if (StringUtils.isBlank(sep)) {
             sep = " ";
         }
         StringBuilder sb = new StringBuilder();
         for (Object x : a) {
             if (x != null) {
                 String v = (x instanceof String) ? ((String) x) : String.valueOf(x);
-                if (!StringUtils.isEmpty(v)) {
+                if (!StringUtils.isBlank(v)) {
                     if (sb.length() > 0) {
                         sb.append(sep);
                     }
@@ -1148,7 +1156,7 @@ public class VrUtils {
         for (String n : value.split(",|;| ")) {
             String[] cn = codeAndName(n);
             String code = cn[0].toLowerCase();
-            if (!StringUtils.isEmpty(code)) {
+            if (!StringUtils.isBlank(code)) {
                 ok.add(code);
             }
         }
@@ -1264,12 +1272,99 @@ public class VrUtils {
 
     public static String resolveFileName(String name, String path) {
         String n = name;
-        if (StringUtils.isEmpty(n)) {
+        if (StringUtils.isBlank(n)) {
             n = getURLName(path);
         }
-        if (StringUtils.isEmpty(n)) {
+        if (StringUtils.isBlank(n)) {
             n = "NONAME";
         }
         return n;
+    }
+
+    public static String getImagePath(String iconPath, String defaultPath) {
+        if (StringUtils.isBlank(iconPath) && !StringUtils.isBlank(defaultPath)) {
+            iconPath = defaultPath;
+        }
+        if (StringUtils.isBlank(iconPath)) {
+            iconPath = "private-theme-context://images/image.png";
+        }
+        return iconPath;
+    }
+
+    public static String getIconPath(String iconPath, String defaultPath) {
+        if (StringUtils.isBlank(iconPath) && !StringUtils.isBlank(defaultPath)) {
+            iconPath = defaultPath;
+        }
+        if (StringUtils.isBlank(iconPath)) {
+            iconPath = "private-theme-context://images/image.png";
+        } else {
+            if (iconPath.startsWith("/")) {
+                String finalVal = iconPath;
+                return UPA.getContext().invokePrivileged(new Action<String>() {
+                    @Override
+                    public String run() {
+                        VFile file = CorePlugin.get().getRootFileSystem().get(finalVal);
+                        if (file.isFile()) {
+                            try {
+                                return VrUtils.getOrResizeIcon(file).getPath();
+                            } catch (IOException e) {
+                                //
+                            }
+                        }
+                        return finalVal;
+                    }
+                });
+            }
+        }
+        return iconPath;
+    }
+
+    public static boolean isValidId(Integer i) {
+        return i != null && i.intValue() >= 0;
+    }
+
+    public static <T> T radomItem(List<T> any) {
+        if (any == null) {
+            return null;
+        }
+        switch (any.size()) {
+            case 0: {
+                return null;
+            }
+            case 1: {
+                return any.get(0);
+            }
+            default: {
+                int i = (int) (Math.random() * any.size());
+                return any.get(i);
+            }
+        }
+    }
+
+    public static String evalSpringExprMessage(String message) {
+        if (StringUtils.isBlank(message)) {
+            return null;
+        }
+        if (message.contains("#{")) {
+            message = StringUtils.replacePlaceHolders(message, "#{", "}", new StringConverter() {
+                @Override
+                public String convert(String str) {
+                    Object e = evalSpringExpr(str);
+                    return e == null ? "" : String.valueOf(e);
+                }
+            });
+        }
+        return message;
+    }
+
+    public static Object evalSpringExpr(String expr) {
+        if (StringUtils.isBlank(expr)) {
+            return null;
+        }
+        StandardEvaluationContext context = new StandardEvaluationContext();
+        context.setBeanResolver(new BeanFactoryResolver(VrApp.getContext()));
+        ExpressionParser parser = new SpelExpressionParser();
+        Expression expression = parser.parseExpression(expr);
+        return expression.getValue(context);
     }
 }

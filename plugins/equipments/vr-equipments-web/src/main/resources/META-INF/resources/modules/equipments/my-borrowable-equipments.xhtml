@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+
+      >
+
+    <h:head>
+
+    </h:head>
+
+    <h:body>
+
+
+        <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.jsf.Vr"-->
+        <!--@elvariable id="teacherStatFeedbackCtrl" type="net.vpc.app.vainruling.plugins.academic.teachereval.web.TeacherStatFeedbackCtrl"-->
+        <ui:composition template="#{vr.privateTemplatePath}">
+            <ui:define name="content">
+                <h:form id="listForm">
+                    <p:messages id="messages" showDetail="true" closable="true">
+                        <p:autoUpdate />
+                    </p:messages>
+                    <p:panelGrid id="details" columns="2" styleClass="vr-no-border-grid">
+                        <p:outputLabel value="réserver"/>
+                        <p:outputLabel 
+                             style="margin-left: 5px;margin-top: 5px"
+                            value="#{myBorrowableEquipmentsCtrl.model.selectedEquipment.equipment.type.name}/#{myBorrowableEquipmentsCtrl.model.selectedEquipment.equipment.brandLine.name}/#{myBorrowableEquipmentsCtrl.model.selectedEquipment.equipment.name}"/>
+                        <p:outputLabel value="quantité"/>
+                        <p:inputText 
+                             style="margin-left: 5px;margin-top: 5px"
+                            value="#{myBorrowableEquipmentsCtrl.model.quantity}"/>
+                        <p:outputLabel value="de la date"/>
+                        <p:calendar  style="margin-left: 5px;margin-top: 5px"
+                            value="#{myBorrowableEquipmentsCtrl.model.fromDate}" />
+                        <p:outputLabel value="à la date"/>
+                        <p:calendar  style="margin-left: 5px;margin-top: 5px"
+                            value="#{myBorrowableEquipmentsCtrl.model.toDate}" />
+                        <p:outputLabel value="confirmer avec"/>
+                        <p:selectOneMenu  style="margin-left: 5px;margin-top: 5px"
+                            class="form-control vr-form-control"
+                                         value="#{myBorrowableEquipmentsCtrl.model.visaUser}"
+                                         converter="#{vr.entityObjConverter('AppUser')}"
+                                         filter="true" filterMatchMode="contains"
+                                         >
+                            <f:selectItems value="#{myBorrowableEquipmentsCtrl.model.visaUsers}"/>
+                        </p:selectOneMenu>
+                    </p:panelGrid>
+
+                    <p:commandButton value="Launcer une réservation" 
+                                     styleClass="btn btn-primary" 
+                                     action="#{myBorrowableEquipmentsCtrl.onAddRequest}"
+                                     update=":listForm" style="margin-bottom: 20px;margin-top: 20px;" />
+
+                    <p:fieldset legend="Filtre" toggleable="true">
+                        <p:panelGrid id="filter" columns="2" styleClass="vr-no-border-grid">
+                            <p:outputLabel value="Type"/>
+                            <p:selectOneMenu class="form-control vr-form-control"
+                                             value="#{myBorrowableEquipmentsCtrl.model.filterEquipmentType}"
+                                             converter="#{vr.entityObjConverter('EquipmentType')}"
+                                             filter="true" filterMatchMode="contains"
+                                             style="margin-left: 5px;margin-top: 5px"
+                                             >
+                                <f:selectItems value="#{vr.entitySelectItemsNullable('EquipmentType')}"/>
+                                <p:ajax listener="#{myBorrowableEquipmentsCtrl.onChangeFilter}"
+                                        update="listForm"/>
+                            </p:selectOneMenu>
+                            <p:outputLabel value="Departement"/>
+                            <p:selectOneMenu class="form-control vr-form-control"
+                                             value="#{myBorrowableEquipmentsCtrl.model.filterDepartment}"
+                                             converter="#{vr.entityObjConverter('AppDepartment')}"
+                                             filter="true" filterMatchMode="contains" style="margin-left: 5px;margin-top: 5px"
+                                             >
+                                <f:selectItems value="#{vr.entitySelectItemsNullable('AppDepartment')}"/>
+                                <p:ajax listener="#{myBorrowableEquipmentsCtrl.onChangeFilter}"
+                                        update="listForm"/>
+                            </p:selectOneMenu>
+                        </p:panelGrid>
+                    </p:fieldset>
+                    <p:dataTable id="equipementsTable" var="i" value="#{myBorrowableEquipmentsCtrl.model.equipments}"
+                                 class="table table-bordered table-hover"
+                                 paginatorAlwaysVisible="false"
+                                 paginator="true"
+                                 paginatorPosition="bottom"
+                                 rows="1000"
+                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 rowsPerPageTemplate="1000,2000,5000,1000"
+                                 widgetVar="othersTable"
+                                 emptyMessage="Aucune Equipement"
+                                 selectionMode="single" selection="#{myBorrowableEquipmentsCtrl.model.selectedEquipment}" rowKey="#{i.id}"
+                                 >
+                        <f:facet name="header">Equipements disponibles</f:facet>
+                        <p:ajax event="rowSelect" listener="#{myBorrowableEquipmentsCtrl.onRowSelect}" update=":listForm" />
+                        <p:column exportable="false" headerText="" style="width: 65px;">
+                            <img src="#{vr.getIconUrl(i.photo,null)}"
+                                 style="width: 40px ; height: 40px; margin-right: 10px;"
+                                 alt="Image"
+                                 onclick="document.getElementById('mainPhotoImg').src = '#{vr.getImageUrl(i.photo,null)}';
+                                         $('#' + PF('photodlg').id).find('.ui-dialog-title')[0].textContent = '#{i.name}';
+                                         PF('photodlg').show();"/>
+                        </p:column>
+                        <!--styleClass="ui-widget-header"--> 
+                        <p:column headerText="# Série">
+                            <p:outputLabel value="#{i.serial}"  style="width: 200px;"/>
+                        </p:column>
+                        <p:column headerText="Type" style="width: 200px;">
+                            <p:outputLabel value="#{i.equipment.type.name}"/>
+                        </p:column>
+                        <p:column headerText="Marque">
+                            <p:outputLabel value="#{i.equipment.brandLine.name}"  style="width: 200px;"/>
+                        </p:column>
+                        <p:column headerText="Libellé">
+                            <p:outputLabel value="#{i.name}" />
+                        </p:column>
+                        <p:column headerText="Disponible" style="width: 80px;">
+                            <p:outputLabel value="#{i.actualQuantity}" />
+                        </p:column>
+                        <p:column headerText="Departement">
+                            <p:outputLabel value="#{i.equipment.department.name}"  style="width: 200px;"/>
+                        </p:column>
+
+                        <f:facet name="footer">
+                            <p:outputLabel value="Total #{myBorrowableEquipmentsCtrl.model.equipments.size()}"/>
+
+                            <div style="float: right;">
+                                <h:commandLink>
+                                    <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-xls16.png"
+                                                    width="16"/>
+                                    <p:dataExporter type="xls" target="equipementsTable"
+                                                    fileName="#{corePlugin.getPreferredFileName('my-borrowable')}"
+                                                    postProcessor="#{vr.postProcessDataExporterXLS}"/>
+                                </h:commandLink>
+
+                                <h:commandLink>
+                                    <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-pdf16.png"
+                                                    width="16"/>
+                                    <p:dataExporter type="pdf" target="equipementsTable"
+                                                    fileName="#{corePlugin.getPreferredFileName('my-borrowable')}"/>
+                                </h:commandLink>
+
+                                <h:commandLink>
+                                    <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-csv16.png"
+                                                    width="16"/>
+                                    <p:dataExporter type="csv" target="equipementsTable"
+                                                    fileName="#{corePlugin.getPreferredFileName('my-borrowable')}"/>
+                                </h:commandLink>
+
+                                <h:commandLink>
+                                    <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-xml16.png"
+                                                    width="16"/>
+                                    <p:dataExporter type="xml" target="equipementsTable"
+                                                    fileName="#{corePlugin.getPreferredFileName('my-borrowable')}"/>
+                                </h:commandLink>
+                            </div>
+                        </f:facet>
+                    </p:dataTable>
+                </h:form>
+                <p:dialog header="Photo" widgetVar="photodlg" modal="true" height="400">
+                    <img id="mainPhotoImg" src=""
+                         style="width: 400px ; height: 400px; margin-right: 10px;"
+                         alt="Image"/>
+                </p:dialog>
+            </ui:define>
+        </ui:composition>
+
+
+    </h:body>
+
+</html>

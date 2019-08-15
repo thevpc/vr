@@ -9,8 +9,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseAssignmentInfoByVisitor;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCourseAssignmentInfoByVisitor;
 import net.vpc.app.vainruling.plugins.academic.service.stat.LoadValue;
 import net.vpc.app.vainruling.plugins.academic.service.stat.TeacherPeriodStat;
 

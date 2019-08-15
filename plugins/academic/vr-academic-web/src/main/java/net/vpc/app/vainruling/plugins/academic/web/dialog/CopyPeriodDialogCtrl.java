@@ -10,7 +10,7 @@ import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.web.jsf.DialogBuilder;
-import net.vpc.app.vainruling.core.web.obj.DialogResult;
+import net.vpc.app.vainruling.core.service.editor.DialogResult;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.web.admin.AcademicAdminToolsCtrl;
 import net.vpc.common.jsf.FacesUtils;
@@ -63,7 +63,7 @@ public class CopyPeriodDialogCtrl {
             getModel().setConfig(c);
         }
         String title = c.getTitle();
-        if (StringUtils.isEmpty(title)) {
+        if (StringUtils.isBlank(title)) {
             title = "Copier Periode";
         }
         getModel().setTitle(title);

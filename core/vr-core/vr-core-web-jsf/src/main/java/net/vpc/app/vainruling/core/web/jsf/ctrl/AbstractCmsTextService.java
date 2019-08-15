@@ -170,7 +170,7 @@ public abstract class AbstractCmsTextService implements CmsTextService {
         if (articleDisposition != null) {
             actionName = articleDisposition.getActionName();
         }
-        if (StringUtils.isEmpty(actionName)) {
+        if (StringUtils.isBlank(actionName)) {
             actionName = "$$" + disposition;
         }
         return actionName;

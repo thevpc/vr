@@ -7,13 +7,13 @@ import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.cache.CacheService;
 import net.vpc.app.vainruling.core.service.model.*;
 import net.vpc.app.vainruling.core.service.util.VrPasswordStrategyNin;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicFormerStudent;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudentStage;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.EmploymentDelay;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicClass;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicProgram;
-import net.vpc.app.vainruling.plugins.academic.service.model.internship.current.AcademicInternship;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicFormerStudent;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicStudent;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicStudentStage;
+import net.vpc.app.vainruling.plugins.academic.model.config.EmploymentDelay;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicClass;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicProgram;
+import net.vpc.app.vainruling.plugins.academic.model.internship.current.AcademicInternship;
 import net.vpc.app.vainruling.plugins.academic.service.util.AcademicStudentProfileFilter;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.Action;
@@ -100,7 +100,7 @@ public class AcademicPluginBodyStudents extends AcademicPluginBody {
                 + " where "
                 + " x.deleted=false "
                 + (stage == null ? "" : " and x.stage=:stage ")
-                + ((StringUtils.isEmpty(studentUpqlFilter)) ? "" : (" and " + studentUpqlFilter))
+                + ((StringUtils.isBlank(studentUpqlFilter)) ? "" : (" and " + studentUpqlFilter))
                 + " order by x.user.fullName")
                 .setParameter("stage", AcademicStudentStage.ATTENDING, stage != null)
                 .getResultList();
@@ -232,23 +232,23 @@ public class AcademicPluginBodyStudents extends AcademicPluginBody {
             return Collections.EMPTY_LIST;
         }
         StringBuilder sb = new StringBuilder();
-        sb.append("Select a from AcademicStudent a where 1=1 ");
+        sb.append("Select a from AcademicStudent a where 1=0 ");
         if (ns.contains(1)) {
             ns.remove(1);
-            sb.append("and a.lasClass1Id=:clsId");
+            sb.append(" or a.lastClass1Id=:clsId ");
         }
         if (ns.contains(2)) {
             ns.remove(2);
-            sb.append("and a.lasClass2Id=:clsId");
+            sb.append(" or a.lastClass2Id=:clsId ");
         }
         if (ns.contains(3)) {
             ns.remove(3);
-            sb.append("and a.lasClass3Id=:clsId");
+            sb.append(" or a.lastClass3Id=:clsId ");
         }
         if (!ns.isEmpty()) {
             throw new IllegalArgumentException("Invalid class Number " + ns);
         }
-        return pu.createQuery(sb.toString()).setParameter("classId", classId).getResultList();
+        return pu.createQuery(sb.toString()).setParameter("clsId", classId).getResultList();
     }
 
     public void updateStudentClassByClass(int classNumber, int fromClassId, int toClassId) {
@@ -333,10 +333,10 @@ public class AcademicPluginBodyStudents extends AcademicPluginBody {
         if (t.getUser() != null) {
             name = t.resolveFullName();
         }
-        if (StringUtils.isEmpty(name) && t.getUser() != null) {
+        if (StringUtils.isBlank(name) && t.getUser() != null) {
             name = t.getUser().getLogin();
         }
-        if (StringUtils.isEmpty(name)) {
+        if (StringUtils.isBlank(name)) {
             name = "Teacher #" + t.getId();
         }
         return (name);
@@ -474,7 +474,7 @@ public class AcademicPluginBodyStudents extends AcademicPluginBody {
         List<AcademicClass> downList = null;
         Map<Integer, AcademicClass> mm = academic.findAcademicClassesMap();
         if (down) {
-            downList = academic.findAcademicDownHierarchyList(refs, mm);
+            downList = academic.findClassDownHierarchyList(refs, mm);
         }
         if (up) {
             upList = academic.findAcademicUpHierarchyList(refs, mm);

@@ -8,10 +8,8 @@ package net.vpc.app.vainruling.core.web.jsf.ctrl;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppProfile;
-import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.core.web.UPathItem;
-import net.vpc.app.vainruling.core.web.VrActionEnabler;
-import net.vpc.app.vainruling.core.web.VrController;
+import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
+import net.vpc.app.vainruling.core.service.pages.VrActionEnabler;
 import net.vpc.app.vainruling.core.web.jsf.ctrl.actions.UpdateProfileUsersActionCtrl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -19,13 +17,15 @@ import org.springframework.stereotype.Controller;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
+import net.vpc.app.vainruling.core.service.pages.VrPage;
+import net.vpc.app.vainruling.core.service.pages.VrPathItem;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@VrController(
+@VrPage(
         breadcrumb = {
-            @UPathItem(title = "Admin", css = "fa-dashboard", ctrl = "")},
+            @VrPathItem(title = "Admin", css = "fa-dashboard", ctrl = "")},
         menu = "/Contact",
         url = "/modules/admin/my-profiles"//,
 //        securityKey = CorePluginSecurity.RIGHT_CUSTOM_UPDATE_MY_PROFILES
@@ -46,7 +46,7 @@ public class UpdateMyProfilesCtrl implements VrActionEnabler {
     }
 
     @Override
-    public boolean isEnabled(net.vpc.app.vainruling.core.web.VrActionInfo data) {
+    public boolean isEnabled(net.vpc.app.vainruling.core.service.pages.VrActionInfo data) {
         if (cachedAdministrableProfiles == null) {
             cachedAdministrableProfiles = core.findAdministrableProfiles();
         }

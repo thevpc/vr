@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+
+      >
+
+    <h:head>
+
+    </h:head>
+
+    <h:body>
+
+
+        <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.jsf.Vr"-->
+        <!--@elvariable id="teacherStatFeedbackCtrl" type="net.vpc.app.vainruling.plugins.academic.teachereval.web.TeacherStatFeedbackCtrl"-->
+        <ui:composition template="#{vr.privateTemplatePath}">
+            <ui:define name="content">
+                <!--                <h:form id="buttonsForm">
+    
+                                     /.row
+                                    <div >
+                                        <p:outputLabel id="buttons">
+                                            <p:commandButton value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton " ajax="true" actionListener="# {myPlanningCtrl.onRefresh}"  update=":listForm"/>
+                                        </p:outputLabel>
+                                    </div>
+    
+                                </h:form>-->
+                <h:form id="listForm">
+                    <div class="form-group">
+                        <h:outputLabel class="col-sm-3 control-label text-navy" value="Utilisateur"/>
+                        <div class="col-sm-7">
+                            <p:selectOneMenu class="form-control vr-form-control"
+                                             id="experienceCompany"
+                                             value="#{equipmentMaintenanceCtrl.model.user}"
+                                             converter="#{vr.entityObjConverter('AppAppUser')}"
+                                             >
+                                <f:selectItems
+                                    value="#{equipmentMaintenanceCtrl.model.users}"/>
+                            </p:selectOneMenu>
+                        </div>
+                    </div>                
+                </h:form>
+            </ui:define>
+
+
+        </ui:composition>
+
+
+    </h:body>
+
+</html>

@@ -8,7 +8,7 @@ package net.vpc.app.vainruling.plugins.academic.web;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.*;
-import net.vpc.app.vainruling.core.web.OnPageLoad;
+import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.app.vainruling.core.web.jsf.ctrl.DocumentUploadListener;
 import net.vpc.app.vainruling.core.web.jsf.ctrl.DocumentsCtrl;
 import net.vpc.app.vainruling.core.web.jsf.ctrl.dialog.DocumentsUploadDialogCtrl;
@@ -16,8 +16,8 @@ import net.vpc.app.vainruling.core.web.jsf.ctrl.FileUploadEventHandler;
 import net.vpc.app.vainruling.core.service.util.ValidatorProgressHelper;
 import net.vpc.app.vainruling.core.web.jsf.VrJsf;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
-import net.vpc.app.vainruling.plugins.academic.service.model.imp.AcademicStudentImport;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicStudent;
+import net.vpc.app.vainruling.plugins.academic.model.imp.AcademicStudentImport;
 import net.vpc.common.io.PathInfo;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
@@ -34,7 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.vpc.app.vainruling.core.web.VrActionEnabler;
+import net.vpc.app.vainruling.core.service.pages.VrActionEnabler;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -110,9 +110,9 @@ public class MyStudentInfoCtrl implements DocumentUploadListener ,VrActionEnable
         h.checkNotDefault(c.getPreClassRankByProgram(),"Missing PreClassRankByProgram");
         h.checkNotDefault(c.getPreClassScore(),"Missing PreClassScore");
         h.check(c.getPreClassRank()>0 ||c.getPreClassRank2()>0,"Missing ");
-        h.check(c.getPreClassChoice1()!=null || !StringUtils.isEmpty(c.getPreClassChoice1Other()));
-        h.check(c.getPreClassChoice2()!=null || !StringUtils.isEmpty(c.getPreClassChoice2Other()));
-        h.check(c.getPreClassChoice3()!=null || !StringUtils.isEmpty(c.getPreClassChoice3Other()));
+        h.check(c.getPreClassChoice1()!=null || !StringUtils.isBlank(c.getPreClassChoice1Other()));
+        h.check(c.getPreClassChoice2()!=null || !StringUtils.isBlank(c.getPreClassChoice2Other()));
+        h.check(c.getPreClassChoice3()!=null || !StringUtils.isBlank(c.getPreClassChoice3Other()));
         getModel().setCompletion(h.getCompletionPercent());
         updateLists();
     }
@@ -196,7 +196,7 @@ public class MyStudentInfoCtrl implements DocumentUploadListener ,VrActionEnable
     }
 
     @Override
-    public boolean isEnabled(net.vpc.app.vainruling.core.web.VrActionInfo data) {
+    public boolean isEnabled(net.vpc.app.vainruling.core.service.pages.VrActionInfo data) {
         return AcademicPlugin.get().getCurrentStudent()!=null;
     }
 

@@ -5,24 +5,29 @@
  */
 package net.vpc.app.vainruling.plugins.mailbox.web;
 
-import net.vpc.app.vainruling.core.web.VRMenuProvider;
+import net.vpc.app.vainruling.core.service.menu.VRMenuInfo;
+import net.vpc.app.vainruling.core.service.menu.VRMenuLabel;
+import net.vpc.app.vainruling.core.service.pages.VrBreadcrumbItem;
+import net.vpc.app.vainruling.plugins.inbox.model.MailboxSentAttachment;
+import net.vpc.app.vainruling.plugins.inbox.model.MailboxMessageFormat;
+import net.vpc.app.vainruling.plugins.inbox.model.MailboxSent;
+import net.vpc.app.vainruling.plugins.inbox.model.MailboxReceived;
+import net.vpc.app.vainruling.plugins.inbox.model.MailboxFolder;
+import net.vpc.app.vainruling.core.service.menu.VRMenuProvider;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.obj.AppFile;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
-import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.core.web.VrController;
-import net.vpc.app.vainruling.core.web.VrControllerInfo;
+import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
+import net.vpc.app.vainruling.core.service.pages.VrPageInfo;
 
 import net.vpc.app.vainruling.core.web.jsf.ctrl.dialog.ProfileExprDialogCtrl;
-import net.vpc.app.vainruling.core.web.menu.*;
-import net.vpc.app.vainruling.core.web.obj.DialogResult;
+import net.vpc.app.vainruling.core.service.editor.DialogResult;
 import net.vpc.app.vainruling.core.web.jsf.ctrl.obj.PropertyView;
 import net.vpc.app.vainruling.core.web.jsf.ctrl.obj.PropertyViewManager;
 import net.vpc.app.vainruling.plugins.inbox.service.MailboxPlugin;
 import net.vpc.app.vainruling.plugins.inbox.service.MailboxPluginSecurity;
-import net.vpc.app.vainruling.plugins.inbox.service.model.*;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.Convert;
@@ -42,13 +47,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.vpc.app.vainruling.core.web.VrControllerInfoResolver;
+import net.vpc.app.vainruling.core.web.jsf.Vr;
+import net.vpc.app.vainruling.core.service.pages.VrPageInfoResolver;
+import net.vpc.app.vainruling.core.service.pages.VrPage;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@VrController
-public class MailboxCtrl implements VrControllerInfoResolver, VRMenuProvider {
+@VrPage
+public class MailboxCtrl implements VrPageInfoResolver, VRMenuProvider {
 
     private static final Logger log = Logger.getLogger(MailboxCtrl.class.getName());
     private Model model = new Model();
@@ -81,7 +88,7 @@ public class MailboxCtrl implements VrControllerInfoResolver, VRMenuProvider {
     }
 
     @Override
-    public VrControllerInfo resolveVrControllerInfo(String cmd) {
+    public VrPageInfo resolvePageInfo(String cmd) {
         Config config = VrUtils.parseJSONObject(cmd, Config.class);
         if (config == null) {
             config = new Config();
@@ -92,36 +99,36 @@ public class MailboxCtrl implements VrControllerInfoResolver, VRMenuProvider {
         if(config.sent) {
             switch (config.folder) {
                 case CURRENT: {
-                    return new VrControllerInfo("mailbox",cmd,getPreferredTitle(config.folder, config.sent), "Messages Envoyés","/Social", "modules/mailbox/mailbox", "fa-table", MailboxPluginSecurity.RIGHT_CUSTOM_SITE_MAILBOX,
-                            new BreadcrumbItem("Social", "Messages", "fa-dashboard", "", "")
+                    return new VrPageInfo("mailbox",cmd,getPreferredTitle(config.folder, config.sent), "Messages Envoyés","/Social", "modules/mailbox/mailbox", "fa-table", MailboxPluginSecurity.RIGHT_CUSTOM_SITE_MAILBOX,
+                            new VrBreadcrumbItem("Social", "Messages", "fa-dashboard", "", "")
                     );
                 }
                 case DELETED: {
-                    return new VrControllerInfo("mailbox",cmd,getPreferredTitle(config.folder, config.sent), "Messages Envoyés Effacés","/Social", "modules/mailbox/mailbox", "fa-table", MailboxPluginSecurity.RIGHT_CUSTOM_SITE_MAILBOX,
-                            new BreadcrumbItem("Social", "Messages", "fa-dashboard", "", "")
+                    return new VrPageInfo("mailbox",cmd,getPreferredTitle(config.folder, config.sent), "Messages Envoyés Effacés","/Social", "modules/mailbox/mailbox", "fa-table", MailboxPluginSecurity.RIGHT_CUSTOM_SITE_MAILBOX,
+                            new VrBreadcrumbItem("Social", "Messages", "fa-dashboard", "", "")
                     );
                 }
                 case ARCHIVED: {
-                    return new VrControllerInfo("mailbox",cmd,getPreferredTitle(config.folder, config.sent), "Messages Envoyés Archivés","/Social", "modules/mailbox/mailbox", "fa-table", MailboxPluginSecurity.RIGHT_CUSTOM_SITE_MAILBOX,
-                            new BreadcrumbItem("Social", "Messages", "fa-dashboard", "", "")
+                    return new VrPageInfo("mailbox",cmd,getPreferredTitle(config.folder, config.sent), "Messages Envoyés Archivés","/Social", "modules/mailbox/mailbox", "fa-table", MailboxPluginSecurity.RIGHT_CUSTOM_SITE_MAILBOX,
+                            new VrBreadcrumbItem("Social", "Messages", "fa-dashboard", "", "")
                     );
                 }
             }
         }else{
             switch (config.folder) {
                 case CURRENT: {
-                    return new VrControllerInfo("mailbox",cmd,getPreferredTitle(config.folder, config.sent), "Messages Reçus","/Social", "modules/mailbox/mailbox", "fa-table", MailboxPluginSecurity.RIGHT_CUSTOM_SITE_MAILBOX,
-                            new BreadcrumbItem("Social", "Messages", "fa-dashboard", "", "")
+                    return new VrPageInfo("mailbox",cmd,getPreferredTitle(config.folder, config.sent), "Messages Reçus","/Social", "modules/mailbox/mailbox", "fa-table", MailboxPluginSecurity.RIGHT_CUSTOM_SITE_MAILBOX,
+                            new VrBreadcrumbItem("Social", "Messages", "fa-dashboard", "", "")
                     );
                 }
                 case DELETED: {
-                    return new VrControllerInfo("mailbox",cmd,getPreferredTitle(config.folder, config.sent), "Messages Reçus Effacés","/Social", "modules/mailbox/mailbox", "fa-table", MailboxPluginSecurity.RIGHT_CUSTOM_SITE_MAILBOX,
-                            new BreadcrumbItem("Social", "Messages", "fa-dashboard", "", "")
+                    return new VrPageInfo("mailbox",cmd,getPreferredTitle(config.folder, config.sent), "Messages Reçus Effacés","/Social", "modules/mailbox/mailbox", "fa-table", MailboxPluginSecurity.RIGHT_CUSTOM_SITE_MAILBOX,
+                            new VrBreadcrumbItem("Social", "Messages", "fa-dashboard", "", "")
                     );
                 }
                 case ARCHIVED: {
-                    return new VrControllerInfo("mailbox",cmd,getPreferredTitle(config.folder, config.sent), "Messages Reçus Archivés","/Social", "modules/mailbox/mailbox", "fa-table", MailboxPluginSecurity.RIGHT_CUSTOM_SITE_MAILBOX,
-                            new BreadcrumbItem("Social", "Messages", "fa-dashboard", "", "")
+                    return new VrPageInfo("mailbox",cmd,getPreferredTitle(config.folder, config.sent), "Messages Reçus Archivés","/Social", "modules/mailbox/mailbox", "fa-table", MailboxPluginSecurity.RIGHT_CUSTOM_SITE_MAILBOX,
+                            new VrBreadcrumbItem("Social", "Messages", "fa-dashboard", "", "")
                     );
                 }
             }
@@ -201,7 +208,7 @@ public class MailboxCtrl implements VrControllerInfoResolver, VRMenuProvider {
         List<Row> list = new ArrayList<>();
         int userId = Convert.toInt(core.getCurrentUserId(), IntegerParserConfig.LENIENT_F);
         getModel().setTitle(getPreferredTitle());
-        VrApp.getBean(VrMenuManager.class).getModel().getTitleCrumb().setTitle(getModel().getTitle());
+        VrApp.getBean(Vr.class).getTitleCrumb().setTitle(getModel().getTitle());
         if (getModel().isSent()) {
             List<MailboxSent> mailboxSents = mailboxPlugin.findLocalSentMessages(userId, -1, -1, false, getModel().getFolder());
             for (MailboxSent inbox : mailboxSents) {
@@ -435,7 +442,7 @@ public class MailboxCtrl implements VrControllerInfoResolver, VRMenuProvider {
     }
 
     public String evalProfileMinusLogin(String profile, String login) {
-        if (StringUtils.isEmpty(login) || StringUtils.isEmpty(login)) {
+        if (StringUtils.isBlank(login) || StringUtils.isBlank(login)) {
             return "";
         }
         if (profile.trim().equals(login)) {
@@ -471,7 +478,7 @@ public class MailboxCtrl implements VrControllerInfoResolver, VRMenuProvider {
         if (current != null && current.isInbox()) {
             MailboxReceived r = (MailboxReceived) current.getMsg();
             String ee = evalProfileMinusLogin(r.getToProfiles(), r.getOwner().getLogin());
-            s.setToProfiles("" + r.getSender().getLogin() + (StringUtils.isEmpty(ee) ? "" : ",(" + ee + ")"));
+            s.setToProfiles("" + r.getSender().getLogin() + (StringUtils.isBlank(ee) ? "" : ",(" + ee + ")"));
             s.setCcProfiles(r.getCcProfiles());
             String subject = r.getSubject();
             if(!subject.startsWith("RE:")){
@@ -584,7 +591,7 @@ public class MailboxCtrl implements VrControllerInfoResolver, VRMenuProvider {
         } else if ("bcc".equals(action)) {
             e = getModel().getNewItem().getBccProfiles();
         }
-        return core.findUsersByProfileFilter(e, null).size();
+        return core.findUsersByProfileFilter(e, null,null).size();
     }
 
     public void openProfileExprDialog(String action) {

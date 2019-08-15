@@ -9,15 +9,13 @@ import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppConfig;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
-import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.core.web.VrController;
-import net.vpc.app.vainruling.core.web.UPathItem;
+import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.app.vainruling.plugins.academic.planning.service.AcademicPlanningPlugin;
 import net.vpc.app.vainruling.plugins.academic.planning.service.AcademicPlanningPluginSecurity;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.app.vainruling.plugins.calendars.service.model.WeekCalendar;
-import net.vpc.app.vainruling.plugins.calendars.service.model.CalendarDay;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
+import net.vpc.app.vainruling.plugins.calendars.service.dto.WeekCalendar;
+import net.vpc.app.vainruling.plugins.calendars.service.dto.CalendarDay;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.calendars.web.week.AbstractWeekCalendarCtrl;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
@@ -27,13 +25,15 @@ import javax.faces.model.SelectItem;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Controller;
+import net.vpc.app.vainruling.core.service.pages.VrPage;
+import net.vpc.app.vainruling.core.service.pages.VrPathItem;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@VrController(
+@VrPage(
         breadcrumb = {
-                @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
+                @VrPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
 //        css = "fa-table",
 //        title = "Emploi par Enseignant",
         url = "modules/academic/planning/teacher-week-calendars",
@@ -54,7 +54,7 @@ public class TeacherWeekCalendarsCtrl extends AbstractWeekCalendarCtrl {
 
     public int getPeriodId() {
         String p = "";//getModel().getSelectedPeriod();
-        if (StringUtils.isEmpty(p)) {
+        if (StringUtils.isBlank(p)) {
             CorePlugin core = VrApp.getBean(CorePlugin.class);
             AppConfig appConfig = core.getCurrentConfig();
             if(appConfig!=null) {
@@ -75,7 +75,7 @@ public class TeacherWeekCalendarsCtrl extends AbstractWeekCalendarCtrl {
         for (NamedId t : p.findEnabledTeacherNames(getPeriodId())) {
             getModel().getTeachers().add(FacesUtils.createSelectItem(t.getStringId(), t.getStringName()));
         }
-        int t = StringUtils.isEmpty(getModel().getTeacherId()) ? -1 : Integer.parseInt(getModel().getTeacherId());
+        int t = StringUtils.isBlank(getModel().getTeacherId()) ? -1 : Integer.parseInt(getModel().getTeacherId());
         WeekCalendar plannings = pl.loadTeacherPlanning(t);
         if (plannings == null) {
             updateModel(new ArrayList<CalendarDay>());

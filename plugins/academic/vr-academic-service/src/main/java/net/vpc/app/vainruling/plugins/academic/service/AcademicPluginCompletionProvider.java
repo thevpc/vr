@@ -1,8 +1,8 @@
 package net.vpc.app.vainruling.plugins.academic.service;
 
 import net.vpc.app.vainruling.core.service.util.*;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudentStage;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicStudent;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicStudentStage;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.Convert;
 import org.springframework.stereotype.Service;
@@ -12,9 +12,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import net.vpc.app.vainruling.core.service.CorePlugin;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
-import net.vpc.app.vainruling.plugins.academic.service.model.internship.AcademicInternshipInfo;
-import net.vpc.app.vainruling.plugins.academic.service.model.internship.current.AcademicInternship;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
+import net.vpc.app.vainruling.plugins.academic.model.internship.AcademicInternshipInfo;
+import net.vpc.app.vainruling.plugins.academic.model.internship.current.AcademicInternship;
 import net.vpc.upa.Action;
 import net.vpc.upa.Entity;
 import net.vpc.upa.UPA;
@@ -234,9 +234,9 @@ public class AcademicPluginCompletionProvider implements CompletionProvider {
                 h.checkNotDefault(c.getPreClassRank() > 0 ? c.getPreClassRank() : c.getPreClassRank2(), studentEntity.getField("preClassRank").getTitle());
                 h.checkNotDefault(c.getPreClassRankByProgram(), studentEntity.getField("preClassRankByProgram").getTitle());
                 h.checkNotDefault(c.getPreClassScore(), studentEntity.getField("preClassScore").getTitle());
-                h.check(c.getPreClassChoice1() != null || !StringUtils.isEmpty(c.getPreClassChoice1Other()));
-                h.check(c.getPreClassChoice2() != null || !StringUtils.isEmpty(c.getPreClassChoice2Other()));
-                h.check(c.getPreClassChoice3() != null || !StringUtils.isEmpty(c.getPreClassChoice3Other()));
+                h.check(c.getPreClassChoice1() != null || !StringUtils.isBlank(c.getPreClassChoice1Other()));
+                h.check(c.getPreClassChoice2() != null || !StringUtils.isBlank(c.getPreClassChoice2Other()));
+                h.check(c.getPreClassChoice3() != null || !StringUtils.isBlank(c.getPreClassChoice3Other()));
             }
             if (h.getCompletionPercent() < 100) {
                 if (Level.SEVERE.intValue() >= minLevel.intValue()) {

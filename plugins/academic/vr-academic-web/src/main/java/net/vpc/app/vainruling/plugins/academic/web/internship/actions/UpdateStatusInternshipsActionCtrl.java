@@ -6,15 +6,14 @@
 package net.vpc.app.vainruling.plugins.academic.web.internship.actions;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
-import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.jsf.DialogBuilder;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
-import net.vpc.app.vainruling.plugins.academic.service.model.internship.config.AcademicInternshipStatus;
-import net.vpc.app.vainruling.plugins.academic.service.model.internship.config.AcademicInternshipType;
-import net.vpc.app.vainruling.plugins.academic.service.model.internship.current.AcademicInternship;
-import net.vpc.app.vainruling.plugins.academic.service.model.internship.current.AcademicInternshipBoard;
-import net.vpc.app.vainruling.plugins.academic.service.model.internship.current.AcademicInternshipGroup;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
+import net.vpc.app.vainruling.plugins.academic.model.internship.config.AcademicInternshipStatus;
+import net.vpc.app.vainruling.plugins.academic.model.internship.config.AcademicInternshipType;
+import net.vpc.app.vainruling.plugins.academic.model.internship.current.AcademicInternship;
+import net.vpc.app.vainruling.plugins.academic.model.internship.current.AcademicInternshipBoard;
+import net.vpc.app.vainruling.plugins.academic.model.internship.current.AcademicInternshipGroup;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.Convert;
@@ -28,11 +27,12 @@ import javax.faces.model.SelectItem;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
+import net.vpc.app.vainruling.core.service.pages.VrPage;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@VrController
+@VrPage
 public class UpdateStatusInternshipsActionCtrl {
 
     private static final Logger log = Logger.getLogger(UpdateStatusInternshipsActionCtrl.class.getName());
@@ -94,14 +94,14 @@ public class UpdateStatusInternshipsActionCtrl {
     public void reloadInternshipStatuses() {
         List<SelectItem> all = new ArrayList<>();
         if (getModel().isUserSelectedOnly()) {
-            if (!StringUtils.isEmpty(getModel().getSelectedInternshipType())) {
+            if (!StringUtils.isBlank(getModel().getSelectedInternshipType())) {
                 int typeId = Integer.parseInt(getModel().getSelectedInternshipType());
                 for (AcademicInternshipStatus t : pi.findInternshipStatusesByType(typeId)) {
                     all.add(FacesUtils.createSelectItem(String.valueOf(t.getId()), t.getName()));
                 }
             }
         } else {
-            if (!StringUtils.isEmpty(getModel().getSelectedBoard())) {
+            if (!StringUtils.isBlank(getModel().getSelectedBoard())) {
                 int boardId = Integer.parseInt(getModel().getSelectedBoard());
                 AcademicInternshipBoard board = pi.findInternshipBoard(boardId);
 
@@ -139,7 +139,7 @@ public class UpdateStatusInternshipsActionCtrl {
     public void apply() {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         if (getModel().isUserSelectedOnly()) {
-            if (!StringUtils.isEmpty(getModel().getSelectedStatusTo())) {
+            if (!StringUtils.isBlank(getModel().getSelectedStatusTo())) {
                 int to = Integer.parseInt(getModel().getSelectedStatusTo());
                 AcademicInternshipStatus toObj = pi.findInternshipStatus(to);
                 for (String s : getModel().getSelectionIdList()) {
@@ -150,11 +150,11 @@ public class UpdateStatusInternshipsActionCtrl {
                 fireEventExtraDialogClosed();
             }
         } else if (    //xor between board and group
-                !StringUtils.isEmpty(getModel().getSelectedStatusFrom())
-                        && !StringUtils.isEmpty(getModel().getSelectedStatusTo())) {
+                !StringUtils.isBlank(getModel().getSelectedStatusFrom())
+                        && !StringUtils.isBlank(getModel().getSelectedStatusTo())) {
             int boardId = Convert.toInt(getModel().getSelectedBoard(), IntegerParserConfig.LENIENT_F);
             int groupId = Convert.toInt(getModel().getSelectedGroup(), IntegerParserConfig.LENIENT_F);
-            int from = StringUtils.isEmpty(getModel().getSelectedStatusFrom()) ? -1 : Integer.parseInt(getModel().getSelectedStatusFrom());
+            int from = StringUtils.isBlank(getModel().getSelectedStatusFrom()) ? -1 : Integer.parseInt(getModel().getSelectedStatusFrom());
             int to = Integer.parseInt(getModel().getSelectedStatusTo());
             AcademicInternshipStatus toObj = pi.findInternshipStatus(to);
 
@@ -179,7 +179,7 @@ public class UpdateStatusInternshipsActionCtrl {
     }
 
     public void fireEventExtraDialogClosed() {
-        RequestContext.getCurrentInstance().closeDialog(null);
+        DialogBuilder.closeCurrent();
     }
 
     public Model getModel() {

@@ -165,7 +165,7 @@ class CorePluginBodyContentManager extends CorePluginBody {
                 MapList<Integer, AppArticleDispositionGroup> values = entityCache.getValues();
                 for (AppArticleDispositionGroup u : values) {
                     String key = u.getName();
-                    if (!StringUtils.isEmpty(key)) {
+                    if (!StringUtils.isBlank(key)) {
                         m.put(key, u);
                     }
                 }
@@ -184,7 +184,7 @@ class CorePluginBodyContentManager extends CorePluginBody {
                 MapList<Integer, AppArticleDisposition> values = entityCache.getValues();
                 for (AppArticleDisposition u : values) {
                     String key = u.getName();
-                    if (!StringUtils.isEmpty(key)) {
+                    if (!StringUtils.isBlank(key)) {
                         m.put(key, u);
                     }
                 }
@@ -244,7 +244,7 @@ class CorePluginBodyContentManager extends CorePluginBody {
         String aurl = a.getLinkURL();
         String acss = a.getLinkClassStyle();
         List<AppArticleFile> att = new ArrayList<>();
-        if (!StringUtils.isEmpty(aname) || !StringUtils.isEmpty(aurl)) {
+        if (!StringUtils.isBlank(aname) || !StringUtils.isBlank(aurl)) {
             AppArticleFile baseArt = new AppArticleFile();
             baseArt.setId(-1);
             baseArt.setName(VrUtils.resolveFileName(aname, aurl));
@@ -340,7 +340,7 @@ class CorePluginBodyContentManager extends CorePluginBody {
                 group = userSession == null ? null : userSession.getSelectedSiteFilter();
             }
         }
-        if (StringUtils.isEmpty(group)) {
+        if (StringUtils.isBlank(group)) {
             group = "";
         }
         AppArticleDispositionGroup g = findArticleDispositionGroup(group);
@@ -405,11 +405,11 @@ class CorePluginBodyContentManager extends CorePluginBody {
                     String aurl = a.getLinkURL();
                     String acss = a.getLinkClassStyle();
                     List<AppArticleFile> att = new ArrayList<>();
-                    if (!StringUtils.isEmpty(aname) || !StringUtils.isEmpty(aurl)) {
-                        if (StringUtils.isEmpty(aname)) {
+                    if (!StringUtils.isBlank(aname) || !StringUtils.isBlank(aurl)) {
+                        if (StringUtils.isBlank(aname)) {
                             aname = VrUtils.getURLName(aurl);
                         }
-                        if (StringUtils.isEmpty(aname)) {
+                        if (StringUtils.isBlank(aname)) {
                             aname = "NoName";
                         }
                         AppArticleFile baseArt = new AppArticleFile();
@@ -516,10 +516,10 @@ class CorePluginBodyContentManager extends CorePluginBody {
                 AppUser s = t.getSender();
                 String author = s == null ? null : s.getLogin();
                 String p = t.getRecipientProfiles();
-                if (StringUtils.isEmpty(p)) {
+                if (StringUtils.isBlank(p)) {
                     return p;
                 }
-                if (StringUtils.isEmpty(author)) {
+                if (StringUtils.isBlank(author)) {
                     return p;
                 }
                 return "( " + p + " ) , " + author;
@@ -540,10 +540,10 @@ class CorePluginBodyContentManager extends CorePluginBody {
                 AppUser s = t.getSender();
                 String author = s == null ? null : s.getLogin();
                 String p = t.getRecipientProfiles();
-                if (StringUtils.isEmpty(p)) {
+                if (StringUtils.isBlank(p)) {
                     return p;
                 }
-                if (StringUtils.isEmpty(author)) {
+                if (StringUtils.isBlank(author)) {
                     return p;
                 }
                 return "( " + p + " ) , " + author;
@@ -654,7 +654,7 @@ class CorePluginBodyContentManager extends CorePluginBody {
 //                MapList<Integer, AppArticleProperty> values = entityCache.getValues();
 //                for (AppArticleProperty u : values) {
 //                    String key = u.getName();
-//                    if (!StringUtils.isEmpty(key)) {
+//                    if (!StringUtils.isBlank(key)) {
 //                        m.put(key, u.getValue());
 //                    }
 //                }

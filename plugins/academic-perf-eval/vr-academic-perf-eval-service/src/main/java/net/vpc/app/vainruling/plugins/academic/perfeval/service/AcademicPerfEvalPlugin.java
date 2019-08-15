@@ -5,24 +5,31 @@
  */
 package net.vpc.app.vainruling.plugins.academic.perfeval.service;
 
+import net.vpc.app.vainruling.plugins.academic.perfeval.model.AcademicFeedbackModel;
+import net.vpc.app.vainruling.plugins.academic.perfeval.model.AcademicFeedbackModelGroup;
+import net.vpc.app.vainruling.plugins.academic.perfeval.model.AcademicFeedbackResponse;
+import net.vpc.app.vainruling.plugins.academic.perfeval.model.AcademicFeedbackModelGroupBinding;
+import net.vpc.app.vainruling.plugins.academic.perfeval.model.AcademicFeedbackSession;
+import net.vpc.app.vainruling.plugins.academic.perfeval.model.AcademicFeedbackGroup;
+import net.vpc.app.vainruling.plugins.academic.perfeval.model.AcademicFeedback;
+import net.vpc.app.vainruling.plugins.academic.perfeval.model.AcademicFeedbackQuestion;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.TraceService;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.service.plugins.Start;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.dto.*;
-import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.*;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.servicemodel.FeedbacksStats;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPluginSecurity;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSemester;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudentStage;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicClass;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseAssignment;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCoursePlan;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseType;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicSemester;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicStudent;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicStudentStage;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicClass;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCourseAssignment;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCoursePlan;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCourseType;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +38,6 @@ import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import net.vpc.app.vainruling.core.service.plugins.VrPlugin;
-import net.vpc.app.vainruling.core.service.util.JsonUtils;
 import net.vpc.common.util.MapUtils;
 
 /**
@@ -332,7 +338,7 @@ public class AcademicPerfEvalPlugin {
             if (cc == null) {
                 return Collections.emptyList();
             }
-            Set<Integer> classes = academic.findAcademicDownHierarchyIdList(cc.getId(), null);
+            Set<Integer> classes = academic.findClassDownHierarchyIdList(cc.getId(), null);
             if (classes.isEmpty()) {
                 return Collections.emptyList();
             }
@@ -398,6 +404,13 @@ public class AcademicPerfEvalPlugin {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return pu.createQuery("Select f from AcademicFeedbackResponse f where f.feedbackId=:feedbackId")
                 .setParameter("feedbackId", feedbackId)
+                .getResultList();
+    }
+
+    public List<AcademicFeedbackResponse> findStudentFeedbackResponsesBySession(int sessionId) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        return pu.createQuery("Select f from AcademicFeedbackResponse f where f.feedback.sessionId=:sessionId order by f.feedbackId")
+                .setParameter("sessionId", sessionId)
                 .getResultList();
     }
 
@@ -479,6 +492,37 @@ public class AcademicPerfEvalPlugin {
                 .getResultList();
     }
 
+    private boolean isEmptyAcademicFeedbackResponse(AcademicFeedbackResponse aa) {
+        return (StringUtils.isBlank(aa.getResponse()));
+    }
+
+    public void resetStudentsFeedbackForm(int academicFeedbackSessionId, boolean force) {
+        List<AcademicFeedbackResponse> all = findStudentFeedbackResponsesBySession(academicFeedbackSessionId);
+        List<AcademicFeedbackResponse> curr = new ArrayList<>();
+        int last = -1;
+        final PersistenceUnit pu = UPA.getPersistenceUnit();
+        for (AcademicFeedbackResponse r : all) {
+            int r2 = r.getFeedback().getId();
+            if (r2 != last) {
+                if (curr.size() > 0 && (force || curr.stream().filter(x -> !isEmptyAcademicFeedbackResponse(x)).count() == 0)) {
+                    for (AcademicFeedbackResponse rr : curr) {
+                        pu.remove(rr);
+                    }
+                    pu.remove(curr.get(0).getFeedback());
+                }
+                curr.clear();
+            }
+            curr.add(r);
+            last = r2;
+        }
+        if (curr.size() > 0 && (force || curr.stream().filter(x -> !isEmptyAcademicFeedbackResponse(x)).count() == 0)) {
+            for (AcademicFeedbackResponse rr : curr) {
+                pu.remove(rr);
+            }
+            pu.remove(curr.get(0).getFeedback());
+        }
+    }
+
     public void generateStudentsFeedbackForm(int academicFeedbackSessionId) {
         final PersistenceUnit pu = UPA.getPersistenceUnit();
 
@@ -507,7 +551,7 @@ public class AcademicPerfEvalPlugin {
 
         TraceService traceService = TraceService.get();
         final String modelNames = modelsByCourseType.values().stream().map(m -> m.toString()).collect(Collectors.joining(","));
-        Map<String, Object> traceParams = MapUtils.map("model", modelNames, "filter", studentProfileFilter);
+        final Map<String, Object> traceParams = MapUtils.map("model", modelNames, "filter", studentProfileFilter);
         try {
             traceService.trace("Academic.generate-students-feedback-form", "start", traceParams,
                     "/Education/Evaluation",
@@ -518,7 +562,8 @@ public class AcademicPerfEvalPlugin {
                 public void run() {
 
                     final List<AcademicStudent> availableStudents = academic.findStudents(studentProfileFilter, AcademicStudentStage.ATTENDING, "x.allowCourseFeedback=true");
-
+                    long count0 = availableStudents.size();
+                    long count1 = 0;
                     for (AcademicStudent s : availableStudents) {
                         //allowCourseFeedback
                         boolean allowCourseFeedback;
@@ -538,16 +583,36 @@ public class AcademicPerfEvalPlugin {
                                 .setParameter("periodId", academicFeedbackSession.getPeriod().getId())
                                 .setParameter("studentId", s.getId())
                                 .getValueSet(0);
+                        if (assignements.isEmpty()) {
+                            traceService.trace("Academic.generate-students-feedback-form", "warning", MapUtils.map(
+                                    "message", "Student without assignements : " + s.getUser() == null ? String.valueOf(s.getId()) : s.getUser().getFullName()
+                            ),
+                                    "/Education/Evaluation",
+                                    java.util.logging.Level.WARNING
+                            );
+                        }
                         for (AcademicCourseAssignment assignement : assignements) {
                             //if(myClasses.contains(assignement.resolveAcademicClass().getId())){
                             if (assignement.getCourseType() == null) {
                                 //log error?
+                                traceService.trace("Academic.generate-students-feedback-form", "warning", MapUtils.map(
+                                        "message", "assignement without course type : " + assignement.toString()
+                                ),
+                                        "/Education/Evaluation",
+                                        java.util.logging.Level.WARNING
+                                );
                                 continue;
                             }
                             if (!existingAssignementIds.contains(assignement.getId())) {
                                 if (!"PFE-PFE".equals(assignement.getName())) {
                                     AcademicFeedbackModel model = modelsByCourseType.get(assignement.getCourseType().getId());
                                     if (model == null) {
+//                                        traceService.trace("Academic.generate-students-feedback-form", "warning", MapUtils.map(
+//                                                "message", "assignement without model : " + assignement.toString()
+//                                        ),
+//                                                "/Education/Evaluation",
+//                                                java.util.logging.Level.WARNING
+//                                        );
                                         continue;
                                     }
                                     List<AcademicFeedbackQuestion> academicFeedbackQuestions = questionsByModel.get(model.getId());
@@ -582,13 +647,13 @@ public class AcademicPerfEvalPlugin {
                 }
             }
             ).run();
-            traceService.trace("Academic.generateStudentsFeedbackForm", "success", traceParams,
+            traceService.trace("Academic.generate-students-feedback-form", "success", traceParams,
                     "/Education/Evaluation",
                     java.util.logging.Level.INFO
             );
         } catch (Exception ex) {
-            traceParams = MapUtils.map("model", modelNames, "filter", studentProfileFilter, "error", ex.getMessage());
-            traceService.trace("Academic.generateStudentsFeedbackForm", "error", traceParams,
+            Map<String, Object> traceParams2 = MapUtils.map("model", modelNames, "filter", studentProfileFilter, "error", ex.getMessage());
+            traceService.trace("Academic.generate-students-feedback-form", "error", traceParams2,
                     "/Education/Evaluation",
                     java.util.logging.Level.SEVERE
             );
@@ -635,7 +700,7 @@ public class AcademicPerfEvalPlugin {
                 feedbacksIds[i] = feedbacks.get(i).getId();
             }
             for (AcademicFeedbackResponse r : findStudentFeedbackResponses(feedbacksIds)) {
-                if (!StringUtils.isEmpty(r.getResponse())) {
+                if (!StringUtils.isBlank(r.getResponse())) {
                     countValidResponses++;
                     QuestionView qv = questionsMap.get(r.getQuestion().getId());
                     int studentId = r.getFeedback().getStudent().getId();
@@ -686,7 +751,7 @@ public class AcademicPerfEvalPlugin {
         for (AcademicFeedbackResponse r : findStudentFeedbackResponses(feedbacksIds)) {
             Studentinfo studentinfo = studentinfoMap.get(r.getFeedback().getStudent().getId());
             studentinfo.setMaxAnswers(studentinfo.getMaxAnswers() + 1);
-            if (!StringUtils.isEmpty(r.getResponse())) {
+            if (!StringUtils.isBlank(r.getResponse())) {
                 studentinfo.setAnswers(studentinfo.getAnswers() + 1);
             }
         }

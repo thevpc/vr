@@ -1,7 +1,7 @@
 package net.vpc.app.vainruling.plugins.academic.pbl.service;
 
 import net.vpc.app.vainruling.core.service.util.*;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicStudent;
 import net.vpc.common.util.Convert;
 import org.springframework.stereotype.Service;
 
@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.logging.Level;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.plugins.academic.pbl.service.dto.ApblStudentInfo;
-import net.vpc.app.vainruling.plugins.academic.pbl.service.model.ApblSession;
+import net.vpc.app.vainruling.plugins.academic.pbl.model.ApblSession;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.upa.Action;
 import net.vpc.upa.UPA;

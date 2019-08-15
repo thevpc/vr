@@ -7,8 +7,8 @@ package net.vpc.app.vainruling.plugins.calendars.web.week;
 
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.web.VrColorTable;
-import net.vpc.app.vainruling.plugins.calendars.service.model.CalendarDay;
-import net.vpc.app.vainruling.plugins.calendars.service.model.CalendarHour;
+import net.vpc.app.vainruling.plugins.calendars.service.dto.CalendarDay;
+import net.vpc.app.vainruling.plugins.calendars.service.dto.CalendarHour;
 import net.vpc.common.strings.StringUtils;
 
 import java.util.ArrayList;
@@ -38,10 +38,10 @@ public class AbstractWeekCalendarCtrl {
         Set<String> classes = new HashSet<>();
         for (CalendarDay p : plannings) {
             for (CalendarHour h : p.getHours()) {
-                if (!StringUtils.isEmpty(h.getSubject())) {
+                if (!StringUtils.isBlank(h.getSubject())) {
                     courses.add(h.getSubject().trim());
                 }
-                if (!StringUtils.isEmpty(h.getStudents())) {
+                if (!StringUtils.isBlank(h.getStudents())) {
                     classes.add(h.getStudents().trim());
                 }
             }

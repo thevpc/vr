@@ -160,7 +160,7 @@ and open the template in the editor.
                 </h:form>
                 <h:form id="listForm">
 
-                    <div >
+                    <div>
                         <div class="table-responsive">
                             <h1>
                                 <ui:fragment rendered="#{myCourseLoadCtrl.model.currentTeacher ne null}">
@@ -197,9 +197,9 @@ and open the template in the editor.
                                     <p:column><p:outputLabel
                                             value="#{myCourseLoadCtrl.model.stat.val.value.tppm}"><f:convertNumber
                                                 pattern="#0.000"/></p:outputLabel></p:column>
-<!--                                    <p:column><p:outputLabel
-                                            value="#_{myCourseLoadCtrl.model.stat.val.value.equiv}"><f:convertNumber
-                                                pattern="#0.000"/></p:outputLabel></p:column>-->
+                                    <!--                                    <p:column><p:outputLabel
+                                                                                value="#_{myCourseLoadCtrl.model.stat.val.value.equiv}"><f:convertNumber
+                                                                                    pattern="#0.000"/></p:outputLabel></p:column>-->
                                     <p:column><p:outputLabel
                                             value="#{myCourseLoadCtrl.model.stat.val.valueWeek.equiv}"><f:convertNumber
                                                 pattern="#0.000"/></p:outputLabel></p:column>
@@ -237,9 +237,9 @@ and open the template in the editor.
                                                     pattern="#0.000"/></p:outputLabel></p:column>
                                         <p:column><p:outputLabel value="#{sem.val.value.tppm}"><f:convertNumber
                                                     pattern="#0.000"/></p:outputLabel></p:column>
-<!--                                        <p:column><p:outputLabel
-                                                value="#_{sem.val.value.equiv}"><f:convertNumber
-                                                    pattern="#0.000"/></p:outputLabel></p:column>-->
+                                        <!--                                        <p:column><p:outputLabel
+                                                                                        value="#_{sem.val.value.equiv}"><f:convertNumber
+                                                                                            pattern="#0.000"/></p:outputLabel></p:column>-->
                                         <p:column><p:outputLabel
                                                 value="#{sem.val.valueWeek.equiv}"><f:convertNumber
                                                     pattern="#0.000"/></p:outputLabel></p:column>
@@ -266,70 +266,403 @@ and open the template in the editor.
                                 </c:forEach>
                             </p:panelGrid>
                         </div>
-                    </div>
 
-                    <ui:repeat value="#{myCourseLoadCtrl.model.stat.semesters}" var="sem">
+                        <div>
+                            <p:commandButton 
+                                rendered="#{!myCourseLoadCtrl.model.enableLoadConfirmation and !myCourseLoadCtrl.model.loadConfirmed}"
+                                value="Je confirme ma charge!" icon="vr-form-field vr-form-fixed-width-medium ui-ribbonicon-refresh"
+                                styleClass="ui-ribbon-bigbutton " ajax="true"
+                                actionListener="#{myCourseLoadCtrl.onConfirmLoad}" update=":listForm"
+                                />
+                            <p:outputLabel value="Ma charge est confirmée" rendered="#{myCourseLoadCtrl.model.loadConfirmed}"/>
+                        </div>
+
+                        <ui:repeat value="#{myCourseLoadCtrl.model.stat.semesters}" var="sem">
+                            <div >
+                                <div class="table-responsive">
+                                    <h1>Semestre #{sem.val.semester.name}</h1>
+                                    <p:dataTable var="i" value="#{sem.assignments}"
+                                                 class="table table-bordered table-hover"
+                                                 paginatorAlwaysVisible="false"
+                                                 paginator="true"
+                                                 paginatorPosition="bottom"
+                                                 rows="20"
+                                                 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                                 rowsPerPageTemplate="10,20,50"
+                                                 emptyMessage="Aucune charge"
+                                                 >
+                                        <p:column styleClass="ui-widget-header" headerText="" width="5%">
+                                            <f:facet name="header">
+                                                <p:commandButton
+                                                    rendered="#{myCourseLoadCtrl.model.enableLoadEditing and myCourseLoadCtrl.model.multipleSelection}"
+                                                    actionListener="#{myCourseLoadCtrl.removeFromMineCurrSelected()}"
+                                                    update=":listForm" title="Clickez ici pour supprimer les voeux sélectionnés"
+                                                    icon="fa fa-trash"
+                                                    />
+                                                <p:commandButton
+                                                    rendered="#{myCourseLoadCtrl.model.enableLoadEditing and myCourseLoadCtrl.model.multipleSelection}"
+                                                    actionListener="#{myCourseLoadCtrl.addToMineCurrSelected()}"
+                                                    update=":listForm" title="Clickez ici pour confirmer les propositions sélectionnées"
+                                                    icon="fa fa-heart"
+                                                    />
+                                            </f:facet>
+                                            <p:selectBooleanCheckbox
+                                                rendered="#{myCourseLoadCtrl.model.enableLoadEditing and myCourseLoadCtrl.model.multipleSelection and !i.assigned}"
+                                                value="#{i.selected}"
+                                                update=":listForm" title="Clickez ici pour supprimer le voeux"/>
+                                            <p:commandButton
+                                                rendered="#{myCourseLoadCtrl.model.enableLoadEditing and !myCourseLoadCtrl.model.multipleSelection}"
+                                                disabled="#{i.assigned}"
+                                                value="-"
+                                                actionListener="#{myCourseLoadCtrl.removeFromMine(i.assignment.id)}"
+                                                update=":listForm" title="Clickez ici pour supprimer le voeux"/>
+                                            <ui:fragment rendered="#{i.assignment.locked or i.assignment.coursePlan.locked}"><i class="fa  fa-lock"></i></ui:fragment>
+                                        </p:column>
+                                        <p:column headerText="Etat" width="5%">
+                                            <ui:fragment rendered="#{i.currentAssigned}">
+                                                <span class="fa fa-check" style="color:forestgreen" title="Assigné"></span>
+                                            </ui:fragment>
+                                            <ui:fragment rendered="#{i.currentProposal}">
+                                                <span class="fa fa-gift" style="color:darkorange" title="Proposition"></span>
+                                            </ui:fragment>
+                                            <ui:fragment rendered="#{i.currentWish}">
+                                                <span class="fa fa-heart" style="color:deeppink" title="Voeu"></span>
+                                            </ui:fragment>
+                                            <ui:fragment rendered="#{i.assignment.locked or i.assignment.coursePlan.locked}">
+                                                <span class="fa fa-lock" style="color:goldenrod" title="Voeu"></span>
+                                            </ui:fragment>
+                                        </p:column>
+                                        <p:column headerText="Classe" width="8%">
+                                            <h:outputText value="#{i.academicClass.name}"/>
+                                        </p:column>
+                                        <p:column headerText="Module">
+                                            <h:outputText action="#{myCourseLoadCtrl.gotoCourseAssignment(i.assignment)}"
+                                                          value="#{i.assignment.coursePlan.name} - #{i.assignment.courseType.name}"
+                                                          styleClass="#{i.currentAssigned?'vr-assigned-course':''}"/>
+                                        </p:column>
+                                        <p:column headerText="C" width="5%">
+                                            <h:outputText
+                                                value="#{i.assignment.valueC != 0 ? i.assignment.valueC : ''}"/>
+                                        </p:column>
+                                        <p:column headerText="TD" width="5%">
+                                            <h:outputText
+                                                value="#{i.assignment.valueTD != 0 ? i.assignment.valueTD : ''}"/>
+                                        </p:column>
+                                        <p:column headerText="TP" width="5%">
+                                            <h:outputText
+                                                value="#{i.assignment.valueTP != 0 ? i.assignment.valueTP : ''}"/>
+                                        </p:column>
+                                        <p:column headerText="PM" width="5%">
+                                            <h:outputText
+                                                value="#{i.assignment.valuePM != 0 ? i.assignment.valuePM : ''}"/>
+                                        </p:column>
+                                        <p:column headerText="Equiv Ann." width="5%">
+                                            <h:outputText value="#{i.equivValue != 0 ? i.equivValue : ''}"><f:convertNumber pattern="#0.000"/></h:outputText>
+                                        </p:column>
+                                        <p:column headerText="Grp" width="3%">
+                                            <h:outputText value="#{i.assignment.groupCount}"><f:convertNumber
+                                                    pattern="#0.#"/></h:outputText>
+                                        </p:column>
+                                        <p:column headerText="Voeux des autres" width="20%">
+                                            <ui:repeat value="#{i.intents}" var="ci">
+                                                <h:outputText value=" #{ci}" 
+                                                              styleClass="#{ci.assigned?'vr-label-valid fa fa-check':ci.wish ?'vr-label-warn fa fa-heart':ci.proposal?'vr-label-info fa fa-heart':'vr-label-invalid'}"
+                                                              style="margin-right: 3px; #{ci.assigned?'color:forestgreen':ci.wish ?'color:deeppink':ci.proposal?'color:darkorange':''}"
+                                                              />
+                                            </ui:repeat>
+                                        </p:column>
+                                        <p:column headerText="Collaborateurs" width="10%" rendered="#{myCourseLoadCtrl.model.isCurrentTeacherFilter('collaborators')}">
+                                            <ui:repeat value="#{i.courseIntents}" var="ci">
+                                                <h:outputText value=" #{ci}" 
+                                                              styleClass="#{ci.assigned?'vr-label-valid fa fa-check':ci.wish ?'vr-label-warn fa fa-heart':ci.proposal?'vr-label-info fa fa-heart':'vr-label-invalid'}"
+                                                              style="margin-right: 3px; #{ci.assigned?'color:forestgreen':ci.wish ?'color:deeppink':ci.proposal?'color:darkorange':''}"
+                                                              />
+                                            </ui:repeat>
+                                        </p:column>
+                                        <p:column headerText="Salles" width="5%" rendered="#{myCourseLoadCtrl.model.isCurrentTeacherFilter('rooms')}">
+                                            <h:outputText value="#{i.rooms}"/>
+                                        </p:column>
+                                    </p:dataTable>
+                                </div>
+                            </div>
+                        </ui:repeat>
+
+                        <p:separator/>
+
                         <div >
                             <div class="table-responsive">
-                                <h1>Semestre #{sem.val.semester.name}</h1>
-                                <p:dataTable var="i" value="#{sem.assignments}"
+                                <h1>Autres modules <p:commandButton value="Afficher/Cacher" action="#{myCourseLoadCtrl.onSwitchDisplayOtherModules}"
+                                                                    style="margin-left:10px; width:130px" update=":listForm" /></h1>
+
+
+                                <div>
+                                    <p:fieldset legend="Filtres Autres..." toggleable="true" toggleSpeed="500"
+                                                rendered="#{myCourseLoadCtrl.model.displayOtherModules}"
+                                                >
+                                        <div>
+                                            <div>
+                                                <p:outputLabel value="Modules"
+                                                               styleClass="vr-form-field vr-form-fixed-width-medium vr-form-indented-child"/>
+                                                <div class="vr-form-sub-rows">
+                                                    <div class="vr-form-sub-row">
+                                                        <!--                                                        <p:selectCheckboxMenu
+                                                                                                                    styleClass="vr-form-field #_{myCourseLoadCtrl.othersCourseFilter.model.selectedTeachers.isEmpty() ?'':'vr-form-selected-many-selected'}"
+                                                                                                                    value="#_{myCourseLoadCtrl.othersCourseFilter.model.selectedTeachers}"
+                                                                                                                    label="Enseignants"
+                                                                                                                    filter="true" filterMatchMode="startsWith"
+                                                                                                                    panelStyle="width:250px">
+                                                                                                                    <p:ajax listener="#_{myCourseLoadCtrl.onRefreshFiltersChanged}"
+                                                                                                                            update=":listForm :buttonsForm"/>
+                                                                                                                    <f:selectItems
+                                                                                                                        value="#_{myCourseLoadCtrl.othersCourseFilter.model.teacherItems}"/>
+                                                                                                                </p:selectCheckboxMenu>-->
+                                                        <!--                                                        <p:selectCheckboxMenu
+                                                                                                                    styleClass="vr-form-field #_{myCourseLoadCtrl.othersCourseFilter.model.selectedTeacherDegrees.isEmpty() ?'':'vr-form-selected-many-selected'}"
+                                                                                                                    value="#_{myCourseLoadCtrl.othersCourseFilter.model.selectedTeacherDegrees}"
+                                                                                                                    label="Grades"
+                                                                                                                    filter="true" filterMatchMode="startsWith"
+                                                                                                                    panelStyle="width:250px">
+                                                                                                                    <p:ajax listener="#_{myCourseLoadCtrl.onRefreshFiltersChanged}"
+                                                                                                                            update=":listForm :buttonsForm"/>
+                                                                                                                    <f:selectItems
+                                                                                                                        value="#_{myCourseLoadCtrl.othersCourseFilter.model.teacherDegreeItems}"/>
+                                                                                                                </p:selectCheckboxMenu>-->
+                                                        <p:selectCheckboxMenu
+                                                            styleClass="vr-form-field #{myCourseLoadCtrl.othersCourseFilter.model.selectedTeacherDepartments.isEmpty() ?'':'vr-form-selected-many-selected'}"
+                                                            value="#{myCourseLoadCtrl.othersCourseFilter.model.selectedTeacherDepartments}"
+                                                            label="Dept. Enseignants"
+                                                            filter="true" filterMatchMode="startsWith"
+                                                            panelStyle="width:250px">
+                                                            <p:ajax listener="#{myCourseLoadCtrl.onRefreshFiltersChanged}"
+                                                                    update=":listForm :buttonsForm"/>
+                                                            <f:selectItems
+                                                                value="#{myCourseLoadCtrl.othersCourseFilter.model.departmentItems}"/>
+                                                        </p:selectCheckboxMenu>
+                                                        <p:selectCheckboxMenu
+                                                            styleClass="vr-form-field #{myCourseLoadCtrl.othersCourseFilter.model.selectedTeacherDisciplines.isEmpty() ?'':'vr-form-selected-many-selected'}"
+                                                            value="#{myCourseLoadCtrl.othersCourseFilter.model.selectedTeacherDisciplines}"
+                                                            label="Disciplines Enseignants"
+                                                            filter="true" filterMatchMode="startsWith"
+                                                            panelStyle="width:250px">
+                                                            <p:ajax listener="#{myCourseLoadCtrl.onRefreshFiltersChanged}"
+                                                                    update=":listForm :buttonsForm"/>
+                                                            <f:selectItems
+                                                                value="#{myCourseLoadCtrl.othersCourseFilter.model.teacherDisciplineItems}"/>
+                                                        </p:selectCheckboxMenu>
+                                                        <p:selectCheckboxMenu
+                                                            styleClass="vr-form-field #{myCourseLoadCtrl.othersCourseFilter.model.selectedTeacherSituations.isEmpty() ?'':'vr-form-selected-many-selected'}"
+                                                            value="#{myCourseLoadCtrl.othersCourseFilter.model.selectedTeacherSituations}"
+                                                            label="Situations Enseignants"
+                                                            filter="true" filterMatchMode="startsWith"
+                                                            panelStyle="width:250px">
+                                                            <p:ajax listener="#{myCourseLoadCtrl.onRefreshFiltersChanged}"
+                                                                    update=":listForm :buttonsForm"/>
+                                                            <f:selectItems
+                                                                value="#{myCourseLoadCtrl.othersCourseFilter.model.teacherSituationItems}"/>
+                                                        </p:selectCheckboxMenu>
+                                                    </div>
+                                                    <div class="vr-form-sub-row">
+                                                        <p:selectCheckboxMenu
+                                                            styleClass="vr-form-field #{myCourseLoadCtrl.othersCourseFilter.model.selectedSemesters.isEmpty() ?'':'vr-form-selected-many-selected'}"
+                                                            value="#{myCourseLoadCtrl.othersCourseFilter.model.selectedSemesters}"
+                                                            label="Semestres"
+                                                            filter="true" filterMatchMode="startsWith"
+                                                            panelStyle="width:250px">
+                                                            <p:ajax listener="#{myCourseLoadCtrl.onRefreshFiltersChanged}"
+                                                                    update=":listForm :buttonsForm"/>
+                                                            <f:selectItems
+                                                                value="#{myCourseLoadCtrl.othersCourseFilter.model.semesterItems}"/>
+                                                        </p:selectCheckboxMenu>
+                                                        <p:selectCheckboxMenu
+                                                            styleClass="vr-form-field #{myCourseLoadCtrl.othersCourseFilter.model.selectedProgramTypes.isEmpty() ?'':'vr-form-selected-many-selected'}"
+                                                            value="#{myCourseLoadCtrl.othersCourseFilter.model.selectedProgramTypes}"
+                                                            label="Type Formation"
+                                                            filter="true" filterMatchMode="startsWith"
+                                                            panelStyle="width:250px">
+                                                            <p:ajax listener="#{myCourseLoadCtrl.onRefreshFiltersChanged}"
+                                                                    update=":listForm :buttonsForm"/>
+                                                            <f:selectItems
+                                                                value="#{myCourseLoadCtrl.othersCourseFilter.model.programTypeItems}"/>
+                                                        </p:selectCheckboxMenu>
+                                                        <p:selectCheckboxMenu
+                                                            styleClass="vr-form-field #{myCourseLoadCtrl.othersCourseFilter.model.selectedCourseTypes.isEmpty() ?'':'vr-form-selected-many-selected'}"
+                                                            value="#{myCourseLoadCtrl.othersCourseFilter.model.selectedCourseTypes}"
+                                                            label="Types Modules"
+                                                            filter="true" filterMatchMode="startsWith"
+                                                            panelStyle="width:250px">
+                                                            <p:ajax listener="#{myCourseLoadCtrl.onRefreshFiltersChanged}"
+                                                                    update=":listForm :buttonsForm"/>
+                                                            <f:selectItems
+                                                                value="#{myCourseLoadCtrl.othersCourseFilter.model.courseTypeItems}"/>
+                                                        </p:selectCheckboxMenu>
+                                                        <p:selectCheckboxMenu
+                                                            styleClass="vr-form-field #{myCourseLoadCtrl.othersCourseFilter.model.selectedCourseDisciplines.isEmpty() ?'':'vr-form-selected-many-selected'}"
+                                                            value="#{myCourseLoadCtrl.othersCourseFilter.model.selectedCourseDisciplines}"
+                                                            label="Disciplines Modules"
+                                                            filter="true" filterMatchMode="startsWith"
+                                                            panelStyle="width:250px">
+                                                            <p:ajax listener="#{myCourseLoadCtrl.onRefreshFiltersChanged}"
+                                                                    update=":listForm :buttonsForm"/>
+                                                            <f:selectItems
+                                                                value="#{myCourseLoadCtrl.othersCourseFilter.model.teacherDisciplineItems}"/>
+                                                        </p:selectCheckboxMenu>
+                                                        <p:selectCheckboxMenu
+                                                            styleClass="vr-form-field #{myCourseLoadCtrl.othersCourseFilter.model.selectedClasses.isEmpty() ?'':'vr-form-selected-many-selected'}"
+                                                            value="#{myCourseLoadCtrl.othersCourseFilter.model.selectedClasses}"
+                                                            label="Classes"
+                                                            filter="true" filterMatchMode="startsWith"
+                                                            panelStyle="width:250px">
+                                                            <p:ajax listener="#{myCourseLoadCtrl.onRefreshFiltersChanged}"
+                                                                    update=":listForm :buttonsForm"/>
+                                                            <f:selectItems
+                                                                value="#{myCourseLoadCtrl.othersCourseFilter.model.classItems}"/>
+                                                        </p:selectCheckboxMenu>
+                                                    </div>
+                                                    <div class="vr-form-sub-row">
+                                                        <p:selectCheckboxMenu
+                                                            styleClass="vr-form-field #{myCourseLoadCtrl.othersCourseFilter.model.selectedDepartments.isEmpty() ?'':'vr-form-selected-many-selected'}"
+                                                            value="#{myCourseLoadCtrl.othersCourseFilter.model.selectedDepartments}"
+                                                            label="Departement"
+                                                            filter="true" filterMatchMode="startsWith"
+                                                            panelStyle="width:250px">
+                                                            <p:ajax listener="#{myCourseLoadCtrl.onRefreshFiltersChanged}"
+                                                                    update=":listForm :buttonsForm"/>
+                                                            <f:selectItems
+                                                                value="#{myCourseLoadCtrl.othersCourseFilter.model.departmentItems}"/>
+                                                        </p:selectCheckboxMenu>
+<!--                                                        <p:selectCheckboxMenu
+                                                            styleClass="vr-form-field #_{myCourseLoadCtrl.othersCourseFilter.model.selectedOwnerDepartments.isEmpty() ?'':'vr-form-selected-many-selected'}"
+                                                            value="#_{myCourseLoadCtrl.othersCourseFilter.model.selectedOwnerDepartments}"
+                                                            label="Géré par..."
+                                                            filter="true" filterMatchMode="startsWith"
+                                                            panelStyle="width:250px">
+                                                            <p:ajax listener="#_{myCourseLoadCtrl.onRefreshFiltersChanged}"
+                                                                    update=":listForm :buttonsForm"/>
+                                                            <f:selectItems
+                                                                value="#_{myCourseLoadCtrl.othersCourseFilter.model.departmentItems}"/>
+                                                        </p:selectCheckboxMenu>-->
+                                                        <p:selectCheckboxMenu
+                                                            styleClass="vr-form-field #{myCourseLoadCtrl.othersCourseFilter.model.selectedLabels.isEmpty() ?'':'vr-form-selected-many-selected'}"
+                                                            value="#{myCourseLoadCtrl.othersCourseFilter.model.selectedLabels}"
+                                                            label="Label"
+                                                            filter="true" filterMatchMode="startsWith"
+                                                            panelStyle="width:250px">
+                                                            <p:ajax listener="#{myCourseLoadCtrl.onRefreshFiltersChanged}"
+                                                                    update=":listForm :buttonsForm"/>
+                                                            <f:selectItems
+                                                                value="#{myCourseLoadCtrl.othersCourseFilter.model.labelItems}"/>
+                                                        </p:selectCheckboxMenu>
+                                                        <!--                                                        <p:selectCheckboxMenu
+                                                                                                                    styleClass="vr-form-field #_{myCourseLoadCtrl.othersCourseFilter.model.selectedDeviationGroups.isEmpty() ?'':'vr-form-selected-many-selected'}"
+                                                                                                                    value="#_{myCourseLoadCtrl.othersCourseFilter.model.selectedDeviationGroups}"
+                                                                                                                    label="Groupe Balance"
+                                                                                                                    filter="true" filterMatchMode="startsWith"
+                                                                                                                    panelStyle="width:250px">
+                                                                                                                    <p:ajax listener="#_{myCourseLoadCtrl.onRefreshFiltersChanged}"
+                                                                                                                            update=":listForm :buttonsForm"/>
+                                                                                                                    <f:selectItems
+                                                                                                                        value="#_{myCourseLoadCtrl.othersCourseFilter.model.deviationGroupItems}"/>
+                                                                                                                </p:selectCheckboxMenu>-->
+                                                    </div>
+                                                    <div class="vr-form-sub-row">
+                                                        <div class="table-responsive">
+                                                            <p:selectManyCheckbox styleClass="vr-form-field"
+                                                                                  value="#{myCourseLoadCtrl.othersCourseFilter.model.refreshFilterSelected}"
+                                                                                  layout="grid" 
+                                                                                  columns="5">
+                                                                <p:ajax listener="#{myCourseLoadCtrl.onRefreshFiltersChanged}"
+                                                                        update=":listForm"/>
+                                                                <f:selectItems
+                                                                    value="#{myCourseLoadCtrl.othersCourseFilter.model.refreshFilterItems}"/>
+                                                            </p:selectManyCheckbox>
+                                                        </div>
+                                                    </div>
+                                                    <div class="vr-form-sub-row">
+                                                        <p:selectManyCheckbox styleClass="vr-form-field"
+                                                                              value="#{myCourseLoadCtrl.model.othersFilters}"
+                                                                              layout="grid" columns="3"
+
+                                                                              >
+                                                            <p:ajax listener="#{myCourseLoadCtrl.onOthersFiltersChanged}"
+                                                                    update=":listForm"/>
+                                                            <f:selectItems
+                                                                value="#{myCourseLoadCtrl.model.othersFiltersSelectItems}"/>
+                                                        </p:selectManyCheckbox>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </p:fieldset>
+
+                                </div>
+
+                                <div style="margin-bottom: 10px;">
+                                    <p:inputText
+                                        rendered="#{myCourseLoadCtrl.model.displayOtherModules}"
+                                        value="#{myCourseLoadCtrl.model.othersTextFilter}" placeholder="Chercher ..."  styleClass="form-control"
+                                        style="width: 100%" onkeypress="if (event.keyCode == 13) {
+                                                    onSearchByText();
+                                                    return false;
+                                                }"
+                                        />
+                                    <p:remoteCommand name="onSearchByText" actionListener="#{myCourseLoadCtrl.applyOthersTextFilter}" update=":listForm"/>
+                                </div>
+
+                                <p:dataTable id="otherModulesTable" var="i" value="#{myCourseLoadCtrl.model.others}"
                                              class="table table-bordered table-hover"
                                              paginatorAlwaysVisible="false"
                                              paginator="true"
                                              paginatorPosition="bottom"
-                                             rows="20"
-                                             paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                                             rowsPerPageTemplate="10,20,50"
+                                             rows="1000"
+                                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                             rowsPerPageTemplate="1000,2000,5000,1000"
+                                             widgetVar="othersTable"
                                              emptyMessage="Aucune charge"
+                                             rendered="#{myCourseLoadCtrl.model.displayOtherModules}"
                                              >
                                     <p:column styleClass="ui-widget-header" headerText="" width="5%">
                                         <f:facet name="header">
                                             <p:commandButton
                                                 rendered="#{myCourseLoadCtrl.model.enableLoadEditing and myCourseLoadCtrl.model.multipleSelection}"
-                                                actionListener="#{myCourseLoadCtrl.removeFromMineCurrSelected()}"
-                                                update=":listForm" title="Clickez ici pour supprimer les voeux sélectionnés"
-                                                icon="fa fa-trash"
-                                                />
-                                            <p:commandButton
-                                                rendered="#{myCourseLoadCtrl.model.enableLoadEditing and myCourseLoadCtrl.model.multipleSelection}"
-                                                actionListener="#{myCourseLoadCtrl.addToMineCurrSelected()}"
-                                                update=":listForm" title="Clickez ici pour confirmer les propositions sélectionnées"
-                                                icon="fa fa-heart"
-                                                />
+                                                value="+"
+                                                actionListener="#{myCourseLoadCtrl.addToMineOtherSelected()}"
+                                                update=":listForm" title="Clickez ici pour ajouter les lignes sélectionnée à vos voeux"/>
                                         </f:facet>
                                         <p:selectBooleanCheckbox
-                                            rendered="#{myCourseLoadCtrl.model.enableLoadEditing and myCourseLoadCtrl.model.multipleSelection and !i.assigned}"
-                                            value="#{i.selected}"
-                                            update=":listForm" title="Clickez ici pour supprimer le voeux"/>
+                                            rendered="#{myCourseLoadCtrl.model.enableLoadEditing and myCourseLoadCtrl.model.multipleSelection}"
+                                            value="#{i.selected}"/>
                                         <p:commandButton
-                                            rendered="#{myCourseLoadCtrl.model.enableLoadEditing and !myCourseLoadCtrl.model.multipleSelection}"
-                                            disabled="#{i.assigned}"
-                                            value="-"
-                                            actionListener="#{myCourseLoadCtrl.removeFromMine(i.assignment.id)}"
-                                            update=":listForm" title="Clickez ici pour supprimer le voeux"/>
+                                            rendered="#{myCourseLoadCtrl.model.enableLoadEditing and !myCourseLoadCtrl.model.multipleSelection and !i.assigned}"
+                                            value="+"
+                                            actionListener="#{myCourseLoadCtrl.addToMine(i.assignment.id)}"
+                                            update=":listForm" title="Clickez ici pour exprimez votre voeux"/>
                                         <ui:fragment rendered="#{i.assignment.locked or i.assignment.coursePlan.locked}"><i class="fa  fa-lock"></i></ui:fragment>
                                     </p:column>
+
                                     <p:column headerText="Etat" width="5%">
-                                        <ui:fragment rendered="#{i.currentAssigned}">
+                                        <ui:fragment rendered="#{i.assigned}">
                                             <span class="fa fa-check" style="color:forestgreen" title="Assigné"></span>
                                         </ui:fragment>
-                                        <ui:fragment rendered="#{i.currentProposal}">
-                                            <span class="fa fa-gift" style="color:darkorange" title="Proposition"></span>
+                                        <ui:fragment rendered="#{i.anyProposal}">
+                                            <span class="fa fa-gift"  style="color:darkorange" title="Proposition"></span>
                                         </ui:fragment>
-                                        <ui:fragment rendered="#{i.currentWish}">
-                                            <span class="fa fa-heart" style="color:deeppink" title="Voeu"></span>
+                                        <ui:fragment rendered="#{i.anyWish}">
+                                            <span class="fa fa-heart"  style="color:deeppink" title="Voeu"></span>
                                         </ui:fragment>
                                         <ui:fragment rendered="#{i.assignment.locked or i.assignment.coursePlan.locked}">
-                                            <span class="fa fa-lock" style="color:goldenrod" title="Voeu"></span>
+                                            <span class="fa fa-lock"  style="color:goldenrod" title="Vérouillé"></span>
                                         </ui:fragment>
                                     </p:column>
-                                    <p:column headerText="Classe" width="8%">
-                                        <h:outputText value="#{i.academicClass.name}"/>
+                                    <p:column headerText="Semestre" width="5%">
+                                        <h:outputText value="#{i.assignment.coursePlan.courseLevel.semester.name}"/>
                                     </p:column>
-                                    <p:column headerText="Module">
-                                        <h:outputText action="#{myCourseLoadCtrl.gotoCourseAssignment(i.assignment)}"
-                                                      value="#{i.assignment.coursePlan.name} - #{i.assignment.courseType.name}"
-                                                      styleClass="#{i.currentAssigned?'vr-assigned-course':''}"/>
+                                    <p:column headerText="Classe" width="8%">
+                                        <h:outputText
+                                            value="#{i.academicClass.name}"/>
+                                    </p:column>
+                                    <p:column headerText="Module" >
+                                        <h:outputText styleClass="#{i.assigned?'vr-assigned-course':''}"
+                                                      value="#{i.assignment.coursePlan.name} - #{i.assignment.courseType.name}"/>
                                     </p:column>
                                     <p:column headerText="C" width="5%">
                                         <h:outputText
@@ -337,21 +670,25 @@ and open the template in the editor.
                                     </p:column>
                                     <p:column headerText="TD" width="5%">
                                         <h:outputText
-                                            value="#{i.assignment.valueTD != 0 ? i.assignment.valueTD : ''}"/>
+                                            value="#{i.assignment.valueTD !=0 ? i.assignment.valueTD : ''}"/>
                                     </p:column>
                                     <p:column headerText="TP" width="5%">
                                         <h:outputText
-                                            value="#{i.assignment.valueTP != 0 ? i.assignment.valueTP : ''}"/>
+                                            value="#{i.assignment.valueTP !=0 ? i.assignment.valueTP : ''}"/>
                                     </p:column>
                                     <p:column headerText="PM" width="5%">
                                         <h:outputText
                                             value="#{i.assignment.valuePM != 0 ? i.assignment.valuePM : ''}"/>
                                     </p:column>
-                                    <p:column headerText="Grp" width="3%">
+                                    <p:column headerText="Equiv Ann." width="5%">
+                                        <h:outputText value="#{i.equivValue != 0 ? i.equivValue : ''}"><f:convertNumber pattern="#0.000"/></h:outputText>
+                                    </p:column>
+                                    <p:column headerText="Grp" width="5%">
                                         <h:outputText value="#{i.assignment.groupCount}"><f:convertNumber
                                                 pattern="#0.#"/></h:outputText>
                                     </p:column>
-                                    <p:column headerText="Voeux des autres" width="20%">
+
+                                    <p:column headerText="Voeux" width="20%">
                                         <ui:repeat value="#{i.intents}" var="ci">
                                             <h:outputText value=" #{ci}" 
                                                           styleClass="#{ci.assigned?'vr-label-valid fa fa-check':ci.wish ?'vr-label-warn fa fa-heart':ci.proposal?'vr-label-info fa fa-heart':'vr-label-invalid'}"
@@ -359,7 +696,7 @@ and open the template in the editor.
                                                           />
                                         </ui:repeat>
                                     </p:column>
-                                    <p:column headerText="Collaborateurs" width="10%" rendered="#{myCourseLoadCtrl.model.isCurrentTeacherFilter('collaborators')}">
+                                    <p:column headerText="Collaborateurs" width="10%" rendered="#{myCourseLoadCtrl.model.isOthersFilterSelected('collaborators')}">
                                         <ui:repeat value="#{i.courseIntents}" var="ci">
                                             <h:outputText value=" #{ci}" 
                                                           styleClass="#{ci.assigned?'vr-label-valid fa fa-check':ci.wish ?'vr-label-warn fa fa-heart':ci.proposal?'vr-label-info fa fa-heart':'vr-label-invalid'}"
@@ -367,136 +704,17 @@ and open the template in the editor.
                                                           />
                                         </ui:repeat>
                                     </p:column>
-                                    <p:column headerText="Salles" width="5%" rendered="#{myCourseLoadCtrl.model.isCurrentTeacherFilter('rooms')}">
+                                    <p:column headerText="Salles" width="5%" rendered="#{myCourseLoadCtrl.model.isOthersFilterSelected('rooms')}">
                                         <h:outputText value="#{i.rooms}"/>
                                     </p:column>
+
+                                    <f:facet name="footer">
+                                        <p:outputLabel value="Total #{myCourseLoadCtrl.model.others.size()}"/>
+                                    </f:facet>
                                 </p:dataTable>
                             </div>
                         </div>
-                    </ui:repeat>
-
-                    <p:separator/>
-
-                    <div >
-                        <div class="table-responsive">
-                            <h1>Autres modules <p:commandButton value="Afficher/Cacher" action="#{myCourseLoadCtrl.onSwitchDisplayOtherModules}"
-                                                                style="margin-left:10px; width:130px" update=":listForm" /></h1>
-                            <div style="margin-bottom: 10px;">
-                                <p:inputText
-                                    rendered="#{myCourseLoadCtrl.model.displayOtherModules}"
-                                    value="#{myCourseLoadCtrl.model.othersTextFilter}" placeholder="Chercher ..."  styleClass="form-control"
-                                    style="width: 100%" onkeypress="if (event.keyCode == 13) {
-                                                onSearchByText();
-                                                return false;
-                                            }"
-                                    />
-                                <p:remoteCommand name="onSearchByText" actionListener="#{myCourseLoadCtrl.applyOthersTextFilter}" update=":listForm"/>
-                            </div>
-
-                            <p:dataTable id="otherModulesTable" var="i" value="#{myCourseLoadCtrl.model.others}"
-                                         class="table table-bordered table-hover"
-                                         paginatorAlwaysVisible="false"
-                                         paginator="true"
-                                         paginatorPosition="bottom"
-                                         rows="1000"
-                                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                                         rowsPerPageTemplate="1000,2000,5000,1000"
-                                         widgetVar="othersTable"
-                                         emptyMessage="Aucune charge"
-                                         rendered="#{myCourseLoadCtrl.model.displayOtherModules}"
-                                         >
-                                <p:column styleClass="ui-widget-header" headerText="" width="5%">
-                                    <f:facet name="header">
-                                        <p:commandButton
-                                            rendered="#{myCourseLoadCtrl.model.enableLoadEditing and myCourseLoadCtrl.model.multipleSelection}"
-                                            value="+"
-                                            actionListener="#{myCourseLoadCtrl.addToMineOtherSelected()}"
-                                            update=":listForm" title="Clickez ici pour ajouter les lignes sélectionnée à vos voeux"/>
-                                    </f:facet>
-                                    <p:selectBooleanCheckbox
-                                        rendered="#{myCourseLoadCtrl.model.enableLoadEditing and myCourseLoadCtrl.model.multipleSelection}"
-                                        value="#{i.selected}"/>
-                                    <p:commandButton
-                                        rendered="#{myCourseLoadCtrl.model.enableLoadEditing and !myCourseLoadCtrl.model.multipleSelection and !i.assigned}"
-                                        value="+"
-                                        actionListener="#{myCourseLoadCtrl.addToMine(i.assignment.id)}"
-                                        update=":listForm" title="Clickez ici pour exprimez votre voeux"/>
-                                    <ui:fragment rendered="#{i.assignment.locked or i.assignment.coursePlan.locked}"><i class="fa  fa-lock"></i></ui:fragment>
-                                </p:column>
-
-                                <p:column headerText="Etat" width="3%">
-                                    <ui:fragment rendered="#{i.assigned}">
-                                        <span class="fa fa-check" style="color:forestgreen" title="Assigné"></span>
-                                    </ui:fragment>
-                                    <ui:fragment rendered="#{i.anyProposal}">
-                                        <span class="fa fa-gift"  style="color:darkorange" title="Proposition"></span>
-                                    </ui:fragment>
-                                    <ui:fragment rendered="#{i.anyWish}">
-                                        <span class="fa fa-heart"  style="color:deeppink" title="Voeu"></span>
-                                    </ui:fragment>
-                                    <ui:fragment rendered="#{i.assignment.locked or i.assignment.coursePlan.locked}">
-                                        <span class="fa fa-lock"  style="color:goldenrod" title="Vérouillé"></span>
-                                    </ui:fragment>
-                                </p:column>
-                                <p:column headerText="Semestre" width="5%">
-                                    <h:outputText value="#{i.assignment.coursePlan.courseLevel.semester.name}"/>
-                                </p:column>
-                                <p:column headerText="Classe" width="8%">
-                                    <h:outputText
-                                        value="#{i.academicClass.name}"/>
-                                </p:column>
-                                <p:column headerText="Module" >
-                                    <h:outputText styleClass="#{i.assigned?'vr-assigned-course':''}"
-                                                  value="#{i.assignment.coursePlan.name} - #{i.assignment.courseType.name}"/>
-                                </p:column>
-                                <p:column headerText="C" width="5%">
-                                    <h:outputText
-                                        value="#{i.assignment.valueC != 0 ? i.assignment.valueC : ''}"/>
-                                </p:column>
-                                <p:column headerText="TD" width="5%">
-                                    <h:outputText
-                                        value="#{i.assignment.valueTD !=0 ? i.assignment.valueTD : ''}"/>
-                                </p:column>
-                                <p:column headerText="TP" width="5%">
-                                    <h:outputText
-                                        value="#{i.assignment.valueTP !=0 ? i.assignment.valueTP : ''}"/>
-                                </p:column>
-                                <p:column headerText="PM" width="5%">
-                                    <h:outputText
-                                        value="#{i.assignment.valuePM != 0 ? i.assignment.valuePM : ''}"/>
-                                </p:column>
-                                <p:column headerText="Grp" width="5%">
-                                    <h:outputText value="#{i.assignment.groupCount}"><f:convertNumber
-                                            pattern="#0.#"/></h:outputText>
-                                </p:column>
-
-                                <p:column headerText="Voeux" width="20%">
-                                    <ui:repeat value="#{i.intents}" var="ci">
-                                        <h:outputText value=" #{ci}" 
-                                                      styleClass="#{ci.assigned?'vr-label-valid fa fa-check':ci.wish ?'vr-label-warn fa fa-heart':ci.proposal?'vr-label-info fa fa-heart':'vr-label-invalid'}"
-                                                      style="margin-right: 3px; #{ci.assigned?'color:forestgreen':ci.wish ?'color:deeppink':ci.proposal?'color:darkorange':''}"
-                                                      />
-                                    </ui:repeat>
-                                </p:column>
-                                <p:column headerText="Collaborateurs" width="10%" rendered="#{myCourseLoadCtrl.model.isOthersFilterSelected('collaborators')}">
-                                    <ui:repeat value="#{i.courseIntents}" var="ci">
-                                        <h:outputText value=" #{ci}" 
-                                                      styleClass="#{ci.assigned?'vr-label-valid fa fa-check':ci.wish ?'vr-label-warn fa fa-heart':ci.proposal?'vr-label-info fa fa-heart':'vr-label-invalid'}"
-                                                      style="margin-right: 3px; #{ci.assigned?'color:forestgreen':ci.wish ?'color:deeppink':ci.proposal?'color:darkorange':''}"
-                                                      />
-                                    </ui:repeat>
-                                </p:column>
-                                <p:column headerText="Salles" width="5%" rendered="#{myCourseLoadCtrl.model.isOthersFilterSelected('rooms')}">
-                                    <h:outputText value="#{i.rooms}"/>
-                                </p:column>
-
-                                <f:facet name="footer">
-                                    <p:outputLabel value="Total #{myCourseLoadCtrl.model.others.size()}"/>
-                                </f:facet>
-                            </p:dataTable>
-                        </div>
                     </div>
-
                 </h:form>
 
 

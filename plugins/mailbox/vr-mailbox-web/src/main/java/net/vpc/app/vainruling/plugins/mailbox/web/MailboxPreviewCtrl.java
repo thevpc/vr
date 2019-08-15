@@ -10,13 +10,11 @@ import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.content.MessageTextService;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
-import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.core.web.VrController;
-import net.vpc.app.vainruling.core.web.UPathItem;
+import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.app.vainruling.plugins.inbox.service.MailboxPlugin;
 import net.vpc.app.vainruling.plugins.inbox.service.MailboxPluginSecurity;
-import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxFolder;
-import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxReceived;
+import net.vpc.app.vainruling.plugins.inbox.model.MailboxFolder;
+import net.vpc.app.vainruling.plugins.inbox.model.MailboxReceived;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,13 +24,15 @@ import net.vpc.app.vainruling.core.service.content.ContentPath;
 import net.vpc.app.vainruling.core.service.content.ContentText;
 import net.vpc.app.vainruling.core.service.model.strict.AppUserStrict;
 import net.vpc.app.vainruling.core.service.notification.PollAware;
+import net.vpc.app.vainruling.core.service.pages.VrPage;
+import net.vpc.app.vainruling.core.service.pages.VrPathItem;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@VrController(
+@VrPage(
         breadcrumb = {
-                @UPathItem(title = "Site", css = "fa-dashboard", ctrl = "")},
+                @VrPathItem(title = "Site", css = "fa-dashboard", ctrl = "")},
 //        css = "fa-table",
 //        title = "Apercu Messages",
         securityKey = MailboxPluginSecurity.RIGHT_CUSTOM_INBOX

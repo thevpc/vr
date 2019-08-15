@@ -7,8 +7,8 @@ package net.vpc.app.vainruling.plugins.academic.service.integration;
 
 import net.vpc.app.vainruling.core.service.model.AppCompany;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
-import net.vpc.app.vainruling.plugins.academic.service.helper.parsers.AppCivilityParser;
-import net.vpc.app.vainruling.plugins.academic.service.helper.parsers.AppGenderParser;
+import net.vpc.app.vainruling.plugins.academic.service.integration.parsers.AppCivilityParser;
+import net.vpc.app.vainruling.plugins.academic.service.integration.parsers.AppGenderParser;
 
 /**
  *

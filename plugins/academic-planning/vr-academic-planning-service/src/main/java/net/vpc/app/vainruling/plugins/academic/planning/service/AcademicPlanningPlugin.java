@@ -10,10 +10,10 @@ import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.plugins.Start;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicClass;
-import net.vpc.app.vainruling.plugins.calendars.service.model.WeekCalendar;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicStudent;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicClass;
+import net.vpc.app.vainruling.plugins.calendars.service.dto.WeekCalendar;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.ListValueMap;
 import net.vpc.common.util.SetValueMap;
@@ -183,7 +183,7 @@ public class AcademicPlanningPlugin {
         for (Integer studentId : studentIds) {
             AcademicStudent student = academicPlugin.findStudent(studentId);
             AcademicPlugin ap = VrApp.getBean(AcademicPlugin.class);
-            List<AcademicClass> allCls = ap.findAcademicDownHierarchyList(new AcademicClass[]{student.getLastClass1(), student.getLastClass2(), student.getLastClass3()}, null);
+            List<AcademicClass> allCls = ap.findClassDownHierarchyList(new AcademicClass[]{student.getLastClass1(), student.getLastClass2(), student.getLastClass3()}, null);
             for (AcademicClass ac : allCls) {
                 String n2 = ac.getName().trim().toLowerCase();
                 nameMapping.put(n2, studentId);
@@ -239,7 +239,7 @@ public class AcademicPlanningPlugin {
         List<WeekCalendar> list = new ArrayList<>();
         HashMap<String, String> nameMapping = new HashMap<>();
         AcademicPlugin ap = VrApp.getBean(AcademicPlugin.class);
-        List<AcademicClass> allCls = ap.findAcademicDownHierarchyList(new AcademicClass[]{student.getLastClass1(), student.getLastClass2(), student.getLastClass3()}, null);
+        List<AcademicClass> allCls = ap.findClassDownHierarchyList(new AcademicClass[]{student.getLastClass1(), student.getLastClass2(), student.getLastClass3()}, null);
         for (AcademicClass ac : allCls) {
             String n2 = ac.getName().trim().toLowerCase();
             nameMapping.put(n2, n2);
@@ -286,7 +286,7 @@ public class AcademicPlanningPlugin {
 
     public WeekCalendar loadClassPlanning(String className) {
         String uniformClassName = className == null ? "" : className.toLowerCase().trim();
-        if (StringUtils.isEmpty(uniformClassName)) {
+        if (StringUtils.isBlank(uniformClassName)) {
             return null;
         }
         VFile[] emploisFiles = getEmploiFolder().listFiles(new VFileFilter() {

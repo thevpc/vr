@@ -29,7 +29,7 @@ public class VrNotificationEvent {
         this.level = level;
         this.timeout = timeout <= 0 ? 60 : timeout;
         this.creationTime = creationTime == null ? new Date() : creationTime;
-        this.title = StringUtils.isEmpty(title) ? "?" : title;
+        this.title = StringUtils.isBlank(title) ? "?" : title;
         this.userObject = userObject;
         Calendar c = Calendar.getInstance();
         c.setTime(this.creationTime);

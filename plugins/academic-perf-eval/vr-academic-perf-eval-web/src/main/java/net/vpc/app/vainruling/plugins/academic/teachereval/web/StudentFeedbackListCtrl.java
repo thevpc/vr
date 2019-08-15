@@ -6,16 +6,14 @@
 package net.vpc.app.vainruling.plugins.academic.teachereval.web;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
-import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.core.web.VrController;
-import net.vpc.app.vainruling.core.web.UPathItem;
+import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.AcademicPerfEvalPlugin;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.AcademicPerfEvalPluginSecurity;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.dto.StatData;
-import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.AcademicFeedback;
+import net.vpc.app.vainruling.plugins.academic.perfeval.model.AcademicFeedback;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudentStage;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicStudent;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicStudentStage;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.Convert;
@@ -25,13 +23,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.faces.model.SelectItem;
 import java.util.*;
 import java.util.logging.Logger;
+import net.vpc.app.vainruling.core.service.pages.VrPage;
+import net.vpc.app.vainruling.core.service.pages.VrPathItem;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@VrController(
+@VrPage(
         breadcrumb = {
-                @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
+                @VrPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
 //        css = "fa-table",
 //        title = "Fiches Eval. enseignements",
         menu = "/Education/Evaluation",
@@ -56,7 +56,7 @@ public class StudentFeedbackListCtrl {
 
     public void onReloadStudents() {
         String studentsFilter=getModel().getStudentsFilter();
-        if(StringUtils.isEmpty(studentsFilter)){
+        if(StringUtils.isBlank(studentsFilter)){
             studentsFilter="Student";
         }
         ArrayList<SelectItem> students = new ArrayList<>();

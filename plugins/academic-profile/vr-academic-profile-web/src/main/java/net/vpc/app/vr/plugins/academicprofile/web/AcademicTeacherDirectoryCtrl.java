@@ -5,10 +5,10 @@ import java.util.List;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.web.OnPageLoad;
+import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
-import net.vpc.app.vr.plugins.academicprofile.service.model.AcademicTeacherCV;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
+import net.vpc.app.vr.plugins.academicprofile.model.AcademicTeacherCV;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /*@VrController(

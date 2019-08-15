@@ -1,8 +1,8 @@
 package net.vpc.app.vainruling.plugins.academic.service.util;
 
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicTeacherDegree;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicTeacherDegree;
 
 import java.util.Comparator;
 
@@ -30,8 +30,8 @@ public class TeacherIdByTeacherPeriodComparator implements Comparator<AcademicTe
             return 1;
         }
 
-        AcademicTeacherDegree d1 = plugin.findAcademicTeacherPeriod(periodId, t1).getDegree();
-        AcademicTeacherDegree d2 = plugin.findAcademicTeacherPeriod(periodId, t2).getDegree();
+        AcademicTeacherDegree d1 = plugin.findTeacherPeriod(periodId, t1.getId()).getDegree();
+        AcademicTeacherDegree d2 = plugin.findTeacherPeriod(periodId, t2.getId()).getDegree();
         if (d1 == null && d2 == null) {
             return 0;
         }

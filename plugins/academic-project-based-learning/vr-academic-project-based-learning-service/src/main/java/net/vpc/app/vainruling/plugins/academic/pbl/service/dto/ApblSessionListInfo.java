@@ -1,6 +1,6 @@
 package net.vpc.app.vainruling.plugins.academic.pbl.service.dto;
 
-import net.vpc.app.vainruling.plugins.academic.pbl.service.model.ApblProgramSession;
+import net.vpc.app.vainruling.plugins.academic.pbl.model.ApblProgramSession;
 
 import java.util.*;
 

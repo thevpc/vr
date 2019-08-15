@@ -5,34 +5,41 @@
  */
 package net.vpc.app.vainruling.plugins.academic.web.load;
 
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCourseAssignment;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCourseAssignmentInfoByVisitor;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCourseAssignmentInfo;
 import net.vpc.app.vainruling.plugins.academic.service.dto.TeacherPeriodStatExt;
 import net.vpc.app.vainruling.plugins.academic.service.dto.TeacherSemesterStatExt;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppDepartment;
-import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.util.*;
-import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.core.web.obj.ObjConfig;
+import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
+import net.vpc.app.vainruling.core.service.editor.EditorConfig;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.app.vainruling.plugins.academic.service.AcademicPluginSecurity;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.*;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.util.Chronometer;
 
 import javax.faces.model.SelectItem;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.vpc.app.vainruling.core.web.jsf.Vr;
 import net.vpc.app.vainruling.plugins.academic.service.dto.TeacherLoadInfoFilter;
 import net.vpc.app.vainruling.plugins.academic.service.dto.TeacherLoadInfo;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacherPeriod;
+import net.vpc.app.vainruling.plugins.academic.service.util.DefaultCourseAssignmentFilter;
+import net.vpc.upa.Document;
+import net.vpc.upa.UPA;
 
 /**
  * @author taha.bensalah@gmail.com
  */
 public abstract class AbstractCourseLoadCtrl {
 
+    private static final Logger LOG = Logger.getLogger(AbstractCourseLoadCtrl.class.getName());
     protected Model model = new Model();
     protected TeacherLoadFilterComponent teacherFilter = new TeacherLoadFilterComponent();
     protected CourseLoadFilterComponent courseFilter = new CourseLoadFilterComponent();
@@ -53,10 +60,39 @@ public abstract class AbstractCourseLoadCtrl {
         return othersCourseFilter;
     }
 
+    public boolean isDeparmentManagedOnly() {
+        return false;
+    }
+
     private void reset() {
 //        getModel().setMineS1(new ArrayList<AcademicCourseAssignmentInfo>());
 //        getModel().setMineS2(new ArrayList<AcademicCourseAssignmentInfo>());
         getModel().setTeacherLoadInfoResult(new TeacherLoadInfo(-1));
+    }
+
+    public void onConfirmLoad() {
+        try {
+            int periodId = getTeacherFilter().getPeriodId();
+            AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
+            AcademicTeacher teacher = getCurrentTeacher();
+            getModel().setCurrentTeacher(teacher);
+            if (teacher != null) {
+                AcademicTeacherPeriod o = a.findTeacherPeriod(periodId, teacher.getId());
+                if (o != null) {
+                    o.setLoadConfirmed(true);
+                    UPA.getPersistenceUnit().merge(o);
+                    getModel().setLoadConfirmed(true);
+                }
+            }
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "Error", ex);
+            FacesUtils.addErrorMessage(ex);
+        }
+    }
+
+    public int getCurrentTeacherId() {
+        final AcademicTeacher t = getCurrentTeacher();
+        return t == null ? -1 : t.getId();
     }
 
     public abstract AcademicTeacher getCurrentTeacher();
@@ -67,17 +103,27 @@ public abstract class AbstractCourseLoadCtrl {
 
     @OnPageLoad
     public void onRefresh(String cmd) {
-        CorePlugin core = VrApp.getBean(CorePlugin.class);
+        try {
+            CorePlugin core = VrApp.getBean(CorePlugin.class);
 //        List<AppPeriod> navigatablePeriods = core.findNavigatablePeriods();
 //        AppPeriod mainPeriod = core.getCurrentPeriod();
-        onInit();
-        onChangePeriod();
+            onInit();
+            onChangePeriod();
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "Error", ex);
+            FacesUtils.addErrorMessage(ex);
+        }
     }
 
     public void onInit() {
-        getTeacherFilter().onInit();
-        getCourseFilter().onInit();
-        getOthersCourseFilter().onInit();
+        try {
+            getTeacherFilter().onInit();
+            getCourseFilter().onInit();
+            getOthersCourseFilter().onInit();
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "Error", ex);
+            FacesUtils.addErrorMessage(ex);
+        }
     }
 
     public boolean isFiltered(String value) {
@@ -97,40 +143,62 @@ public abstract class AbstractCourseLoadCtrl {
 
     public String gotoCourseAssignment(AcademicCourseAssignment a) {
         if (a != null) {
-            ObjConfig c = new ObjConfig();
+            EditorConfig c = new EditorConfig();
             c.entity = "AcademicCourseAssignment";
             c.id = String.valueOf(a.getId());
-            return Vr.get().gotoPage("obj", VrUtils.formatJSONObject(c));
+            return Vr.get().gotoPage("editor", VrUtils.formatJSONObject(c));
         }
         return null;
     }
 
     public void onChangePeriod() {
-        AcademicPlugin ap = VrApp.getBean(AcademicPlugin.class);
-        AppDepartment userDepartment = getUserDepartment();
-        int periodId = getTeacherFilter().getPeriodId();
+        try {
+            AcademicPlugin academic = VrApp.getBean(AcademicPlugin.class);
+//        AppDepartment userDepartment = getUserDepartment();
+            int periodId = getTeacherFilter().getPeriodId();
 
-        getModel().setEnableLoadEditing(
-                (userDepartment == null || periodId < 0) ? false
-                        : ap.getAppDepartmentPeriodRecord(periodId, userDepartment.getId()).getBoolean("enableLoadEditing", false)
-        );
+            int departmentId = getTeacherDepartment();
+            boolean enableLoadConfirmation = false;
+            boolean enableLoadEditing = false;
+            boolean loadConfirmed = false;
+            if (periodId >= 0 && departmentId >= 0) {
+                final Document p = academic.getDepartmentPeriodDocument(periodId, departmentId);
+                if (p != null) {
+                    enableLoadConfirmation = p.getBoolean("enableLoadConfirmation", false);
+                    enableLoadEditing = p.getBoolean("enableLoadEditing", false);
+                }
+            }
+            getModel().setEnableLoadConfirmation(enableLoadConfirmation);
+            getModel().setEnableLoadEditing(enableLoadEditing);
+            int teacherId = getCurrentTeacherId();
+            if (periodId >= 0 && teacherId >= 0) {
+                AcademicTeacherPeriod tp = academic.findTeacherPeriod(periodId, teacherId);
+                loadConfirmed = tp.isLoadConfirmed();
+            }
+            getModel().setLoadConfirmed(loadConfirmed);
 
-        getTeacherFilter().onChangePeriod();
-        getCourseFilter().onChangePeriod();
+            getTeacherFilter().onChangePeriod();
+            getCourseFilter().onChangePeriod();
 
-        List<SelectItem> refreshableFilters = new ArrayList<>();
-        refreshableFilters.add(FacesUtils.createSelectItem("intents", "Inclure Voeux", "vr-checkbox"));
-        refreshableFilters.add(FacesUtils.createSelectItem("deviation-week", "Balance/Sem", "vr-checkbox"));
-        refreshableFilters.add(FacesUtils.createSelectItem("deviation-extra", "Balance/Supp", "vr-checkbox"));
-        refreshableFilters.add(FacesUtils.createSelectItem("extra-abs", "Supp ABS", "vr-checkbox"));
-        getCourseFilter().getModel().setRefreshFilterItems(refreshableFilters);
+            List<SelectItem> refreshableFilters = new ArrayList<>();
+            refreshableFilters.add(FacesUtils.createSelectItem("intents", "Inclure Voeux", "vr-checkbox"));
+            refreshableFilters.add(FacesUtils.createSelectItem("proposals", "Inclure Propositions", "vr-checkbox"));
+            refreshableFilters.add(FacesUtils.createSelectItem("deviation-week", "Balance/Sem", "vr-checkbox"));
+            refreshableFilters.add(FacesUtils.createSelectItem("deviation-extra", "Balance/Supp", "vr-checkbox"));
+            refreshableFilters.add(FacesUtils.createSelectItem("extra-abs", "Supp ABS", "vr-checkbox"));
+            getCourseFilter().getModel().setRefreshFilterItems(refreshableFilters);
 
-        refreshableFilters = new ArrayList<>();
-        refreshableFilters.add(FacesUtils.createSelectItem("intents", "Inclure Voeux", "vr-checkbox"));
-        getOthersCourseFilter().getModel().setRefreshFilterItems(refreshableFilters);
+            refreshableFilters = new ArrayList<>();
+            refreshableFilters.add(FacesUtils.createSelectItem("intents", "Inclure Voeux", "vr-checkbox"));
+            refreshableFilters.add(FacesUtils.createSelectItem("proposals", "Inclure Propositions", "vr-checkbox"));
+            getOthersCourseFilter().getModel().setRefreshFilterItems(refreshableFilters);
 
-        getOthersCourseFilter().onChangePeriod();
-        onChangeOther();
+            getOthersCourseFilter().onChangePeriod();
+            onChangeOther();
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "Error", ex);
+            FacesUtils.addErrorMessage(ex);
+        }
     }
 
     public void onDoNothing() {
@@ -146,400 +214,569 @@ public abstract class AbstractCourseLoadCtrl {
     }
 
     public void onRefresh() {
-        Chronometer chronometer = new Chronometer();
-        int periodId = getTeacherFilter().getPeriodId();
-        AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
-        List<SelectItem> allCurrFilters = new ArrayList<>();
-        allCurrFilters.add(FacesUtils.createSelectItem("collaborators", "Collaborateurs", "vr-checkbox"));
-        allCurrFilters.add(FacesUtils.createSelectItem("rooms", "Salles", "vr-checkbox"));
-        getModel().setCurrentTeacherFiltersSelectItems(allCurrFilters);
-        List<SelectItem> allOtherFilters = new ArrayList<>();
-        allOtherFilters.add(FacesUtils.createSelectItem("assigned", "Modules Affectés", "vr-checkbox"));
-        allOtherFilters.add(FacesUtils.createSelectItem("non-assigned", "Modules Non Affectés", "vr-checkbox"));
-        allOtherFilters.add(FacesUtils.createSelectItem("intended", "Modules Demandés", "vr-checkbox"));
-        allOtherFilters.add(FacesUtils.createSelectItem("non-intended", "Modules Non Demandés", "vr-checkbox"));
-        allOtherFilters.add(FacesUtils.createSelectItem("conflict", "Modules En Conflits", "vr-checkbox"));
-        allOtherFilters.add(FacesUtils.createSelectItem("collaborators", "Collaborateurs", "vr-checkbox"));
-        allOtherFilters.add(FacesUtils.createSelectItem("rooms", "Salles", "vr-checkbox"));
-        allOtherFilters.add(FacesUtils.createSelectItem("locked", "Modules vérouillés", "vr-checkbox"));
-        allOtherFilters.add(FacesUtils.createSelectItem("unlocked", "Modules non vérouillés", "vr-checkbox"));
+        try {
+            Chronometer chronometer = new Chronometer();
+            final int teacherDepartment = getTeacherDepartment();
+            int periodId = getTeacherFilter().getPeriodId();
+            AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
+            List<SelectItem> allCurrFilters = new ArrayList<>();
+            allCurrFilters.add(FacesUtils.createSelectItem("collaborators", "Collaborateurs", "vr-checkbox"));
+            allCurrFilters.add(FacesUtils.createSelectItem("rooms", "Salles", "vr-checkbox"));
+            getModel().setCurrentTeacherFiltersSelectItems(allCurrFilters);
+            List<SelectItem> allOtherFilters = new ArrayList<>();
+            allOtherFilters.add(FacesUtils.createSelectItem("assigned", "Modules Affectés", "vr-checkbox"));
+            allOtherFilters.add(FacesUtils.createSelectItem("non-assigned", "Modules Non Affectés", "vr-checkbox"));
+            allOtherFilters.add(FacesUtils.createSelectItem("intended", "Modules Demandés", "vr-checkbox"));
+            allOtherFilters.add(FacesUtils.createSelectItem("non-intended", "Modules Non Demandés", "vr-checkbox"));
+            allOtherFilters.add(FacesUtils.createSelectItem("conflict", "Modules En Conflits", "vr-checkbox"));
+            allOtherFilters.add(FacesUtils.createSelectItem("collaborators", "Collaborateurs", "vr-checkbox"));
+            allOtherFilters.add(FacesUtils.createSelectItem("rooms", "Salles", "vr-checkbox"));
+            allOtherFilters.add(FacesUtils.createSelectItem("locked", "Modules vérouillés", "vr-checkbox"));
+            allOtherFilters.add(FacesUtils.createSelectItem("unlocked", "Modules non vérouillés", "vr-checkbox"));
 
-        getModel().setOthersFiltersSelectItems(allOtherFilters);
+            getModel().setOthersFiltersSelectItems(allOtherFilters);
 
-        AcademicTeacher teacher = getCurrentTeacher();
-        getModel().setCurrentTeacher(teacher);
-        reset();
-
-        TeacherLoadInfoFilter ff = new TeacherLoadInfoFilter();
-        ff.setOtherCourseAssignmentFilter(getOthersCourseFilter().getCourseAssignmentFilter());
-        ff.setTeacherCourseAssignmentFilter(getCourseFilter().getCourseAssignmentFilter());
-        ff.setDeviationConfig(getCourseFilter().getDeviationConfig());
-        ff.setTeacherId(teacher == null ? -1 : teacher.getId());
-        ff.setPeriodId(periodId);
-        ff.setFilterConflict(isFiltered("conflict"));
-        ff.setFilterAssigned(isFiltered("assigned"));
-        ff.setFilterNonAssigned(isFiltered("non-assigned"));
-        ff.setFilterIntended(isFiltered("intended"));
-        ff.setFilterNonIntended(isFiltered("non-intended"));
-        ff.setFilterLocked(isFiltered("locked"));
-        ff.setFilterUnlocked(isFiltered("unlocked"));
-        TeacherLoadInfo result = a.getTeacherLoadInfo(ff);
-        getModel().setTeacherLoadInfoResult(result);
-        applyOthersTextFilter();
-        chronometer.stop();
-        System.out.println(chronometer);
+            AcademicTeacher teacher = getCurrentTeacher();
+            getModel().setCurrentTeacher(teacher);
+            if (teacher != null) {
+                AcademicTeacherPeriod o = a.findTeacherPeriod(periodId, teacher.getId());
+                getModel().setLoadConfirmed(o != null && o.isLoadConfirmed());
+            } else {
+                getModel().setLoadConfirmed(false);
+            }
+            reset();
+            DefaultCourseAssignmentFilter othersCourseAssignmentFilter = getOthersCourseFilter().getCourseAssignmentFilter();
+            if (isDeparmentManagedOnly()) {
+                if (teacherDepartment >= 0 && !CorePlugin.get().isCurrentSessionAdmin()) {
+                    othersCourseAssignmentFilter.setAcceptedOwnerDepartments(
+                            new HashSet<Integer>(Arrays.asList(teacherDepartment))
+                    );
+                }
+            }
+            TeacherLoadInfoFilter ff = new TeacherLoadInfoFilter();
+            ff.setOtherCourseAssignmentFilter(othersCourseAssignmentFilter);
+            ff.setTeacherCourseAssignmentFilter(getCourseFilter().getCourseAssignmentFilter());
+            ff.setDeviationConfig(getCourseFilter().getDeviationConfig());
+            ff.setTeacherId(teacher == null ? -1 : teacher.getId());
+            ff.setPeriodId(periodId);
+            ff.setFilterConflict(isFiltered("conflict"));
+            ff.setFilterAssigned(isFiltered("assigned"));
+            ff.setFilterNonAssigned(isFiltered("non-assigned"));
+            ff.setFilterIntended(isFiltered("intended"));
+            ff.setFilterNonIntended(isFiltered("non-intended"));
+            ff.setFilterLocked(isFiltered("locked"));
+            ff.setFilterUnlocked(isFiltered("unlocked"));
+            TeacherLoadInfo result = a.getTeacherLoadInfo(ff);
+            getModel().setTeacherLoadInfoResult(result);
+            applyOthersTextFilter();
+            chronometer.stop();
+            System.out.println(chronometer);
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "Error", ex);
+            FacesUtils.addErrorMessage(ex);
+        }
     }
 
     public void applyOthersTextFilter() {
-        AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
-        a.teacherLoadInfoApplyTextFilter(getModel().getTeacherLoadInfoResult(), getModel().getOthersTextFilter());
+        try {
+            AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
+            a.teacherLoadInfoApplyTextFilter(getModel().getTeacherLoadInfoResult(), getModel().getOthersTextFilter());
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "Error", ex);
+            FacesUtils.addErrorMessage(ex);
+        }
     }
 
     public void assignmentsToIntentsAll() {
-        if (getModel().isEnableLoadEditing()) {
-            ArrayList<AcademicCourseAssignmentInfoByVisitor> assignmentInfos = new ArrayList<>();
-            assignmentInfos.addAll(getModel().getStat().getAssignments());
-            assignmentInfos.addAll(getModel().getOthers());
-            AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
-            for (AcademicCourseAssignmentInfoByVisitor aa : assignmentInfos) {
-                AcademicCourseAssignment assignment = aa.getValue().getAssignment();
-                AcademicTeacher t = assignment.getTeacher();
-                if (t != null) {
-                    if (isAllowedUpdateMineIntents(assignment.getId())) {
-                        a.addIntent(t.getId(), assignment.getId());
-                        a.removeCourseAssignment(assignment.getId(), false, false);
+        try {
+            if (getModel().isEnableLoadEditing()) {
+                ArrayList<AcademicCourseAssignmentInfoByVisitor> assignmentInfos = new ArrayList<>();
+                assignmentInfos.addAll(getModel().getStat().getAssignments());
+                assignmentInfos.addAll(getModel().getOthers());
+                AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
+                for (AcademicCourseAssignmentInfoByVisitor aa : assignmentInfos) {
+                    AcademicCourseAssignment assignment = aa.getValue().getAssignment();
+                    AcademicTeacher t = assignment.getTeacher();
+                    if (t != null) {
+                        if (isAllowedUpdateMineIntents(assignment.getId())) {
+                            a.addIntent(t.getId(), assignment.getId());
+                            a.removeCourseAssignment(assignment.getId(), false, false);
+                        }
                     }
                 }
             }
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "Error", ex);
+            FacesUtils.addErrorMessage(ex);
         }
     }
 
     public void intentsToAssignmentsAll() {
-        if (getModel().isEnableLoadEditing()) {
-            ArrayList<AcademicCourseAssignmentInfoByVisitor> assignmentInfos = new ArrayList<>();
-            assignmentInfos.addAll(getModel().getStat().getAssignments());
-            assignmentInfos.addAll(getModel().getOthers());
-            AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
-            for (AcademicCourseAssignmentInfoByVisitor aa : assignmentInfos) {
-                AcademicTeacher t = aa.getAssignment().getTeacher();
-                if (t == null) {
-                    for (Integer uid : aa.getAssignmentChunck().getChuncks().keySet()) {
-                        a.addCourseAssignment(uid, aa.getAssignment().getId());
-                        break;
+        try {
+            if (getModel().isEnableLoadEditing()) {
+                ArrayList<AcademicCourseAssignmentInfoByVisitor> assignmentInfos = new ArrayList<>();
+                assignmentInfos.addAll(getModel().getStat().getAssignments());
+                assignmentInfos.addAll(getModel().getOthers());
+                AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
+                for (AcademicCourseAssignmentInfoByVisitor aa : assignmentInfos) {
+                    AcademicTeacher t = aa.getAssignment().getTeacher();
+                    if (t == null) {
+                        for (Integer uid : aa.getAssignmentChunck().getChuncks().keySet()) {
+                            a.addCourseAssignment(uid, aa.getAssignment().getId());
+                            break;
+                        }
                     }
                 }
             }
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "Error", ex);
+            FacesUtils.addErrorMessage(ex);
         }
     }
 
     public void assignmentsToIntentsMine() {
-        for (AcademicCourseAssignmentInfoByVisitor aa : getModel().getStat().getAssignments()) {
-            addToMine(aa.getValue().getAssignment().getId());
-            doUnAssign(aa.getValue().getAssignment().getId());
+        try {
+            for (AcademicCourseAssignmentInfoByVisitor aa : getModel().getStat().getAssignments()) {
+                addToMine(aa.getValue().getAssignment().getId());
+                doUnAssign(aa.getValue().getAssignment().getId());
+            }
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "Error", ex);
+            FacesUtils.addErrorMessage(ex);
         }
     }
 
     public void intentsToAssignmentsMine() {
-        for (AcademicCourseAssignmentInfoByVisitor aa : getModel().getStat().getAssignments()) {
-            doAssign(aa.getValue().getAssignment().getId());
+        try {
+            for (AcademicCourseAssignmentInfoByVisitor aa : getModel().getStat().getAssignments()) {
+                doAssign(aa.getValue().getAssignment().getId());
+            }
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "Error", ex);
+            FacesUtils.addErrorMessage(ex);
         }
     }
 
     public void removeAllIntentsMine() {
-        for (AcademicCourseAssignmentInfoByVisitor aa : getModel().getStat().getAssignments()) {
-            removeFromMine(aa.getValue().getAssignment().getId());
+        try {
+            for (AcademicCourseAssignmentInfoByVisitor aa : getModel().getStat().getAssignments()) {
+                removeFromMine(aa.getValue().getAssignment().getId());
+            }
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "Error", ex);
+            FacesUtils.addErrorMessage(ex);
         }
     }
 
     public void removeAllAssignmentsMine() {
-        for (AcademicCourseAssignmentInfoByVisitor aa : getModel().getStat().getAssignments()) {
-            doUnAssign(aa.getValue().getAssignment().getId());
+        try {
+            for (AcademicCourseAssignmentInfoByVisitor aa : getModel().getStat().getAssignments()) {
+                doUnAssign(aa.getValue().getAssignment().getId());
+            }
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "Error", ex);
+            FacesUtils.addErrorMessage(ex);
         }
     }
 
     public void addToMineOtherSelected() {
-        AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
-        AcademicTeacher t = getModel().getCurrentTeacher();
-        if (t != null) {
-            for (AcademicCourseAssignmentInfoByVisitor s : getModel().getOthers()) {
-                if (s.isSelected()) {
-                    int assignementId = s.getValue().getAssignment().getId();
-                    a.addIntent(t.getId(), assignementId);
-                }
-            }
-            onRefresh();
-        }
-    }
-
-    public void addProposalToMineOtherSelected() {
-        AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
-        AcademicTeacher t = getModel().getCurrentTeacher();
-        if (t != null) {
-            for (AcademicCourseAssignmentInfoByVisitor s : getModel().getOthers()) {
-                if (s.isSelected()) {
-                    int assignementId = s.getValue().getAssignment().getId();
-                    a.addProposal(t.getId(), assignementId);
-                }
-            }
-            onRefresh();
-        }
-    }
-
-    public void addToMineCurrSelected() {
-        AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
-        AcademicTeacher t = getModel().getCurrentTeacher();
-        if (t != null) {
-            for (TeacherSemesterStatExt teacherSemesterStatExt : getModel().getStat().getSemesters()) {
-                for (AcademicCourseAssignmentInfoByVisitor s : teacherSemesterStatExt.getAssignments()) {
+        try {
+            AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
+            AcademicTeacher t = getModel().getCurrentTeacher();
+            if (t != null) {
+                for (AcademicCourseAssignmentInfoByVisitor s : getModel().getOthers()) {
                     if (s.isSelected()) {
                         int assignementId = s.getValue().getAssignment().getId();
                         a.addIntent(t.getId(), assignementId);
                     }
                 }
+                onRefresh();
             }
-            onRefresh();
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "Error", ex);
+            FacesUtils.addErrorMessage(ex);
         }
     }
 
-    public void addProposalToMineCurrSelected() {
-        AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
-        AcademicTeacher t = getModel().getCurrentTeacher();
-        if (t != null) {
-            for (TeacherSemesterStatExt teacherSemesterStatExt : getModel().getStat().getSemesters()) {
-                for (AcademicCourseAssignmentInfoByVisitor s : teacherSemesterStatExt.getAssignments()) {
+    public void addProposalToMineOtherSelected() {
+        try {
+            AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
+            AcademicTeacher t = getModel().getCurrentTeacher();
+            if (t != null) {
+                for (AcademicCourseAssignmentInfoByVisitor s : getModel().getOthers()) {
                     if (s.isSelected()) {
                         int assignementId = s.getValue().getAssignment().getId();
                         a.addProposal(t.getId(), assignementId);
                     }
                 }
+                onRefresh();
             }
-            onRefresh();
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "Error", ex);
+            FacesUtils.addErrorMessage(ex);
+        }
+    }
+
+    public void addToMineCurrSelected() {
+        try {
+            AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
+            AcademicTeacher t = getModel().getCurrentTeacher();
+            if (t != null) {
+                for (TeacherSemesterStatExt teacherSemesterStatExt : getModel().getStat().getSemesters()) {
+                    for (AcademicCourseAssignmentInfoByVisitor s : teacherSemesterStatExt.getAssignments()) {
+                        if (s.isSelected()) {
+                            int assignementId = s.getValue().getAssignment().getId();
+                            a.addIntent(t.getId(), assignementId);
+                        }
+                    }
+                }
+                onRefresh();
+            }
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "Error", ex);
+            FacesUtils.addErrorMessage(ex);
+        }
+    }
+
+    public void addProposalToMineCurrSelected() {
+        try {
+            AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
+            AcademicTeacher t = getModel().getCurrentTeacher();
+            if (t != null) {
+                for (TeacherSemesterStatExt teacherSemesterStatExt : getModel().getStat().getSemesters()) {
+                    for (AcademicCourseAssignmentInfoByVisitor s : teacherSemesterStatExt.getAssignments()) {
+                        if (s.isSelected()) {
+                            int assignementId = s.getValue().getAssignment().getId();
+                            a.addProposal(t.getId(), assignementId);
+                        }
+                    }
+                }
+                onRefresh();
+            }
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "Error", ex);
+            FacesUtils.addErrorMessage(ex);
         }
     }
 
     public void addWishToMineCurrSelected() {
-        AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
-        AcademicTeacher t = getModel().getCurrentTeacher();
-        if (t != null) {
-            for (TeacherSemesterStatExt teacherSemesterStatExt : getModel().getStat().getSemesters()) {
-                for (AcademicCourseAssignmentInfoByVisitor s : teacherSemesterStatExt.getAssignments()) {
-                    if (s.isSelected()) {
-                        int assignementId = s.getValue().getAssignment().getId();
-                        a.addWish(t.getId(), assignementId);
+        try {
+            AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
+            AcademicTeacher t = getModel().getCurrentTeacher();
+            if (t != null) {
+                for (TeacherSemesterStatExt teacherSemesterStatExt : getModel().getStat().getSemesters()) {
+                    for (AcademicCourseAssignmentInfoByVisitor s : teacherSemesterStatExt.getAssignments()) {
+                        if (s.isSelected()) {
+                            int assignementId = s.getValue().getAssignment().getId();
+                            a.addWish(t.getId(), assignementId);
+                        }
                     }
                 }
+                onRefresh();
             }
-            onRefresh();
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "Error", ex);
+            FacesUtils.addErrorMessage(ex);
         }
     }
 
     public void addToMine(Integer assignementId) {
-        AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
-        AcademicTeacher t = getModel().getCurrentTeacher();
-        if (t != null && assignementId != null) {
-            a.addIntent(t.getId(), assignementId);
+        try {
+            AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
+            AcademicTeacher t = getModel().getCurrentTeacher();
+            if (t != null && assignementId != null) {
+                a.addIntent(t.getId(), assignementId);
+            }
+            onRefresh();
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "Error", ex);
+            FacesUtils.addErrorMessage(ex);
         }
-        onRefresh();
     }
 
     public void addWishToMine(Integer assignementId) {
-        AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
-        AcademicTeacher t = getModel().getCurrentTeacher();
-        if (t != null && assignementId != null) {
-            a.addWish(t.getId(), assignementId);
+        try {
+            AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
+            AcademicTeacher t = getModel().getCurrentTeacher();
+            if (t != null && assignementId != null) {
+                a.addWish(t.getId(), assignementId);
+            }
+            onRefresh();
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "Error", ex);
+            FacesUtils.addErrorMessage(ex);
         }
-        onRefresh();
     }
 
     public void removeFromMineCurrSelected() {
-        AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
-        AcademicTeacher t = getModel().getCurrentTeacher();
-        if (t != null) {
-            for (TeacherSemesterStatExt teacherSemesterStatExt : getModel().getStat().getSemesters()) {
-                for (AcademicCourseAssignmentInfoByVisitor s : teacherSemesterStatExt.getAssignments()) {
-                    if (s.isSelected()) {
-                        int assignementId = s.getValue().getAssignment().getId();
-                        a.removeIntent(t.getId(), assignementId);
+        try {
+            AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
+            AcademicTeacher t = getModel().getCurrentTeacher();
+            if (t != null) {
+                for (TeacherSemesterStatExt teacherSemesterStatExt : getModel().getStat().getSemesters()) {
+                    for (AcademicCourseAssignmentInfoByVisitor s : teacherSemesterStatExt.getAssignments()) {
+                        if (s.isSelected()) {
+                            int assignementId = s.getValue().getAssignment().getId();
+                            a.removeIntent(t.getId(), assignementId);
+                        }
                     }
                 }
+                onRefresh();
             }
-            onRefresh();
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "Error", ex);
+            FacesUtils.addErrorMessage(ex);
         }
     }
 
     public void removeProposalFromMineCurrSelected() {
-        AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
-        AcademicTeacher t = getModel().getCurrentTeacher();
-        if (t != null) {
-            for (TeacherSemesterStatExt teacherSemesterStatExt : getModel().getStat().getSemesters()) {
-                for (AcademicCourseAssignmentInfoByVisitor s : teacherSemesterStatExt.getAssignments()) {
-                    if (s.isSelected()) {
-                        int assignementId = s.getValue().getAssignment().getId();
-                        a.removeProposal(t.getId(), assignementId);
+        try {
+            AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
+            AcademicTeacher t = getModel().getCurrentTeacher();
+            if (t != null) {
+                for (TeacherSemesterStatExt teacherSemesterStatExt : getModel().getStat().getSemesters()) {
+                    for (AcademicCourseAssignmentInfoByVisitor s : teacherSemesterStatExt.getAssignments()) {
+                        if (s.isSelected()) {
+                            int assignementId = s.getValue().getAssignment().getId();
+                            a.removeProposal(t.getId(), assignementId);
+                        }
                     }
                 }
+                onRefresh();
             }
-            onRefresh();
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "Error", ex);
+            FacesUtils.addErrorMessage(ex);
         }
     }
 
     public void removeWishFromMineCurrSelected() {
-        AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
-        AcademicTeacher t = getModel().getCurrentTeacher();
-        if (t != null) {
-            for (TeacherSemesterStatExt teacherSemesterStatExt : getModel().getStat().getSemesters()) {
-                for (AcademicCourseAssignmentInfoByVisitor s : teacherSemesterStatExt.getAssignments()) {
-                    if (s.isSelected()) {
-                        int assignementId = s.getValue().getAssignment().getId();
-                        a.removeWish(t.getId(), assignementId);
+        try {
+            AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
+            AcademicTeacher t = getModel().getCurrentTeacher();
+            if (t != null) {
+                for (TeacherSemesterStatExt teacherSemesterStatExt : getModel().getStat().getSemesters()) {
+                    for (AcademicCourseAssignmentInfoByVisitor s : teacherSemesterStatExt.getAssignments()) {
+                        if (s.isSelected()) {
+                            int assignementId = s.getValue().getAssignment().getId();
+                            a.removeWish(t.getId(), assignementId);
+                        }
                     }
                 }
+                onRefresh();
             }
-            onRefresh();
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "Error", ex);
+            FacesUtils.addErrorMessage(ex);
         }
     }
 
     public void removeFromMine(Integer assignementId) {
-        AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
-        AcademicTeacher t = getModel().getCurrentTeacher();
-        if (t != null && assignementId != null) {
-            a.removeIntent(t.getId(), assignementId);
+        try {
+            AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
+            AcademicTeacher t = getModel().getCurrentTeacher();
+            if (t != null && assignementId != null) {
+                a.removeIntent(t.getId(), assignementId);
+            }
+            onRefresh();
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "Error", ex);
+            FacesUtils.addErrorMessage(ex);
         }
-        onRefresh();
     }
 
     public void removeAllIntents(Integer assignementId) {
-        AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
-        if (assignementId != null) {
-            a.removeAllIntents(assignementId);
+        try {
+            AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
+            if (assignementId != null) {
+                a.removeAllIntents(assignementId);
+            }
+            onRefresh();
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "Error", ex);
+            FacesUtils.addErrorMessage(ex);
         }
-        onRefresh();
     }
 
     public void removeAllIntentsSelected() {
-        AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
-        for (AcademicCourseAssignmentInfoByVisitor s : getModel().getAll().values()) {
-            if (s.isSelected()) {
-                a.removeAllIntents(s.getValue().getAssignment().getId());
+        try {
+            AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
+            for (AcademicCourseAssignmentInfoByVisitor s : getModel().getAll().values()) {
+                if (s.isSelected()) {
+                    a.removeAllIntents(s.getValue().getAssignment().getId());
+                }
             }
+            onRefresh();
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "Error", ex);
+            FacesUtils.addErrorMessage(ex);
         }
-        onRefresh();
     }
 
     public void removeAllProposalsSelected() {
-        AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
-        for (AcademicCourseAssignmentInfoByVisitor s : getModel().getAll().values()) {
-            if (s.isSelected()) {
-                a.removeAllProposal(s.getValue().getAssignment().getId());
+        try {
+            AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
+            for (AcademicCourseAssignmentInfoByVisitor s : getModel().getAll().values()) {
+                if (s.isSelected()) {
+                    a.removeAllProposal(s.getValue().getAssignment().getId());
+                }
             }
+            onRefresh();
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "Error", ex);
+            FacesUtils.addErrorMessage(ex);
         }
-        onRefresh();
     }
 
     public void removeAllWishesSelected() {
-        AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
-        for (AcademicCourseAssignmentInfoByVisitor s : getModel().getAll().values()) {
-            if (s.isSelected()) {
-                a.removeAllWishes(s.getValue().getAssignment().getId());
+        try {
+            AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
+            for (AcademicCourseAssignmentInfoByVisitor s : getModel().getAll().values()) {
+                if (s.isSelected()) {
+                    a.removeAllWishes(s.getValue().getAssignment().getId());
+                }
             }
+            onRefresh();
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "Error", ex);
+            FacesUtils.addErrorMessage(ex);
         }
-        onRefresh();
     }
 
     public void doDeleteAssignment(Integer assignementId) {
-        if (CorePlugin.get().isCurrentSessionAdminOrManager()) {
-            AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
-            a.removeCourseAssignment(assignementId, true, false);
+        try {
+            if (CorePlugin.get().isCurrentSessionAdminOrManager()) {
+                AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
+                a.removeCourseAssignment(assignementId, true, false);
+            }
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "Error", ex);
+            FacesUtils.addErrorMessage(ex);
         }
     }
 
     public void doUnAssign(Integer assignementId) {
-        AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
-        AcademicTeacher t = getModel().getCurrentTeacher();
-        if (t != null && assignementId != null) {
-            a.removeCourseAssignment(assignementId, false, true);
+        try {
+            AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
+            AcademicTeacher t = getModel().getCurrentTeacher();
+            if (t != null && assignementId != null) {
+                a.removeCourseAssignment(assignementId, false, true);
+            }
+            onRefresh();
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "Error", ex);
+            FacesUtils.addErrorMessage(ex);
         }
-        onRefresh();
     }
 
     public void doAssign(Integer assignementId) {
-        AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
-        AcademicTeacher t = getModel().getCurrentTeacher();
-        if (t != null && assignementId != null) {
-            a.addCourseAssignment(t.getId(), assignementId);
+        try {
+            AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
+            AcademicTeacher t = getModel().getCurrentTeacher();
+            if (t != null && assignementId != null) {
+                a.addCourseAssignment(t.getId(), assignementId);
+            }
+            onRefresh();
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "Error", ex);
+            FacesUtils.addErrorMessage(ex);
         }
-        onRefresh();
     }
 
     public void doAssignSelected() {
-        AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
-        AcademicTeacher t = getModel().getCurrentTeacher();
-        if (t != null) {
-            for (AcademicCourseAssignmentInfoByVisitor s : getModel().getAll().values()) {
-                if (s.isSelected()) {
-                    int assignementId = s.getValue().getAssignment().getId();
-                    a.addCourseAssignment(t.getId(), assignementId);
-                }
-            }
-        }
-        onRefresh();
-    }
-
-    public void doSwitchLockAssignment(Integer assignementId) {
-        AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
-        if (CorePlugin.get().isCurrentSessionAdminOrManager()) {
-            if (assignementId != null) {
-                AcademicCourseAssignment assignment = a.findCourseAssignment(assignementId);
-                if (assignment != null) {
-                    assignment.setLocked(!assignment.isLocked());
-                    a.updateCourseAssignment(assignment);
+        try {
+            AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
+            AcademicTeacher t = getModel().getCurrentTeacher();
+            if (t != null) {
+                for (AcademicCourseAssignmentInfoByVisitor s : getModel().getAll().values()) {
+                    if (s.isSelected()) {
+                        int assignementId = s.getValue().getAssignment().getId();
+                        a.addCourseAssignment(t.getId(), assignementId);
+                    }
                 }
             }
             onRefresh();
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "Error", ex);
+            FacesUtils.addErrorMessage(ex);
+        }
+    }
+
+    public void doSwitchLockAssignment(Integer assignementId) {
+        try {
+            AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
+            if (CorePlugin.get().isCurrentSessionAdminOrManager()) {
+                if (assignementId != null) {
+                    AcademicCourseAssignment assignment = a.findCourseAssignment(assignementId);
+                    if (assignment != null) {
+                        assignment.setLocked(!assignment.isLocked());
+                        a.updateCourseAssignment(assignment);
+                    }
+                }
+                onRefresh();
+            }
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "Error", ex);
+            FacesUtils.addErrorMessage(ex);
         }
     }
 
     public void doSwitchLockAssignmentSelected() {
-        AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
-        if (CorePlugin.get().isCurrentSessionAdminOrManager()) {
-            for (AcademicCourseAssignmentInfoByVisitor s : getModel().getAll().values()) {
-                if (s.isSelected()) {
-                    AcademicCourseAssignment assignment = s.getValue().getAssignment();
-                    assignment.setLocked(!assignment.isLocked());
-                    a.updateCourseAssignment(assignment);
+        try {
+            AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
+            if (CorePlugin.get().isCurrentSessionAdminOrManager()) {
+                for (AcademicCourseAssignmentInfoByVisitor s : getModel().getAll().values()) {
+                    if (s.isSelected()) {
+                        AcademicCourseAssignment assignment = s.getValue().getAssignment();
+                        assignment.setLocked(!assignment.isLocked());
+                        a.updateCourseAssignment(assignment);
+                    }
                 }
+                onRefresh();
             }
-            onRefresh();
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "Error", ex);
+            FacesUtils.addErrorMessage(ex);
         }
     }
 
     public void doUnAssignSelected() {
-        AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
-//        AcademicTeacher t = getModel().getCurrentTeacher();
-//        if (t != null) {
-        for (AcademicCourseAssignmentInfoByVisitor s : getModel().getAll().values()) {
-            if (s.isSelected()) {
-                int assignementId = s.getValue().getAssignment().getId();
-                a.removeCourseAssignment(assignementId, false, true);
-            }
-        }
-//        }
-        onRefresh();
-    }
-
-    public void doDeleteSelected() {
-        AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
-        if (CorePlugin.get().isCurrentSessionAdminOrManager()) {
+        try {
+            AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
 //        AcademicTeacher t = getModel().getCurrentTeacher();
 //        if (t != null) {
             for (AcademicCourseAssignmentInfoByVisitor s : getModel().getAll().values()) {
                 if (s.isSelected()) {
                     int assignementId = s.getValue().getAssignment().getId();
-                    a.removeCourseAssignment(assignementId, true, false);
+                    a.removeCourseAssignment(assignementId, false, true);
                 }
             }
 //        }
             onRefresh();
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "Error", ex);
+            FacesUtils.addErrorMessage(ex);
+        }
+    }
+
+    public void doDeleteSelected() {
+        try {
+            AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
+            if (CorePlugin.get().isCurrentSessionAdminOrManager()) {
+//        AcademicTeacher t = getModel().getCurrentTeacher();
+//        if (t != null) {
+                for (AcademicCourseAssignmentInfoByVisitor s : getModel().getAll().values()) {
+                    if (s.isSelected()) {
+                        int assignementId = s.getValue().getAssignment().getId();
+                        a.removeCourseAssignment(assignementId, true, false);
+                    }
+                }
+//        }
+                onRefresh();
+            }
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "Error", ex);
+            FacesUtils.addErrorMessage(ex);
         }
     }
 
@@ -553,6 +790,19 @@ public abstract class AbstractCourseLoadCtrl {
 
     public void onOthersFiltersChanged() {
         onRefresh();
+    }
+
+    public int getTeacherDepartment() {
+        final AcademicTeacher currentTeacher = getCurrentTeacher();
+        if (currentTeacher != null && currentTeacher.getUser() != null && currentTeacher.getUser().getDepartment() != null) {
+            return currentTeacher.getUser().getDepartment().getId();
+        }
+        return -1;
+    }
+
+    public int getUserDepartmentId() {
+        final AppDepartment d = getUserDepartment();
+        return d == null ? -1 : d.getId();
     }
 
     public AppDepartment getUserDepartment() {
@@ -573,8 +823,8 @@ public abstract class AbstractCourseLoadCtrl {
     }
 
     public void doAssignByIntentSelected() {
-        if(VrApp.getBean(AcademicPlugin.class).teacherLoadInfoDoAssignByIntentSelected(getModel().getTeacherLoadInfoResult())){
-                    onRefresh();
+        if (VrApp.getBean(AcademicPlugin.class).teacherLoadInfoDoAssignByIntentSelected(getModel().getTeacherLoadInfoResult())) {
+            onRefresh();
         }
     }
 
@@ -637,7 +887,9 @@ public abstract class AbstractCourseLoadCtrl {
         boolean nonIntentedOnly = false;
         boolean multipleSelection = true;
         boolean enableLoadEditing = false;
+        boolean enableLoadConfirmation = false;
         boolean displayOtherModules = false;
+        boolean loadConfirmed = false;
         AcademicCourseAssignmentInfo selectedFromOthers = null;
         AcademicCourseAssignmentInfo selectedFromMine1 = null;
         AcademicCourseAssignmentInfo selectedFromMine2 = null;
@@ -651,8 +903,24 @@ public abstract class AbstractCourseLoadCtrl {
 
         AcademicTeacher currentTeacher;
 
+        public boolean isLoadConfirmed() {
+            return loadConfirmed;
+        }
+
+        public void setLoadConfirmed(boolean loadConfirmed) {
+            this.loadConfirmed = loadConfirmed;
+        }
+
         public String[] getCurrentTeacherFilters() {
             return currentTeacherFilters;
+        }
+
+        public boolean isEnableLoadConfirmation() {
+            return enableLoadConfirmation;
+        }
+
+        public void setEnableLoadConfirmation(boolean enableLoadConfirmation) {
+            this.enableLoadConfirmation = enableLoadConfirmation;
         }
 
         public void setCurrentTeacherFilters(String[] currentTeacherFilters) {

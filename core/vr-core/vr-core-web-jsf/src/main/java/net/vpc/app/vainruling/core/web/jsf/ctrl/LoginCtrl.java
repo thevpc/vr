@@ -11,7 +11,6 @@ import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.security.*;
 import net.vpc.app.vainruling.core.web.HttpPlatformSession;
-import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.jsf.Vr;
 import net.vpc.app.vainruling.core.web.util.VrWebHelper;
 import net.vpc.common.jsf.FacesUtils;
@@ -26,11 +25,12 @@ import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import net.vpc.app.vainruling.core.service.pages.VrPage;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@VrController(
+@VrPage(
         //        title = "Login",
         url = "login",
         acceptAnonymous = true

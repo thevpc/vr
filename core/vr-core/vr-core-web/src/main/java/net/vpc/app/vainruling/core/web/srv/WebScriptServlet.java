@@ -66,7 +66,7 @@ public class WebScriptServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String pathInfo = request.getPathInfo();
-        if (StringUtils.isEmpty(pathInfo)) {
+        if (StringUtils.isBlank(pathInfo)) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }

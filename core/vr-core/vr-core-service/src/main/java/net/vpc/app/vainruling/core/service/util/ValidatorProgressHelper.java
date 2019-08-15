@@ -19,7 +19,7 @@ public class ValidatorProgressHelper {
         if(value==null){
             bval=false;
         }else if(value instanceof String){
-            bval= !StringUtils.isEmpty(value.toString());
+            bval= !StringUtils.isBlank(value.toString());
         }else if(value instanceof Number){
             bval= ((Number)value).doubleValue()!=0;
         }else if(value instanceof Boolean){

@@ -1,5 +1,7 @@
 package net.vpc.app.vr.plugins.academicprofile.web;
 
+import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
+import net.vpc.app.vainruling.core.service.pages.VrActionEnabler;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.web.*;
@@ -12,9 +14,9 @@ import net.vpc.app.vainruling.core.web.themes.VrTheme;
 import net.vpc.app.vainruling.core.web.themes.VrThemeFace;
 import net.vpc.app.vainruling.core.web.themes.VrThemeFactory;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicStudent;
 import net.vpc.app.vr.plugins.academicprofile.service.AcademicProfilePlugin;
-import net.vpc.app.vr.plugins.academicprofile.service.model.AcademicStudentCV;
+import net.vpc.app.vr.plugins.academicprofile.model.AcademicStudentCV;
 import net.vpc.common.io.PathInfo;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.vfs.VFile;
@@ -32,10 +34,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.bean.ManagedBean;
 import net.vpc.app.vainruling.core.service.model.AppUser;
+import net.vpc.app.vainruling.core.service.pages.VrPage;
+import net.vpc.app.vainruling.core.service.pages.VrPathItem;
 
-@VrController(
+@VrPage(
         breadcrumb = {
-                @UPathItem(title = "Paramètres", css = "fa-dashboard", ctrl = "")},
+                @VrPathItem(title = "Paramètres", css = "fa-dashboard", ctrl = "")},
         title = "Mon profil étudiant",
         menu = "/Config",
         url = "modules/academic/profile/student-profile-settings",
@@ -83,7 +87,7 @@ public class StudentProfileSettingsCtrl implements DocumentUploadListener, VrAct
     }
 
     @Override
-    public boolean isEnabled(net.vpc.app.vainruling.core.web.VrActionInfo data) {
+    public boolean isEnabled(net.vpc.app.vainruling.core.service.pages.VrActionInfo data) {
         return AcademicPlugin.get().getCurrentStudent() != null;
     }
 

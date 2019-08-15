@@ -5,6 +5,8 @@
  */
 package net.vpc.app.vainruling.plugins.inbox.service;
 
+import net.vpc.app.vainruling.plugins.inbox.service.dto.SendExternalMailConfig;
+import net.vpc.app.vainruling.plugins.inbox.service.dto.MailData;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.CorePluginSecurity;
 import net.vpc.app.vainruling.core.service.TraceService;
@@ -15,15 +17,15 @@ import net.vpc.app.vainruling.core.service.model.content.AppArticle;
 import net.vpc.app.vainruling.core.service.notification.VrNotificationEvent;
 import net.vpc.app.vainruling.core.service.notification.VrNotificationManager;
 import net.vpc.app.vainruling.core.service.notification.VrNotificationSession;
-import net.vpc.app.vainruling.core.service.obj.AppEntityExtendedPropertiesProvider;
+import net.vpc.app.vainruling.core.service.editor.AppEntityExtendedPropertiesProvider;
 import net.vpc.app.vainruling.core.service.plugins.Install;
 import net.vpc.app.vainruling.core.service.plugins.Start;
 import net.vpc.app.vainruling.core.service.util.VrPasswordStrategyRandom;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
-import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxFolder;
-import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxMessageFormat;
-import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxReceived;
-import net.vpc.app.vainruling.plugins.inbox.service.model.MailboxSent;
+import net.vpc.app.vainruling.plugins.inbox.model.MailboxFolder;
+import net.vpc.app.vainruling.plugins.inbox.model.MailboxMessageFormat;
+import net.vpc.app.vainruling.plugins.inbox.model.MailboxReceived;
+import net.vpc.app.vainruling.plugins.inbox.model.MailboxSent;
 import net.vpc.common.gomail.*;
 import net.vpc.common.gomail.datasource.StringsGoMailDataSource;
 import net.vpc.common.gomail.modules.GoMailModuleProcessor;
@@ -484,7 +486,7 @@ public class MailboxPlugin {
                 userId, mailTemplate);
 
         prepareRecipients(m, data.getEmailType(), data.getTo(), data.getToFilter(), !data.isExternal());
-        if (!StringUtils.isEmpty(data.getCategory())) {
+        if (!StringUtils.isBlank(data.getCategory())) {
             m.getProperties().setProperty("header.X-App-Category", data.getCategory());
         }
         return m;
@@ -576,7 +578,7 @@ public class MailboxPlugin {
             m.setTemplateId(getWelcomeTemplate().getId());
             m.setCategory("Welcome");
             m.getProperties().setProperty("new_user_login", u.getLogin());
-            if (StringUtils.isEmpty(u.getPasswordAuto())) {
+            if (StringUtils.isBlank(u.getPasswordAuto())) {
                 u.setPasswordAuto(VrPasswordStrategyRandom.INSTANCE.generatePassword(u));
                 u.setPassword(u.getPasswordAuto());
                 UPA.getContext().invokePrivileged(TraceService.makeSilenced(new VoidAction() {
@@ -642,17 +644,17 @@ public class MailboxPlugin {
         m.from(message.getSender().getLogin());
         message.setSendTime(new DateTime());
         boolean someSend = false;
-        if (!StringUtils.isEmpty(message.getCcProfiles())) {
+        if (!StringUtils.isBlank(message.getCcProfiles())) {
             m.namedDataSources().put("ccdatasource", createUsersEmailDatasource(message.getCcProfiles()));
             m.cc().add("${select login from ccdatasource}");
             someSend = true;
         }
-        if (!StringUtils.isEmpty(message.getBccProfiles())) {
+        if (!StringUtils.isBlank(message.getBccProfiles())) {
             m.namedDataSources().put("bccdatasource", createUsersEmailDatasource(message.getBccProfiles()));
             m.bcc().add("${select login from bccdatasource}");
             someSend = true;
         }
-        if (!StringUtils.isEmpty(message.getToProfiles())) {
+        if (!StringUtils.isBlank(message.getToProfiles())) {
             if (message.isTemplateMessage()) {
                 m.namedDataSources().put("todatasource", createUsersEmailDatasource(message.getToProfiles()));
                 m.setExpandable(true);
@@ -663,10 +665,10 @@ public class MailboxPlugin {
             }
             someSend = true;
         }
-        if (StringUtils.isEmpty(message.getSubject())) {
+        if (StringUtils.isBlank(message.getSubject())) {
             throw new IllegalArgumentException("Empty Subject");
         }
-        if (StringUtils.isEmpty(message.getContent())) {
+        if (StringUtils.isBlank(message.getContent())) {
             throw new IllegalArgumentException("Empty Body");
         }
         if (!someSend) {
@@ -794,9 +796,9 @@ public class MailboxPlugin {
     public Set<String> createUsersEmails(String recipientProfiles) {
         Set<String> rows = new HashSet<>();
         CorePlugin core = VrApp.getBean(CorePlugin.class);
-        for (AppUser p : core.findUsersByProfileFilter(recipientProfiles, null)) {
+        for (AppUser p : core.findUsersByProfileFilter(recipientProfiles, null,null)) {
             String email = p.getEmail();
-            if (!StringUtils.isEmpty(email)) {
+            if (!StringUtils.isBlank(email)) {
                 rows.add(email);
             }
         }
@@ -806,9 +808,9 @@ public class MailboxPlugin {
     public Set<String> createUsersLogins(String recipientProfiles) {
         Set<String> rows = new HashSet<>();
         CorePlugin core = VrApp.getBean(CorePlugin.class);
-        for (AppUser p : core.findUsersByProfileFilter(recipientProfiles, null)) {
+        for (AppUser p : core.findUsersByProfileFilter(recipientProfiles, null,null)) {
             String login = p.getLogin();
-            if (!StringUtils.isEmpty(login)) {
+            if (!StringUtils.isBlank(login)) {
                 rows.add(login);
             }
         }
@@ -831,9 +833,9 @@ public class MailboxPlugin {
         }
         CorePlugin core = VrApp.getBean(CorePlugin.class);
         List<String[]> rows = new ArrayList<>();
-        for (AppUser p : core.findUsersByProfileFilter(recipientProfiles, null)) {
+        for (AppUser p : core.findUsersByProfileFilter(recipientProfiles, null,null)) {
             String email = p.getEmail();
-            if (!StringUtils.isEmpty(email)) {
+            if (!StringUtils.isBlank(email)) {
                 Map<String, Object> allValues = new HashMap<>();
 
                 StringBuilder profilesString = new StringBuilder();
@@ -894,26 +896,26 @@ public class MailboxPlugin {
     public void prepareToAll(GoMail m, String recipientProfiles, String filterExpression, boolean preferLogin) {
         m.namedDataSources().put("all", createUsersEmailDatasource(recipientProfiles));
         String mailAddr = preferLogin ? "login" : "email";
-        m.to().add("${select " + mailAddr + " from all " + (StringUtils.isEmpty(filterExpression) ? "" : " where " + filterExpression) + "}");
+        m.to().add("${select " + mailAddr + " from all " + (StringUtils.isBlank(filterExpression) ? "" : " where " + filterExpression) + "}");
     }
 
     public void prepareCCAll(GoMail m, String recipientProfiles, String filterExpression, boolean preferLogin) {
         m.namedDataSources().put("all", createUsersEmailDatasource(recipientProfiles));
         String mailAddr = preferLogin ? "login" : "email";
-        m.cc().add("${select " + mailAddr + " from all " + (StringUtils.isEmpty(filterExpression) ? "" : " where " + filterExpression) + "}");
+        m.cc().add("${select " + mailAddr + " from all " + (StringUtils.isBlank(filterExpression) ? "" : " where " + filterExpression) + "}");
     }
 
     public void prepareBCCAll(GoMail m, String recipientProfiles, String filterExpression, boolean preferLogin) {
         m.namedDataSources().put("all", createUsersEmailDatasource(recipientProfiles));
         String mailAddr = preferLogin ? "login" : "email";
-        m.bcc().add("${select " + mailAddr + " from all " + (StringUtils.isEmpty(filterExpression) ? "" : " where " + filterExpression) + "}");
+        m.bcc().add("${select " + mailAddr + " from all " + (StringUtils.isBlank(filterExpression) ? "" : " where " + filterExpression) + "}");
     }
 
     public void prepareToEach(GoMail m, String recipientProfiles, String filterExpression, boolean preferLogin) {
         m.namedDataSources().put("all", createUsersEmailDatasource(recipientProfiles));
         m.repeatDatasource(GoMailModuleSerializer.deserializeDataSource(
                 "all "
-                        + (StringUtils.isEmpty(filterExpression) ? "" : " where " + filterExpression)
+                        + (StringUtils.isBlank(filterExpression) ? "" : " where " + filterExpression)
                 )
         );
         String mailAddr = preferLogin ? "login" : "email";
@@ -945,10 +947,10 @@ public class MailboxPlugin {
             emailContent = mailTemplate.getPlainBody() == null ? "" : mailTemplate.getPlainBody().replace("${mail_body}", content);
             emailSubject = mailTemplate.getSubject() == null ? "" : mailTemplate.getSubject().replace("${mail_subject}", subject);
         }
-        if (StringUtils.isEmpty(emailContent)) {
+        if (StringUtils.isBlank(emailContent)) {
             emailContent = "empty message";
         }
-        if (StringUtils.isEmpty(emailSubject)) {
+        if (StringUtils.isBlank(emailSubject)) {
             emailSubject = "no subject";
         }
 
@@ -982,7 +984,7 @@ public class MailboxPlugin {
                         @Override
                         public void run() {
                             try {
-                                if (!StringUtils.isEmpty(footerEmbeddedImage)) {
+                                if (!StringUtils.isBlank(footerEmbeddedImage)) {
                                     CorePlugin fs = VrApp.getBean(CorePlugin.class);
                                     VirtualFileSystem ufs = fs.getUserFileSystem(finalU.getLogin());
                                     VirtualFileSystem allfs = fs.getRootFileSystem();
@@ -1083,7 +1085,7 @@ public class MailboxPlugin {
         if (etype == null) {
             etype = RecipientType.TOEACH;
         }
-        if (!StringUtils.isEmpty(a.getRecipientProfiles())) {
+        if (!StringUtils.isBlank(a.getRecipientProfiles())) {
             MailData mailData = new MailData();
             mailData.setFrom(a.getSender() == null ? null : a.getSender().getLogin());
             mailData.setTemplateId(c.getTemplateId());
@@ -1155,7 +1157,7 @@ public class MailboxPlugin {
         if (type == null) {
             type = RecipientType.TO;
         }
-        if (!StringUtils.isEmpty(a.getRecipientProfiles())) {
+        if (!StringUtils.isBlank(a.getRecipientProfiles())) {
             MailData mailData = new MailData();
             mailData.setFrom(a.getSender() == null ? null : a.getSender().getLogin());
             mailData.setTemplateId(c.getTemplateId());

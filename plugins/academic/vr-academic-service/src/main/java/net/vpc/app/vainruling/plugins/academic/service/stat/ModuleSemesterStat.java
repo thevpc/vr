@@ -5,7 +5,7 @@
  */
 package net.vpc.app.vainruling.plugins.academic.service.stat;
 
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSemester;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicSemester;
 
 /**
  * @author taha.bensalah@gmail.com

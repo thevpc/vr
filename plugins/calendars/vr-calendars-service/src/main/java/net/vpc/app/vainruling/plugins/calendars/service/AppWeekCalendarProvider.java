@@ -1,7 +1,7 @@
 package net.vpc.app.vainruling.plugins.calendars.service;
 
 
-import net.vpc.app.vainruling.plugins.calendars.service.model.WeekCalendar;
+import net.vpc.app.vainruling.plugins.calendars.service.dto.WeekCalendar;
 
 import java.util.List;
 import java.util.Set;

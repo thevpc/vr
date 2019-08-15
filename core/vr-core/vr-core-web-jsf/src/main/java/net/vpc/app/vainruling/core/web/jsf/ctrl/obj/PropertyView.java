@@ -337,7 +337,7 @@ public class PropertyView implements Serializable {
 
     public void onChange(ValueChangeEvent e) {
         if (changeListener != null) {
-//            ObjCtrl ctrl=VRApp.getBean(ObjCtrl.class);
+//            EditorCtrl ctrl=VRApp.getBean(EditorCtrl.class);
 //            ctrl.currentViewToModel();
             changeListener.processValueChange(e);
         }

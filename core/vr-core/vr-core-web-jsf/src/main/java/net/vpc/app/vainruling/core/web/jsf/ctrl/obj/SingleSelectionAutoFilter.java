@@ -1,7 +1,7 @@
 package net.vpc.app.vainruling.core.web.jsf.ctrl.obj;
 
-import net.vpc.app.vainruling.core.service.obj.AutoFilter;
-import net.vpc.app.vainruling.core.service.obj.AutoFilterData;
+import net.vpc.app.vainruling.core.service.editor.AutoFilter;
+import net.vpc.app.vainruling.core.service.editor.AutoFilterData;
 
 import javax.faces.model.SelectItem;
 import java.util.ArrayList;

@@ -41,11 +41,11 @@ public class DefaultObjectToMapConverter implements ObjectToMapConverter{
                         if (ve != null) {
                             Object mv = ve.getBuilder().getMainValue(v);
                             String v2 = String.valueOf(mv);
-                            if (!StringUtils.isEmpty(v2)) {
+                            if (!StringUtils.isBlank(v2)) {
                                 words.put(k, (v2));
                             }
                         } else if (v instanceof String) {
-                            if (!StringUtils.isEmpty(v.toString())) {
+                            if (!StringUtils.isBlank(v.toString())) {
                                 words.put(k, (v));
                             }
                         } else {

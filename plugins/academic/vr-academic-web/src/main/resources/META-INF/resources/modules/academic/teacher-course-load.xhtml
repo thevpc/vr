@@ -501,6 +501,17 @@ and open the template in the editor.
                             </p:panelGrid>
                         </div>
                     </div>
+                    <div>
+
+                        <p:commandButton 
+                            rendered="#{!myCourseLoadCtrl.model.enableLoadConfirmation and !myCourseLoadCtrl.model.loadConfirmed}"
+                            value="Je confirme ma charge!" icon="vr-form-field vr-form-fixed-width-medium ui-ribbonicon-refresh"
+                            styleClass="ui-ribbon-bigbutton " ajax="true"
+                            actionListener="#{myCourseLoadCtrl.onConfirmLoad}" update=":listForm"
+                            />
+                        <p:outputLabel value="Charge confirmée" rendered="#{myCourseLoadCtrl.model.loadConfirmed}"/>
+
+                    </div>
 
                     <ui:repeat value="#{teacherCourseLoadCtrl.model.stat.semesters}" var="sem">
                         <div>
@@ -641,15 +652,15 @@ and open the template in the editor.
                                         <h:outputText
                                             value="#{i.assignment.valuePM != 0 ? i.assignment.valuePM  : ''}"/>
                                     </p:column>
+                                    <p:column headerText="Equiv Ann." width="5%">
+                                        <h:outputText
+                                            value="#{i.equivValue != 0 ? i.equivValue : ''}"><f:convertNumber pattern="#0.000"/></h:outputText>
+                                    </p:column>
                                     <p:column headerText="Grp" width="3%" styleClass="#{(i.assignment.groupCount le 0)?'vr-label-invalid':''}">
                                         <h:outputText value="#{i.assignment.groupCount}"><f:convertNumber
                                                 pattern="#0.00#"/></h:outputText>
                                     </p:column>
 
-                                    <p:column headerText="Prtg" width="3%"  styleClass="#{(i.assignment.shareCount le 0)?'vr-label-invalid':''}">
-                                        <h:outputText value="#{i.assignment.shareCount}"><f:convertNumber
-                                                pattern="#0.00#"/></h:outputText>
-                                    </p:column>
                                     <p:column headerText="Voeux des autres" width="20%">
                                         <ui:repeat value="#{i.intents}" var="ci">
                                             <h:outputText value=" #{ci}" 
@@ -1000,7 +1011,7 @@ and open the template in the editor.
                                         rendered="#{i.assignment.locked or i.assignment.coursePlan.locked}"><i
                                             class="fa  fa-lock"></i></ui:fragment>
                                 </p:column>
-                                <p:column exportable="true" exportFunction="#{vr.trim(vr.strcat(i.assigned?'A':'-',i.anyProposal?'P':'-',i.anyWish?'W':'-',(i.assignment.locked or i.assignment.coursePlan.locked)?'L':'-'))}" headerText="Etat" width="3%">
+                                <p:column exportable="true" exportFunction="#{vr.trim(vr.strcat(i.assigned?'A':'-',i.anyProposal?'P':'-',i.anyWish?'W':'-',(i.assignment.locked or i.assignment.coursePlan.locked)?'L':'-'))}" headerText="Etat" width="5%">
                                     <ui:fragment rendered="#{i.assigned}">
                                         <span class="fa fa-check" style="color:forestgreen" title="Assigné"></span>
                                     </ui:fragment>
@@ -1048,15 +1059,14 @@ and open the template in the editor.
                                     <h:outputText
                                         value="#{i.assignment.valuePM != 0 ? i.assignment.valuePM : ''}"/>
                                 </p:column>
+                                <p:column headerText="Equiv Ann." width="5%">
+                                    <h:outputText
+                                        value="#{i.equivValue != 0 ? i.equivValue : ''}"><f:convertNumber pattern="#0.000"/></h:outputText>
+                                </p:column>
                                 <p:column headerText="Grp" width="3%"  styleClass="#{(i.assignment.groupCount le 0)?'vr-label-invalid':''}">
                                     <h:outputText value="#{i.assignment.groupCount}"><f:convertNumber
                                             pattern="#0.#"/></h:outputText>
                                 </p:column>
-                                <p:column headerText="Prtg" width="3%"  styleClass="#{(i.assignment.shareCount le 0)?'vr-label-invalid':''}">
-                                    <h:outputText value="#{i.assignment.shareCount}"><f:convertNumber
-                                            pattern="#0.00#"/></h:outputText>
-                                </p:column>
-
                                 <p:column headerText="Voeux" width="20%">
                                     <ui:repeat value="#{i.intents}" var="ci">
                                         <h:outputText value=" #{ci}" 
@@ -1085,36 +1095,36 @@ and open the template in the editor.
                                         value="Total #{teacherCourseLoadCtrl.model.others.size()} ; C=#{vr.dblCustomFormat(teacherCourseLoadCtrl.model.othersSumC,'#.000')}  ; TD=#{vr.dblCustomFormat(teacherCourseLoadCtrl.model.othersSumTD,'#.000')}  ; TP=#{vr.dblCustomFormat(teacherCourseLoadCtrl.model.othersSumTP,'#.000')}  ; PM=#{vr.dblCustomFormat(teacherCourseLoadCtrl.model.othersSumPM,'#.000')}   ; MA=#{vr.dblCustomFormat(teacherCourseLoadCtrl.model.othersSumMA,'#.00')} "/>
 
 
-                                        <div style="float: right;">
-                                            <h:commandLink>
-                                                <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-xls16.png"
-                                                                width="16"/>
-                                                <p:dataExporter type="xls" target="othersTable"
-                                                                fileName="#{corePlugin.getPreferredFileName('teacher-course-load')}"
-                                                                postProcessor="#{vr.postProcessDataExporterXLS}"/>
-                                            </h:commandLink>
+                                    <div style="float: right;">
+                                        <h:commandLink>
+                                            <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-xls16.png"
+                                                            width="16"/>
+                                            <p:dataExporter type="xls" target="othersTable"
+                                                            fileName="#{corePlugin.getPreferredFileName('teacher-course-load')}"
+                                                            postProcessor="#{vr.postProcessDataExporterXLS}"/>
+                                        </h:commandLink>
 
-                                            <h:commandLink>
-                                                <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-pdf16.png"
-                                                                width="16"/>
-                                                <p:dataExporter type="pdf" target="othersTable"
-                                                                fileName="#{corePlugin.getPreferredFileName('teacher-course-load')}"/>
-                                            </h:commandLink>
+                                        <h:commandLink>
+                                            <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-pdf16.png"
+                                                            width="16"/>
+                                            <p:dataExporter type="pdf" target="othersTable"
+                                                            fileName="#{corePlugin.getPreferredFileName('teacher-course-load')}"/>
+                                        </h:commandLink>
 
-                                            <h:commandLink>
-                                                <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-csv16.png"
-                                                                width="16"/>
-                                                <p:dataExporter type="csv" target="othersTable"
-                                                                fileName="#{corePlugin.getPreferredFileName('teacher-course-load')}"/>
-                                            </h:commandLink>
+                                        <h:commandLink>
+                                            <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-csv16.png"
+                                                            width="16"/>
+                                            <p:dataExporter type="csv" target="othersTable"
+                                                            fileName="#{corePlugin.getPreferredFileName('teacher-course-load')}"/>
+                                        </h:commandLink>
 
-                                            <h:commandLink>
-                                                <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-xml16.png"
-                                                                width="16"/>
-                                                <p:dataExporter type="xml" target="othersTable"
-                                                                fileName="#{corePlugin.getPreferredFileName('teacher-course-load')}"/>
-                                            </h:commandLink>
-                                        </div>
+                                        <h:commandLink>
+                                            <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-xml16.png"
+                                                            width="16"/>
+                                            <p:dataExporter type="xml" target="othersTable"
+                                                            fileName="#{corePlugin.getPreferredFileName('teacher-course-load')}"/>
+                                        </h:commandLink>
+                                    </div>
                                 </f:facet>
                             </p:dataTable>
                         </div>

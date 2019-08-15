@@ -5,7 +5,7 @@
  */
 package net.vpc.app.vainruling.plugins.academic.service.stat;
 
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseAssignment;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCourseAssignment;
 
 import java.util.NoSuchElementException;
 

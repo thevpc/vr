@@ -4,8 +4,7 @@ import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.model.AppUserType;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.filters.ObjectFilter;
 
@@ -16,11 +15,11 @@ public class AcademicTeacherProfileFilter implements ObjectFilter<AcademicTeache
     private HashSet<Integer> goodUsers = null;
 
     public AcademicTeacherProfileFilter(String studentProfileFilter) {
-        if (!StringUtils.isEmpty(studentProfileFilter)) {
+        if (!StringUtils.isBlank(studentProfileFilter)) {
             goodUsers = new HashSet<Integer>();
             CorePlugin core = CorePlugin.get();
             AppUserType studentType = core.findUserType("Student");
-            List<AppUser> users = VrApp.getBean(CorePlugin.class).findUsersByProfileFilter(studentProfileFilter, studentType.getId());
+            List<AppUser> users = VrApp.getBean(CorePlugin.class).findUsersByProfileFilter(studentProfileFilter, studentType.getId(),null);
             for (AppUser user : users) {
                 goodUsers.add(user.getId());
             }

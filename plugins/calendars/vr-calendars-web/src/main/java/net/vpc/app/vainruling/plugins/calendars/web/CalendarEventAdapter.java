@@ -82,13 +82,13 @@ public class CalendarEventAdapter implements CalendarEventExt {
     @Override
     public String getTitle() {
         String t = event.getTitle();
-        if (StringUtils.isEmpty(t)) {
+        if (StringUtils.isBlank(t)) {
             t = "NO_NAME";
         }
         AppArea loc = event.getLocation();
         if (loc != null) {
             t += " (" + loc.getName() + ")";
-        } else if (!StringUtils.isEmpty(event.getOtherLocation())) {
+        } else if (!StringUtils.isBlank(event.getOtherLocation())) {
             t += " (" + StringUtils.trim(event.getOtherLocation()) + ")";
         }
         return t;

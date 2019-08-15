@@ -5,6 +5,8 @@
  */
 package net.vpc.app.vainruling.plugins.tasks.web;
 
+import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
+import net.vpc.app.vainruling.core.service.pages.VrPageInfo;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.content.ContentText;
@@ -13,9 +15,9 @@ import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.web.*;
 import net.vpc.app.vainruling.core.web.jsf.ctrl.AbstractObjectCtrl;
 
-import net.vpc.app.vainruling.core.web.menu.BreadcrumbItem;
-import net.vpc.app.vainruling.core.web.menu.VRMenuInfo;
-import net.vpc.app.vainruling.core.web.menu.VRMenuLabel;
+import net.vpc.app.vainruling.core.service.pages.VrBreadcrumbItem;
+import net.vpc.app.vainruling.core.service.menu.VRMenuInfo;
+import net.vpc.app.vainruling.core.service.menu.VRMenuLabel;
 import net.vpc.app.vainruling.core.web.jsf.VrJsf;
 import net.vpc.app.vainruling.plugins.tasks.service.TaskPlugin;
 import net.vpc.app.vainruling.plugins.tasks.service.TaskPluginSecurity;
@@ -27,18 +29,21 @@ import org.springframework.context.annotation.Scope;
 
 import java.util.ArrayList;
 import java.util.List;
-import net.vpc.app.vainruling.core.web.VRMenuProvider;
+import net.vpc.app.vainruling.core.service.menu.VRMenuProvider;
+import net.vpc.app.vainruling.core.service.pages.VrPageInfoResolver;
+import net.vpc.app.vainruling.core.service.pages.VrPage;
+import net.vpc.app.vainruling.core.service.pages.VrPathItem;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@VrController(
+@VrPage(
         breadcrumb = {
-                @UPathItem(title = "Todo", css = "fa-dashboard", ctrl = "")
+                @VrPathItem(title = "Todo", css = "fa-dashboard", ctrl = "")
         }, url = "modules/todo/todos"
 )
 @Scope("singleton")
-public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuProvider, VrControllerInfoResolver, TaskTextService{
+public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuProvider, VrPageInfoResolver, TaskTextService{
 
     @Autowired
     private TaskPlugin todoService;
@@ -58,8 +63,8 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuProvider
     }
 
     @Override
-    public BreadcrumbItem getTitle() {
-        BreadcrumbItem b = super.getTitle();
+    public VrBreadcrumbItem getTitle() {
+        VrBreadcrumbItem b = super.getTitle();
         TodoList list = todoService.findTodoList(getModel().getListName());
         if (TodoList.LABO_ACTION.equals(list.getName())) {
             b.setTitle("Mes Actions Labo");
@@ -210,7 +215,7 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuProvider
     @OnPageLoad
     @Override
     public void reloadPage(String cmd, boolean ustomization) {
-        if (!StringUtils.isEmpty(cmd)) {
+        if (!StringUtils.isBlank(cmd)) {
             getModel().setListName(cmd);
             getModel().setCmd(cmd);
         }
@@ -252,7 +257,7 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuProvider
     }
 
     @Override
-    public VrControllerInfo resolveVrControllerInfo(String cmd) {
+    public VrPageInfo resolvePageInfo(String cmd) {
         String listName = cmd;
         String title = "?";
         if (TodoList.LABO_ACTION.equals(listName)) {
@@ -263,14 +268,14 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuProvider
             title = (listName);
         }
 
-        VrControllerInfo d = new VrControllerInfo();
+        VrPageInfo d = new VrPageInfo();
         d.setUrl("modules/todo/todos");
         d.setCss("fa-table");
         d.setTitle(title);
         d.setSecurityKey(TaskPluginSecurity.PREFIX_RIGHT_CUSTOM_TODO + listName);
-        List<BreadcrumbItem> items = new ArrayList<>();
-        items.add(new BreadcrumbItem("Todo","Mes taches à faire","fa-dashboard", "", ""));
-        d.setBreadcrumb(items.toArray(new BreadcrumbItem[items.size()]));
+        List<VrBreadcrumbItem> items = new ArrayList<>();
+        items.add(new VrBreadcrumbItem("Todo","Mes taches à faire","fa-dashboard", "", ""));
+        d.setBreadcrumb(items.toArray(new VrBreadcrumbItem[items.size()]));
         return d;
     }
 

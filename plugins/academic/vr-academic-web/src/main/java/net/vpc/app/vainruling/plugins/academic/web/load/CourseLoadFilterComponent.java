@@ -6,14 +6,14 @@ import net.vpc.app.vainruling.core.service.model.AppConfig;
 import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicOfficialDiscipline;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSemester;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacherSituation;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicClass;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseType;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicProgramType;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicTeacherDegree;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicOfficialDiscipline;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicSemester;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacherSituation;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicClass;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCourseType;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicProgramType;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicTeacherDegree;
 import net.vpc.app.vainruling.plugins.academic.service.stat.DeviationConfig;
 import net.vpc.app.vainruling.plugins.academic.service.stat.DeviationGroup;
 import net.vpc.app.vainruling.plugins.academic.service.util.DefaultCourseAssignmentFilter;
@@ -36,7 +36,7 @@ public class CourseLoadFilterComponent {
 
     public int getPeriodId() {
         String p = getModel().getSelectedPeriod();
-        if (StringUtils.isEmpty(p)) {
+        if (StringUtils.isBlank(p)) {
             CorePlugin core = VrApp.getBean(CorePlugin.class);
             AppConfig appConfig = core.getCurrentConfig();
             if (appConfig != null && appConfig.getMainPeriod() != null) {
@@ -136,9 +136,9 @@ public class CourseLoadFilterComponent {
             getModel().getTeacherItems().add(FacesUtils.createSelectItem(String.valueOf(item.getId()), item.resolveFullName(), "vr-checkbox"));
         }
 
-        getModel().setRefreshFilterSelected(new String[]{"intents"
-                //, "deviation-extra"
-                , "deviation-week"});
+        getModel().setRefreshFilterSelected(new String[]{"intents", "proposals" //, "deviation-extra"
+            ,
+             "deviation-week"});
     }
 
     public void onChangePeriod() {
@@ -168,83 +168,90 @@ public class CourseLoadFilterComponent {
     public DefaultCourseAssignmentFilter getCourseAssignmentFilter() {
         DefaultCourseAssignmentFilter c = new DefaultCourseAssignmentFilter();
         for (String s : getModel().getSelectedProgramTypes()) {
-            c.addAcceptedProgramType(StringUtils.isEmpty(s) ? null : Integer.parseInt(s));
+            c.addAcceptedProgramType(StringUtils.isBlank(s) ? null : Integer.parseInt(s));
         }
         for (String s : getModel().getSelectedLabels()) {
             c.addLabelExpression(s);
         }
         for (String s : getModel().getSelectedSemesters()) {
-            c.addAcceptedSemester(StringUtils.isEmpty(s) ? null : Integer.parseInt(s));
+            c.addAcceptedSemester(StringUtils.isBlank(s) ? null : Integer.parseInt(s));
         }
         for (String s : getModel().getSelectedCourseTypes()) {
-            c.addAcceptedCourseType(StringUtils.isEmpty(s) ? null : Integer.parseInt(s));
+            c.addAcceptedCourseType(StringUtils.isBlank(s) ? null : Integer.parseInt(s));
         }
         for (String s : getModel().getSelectedClasses()) {
-            c.addAcceptedClass(StringUtils.isEmpty(s) ? null : Integer.parseInt(s));
+            c.addAcceptedClass(StringUtils.isBlank(s) ? null : Integer.parseInt(s));
         }
 
 //        for (String s : getModel().getSelectedDegrees()) {
-//            c.addAcceptedDegree(StringUtils.isEmpty(s)?null:Integer.parseInt(s));
+//            c.addAcceptedDegree(StringUtils.isBlank(s)?null:Integer.parseInt(s));
 //        }
         for (String s : getModel().getSelectedDepartments()) {
-            c.addAcceptedDepartment(StringUtils.isEmpty(s) ? null : Integer.parseInt(s));
+            c.addAcceptedDepartment(StringUtils.isBlank(s) ? null : Integer.parseInt(s));
         }
         for (String s : getModel().getSelectedTeachers()) {
-            c.addAcceptedTeacher(StringUtils.isEmpty(s) ? null : Integer.parseInt(s));
+            c.addAcceptedTeacher(StringUtils.isBlank(s) ? null : Integer.parseInt(s));
         }
         for (String s : getModel().getSelectedOwnerDepartments()) {
-            c.addAcceptedOwnerDepartment(StringUtils.isEmpty(s) ? null : Integer.parseInt(s));
+            c.addAcceptedOwnerDepartment(StringUtils.isBlank(s) ? null : Integer.parseInt(s));
         }
         for (String s : getModel().getSelectedTeacherDepartments()) {
-            c.addAcceptedTeacherDepartment(StringUtils.isEmpty(s) ? null : Integer.parseInt(s));
+            c.addAcceptedTeacherDepartment(StringUtils.isBlank(s) ? null : Integer.parseInt(s));
         }
         for (String s : getModel().getSelectedTeacherDegrees()) {
-            c.addAcceptedTeacherDegree(StringUtils.isEmpty(s) ? null : Integer.parseInt(s));
+            c.addAcceptedTeacherDegree(StringUtils.isBlank(s) ? null : Integer.parseInt(s));
         }
         for (String s : getModel().getSelectedTeacherSituations()) {
-            c.addAcceptedTeacherSituation(StringUtils.isEmpty(s) ? null : Integer.parseInt(s));
+            c.addAcceptedTeacherSituation(StringUtils.isBlank(s) ? null : Integer.parseInt(s));
         }
         for (String s : getModel().getSelectedTeacherDisciplines()) {
-            c.addAcceptedTeacherDiscipline(StringUtils.isEmpty(s) ? null : Integer.parseInt(s));
+            c.addAcceptedTeacherDiscipline(StringUtils.isBlank(s) ? null : Integer.parseInt(s));
         }
         for (String s : getModel().getSelectedCourseDisciplines()) {
-            c.addAcceptedCourseDiscipline(StringUtils.isEmpty(s) ? null : Integer.parseInt(s));
+            c.addAcceptedCourseDiscipline(StringUtils.isBlank(s) ? null : Integer.parseInt(s));
         }
         if ("proposalOnly".equals(getModel().getSelectedInitiatorStatus())) {
-            c.setAcceptProposal(true);
+            c.setAcceptProposals(true);
             c.setAcceptWish(null);
             c.setAcceptIntents(true);
         } else if ("wishOnly".equals(getModel().getSelectedInitiatorStatus())) {
-            c.setAcceptProposal(null);
+            c.setAcceptProposals(null);
             c.setAcceptWish(true);
             c.setAcceptIntents(true);
         } else if ("assignmentOnly".equals(getModel().getSelectedInitiatorStatus())) {
-            c.setAcceptProposal(null);
+            c.setAcceptProposals(null);
             c.setAcceptWish(null);
             c.setAcceptIntents(false);
         } else if ("all".equals(getModel().getSelectedInitiatorStatus())) {
-            c.setAcceptProposal(null);
+            c.setAcceptProposals(null);
             c.setAcceptWish(null);
             c.setAcceptIntents(true);
         } else {
-            c.setAcceptProposal(null);
+            c.setAcceptProposals(null);
             c.setAcceptWish(null);
             c.setAcceptIntents(true);
         }
 //        for (String s : getModel().getSelectedTeacherDisciplines()) {
-//            c.addAcceptedOfficialDisciplines(StringUtils.isEmpty(s)?null:Integer.parseInt(s));
+//            c.addAcceptedOfficialDisciplines(StringUtils.isBlank(s)?null:Integer.parseInt(s));
 //        }
 //        for (String s : getModel().getSelectedSituations()) {
-//            c.addAcceptedSituation(StringUtils.isEmpty(s)?null:Integer.parseInt(s));
+//            c.addAcceptedSituation(StringUtils.isBlank(s)?null:Integer.parseInt(s));
 //        }
 //        c.setAcceptAssignments(true);
-//        c.setAcceptIntents(isIncludeIntents());
+        c.setAcceptIntents(true);
+        c.setAcceptWish(isIncludeIntents());
+        c.setAcceptProposals(isIncludeProposals());
         return c;
     }
 
     public boolean isIncludeIntents() {
         HashSet<String> labels = new HashSet<>(Arrays.asList(getModel().getRefreshFilterSelected()));
         return labels.contains("intents");
+    }
+
+    public boolean isIncludeProposals() {
+        HashSet<String> labels = new HashSet<>(Arrays.asList(getModel().getRefreshFilterSelected()));
+        return labels.contains("proposals");
     }
 
     public boolean containsRefreshFilter(String s) {

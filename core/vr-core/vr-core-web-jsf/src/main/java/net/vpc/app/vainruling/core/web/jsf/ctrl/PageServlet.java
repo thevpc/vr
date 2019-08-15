@@ -6,7 +6,6 @@
 package net.vpc.app.vainruling.core.web.jsf.ctrl;
 
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.web.menu.VrMenuManager;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -16,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URLDecoder;
 import net.vpc.app.vainruling.core.service.CorePlugin;
+import net.vpc.app.vainruling.core.web.jsf.Vr;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -26,7 +26,7 @@ public class PageServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        VrMenuManager mm = VrApp.getBean(VrMenuManager.class);
+        Vr mm = Vr.get();
         String filename = URLDecoder.decode(request.getPathInfo(), "UTF-8");
         if (filename.startsWith("/")) {
             filename = filename.substring(1);

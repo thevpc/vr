@@ -3,10 +3,10 @@ package net.vpc.app.vainruling.plugins.academic.service.stat.impl.groups;
 import net.vpc.app.vainruling.core.service.stats.KPIGroup;
 import net.vpc.app.vainruling.core.service.stats.KPIGroupBy;
 import net.vpc.app.vainruling.core.service.stats.StringArrayKPIGroup;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacherSituation;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseAssignmentInfo;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicTeacherDegree;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacherSituation;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCourseAssignmentInfo;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicTeacherDegree;
 
 import java.util.*;
 

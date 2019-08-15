@@ -10,13 +10,16 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import net.vpc.common.strings.StringUtils;
 
 /**
  * Created by vpc on 9/5/16.
  */
 public class VrUPAUtils {
+    private static final java.util.logging.Logger LOG = java.util.logging.Logger.getLogger(VrUPAUtils.class.getName());
 
-    private static SimpleDateFormat UNIVERSAL_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+    private static final SimpleDateFormat UNIVERSAL_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
     private static Object jsonPrimitiveToValue(JsonElement jsonElement, DataType dataType) {
         if (dataType instanceof IntType) {
@@ -331,5 +334,39 @@ public class VrUPAUtils {
             return ee.findById(value);
         }
 
+    }
+    
+    
+    public static <T> T resolveCachedEntityPropertyInstance(Entity entity,String key,Class<T> clazz) {
+        String objCacheKey = "cache."+key;
+        String nullCacheKey = "cache."+key+"null";
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        T oldProvider = entity.getProperties().getObject(objCacheKey);
+        if (oldProvider != null) {
+            return oldProvider;
+        }
+        boolean noProvider = entity.getProperties().getBoolean(nullCacheKey, false);
+        if (noProvider) {
+            return null;
+        }
+        
+        T value = null;
+        value = null;
+        String p = StringUtils.trimToNull(entity.getProperties().getString(key));
+        if (!StringUtils.isBlank(p)) {
+            try {
+                Class<?> pp = Class.forName(p);
+                value = (T) VrApp.getBean(pp);//pp.newInstance();
+            } catch (Exception e) {
+                LOG.log(Level.SEVERE, " Unable to create of "+key+"("+clazz.getSimpleName()+") for entity " + entity.getName() + " as type " + p, e);
+            }
+        }
+        if (value == null) {
+            entity.getProperties().setBoolean(nullCacheKey, true);
+        } else {
+            entity.getProperties().setObject(objCacheKey, value);
+        }
+        return value;
+            //
     }
 }

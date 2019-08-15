@@ -33,7 +33,7 @@ public class DateFormatUtils {
     }
 
     public static Date parse(String value, String format, Date defaultValue) {
-        if (StringUtils.isEmpty(value)) {
+        if (StringUtils.isBlank(value)) {
             return defaultValue;
         }
         try {

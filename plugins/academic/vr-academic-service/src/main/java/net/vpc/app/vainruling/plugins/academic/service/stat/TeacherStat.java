@@ -1,6 +1,6 @@
 package net.vpc.app.vainruling.plugins.academic.service.stat;
 
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
 
 /**
  * Created by vpc on 8/20/16.

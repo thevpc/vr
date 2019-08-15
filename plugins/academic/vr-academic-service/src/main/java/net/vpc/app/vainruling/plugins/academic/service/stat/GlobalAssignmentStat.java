@@ -7,10 +7,10 @@ package net.vpc.app.vainruling.plugins.academic.service.stat;
 
 import java.util.Comparator;
 import net.vpc.app.vainruling.plugins.academic.service.util.AcademicCourseAssignmentIdConverter;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSemester;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacherSituation;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseAssignment;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicTeacherDegree;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicSemester;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacherSituation;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCourseAssignment;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicTeacherDegree;
 import net.vpc.common.util.DefaultMapList;
 import net.vpc.common.util.MapList;
 

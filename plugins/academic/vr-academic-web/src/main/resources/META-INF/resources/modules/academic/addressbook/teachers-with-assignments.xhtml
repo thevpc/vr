@@ -48,7 +48,7 @@ and open the template in the editor.
                                              id="period"
                                              value="#{academicTeachersWithAssignmentsCtrl.model.period}"
                                              converter="#{vr.entityObjConverter('AppPeriod')}">
-                                <f:selectItems value="#{vr.entitySelectItems('AppPeriod',true,false)}"/>
+                                <f:selectItems value="#{vr.entitySelectItemsNullable('AppPeriod')}"/>
                             </p:selectOneMenu>
                         </div>
                         <div class="form-group">
@@ -57,7 +57,7 @@ and open the template in the editor.
                                              id="semester"
                                              value="#{academicTeachersWithAssignmentsCtrl.model.semester}"
                                              converter="#{vr.entityObjConverter('AcademicSemester')}">
-                                <f:selectItems value="#{vr.entitySelectItems('AcademicSemester',true,false)}"/>
+                                <f:selectItems value="#{vr.entitySelectItemsNullable('AcademicSemester')}"/>
                             </p:selectOneMenu>
                         </div>
                         <div class="form-group">
@@ -67,7 +67,7 @@ and open the template in the editor.
                                              id="teacherDepartment"
                                              value="#{academicTeachersWithAssignmentsCtrl.model.teacherDepartment}"
                                              converter="#{vr.entityObjConverter('AppDepartment')}">
-                                <f:selectItems value="#{vr.entitySelectItems('AppDepartment',true,false)}"/>
+                                <f:selectItems value="#{vr.entitySelectItemsNullable('AppDepartment')}"/>
                             </p:selectOneMenu>
                         </div>
                         <div class="form-group">
@@ -76,7 +76,7 @@ and open the template in the editor.
                                              id="assignmentDepartment"
                                              value="#{academicTeachersWithAssignmentsCtrl.model.assignmentDepartment}"
                                              converter="#{vr.entityObjConverter('AppDepartment')}">
-                                <f:selectItems value="#{vr.entitySelectItems('AppDepartment',true,false)}"/>
+                                <f:selectItems value="#{vr.entitySelectItemsNullable('AppDepartment')}"/>
                             </p:selectOneMenu>
                         </div>
                     </div>

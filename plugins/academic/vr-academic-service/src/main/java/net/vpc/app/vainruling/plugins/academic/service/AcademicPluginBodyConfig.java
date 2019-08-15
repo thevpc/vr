@@ -1,5 +1,24 @@
 package net.vpc.app.vainruling.plugins.academic.service;
 
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicStudent;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicSemester;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicBac;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicPreClass;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicProgramType;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCourseType;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacherSituation;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicDiscipline;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicTeacherSemestrialLoad;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCoursePlan;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCourseLevel;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicPreClassType;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicProgram;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCourseGroup;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacherSituationType;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicTeacherDegree;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicOfficialDiscipline;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicClass;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.CorePluginSecurity;
 import net.vpc.app.vainruling.core.service.cache.CacheService;
@@ -7,9 +26,7 @@ import net.vpc.app.vainruling.core.service.cache.EntityCache;
 import net.vpc.app.vainruling.core.service.model.*;
 import net.vpc.app.vainruling.core.service.util.DateFormatUtils;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.*;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.*;
-import net.vpc.app.vainruling.plugins.academic.service.model.internship.current.AcademicInternshipGroup;
+import net.vpc.app.vainruling.plugins.academic.model.internship.current.AcademicInternshipGroup;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.Action;
 import net.vpc.upa.Document;
@@ -458,7 +475,7 @@ public class AcademicPluginBodyConfig extends AcademicPluginBody {
             String code = cn[0].toLowerCase();
             AcademicDiscipline t = pu.findByMainField(AcademicDiscipline.class, code);
             if (t == null && autoCreate) {
-                if (!StringUtils.isEmpty(code)) {
+                if (!StringUtils.isBlank(code)) {
                     t = new AcademicDiscipline();
                     t.setCode(code);
                     t.setName(cn[1]);
@@ -494,7 +511,7 @@ public class AcademicPluginBodyConfig extends AcademicPluginBody {
             String code = cn[0].toLowerCase();
             AcademicDiscipline t = pu.findByMainField(AcademicDiscipline.class, code);
             if (t == null) {
-                if (!StringUtils.isEmpty(code)) {
+                if (!StringUtils.isBlank(code)) {
                     ok.add(cn[1]);
                 }
             } else {
@@ -515,7 +532,7 @@ public class AcademicPluginBodyConfig extends AcademicPluginBody {
             String code = cn[0].toLowerCase();
             AcademicDiscipline t = pu.findByMainField(AcademicDiscipline.class, code);
             if (t == null) {
-                if (!StringUtils.isEmpty(code)) {
+                if (!StringUtils.isBlank(code)) {
                     t = new AcademicDiscipline();
                     t.setId(-1);
                     t.setCode(code);
@@ -649,17 +666,17 @@ public class AcademicPluginBodyConfig extends AcademicPluginBody {
         return result;
     }
 
-    public Set<Integer> findAcademicDownHierarchyIdList(int classId, Map<Integer, AcademicClass> allClasses) {
+    public Set<Integer> findClassDownHierarchyIdList(int classId, Map<Integer, AcademicClass> allClasses) {
         return cacheService.get(AcademicClass.class)
                 .getProperty("AcademicDownHierarchyIdList." + classId, new Action<Set<Integer>>() {
                     @Override
                     public Set<Integer> run() {
-                        return findAcademicDownHierarchyIdList0(classId, allClasses);
+                        return findClassDownHierarchyIdList0(classId, allClasses);
                     }
                 });
     }
 
-    public Set<Integer> findAcademicDownHierarchyIdList0(int classId, Map<Integer, AcademicClass> allClasses) {
+    public Set<Integer> findClassDownHierarchyIdList0(int classId, Map<Integer, AcademicClass> allClasses) {
         HashSet<Integer> visited = new HashSet<>();
 
         Set<Integer> result = new HashSet<>();
@@ -686,7 +703,7 @@ public class AcademicPluginBodyConfig extends AcademicPluginBody {
         return result;
     }
 
-    public List<AcademicClass> findAcademicDownHierarchyList(AcademicClass[] classes, Map<Integer, AcademicClass> allClasses) {
+    public List<AcademicClass> findClassDownHierarchyList(AcademicClass[] classes, Map<Integer, AcademicClass> allClasses) {
         if (allClasses == null) {
             allClasses = findAcademicClassesMap();
         }
@@ -694,7 +711,7 @@ public class AcademicPluginBodyConfig extends AcademicPluginBody {
         Set<Integer> baseIds = new HashSet<>();
         for (AcademicClass aClass : classes) {
             if (aClass != null) {
-                baseIds.addAll(findAcademicDownHierarchyIdList(aClass.getId(), allClasses));
+                baseIds.addAll(findClassDownHierarchyIdList(aClass.getId(), allClasses));
             }
         }
         for (Integer baseId : baseIds) {
@@ -703,7 +720,7 @@ public class AcademicPluginBodyConfig extends AcademicPluginBody {
         return result;
     }
 
-    public List<AcademicPreClass> findAcademicDownHierarchyList(AcademicPreClass[] classes, Map<Integer, AcademicPreClass> allClasses) {
+    public List<AcademicPreClass> findPreClassDownHierarchyList(AcademicPreClass[] classes, Map<Integer, AcademicPreClass> allClasses) {
         HashSet<Integer> visited = new HashSet<>();
         if (allClasses == null) {
             allClasses = findAcademicPreClassesMap();
@@ -732,7 +749,7 @@ public class AcademicPluginBodyConfig extends AcademicPluginBody {
         return result;
     }
 
-    public List<AcademicBac> findAcademicDownHierarchyList(AcademicBac[] classes, Map<Integer, AcademicBac> allClasses) {
+    public List<AcademicBac> findBacDownHierarchyList(AcademicBac[] classes, Map<Integer, AcademicBac> allClasses) {
         HashSet<Integer> visited = new HashSet<>();
         if (allClasses == null) {
             allClasses = findAcademicBacsMap();

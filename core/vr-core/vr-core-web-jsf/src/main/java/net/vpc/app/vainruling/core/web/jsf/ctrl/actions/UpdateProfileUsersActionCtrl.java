@@ -8,7 +8,6 @@ package net.vpc.app.vainruling.core.web.jsf.ctrl.actions;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
-import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.jsf.DialogBuilder;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.Convert;
@@ -23,11 +22,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Logger;
+import net.vpc.app.vainruling.core.service.pages.VrPage;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@VrController
+@VrPage
 @Controller
 public class UpdateProfileUsersActionCtrl {
 
@@ -44,7 +44,7 @@ public class UpdateProfileUsersActionCtrl {
         if (config == null) {
             config = new Config();
         }
-        int profileId = (!StringUtils.isEmpty(config.profile)) ? Convert.toInt(config.profile, IntegerParserConfig.LENIENT_F) : -1;
+        int profileId = (!StringUtils.isBlank(config.profile)) ? Convert.toInt(config.profile, IntegerParserConfig.LENIENT_F) : -1;
         setProfile(profileId);
         new DialogBuilder("/modules/admin/update-profile-users-dialog")
                 .setResizable(true)
@@ -99,7 +99,7 @@ public class UpdateProfileUsersActionCtrl {
     }
 
     public void fireEventExtraDialogClosed() {
-        RequestContext.getCurrentInstance().closeDialog(null);
+        DialogBuilder.closeCurrent();
     }
 
     public Model getModel() {

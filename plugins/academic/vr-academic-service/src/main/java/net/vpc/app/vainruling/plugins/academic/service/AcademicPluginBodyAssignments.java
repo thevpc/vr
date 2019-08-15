@@ -1,15 +1,26 @@
 package net.vpc.app.vainruling.plugins.academic.service;
 
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicSemester;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicLoadConversionTable;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicTeacherSemestrialLoad;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCoursePlan;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCourseAssignment;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacherPeriod;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCourseAssignment1;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCourseAssignment2;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCourseIntent;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCourseAssignmentInfo;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicLoadConversionRow;
+import net.vpc.app.vainruling.plugins.academic.model.current.TeacherAssignmentChunck;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.CorePluginSecurity;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.cache.CacheService;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
-import net.vpc.app.vainruling.plugins.academic.service.helper.AcademicConversionTableHelper;
-import net.vpc.app.vainruling.plugins.academic.service.load.TeacherGenerationHelper;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.*;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.*;
+import net.vpc.app.vainruling.plugins.academic.service.integration.AcademicConversionTableHelper;
+import net.vpc.app.vainruling.plugins.academic.service.integration.TeacherGenerationHelper;
 import net.vpc.app.vainruling.plugins.academic.service.stat.*;
 import net.vpc.app.vainruling.plugins.academic.service.util.AcademicCourseAssignmentIdConverter;
 import net.vpc.app.vainruling.plugins.academic.service.util.CourseAssignmentFilter;
@@ -56,7 +67,7 @@ public class AcademicPluginBodyAssignments extends AcademicPluginBody {
         AcademicCourseAssignment a = pu.findById(AcademicCourseAssignment.class, assignmentId);
         AcademicPluginSecurity.requireManageableCourseAssignment(a);
         String d = a.getDiscriminator();
-        if (StringUtils.isEmpty(d)) {
+        if (StringUtils.isBlank(d)) {
             d = "";
         } else {
             d = d + "-";
@@ -75,7 +86,7 @@ public class AcademicPluginBodyAssignments extends AcademicPluginBody {
         if (a != null && a.getGroupCount() > 0) {
             AcademicPluginSecurity.requireManageableCourseAssignment(a);
             String d = a.getDiscriminator();
-            if (StringUtils.isEmpty(d)) {
+            if (StringUtils.isBlank(d)) {
                 d = "";
             } else {
                 d = d + "-";
@@ -88,29 +99,6 @@ public class AcademicPluginBodyAssignments extends AcademicPluginBody {
             //create a perfect copy!
             a.setId(0);
             a.setDiscriminator(d + "G2");
-            pu.persist(a);
-        }
-    }
-
-    public void splitShareCourseAssignment(int assignmentId) {
-        PersistenceUnit pu = UPA.getPersistenceUnit();
-        AcademicCourseAssignment a = pu.findById(AcademicCourseAssignment.class, assignmentId);
-        if (a != null && a.getShareCount() > 0) {
-            AcademicPluginSecurity.requireManageableCourseAssignment(a);
-            String d = a.getDiscriminator();
-            if (StringUtils.isEmpty(d)) {
-                d = "";
-            } else {
-                d = d + "-";
-            }
-            double g = a.getShareCount();
-            a.setShareCount(g / 2.0);
-            a.setDiscriminator(d + "SH1");
-            pu.merge(a);
-
-            //create a perfect copy!
-            a.setId(0);
-            a.setDiscriminator(d + "SH2");
             pu.persist(a);
         }
     }
@@ -537,7 +525,7 @@ public class AcademicPluginBodyAssignments extends AcademicPluginBody {
             } else {
                 List<AcademicCourseAssignment> list = findAcademicCourseAssignmentListGroupByByTeacherId(periodId).get(teacher);
                 AcademicTeacher tt = getContext().getPlugin().findTeacher(teacher);
-                AcademicTeacherPeriod tp = tt == null ? null : getContext().getPlugin().findAcademicTeacherPeriod(periodId, tt);
+                AcademicTeacherPeriod tp = tt == null ? null : getContext().getPlugin().findTeacherPeriod(periodId, tt.getId());
                 if (list == null) {
                     if (tt != null) {
                         if (!tp.isEnabled()) {
@@ -580,7 +568,7 @@ public class AcademicPluginBodyAssignments extends AcademicPluginBody {
             } else {
                 List<AcademicCourseAssignment> list = findAcademicCourseAssignmentListGroupByByTeacherId(periodId).get(teacher);
                 AcademicTeacher tt = getContext().getPlugin().findTeacher(teacher);
-                AcademicTeacherPeriod tp = tt == null ? null : getContext().getPlugin().findAcademicTeacherPeriod(periodId, tt);
+                AcademicTeacherPeriod tp = tt == null ? null : getContext().getPlugin().findTeacherPeriod(periodId, tt.getId());
                 if (list == null) {
                     if (tt != null) {
                         if (!tp.isEnabled()) {
@@ -1101,7 +1089,6 @@ public class AcademicPluginBodyAssignments extends AcademicPluginBody {
                         return h;
                     }
                 });
-
     }
 
     public void generateTeachingLoad(int periodId, CourseAssignmentFilter courseAssignmentFilter, String version0, String oldVersion, ProgressMonitor monitor) throws IOException {

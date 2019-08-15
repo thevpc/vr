@@ -9,9 +9,9 @@ import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.plugins.Start;
-import net.vpc.app.vainruling.plugins.calendars.service.model.WeekCalendar;
-import net.vpc.app.vainruling.plugins.calendars.service.model.CalendarDay;
-import net.vpc.app.vainruling.plugins.calendars.service.model.CalendarHour;
+import net.vpc.app.vainruling.plugins.calendars.service.dto.WeekCalendar;
+import net.vpc.app.vainruling.plugins.calendars.service.dto.CalendarDay;
+import net.vpc.app.vainruling.plugins.calendars.service.dto.CalendarHour;
 import net.vpc.common.strings.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -49,19 +49,29 @@ public class CalendarsPlugin {
         return CalendarsPlugin.this.findMergedUserPublicWeekCalendar(userId, null);
     }
 
-    public WeekCalendar findMergedUserPublicWeekCalendar(int userId, String newName) {
-        if (StringUtils.isEmpty(newName)) {
-            AppUser user = core.findUser(userId);
-            newName = "noname";
-            if (user != null) {
-                newName = user.getFullName();
-                if (StringUtils.isEmpty(newName)) {
-                    newName = user.getLogin();
-                    if (StringUtils.isEmpty(newName)) {
-                        newName = "noname";
-                    }
-                }
+    private String findUserName(int userId) {
+        String newName = null;
+        AppUser user = UPA.getPersistenceUnit().invokePrivileged(new Action<AppUser>() {
+            @Override
+            public AppUser run() {
+                return core.findUser(userId);
             }
+        });
+        if (user != null) {
+            newName = user.getFullName();
+            if (StringUtils.isBlank(newName)) {
+                newName = user.getLogin();
+            }
+        }
+        if (StringUtils.isBlank(newName)) {
+            newName = "noname";
+        }
+        return newName;
+    }
+
+    public WeekCalendar findMergedUserPublicWeekCalendar(int userId, String newName) {
+        if (StringUtils.isBlank(newName)) {
+            newName = findUserName(userId);
         }
         return mergeWeekCalendars(findPlainUserPublicWeekCalendars(userId), newName);
     }
@@ -69,17 +79,7 @@ public class CalendarsPlugin {
     public List<WeekCalendar> findUserPublicWeekCalendars(int userId, boolean merge) {
         List<WeekCalendar> all = findPlainUserPublicWeekCalendars(userId);
         if (merge) {
-            AppUser user = core.findUser(userId);
-            String name = "noname";
-            if (user != null) {
-                name = user.getFullName();
-                if (StringUtils.isEmpty(name)) {
-                    name = user.getLogin();
-                    if (StringUtils.isEmpty(name)) {
-                        name = "noname";
-                    }
-                }
-            }
+            String name = findUserName(userId);
             if (all.size() > 1) {
                 all.add(0, mergeWeekCalendars(all, name + " (*)"));
             }
@@ -160,24 +160,24 @@ public class CalendarsPlugin {
                             visited.add(hj);
                             visited.add(hc);
                         } else {
-                            if (!visited.contains(ha) && !StringUtils.isEmpty(hour.getActivity())) {
-                                h0.setActivity((StringUtils.isEmpty(h0.getActivity())) ? hour.getActivity() : (h0.getActivity() + " / " + hour.getActivity()));
+                            if (!visited.contains(ha) && !StringUtils.isBlank(hour.getActivity())) {
+                                h0.setActivity((StringUtils.isBlank(h0.getActivity())) ? hour.getActivity() : (h0.getActivity() + " / " + hour.getActivity()));
                                 visited.add(ha);
                             }
-                            if (!visited.contains(hr) && !StringUtils.isEmpty(hour.getRoom())) {
-                                h0.setRoom((StringUtils.isEmpty(h0.getRoom())) ? hour.getRoom() : (h0.getRoom() + " / " + hour.getRoom()));
+                            if (!visited.contains(hr) && !StringUtils.isBlank(hour.getRoom())) {
+                                h0.setRoom((StringUtils.isBlank(h0.getRoom())) ? hour.getRoom() : (h0.getRoom() + " / " + hour.getRoom()));
                                 visited.add(hr);
                             }
-                            if (!visited.contains(hs) && !StringUtils.isEmpty(hour.getStudents())) {
-                                h0.setStudents((StringUtils.isEmpty(h0.getStudents())) ? hour.getStudents() : (h0.getStudents() + " / " + hour.getStudents()));
+                            if (!visited.contains(hs) && !StringUtils.isBlank(hour.getStudents())) {
+                                h0.setStudents((StringUtils.isBlank(h0.getStudents())) ? hour.getStudents() : (h0.getStudents() + " / " + hour.getStudents()));
                                 visited.add(hs);
                             }
-                            if (!visited.contains(hj) && !StringUtils.isEmpty(hour.getSubject())) {
-                                h0.setSubject((StringUtils.isEmpty(h0.getSubject())) ? hour.getSubject() : (h0.getSubject() + " / " + hour.getSubject()));
+                            if (!visited.contains(hj) && !StringUtils.isBlank(hour.getSubject())) {
+                                h0.setSubject((StringUtils.isBlank(h0.getSubject())) ? hour.getSubject() : (h0.getSubject() + " / " + hour.getSubject()));
                                 visited.add(hj);
                             }
-                            if (!visited.contains(hc) && !StringUtils.isEmpty(hour.getActor())) {
-                                h0.setActor((StringUtils.isEmpty(h0.getActor())) ? hour.getActor() : (h0.getActor() + " / " + hour.getActor()));
+                            if (!visited.contains(hc) && !StringUtils.isBlank(hour.getActor())) {
+                                h0.setActor((StringUtils.isBlank(h0.getActor())) ? hour.getActor() : (h0.getActor() + " / " + hour.getActor()));
                                 visited.add(hj);
                             }
                         }
@@ -196,7 +196,13 @@ public class CalendarsPlugin {
     public Set<Integer> findUsersWithPublicWeekCalendars() {
         Set<Integer> all = new HashSet<>();
         Set<Integer> good = new HashSet<>();
-        for (AppUser appUser : core.findUsers()) {
+        List<AppUser> users = UPA.getPersistenceUnit().invokePrivileged(new Action<List<AppUser>>() {
+            @Override
+            public List<AppUser> run() {
+                return core.findUsers();
+            }
+        });
+        for (AppUser appUser : users) {
             all.add(appUser.getId());
         }
         for (Map.Entry<String, AppWeekCalendarProvider> o : weekCalendarProviders.entrySet()) {
@@ -277,7 +283,7 @@ public class CalendarsPlugin {
             calendarEvent.setCalendar(findMyPrivateEventCalendar());
         }
 
-        if (StringUtils.isEmpty(calendarEvent.getTitle())) {
+        if (StringUtils.isBlank(calendarEvent.getTitle())) {
             calendarEvent.setTitle("TODO");
         }
         if (calendarEvent.getOwner() == null) {
@@ -305,7 +311,7 @@ public class CalendarsPlugin {
     public AppCalendar findMyDefaultEditEventCalendar() {
         AppUser me = core.getCurrentUser();
         String c = (String) core.getAppPropertyValue("vr-calendars.DefaultEditCalendar", me.getLogin());
-        if (!StringUtils.isEmpty(c)) {
+        if (!StringUtils.isBlank(c)) {
             AppCalendar ca = findEventCalendarByCode(c);
             if (ca != null && isEventCalendarWriteAllowed(ca)) {
                 return ca;
@@ -315,10 +321,10 @@ public class CalendarsPlugin {
         return findMyPrivateEventCalendar();
     }
 
-public AppCalendar findMyPrivateEventCalendar() {
+    public AppCalendar findMyPrivateEventCalendar() {
         AppUser me = core.getCurrentUser();
         String c = (String) core.getAppPropertyValue("vr-calendars.DefaultCalendar", me.getLogin());
-        if (!StringUtils.isEmpty(c)) {
+        if (!StringUtils.isBlank(c)) {
             AppCalendar ca = findEventCalendarByCode(c);
             if (ca != null) {
                 return ca;
@@ -333,7 +339,7 @@ public AppCalendar findMyPrivateEventCalendar() {
             ca.setName("Calendrier de " + me.getFullName());
             ca.setOwner(me);
             ca.setReadUserFilter(me);
-            AppCalendar ca2=ca;
+            AppCalendar ca2 = ca;
             UPA.getContext().invokePrivileged(new VoidAction() {
                 @Override
                 public void run() {
@@ -355,7 +361,7 @@ public AppCalendar findMyPrivateEventCalendar() {
             return true;
         }
         String s = i.getWriteProfileFilter();
-        if (!StringUtils.isEmpty(s) && core.isCurrentSessionMatchesProfileFilter(s)) {
+        if (!StringUtils.isBlank(s) && core.isCurrentSessionMatchesProfileFilter(s)) {
             return true;
         }
         return false;
@@ -382,11 +388,11 @@ public AppCalendar findMyPrivateEventCalendar() {
         }
 
         String s = i.getReadProfileFilter();
-        if (StringUtils.isEmpty(s) || core.isCurrentSessionMatchesProfileFilter(s)) {
+        if (StringUtils.isBlank(s) || core.isCurrentSessionMatchesProfileFilter(s)) {
             return true;
         }
         s = i.getWriteProfileFilter();
-        if (!StringUtils.isEmpty(s) && core.isCurrentSessionMatchesProfileFilter(s)) {
+        if (!StringUtils.isBlank(s) && core.isCurrentSessionMatchesProfileFilter(s)) {
             return true;
         }
         return false;
@@ -426,7 +432,7 @@ public AppCalendar findMyPrivateEventCalendar() {
         List<AppCalendar> a = findMyEventCalendars();
         List<AppCalendarEvent> all = new ArrayList<>();
         int v = -99;
-        if (StringUtils.isEmpty(calendar)) {
+        if (StringUtils.isBlank(calendar)) {
             calendar = null;
         }
         for (AppCalendar cal : a) {
@@ -525,7 +531,7 @@ public AppCalendar findMyPrivateEventCalendar() {
 
     public int findMyEventCalendarEventsCount(String calendar, Date fromDate, Date toDate) {
         List<AppCalendar> a = findMyEventCalendars();
-        if (StringUtils.isEmpty(calendar)) {
+        if (StringUtils.isBlank(calendar)) {
             calendar = null;
         }
         int count = 0;
@@ -569,7 +575,7 @@ public AppCalendar findMyPrivateEventCalendar() {
     }
 
     public AppCalendar findMyEventCalendar(String name) {
-        if (StringUtils.isEmpty(name)) {
+        if (StringUtils.isBlank(name)) {
             return null;
         }
         AppCalendar c = UPA.getPersistenceUnit().findByField("AppCalendar", "code", name);
@@ -605,7 +611,7 @@ public AppCalendar findMyPrivateEventCalendar() {
                     for (AppCalendar c : allPersistentValendars) {
                         if (c.getId() != dc.getId()) {
                             if (isEventCalendarReadAllowed(c)) {
-                                if (!StringUtils.isEmpty(c.getCode())) {
+                                if (!StringUtils.isBlank(c.getCode())) {
                                     if (!all.containsKey(c.getCode())) {
                                         all.put(c.getCode(), c);
                                     }
@@ -619,7 +625,7 @@ public AppCalendar findMyPrivateEventCalendar() {
                         List<RuntimeAppCalendar> cls = calendarEventSerivce.getPublicCalendars();
                         if (cls != null) {
                             for (RuntimeAppCalendar cl : cls) {
-                                if (cl != null && !StringUtils.isEmpty(cl.getCode()) && !all.containsKey(cl.getCode())) {
+                                if (cl != null && !StringUtils.isBlank(cl.getCode()) && !all.containsKey(cl.getCode())) {
                                     all.put(cl.getCode(), cl);
                                 }
                             }
@@ -654,7 +660,7 @@ public AppCalendar findMyPrivateEventCalendar() {
             for (AppCalendar c : allPersistentValendars) {
                 if (c.getId() != dc.getId()) {
                     if (isEventCalendarReadAllowed(c)) {
-                        if (!StringUtils.isEmpty(c.getCode())) {
+                        if (!StringUtils.isBlank(c.getCode())) {
                             if (!all.containsKey(c.getCode())) {
                                 all.put(c.getCode(), c);
                             }
@@ -669,7 +675,7 @@ public AppCalendar findMyPrivateEventCalendar() {
                 List<RuntimeAppCalendar> cls = calendarEventSerivce.getMyCalendars();
                 if (cls != null) {
                     for (RuntimeAppCalendar cl : cls) {
-                        if (cl != null && !StringUtils.isEmpty(cl.getCode()) && !all.containsKey(cl.getCode())) {
+                        if (cl != null && !StringUtils.isBlank(cl.getCode()) && !all.containsKey(cl.getCode())) {
                             all.put(cl.getCode(), cl);
                         }
                     }

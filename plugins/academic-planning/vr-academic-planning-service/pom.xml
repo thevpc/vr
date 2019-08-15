@@ -5,7 +5,7 @@
     <groupId>net.vpc.app.vain-ruling.plugins.academic-planning</groupId>
     <artifactId>vr-academic-planning-service</artifactId>
     <name>net.vpc.app.vain-ruling.plugins.academic-planning.vr-academic-planning-service</name>
-    <version>1.13.13</version>
+    <version>1.13.15</version>
     <packaging>jar</packaging>
     <url>https://github.com/thevpc/vr/wiki</url>
 
@@ -20,7 +20,7 @@
         <vr-plugin.component-type>service</vr-plugin.component-type>
         <vr-plugin.name>Academic Planning</vr-plugin.name>
         <vr-plugin.description>Renders FET Plannings</vr-plugin.description>
-        <version.vr-core-service>1.13.13</version.vr-core-service>
+        <version.vr-core-service>1.13.15</version.vr-core-service>
     </properties>
 
     <dependencies>
@@ -32,12 +32,12 @@
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.academic</groupId>
             <artifactId>vr-academic-service</artifactId>
-            <version>1.13.13</version>
+            <version>1.13.15</version>
         </dependency>
         <dependency>
             <groupId>net.vpc.app.vain-ruling.plugins.calendars</groupId>
             <artifactId>vr-calendars-service</artifactId>
-            <version>1.13.13</version>
+            <version>1.13.15</version>
         </dependency>
     </dependencies>
 

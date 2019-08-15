@@ -6,9 +6,7 @@
 package net.vpc.app.vainruling.plugins.tasks.web;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
-import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.core.web.VrController;
-import net.vpc.app.vainruling.core.web.UPathItem;
+import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.app.vainruling.core.web.jsf.ctrl.AbstractObjectCtrl;
 
 import net.vpc.app.vainruling.plugins.tasks.service.TaskPlugin;
@@ -18,13 +16,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 
 import java.util.List;
+import net.vpc.app.vainruling.core.service.pages.VrPage;
+import net.vpc.app.vainruling.core.service.pages.VrPathItem;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@VrController(
+@VrPage(
         breadcrumb = {
-                @UPathItem(ctrl = "dashboard")},
+                @VrPathItem(ctrl = "dashboard")},
         url = "modules/todo/config-todo-list"
 )
 @Scope(value = "session")

@@ -195,8 +195,8 @@ class CorePluginBodySecurityAuthenticator extends CorePluginBody {
                             return null;
                         }
                     }), null);
-            token.setClientApp(StringUtils.isEmpty(clientApp) ? "default" : clientApp);
-            token.setClientAppId(StringUtils.isEmpty(clientAppId) ? "unknown" : clientAppId);
+            token.setClientApp(StringUtils.isBlank(clientApp) ? "default" : clientApp);
+            token.setClientAppId(StringUtils.isBlank(clientAppId) ? "unknown" : clientAppId);
             token.setDestroyed(false);
             token.setDomain(getContext().getCorePlugin().getCurrentDomain());
             token.setConnexionTime(user.getLastConnexionDate());
@@ -658,7 +658,7 @@ class CorePluginBodySecurityAuthenticator extends CorePluginBody {
     }
 
     public boolean isCurrentSessionAdminOrUser(String login) {
-        if (StringUtils.isEmpty(login)) {
+        if (StringUtils.isBlank(login)) {
             return isCurrentSessionAdmin();
         }
         UserToken token = getContext().getCorePlugin().getCurrentToken();
@@ -784,7 +784,7 @@ class CorePluginBodySecurityAuthenticator extends CorePluginBody {
 //        return us != null && us.isAdmin();
 //    }
     public boolean isCurrentSessionAdminOrProfile(String profileName) {
-        if (StringUtils.isEmpty(profileName)) {
+        if (StringUtils.isBlank(profileName)) {
             return isCurrentSessionAdmin();
         }
         UserToken us = getContext().getCorePlugin().getCurrentToken();

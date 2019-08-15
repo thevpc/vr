@@ -8,7 +8,6 @@ package net.vpc.app.vainruling.core.web.jsf.ctrl.actions;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.model.AppRightName;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
-import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.jsf.DialogBuilder;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.Convert;
@@ -22,11 +21,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Logger;
+import net.vpc.app.vainruling.core.service.pages.VrPage;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@VrController
+@VrPage
 public class UpdateProfileRightsActionCtrl {
 
     private static final Logger log = Logger.getLogger(UpdateProfileRightsActionCtrl.class.getName());
@@ -42,7 +42,7 @@ public class UpdateProfileRightsActionCtrl {
         if (config == null) {
             config = new Config();
         }
-        if (!StringUtils.isEmpty(config.profile)) {
+        if (!StringUtils.isBlank(config.profile)) {
             int profileId = Convert.toInt(config.profile,IntegerParserConfig.LENIENT_F);
             List<AppRightName>[] list = core.findProfileRightNamesDualList(profileId);
             Comparator<AppRightName> comp = new Comparator<AppRightName>() {
@@ -93,7 +93,7 @@ public class UpdateProfileRightsActionCtrl {
     }
 
     public void fireEventExtraDialogClosed() {
-        RequestContext.getCurrentInstance().closeDialog(null);
+        DialogBuilder.closeCurrent();
     }
 
     public Model getModel() {

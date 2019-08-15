@@ -8,7 +8,7 @@ package net.vpc.app.vainruling.plugins.academic.service.dto;
 import java.util.List;
 import java.util.Map;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseAssignmentInfoByVisitor;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCourseAssignmentInfoByVisitor;
 import net.vpc.app.vainruling.plugins.academic.service.stat.TeacherSemesterStat;
 
 /**

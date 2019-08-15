@@ -2,8 +2,7 @@ package net.vpc.app.vainruling.plugins.calendars.web;
 
 import java.util.ArrayList;
 import net.vpc.app.vainruling.core.service.CorePlugin;
-import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.core.web.VrController;
+import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import org.primefaces.event.SelectEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -14,8 +13,9 @@ import net.vpc.app.vainruling.plugins.calendars.model.AppCalendarEvent;
 import net.vpc.app.vainruling.plugins.calendars.model.RuntimeAppCalendarEvent;
 import net.vpc.app.vainruling.plugins.calendars.model.RuntimeAppCalendarProperty;
 import net.vpc.app.vainruling.plugins.calendars.service.CalendarsPlugin;
+import net.vpc.app.vainruling.core.service.pages.VrPage;
 
-@VrController(
+@VrPage(
         url = "modules/calendars/public-events-calendars"
 )
 @Controller

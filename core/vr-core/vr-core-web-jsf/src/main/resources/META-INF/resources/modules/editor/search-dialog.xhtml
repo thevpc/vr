@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+        >
+
+<h:head>
+</h:head>
+
+<h:body>
+
+    <ui:composition template="#{vr.privateThemePath}/templates/dialog-template.xhtml">
+        <ui:define name="dialog-title">
+            <h:outputText value="Recherche Simple"/>
+        </ui:define>
+        <ui:define name="dialog-body">
+
+            <h:form id="myform" style="height: 100px">
+                <p:inputText value="#{editorCtrl.model.search.expression}" style="width: 100%; margin-top: 20px;"/>
+                <p:separator/>
+                <p:commandButton icon="ui-icon-search" actionListener="#{editorCtrl.fireEventSearchCancelled}"
+                                 value="Annuler" styleClass="btn btn-default"
+                                 style="float: left;"/>
+                <p:commandButton icon="ui-icon-search" actionListener="#{editorCtrl.fireEventSearchClosed}"
+                                 value="Chercher" styleClass="btn btn-primary"
+                                 style="float: right;"/>
+            </h:form>
+
+        </ui:define>
+    </ui:composition>
+
+</h:body>
+
+</html>

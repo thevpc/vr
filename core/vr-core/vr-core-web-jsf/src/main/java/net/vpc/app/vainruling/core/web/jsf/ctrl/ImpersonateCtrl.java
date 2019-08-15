@@ -6,13 +6,13 @@
 package net.vpc.app.vainruling.core.web.jsf.ctrl;
 
 import net.vpc.app.vainruling.core.service.CorePluginSecurity;
-import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.core.web.VrController;
+import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
+import net.vpc.app.vainruling.core.service.pages.VrPage;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@VrController(
+@VrPage(
         url = "modules/admin/impersonate",
         menu = "/Admin/Security",
         securityKey = CorePluginSecurity.RIGHT_CUSTOM_ADMIN_IMPERSONATE

@@ -7,19 +7,17 @@ package net.vpc.app.vainruling.plugins.academic.teachereval.web;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
-import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.core.web.UPathItem;
-import net.vpc.app.vainruling.core.web.VrController;
+import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.AcademicPerfEvalPlugin;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.dto.FQuestion;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.dto.FRow;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.dto.FeedbackForm;
-import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.AcademicFeedback;
-import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.AcademicFeedbackResponse;
-import net.vpc.app.vainruling.plugins.academic.perfeval.service.model.AcademicFeedbackSession;
+import net.vpc.app.vainruling.plugins.academic.perfeval.model.AcademicFeedback;
+import net.vpc.app.vainruling.plugins.academic.perfeval.model.AcademicFeedbackResponse;
+import net.vpc.app.vainruling.plugins.academic.perfeval.model.AcademicFeedbackSession;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPluginSecurity;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicStudent;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.UPA;
@@ -34,13 +32,15 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.logging.Logger;
+import net.vpc.app.vainruling.core.service.pages.VrPage;
+import net.vpc.app.vainruling.core.service.pages.VrPathItem;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@VrController(
+@VrPage(
         breadcrumb = {
-                @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
+                @VrPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
 //        css = "fa-table",
 //        title = "Fiches Eval. enseignements",
         menu = "/Education/Evaluation",
@@ -106,7 +106,7 @@ public class StudentFeedbackCtrl {
         AcademicStudent s = academic.getCurrentStudent();
         getModel().setFeedbacks(new ArrayList<SelectItem>());
         AppPeriod p = null;
-        if (StringUtils.isEmpty(getModel().getPeriodId())) {
+        if (StringUtils.isBlank(getModel().getPeriodId())) {
             p = core.getCurrentPeriod();
             //
         } else {
@@ -134,7 +134,7 @@ public class StudentFeedbackCtrl {
 
     public void onFeedbackChange() {
         FeedbackForm form;
-        if (StringUtils.isEmpty(getModel().getSelectedFeedback())) {
+        if (StringUtils.isBlank(getModel().getSelectedFeedback())) {
             form = new FeedbackForm();
         } else {
             form = feedback.createFeedbackForm(Integer.parseInt(getModel().getSelectedFeedback()), -1);
@@ -161,7 +161,7 @@ public class StudentFeedbackCtrl {
         boolean allvalid = true;
         for (FRow row : getModel().getRows()) {
             for (FQuestion question : row.getQuestions()) {
-                if (StringUtils.isEmpty(question.getResponse().getResponse())) {
+                if (StringUtils.isBlank(question.getResponse().getResponse())) {
                     allvalid = false;
                 }
             }

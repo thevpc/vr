@@ -29,7 +29,7 @@ public class CrewPublicThemePlugin {
             @Override
             public String run() {
                 String countDownText = (String) core.getAppPropertyValue("System.UI.Theme.CountDown.Text", null);
-                if (StringUtils.isEmpty(countDownText)) {
+                if (StringUtils.isBlank(countDownText)) {
                     return "";
                 }
                 return countDownText;
@@ -43,7 +43,7 @@ public class CrewPublicThemePlugin {
             public String run() {
                 String countDownText = (String) core.getAppPropertyValue("System.UI.Theme.CountDown.Text", null);
                 Object countDownDate = core.getAppPropertyValue("System.UI.Theme.CountDown.Date", null);
-                if (StringUtils.isEmpty(countDownText)) {
+                if (StringUtils.isBlank(countDownText)) {
                     return "";
                 }
                 if (countDownDate != null && countDownDate instanceof String) {

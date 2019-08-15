@@ -8,14 +8,12 @@ package net.vpc.app.vainruling.plugins.calendars.web.week;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.*;
-import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.core.web.VrController;
-import net.vpc.app.vainruling.core.web.UPathItem;
+import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.app.vainruling.core.web.jsf.VrJsf;
 import net.vpc.app.vainruling.plugins.calendars.service.CalendarsPlugin;
 import net.vpc.app.vainruling.plugins.calendars.service.CalendarsPluginSecurity;
-import net.vpc.app.vainruling.plugins.calendars.service.model.WeekCalendar;
-import net.vpc.app.vainruling.plugins.calendars.service.model.CalendarDay;
+import net.vpc.app.vainruling.plugins.calendars.service.dto.WeekCalendar;
+import net.vpc.app.vainruling.plugins.calendars.service.dto.CalendarDay;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.Convert;
 import net.vpc.common.util.IntegerParserConfig;
@@ -23,13 +21,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.faces.model.SelectItem;
 import java.util.*;
+import net.vpc.app.vainruling.core.service.pages.VrPage;
+import net.vpc.app.vainruling.core.service.pages.VrPathItem;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@VrController(
+@VrPage(
         breadcrumb = {
-                @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
+                @VrPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
 //        css = "fa-table",
 //        title = "Tous les Emplois",
         url = "modules/calendars/user-week-calendars",
@@ -102,7 +102,7 @@ public class UserWeekCalendarsCtrl extends AbstractWeekCalendarCtrl {
 
     public int getPeriodId() {
         String p = "";//getModel().getSelectedPeriod();
-        if (StringUtils.isEmpty(p)) {
+        if (StringUtils.isBlank(p)) {
             CorePlugin core = VrApp.getBean(CorePlugin.class);
             AppConfig appConfig = core.getCurrentConfig();
             if (appConfig != null) {

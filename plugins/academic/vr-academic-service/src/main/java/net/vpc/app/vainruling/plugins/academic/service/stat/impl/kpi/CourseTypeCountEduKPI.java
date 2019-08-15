@@ -1,7 +1,7 @@
 package net.vpc.app.vainruling.plugins.academic.service.stat.impl.kpi;
 
 import net.vpc.app.vainruling.core.service.stats.*;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseAssignmentInfo;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCourseAssignmentInfo;
 
 /**
  * Created by vpc on 8/29/16.

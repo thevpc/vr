@@ -48,7 +48,7 @@ public class VrConfigureInstallCtrl {
         AppProperty p = findSystemProperty("System.FileSystem");
         getModel().setRootPath(p == null ? null : p.getPropertyValue());
         String s = VrPlatformUtils.validatePath(getModel().getRootPath());
-        if (StringUtils.isEmpty(s) || !new File(s).exists() || !new File(s).isDirectory()) {
+        if (StringUtils.isBlank(s) || !new File(s).exists() || !new File(s).isDirectory()) {
             return true;
         }
         try {

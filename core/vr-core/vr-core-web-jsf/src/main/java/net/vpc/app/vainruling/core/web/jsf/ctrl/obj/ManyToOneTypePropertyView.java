@@ -7,8 +7,8 @@ package net.vpc.app.vainruling.core.web.jsf.ctrl.obj;
 
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.util.VrUPAUtils;
-import net.vpc.app.vainruling.core.web.jsf.ctrl.ObjCtrl;
-import net.vpc.app.vainruling.core.web.obj.ViewContext;
+import net.vpc.app.vainruling.core.web.jsf.ctrl.EditorCtrl;
+import net.vpc.app.vainruling.core.service.editor.ViewContext;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.upa.*;
 import net.vpc.upa.types.DataType;
@@ -64,7 +64,7 @@ public class ManyToOneTypePropertyView extends FieldPropertyView {
     }
 
     public String buildActionCommand() {
-        ObjCtrl ctrl = VrApp.getBean(ObjCtrl.class);
+        EditorCtrl ctrl = VrApp.getBean(EditorCtrl.class);
         Object idVal = getSelectedItem();
         return getActionCommand().replace("${ID}", idVal == null ? "" : idVal.toString());
     }
@@ -107,8 +107,8 @@ public class ManyToOneTypePropertyView extends FieldPropertyView {
             dt = getField().getDataType();
         }
         Entity me = getTargetEntity();
-//        ObjCtrl objCtrl = VrApp.getBean(ObjCtrl.class);
-//        Map<String, Object> otherValues = objCtrl.currentViewToMap();
+//        EditorCtrl editorCtrl = VrApp.getBean(EditorCtrl.class);
+//        Map<String, Object> editorCtrl = editorCtrl.currentViewToMap();
 //        List<PropertyView> updatablePropertyViews = getUpdatablePropertyViews();
 //        List<PropertyView> dependentPropertyViews = getDependentPropertyViews();
         this.setValues(getPropertyViewManager().getPropertyViewValuesProvider(getField(), dt).resolveValues(this, getField(), dt, viewContext));

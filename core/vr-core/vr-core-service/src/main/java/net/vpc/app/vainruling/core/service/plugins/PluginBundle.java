@@ -54,18 +54,18 @@ public class PluginBundle extends PluginInfo{
 
     public void addComponent(PluginComponent component) {
         if (component != null) {
-//            if (!StringUtils.isEmpty(component.getId())) {
+//            if (!StringUtils.isBlank(component.getId())) {
 //                setId(component.getId());
 //            }
-            if (!StringUtils.isEmpty(component.getBundleName())) {
+            if (!StringUtils.isBlank(component.getBundleName())) {
                 this.setName(component.getBundleName());
-            }else if (StringUtils.isEmpty(getName()) && !StringUtils.isEmpty(component.getName())) {
+            }else if (StringUtils.isBlank(getName()) && !StringUtils.isBlank(component.getName())) {
                 if(
                         !component.getId().endsWith(":"+component.getName())
                         && !!component.getId().equals(component.getName())
                         ) {
                     this.setName(component.getName());
-                }else if(StringUtils.isEmpty(getName())){
+                }else if(StringUtils.isBlank(getName())){
                     if(getId().contains(":")){
                         setName(getId().substring(getId().indexOf(':')+1));
                     }else{
@@ -73,12 +73,12 @@ public class PluginBundle extends PluginInfo{
                     }
                 }
             }
-            if (!StringUtils.isEmpty(component.getBundleDescription())) {
+            if (!StringUtils.isBlank(component.getBundleDescription())) {
                 this.setDescription(component.getBundleDescription());
-            }else if (StringUtils.isEmpty(getDescription()) && !StringUtils.isEmpty(component.getDescription())) {
+            }else if (StringUtils.isBlank(getDescription()) && !StringUtils.isBlank(component.getDescription())) {
                 this.setDescription(component.getDescription());
             }
-            if (!StringUtils.isEmpty(component.getUrl())) {
+            if (!StringUtils.isBlank(component.getUrl())) {
                 this.setUrl(component.getUrl());
             }
             this.getOrganization().updateNonNull(component.getOrganization());
@@ -106,7 +106,7 @@ public class PluginBundle extends PluginInfo{
             //reeval version
             Set<String> vers = new HashSet<>();
             for (PluginComponent d : getComponents()) {
-                if(!StringUtils.isEmpty(d.getVersion())) {
+                if(!StringUtils.isBlank(d.getVersion())) {
                     vers.add(d.getVersion());
                 }
             }

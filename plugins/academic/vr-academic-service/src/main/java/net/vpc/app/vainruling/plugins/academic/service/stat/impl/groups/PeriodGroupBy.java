@@ -4,8 +4,8 @@ import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.service.stats.KPIGroup;
 import net.vpc.app.vainruling.core.service.stats.KPIGroupBy;
 import net.vpc.app.vainruling.core.service.stats.StringArrayKPIGroup;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSemester;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseAssignmentInfo;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicSemester;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCourseAssignmentInfo;
 
 import java.util.Arrays;
 import java.util.List;

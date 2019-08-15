@@ -18,7 +18,7 @@ import java.util.logging.Logger;
  * @author taha.bensalah@gmail.com
  */
 public class CourseOptionsRanking_IA2018 {
-    private final String USER_HOME_DATA_ENISO_STUDENTS = "/data/vpc/Data/eniso/eleves-ingenieurs/2018-2019/choix-options/IA";///old/v01
+    private final String USER_HOME_DATA_ENISO_STUDENTS = "/data/vpc/data/eniso/eleves-ingenieurs/2018-2019/choix-options/IA";///old/v01
     int[] maxOptions = new int[]{28, 14, 23};
     private String[][] modulesByOptionsNames = new String[][]{
         {"M298,N,5,2", "M288,N,5,2", "M2I1,N,5,2"},

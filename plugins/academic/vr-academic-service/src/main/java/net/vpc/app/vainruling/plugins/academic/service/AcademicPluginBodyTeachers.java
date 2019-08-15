@@ -6,13 +6,13 @@ import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.cache.CacheService;
 import net.vpc.app.vainruling.core.service.model.*;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacherPeriod;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacherStrict;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicClass;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCourseAssignment;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicCoursePlan;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicProgram;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacherPeriod;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacherStrict;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicClass;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCourseAssignment;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCoursePlan;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicProgram;
 import net.vpc.app.vainruling.plugins.academic.service.util.AcademicTeacherProfileFilter;
 import net.vpc.app.vainruling.plugins.academic.service.util.DefaultCourseAssignmentFilter;
 import net.vpc.app.vainruling.plugins.academic.service.util.TeacherPeriodFilter;
@@ -122,7 +122,7 @@ public class AcademicPluginBodyTeachers extends AcademicPluginBody {
         }
         List<AcademicTeacher> teachers2 = new ArrayList<>(teachers.size());
         for (AcademicTeacher teacher : teachers) {
-            if (teacherFilter.acceptTeacher(academic.findAcademicTeacherPeriod(period, teacher))) {
+            if (teacherFilter.acceptTeacher(academic.findTeacherPeriod(period, teacher.getId()))) {
                 teachers2.add(teacher);
             }
         }
@@ -384,6 +384,14 @@ public class AcademicPluginBodyTeachers extends AcademicPluginBody {
         return (AcademicTeacher) UPA.getPersistenceUnit().createQuery("Select u from AcademicTeacher u where u.user.fullName=:name").setParameter("name", t).getFirstResultOrNull();
     }
 
+    public AcademicTeacherPeriod findAcademicTeacherPeriod(final int periodId, int teacherId) {
+        AcademicTeacher t = findTeacher(teacherId);
+        if(t==null){
+            return null;
+        }
+        return findAcademicTeacherPeriod(periodId, t);
+    }
+    
     public AcademicTeacherPeriod findAcademicTeacherPeriod(final int periodId, AcademicTeacher t) {
         Map<Integer, AcademicTeacherPeriod> m = cacheService.get(AcademicTeacherPeriod.class).getProperty("findAcademicTeacherPeriodByTeacher:" + periodId, new Action<Map<Integer, AcademicTeacherPeriod>>() {
             @Override
@@ -428,10 +436,10 @@ public class AcademicPluginBodyTeachers extends AcademicPluginBody {
         if (t.getUser() != null) {
             name = t.resolveFullName();
         }
-        if (StringUtils.isEmpty(name) && t.getUser() != null) {
+        if (StringUtils.isBlank(name) && t.getUser() != null) {
             name = t.getUser().getLogin();
         }
-        if (StringUtils.isEmpty(name)) {
+        if (StringUtils.isBlank(name)) {
             name = "Teacher #" + t.getId();
         }
         return (name);

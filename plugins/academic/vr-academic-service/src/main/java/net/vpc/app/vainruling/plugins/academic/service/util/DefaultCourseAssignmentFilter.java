@@ -1,13 +1,18 @@
 package net.vpc.app.vainruling.plugins.academic.service.util;
 
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCoursePlan;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicProgramType;
+import net.vpc.app.vainruling.plugins.academic.model.current.IAcademicCourseAssignment;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicTeacherDegree;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCourseType;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicClass;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicOfficialDiscipline;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicSemester;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacherSituation;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.*;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicOfficialDiscipline;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicSemester;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacherSituation;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -44,9 +49,9 @@ public class DefaultCourseAssignmentFilter implements CourseAssignmentFilter {
     private Set<String> acceptedLabels = new HashSet<>();
     private Set<String> rejectedLabels = new HashSet<>();
     private Boolean acceptWish = null;
-    private Boolean acceptProposal = null;
+    private Boolean acceptProposals = null;
     private boolean acceptIntents = true;
-    private boolean acceptAssignments = true;
+    private Boolean acceptAssignments = true;
     private boolean acceptNoTeacher = true;
 
     public static DefaultCourseAssignmentFilter build(Set<String> refreshFilter) {
@@ -152,11 +157,11 @@ public class DefaultCourseAssignmentFilter implements CourseAssignmentFilter {
         return this;
     }
 
-    public boolean isAcceptAssignments() {
+    public Boolean getAcceptAssignments() {
         return acceptAssignments;
     }
 
-    public DefaultCourseAssignmentFilter setAcceptAssignments(boolean acceptAssignments) {
+    public DefaultCourseAssignmentFilter setAcceptAssignments(Boolean acceptAssignments) {
         this.acceptAssignments = acceptAssignments;
         return this;
     }
@@ -165,7 +170,7 @@ public class DefaultCourseAssignmentFilter implements CourseAssignmentFilter {
     public boolean lookupIntents() {
         return isAcceptIntents()
                 || getAcceptWish() != null
-                || getAcceptProposal() != null;
+                || getAcceptProposals() != null;
     }
 
     public Set<Integer> getAcceptedProgramTypes() {
@@ -723,6 +728,7 @@ public class DefaultCourseAssignmentFilter implements CourseAssignmentFilter {
         return true;
     }
 
+    @Override
     public boolean acceptAssignment(IAcademicCourseAssignment a) {
 //        if(!isAcceptIntents() && a.getTeacher()==null){
 //                return false;
@@ -857,7 +863,7 @@ public class DefaultCourseAssignmentFilter implements CourseAssignmentFilter {
         Set<Integer> acceptedTree = new HashSet<>();
         acceptedTree.addAll(this.getAcceptedClasses());
         for (Integer cc : this.getAcceptedClasses()) {
-            for (Integer academicClass : academicPlugin.findAcademicDownHierarchyIdList(cc, null)) {
+            for (Integer academicClass : academicPlugin.findClassDownHierarchyIdList(cc, null)) {
                 acceptedTree.add(academicClass);
             }
         }
@@ -865,7 +871,7 @@ public class DefaultCourseAssignmentFilter implements CourseAssignmentFilter {
         Set<Integer> rejectedTree = new HashSet<>();
         acceptedTree.addAll(this.getRejectedClasses());
         for (Integer cc : this.getRejectedClasses()) {
-            for (Integer academicClass : academicPlugin.findAcademicDownHierarchyIdList(cc, null)) {
+            for (Integer academicClass : academicPlugin.findClassDownHierarchyIdList(cc, null)) {
                 rejectedTree.add(academicClass);
             }
         }
@@ -879,17 +885,19 @@ public class DefaultCourseAssignmentFilter implements CourseAssignmentFilter {
                 return false;
             }
         }
-        if (this.getAcceptWish() != null && !a.isAssigned()) {
-            if (this.getAcceptWish() != a.isWish()) {
-                return false;
-            }
+        boolean acceptAssignOrWishOrProposal=false;
+        if(getAcceptAssignments()==null ||  getAcceptAssignments()==a.isAssigned()){
+            acceptAssignOrWishOrProposal=true;
         }
-        if (this.getAcceptProposal() != null && !a.isAssigned()) {
-            if (this.getAcceptProposal() != a.isProposal()) {
-                return false;
-            }
+        if (this.getAcceptWish()==null || (a.supportsWish() && this.getAcceptWish()==a.isWish())) {
+            acceptAssignOrWishOrProposal=true;
         }
-
+        if (this.getAcceptProposals()==null || (a.supportsProposals() && this.getAcceptProposals()==a.isProposal())) {
+            acceptAssignOrWishOrProposal=true;
+        }
+        if(!acceptAssignOrWishOrProposal){
+            return false;
+        }
 //        boolean _assigned = a.isAssigned();
 //        HashSet<String> s = new HashSet<>(c.getIntentsSet());
 //        boolean _intended = s.size() > 0;
@@ -941,12 +949,12 @@ public class DefaultCourseAssignmentFilter implements CourseAssignmentFilter {
         this.acceptWish = acceptWish;
     }
 
-    public Boolean getAcceptProposal() {
-        return acceptProposal;
+    public Boolean getAcceptProposals() {
+        return acceptProposals;
     }
 
-    public void setAcceptProposal(Boolean acceptProposal) {
-        this.acceptProposal = acceptProposal;
+    public void setAcceptProposals(Boolean acceptProposals) {
+        this.acceptProposals = acceptProposals;
     }
 
 }

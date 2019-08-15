@@ -6,9 +6,9 @@ import net.vpc.app.vainruling.core.service.model.AppConfig;
 import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicOfficialDiscipline;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacherSituation;
-import net.vpc.app.vainruling.plugins.academic.service.model.current.AcademicTeacherDegree;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicOfficialDiscipline;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacherSituation;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicTeacherDegree;
 import net.vpc.app.vainruling.plugins.academic.service.util.DefaultTeacherPeriodFilter;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
@@ -28,7 +28,7 @@ public class TeacherLoadFilterComponent {
     public AppPeriod getPeriod() {
         String p = getModel().getSelectedPeriod();
         CorePlugin core = VrApp.getBean(CorePlugin.class);
-        if (StringUtils.isEmpty(p)) {
+        if (StringUtils.isBlank(p)) {
             AppConfig appConfig = core.getCurrentConfig();
             if (appConfig != null && appConfig.getMainPeriod() != null) {
                 return appConfig.getMainPeriod();
@@ -40,7 +40,7 @@ public class TeacherLoadFilterComponent {
 
     public int getPeriodId() {
         String p = getModel().getSelectedPeriod();
-        if (StringUtils.isEmpty(p)) {
+        if (StringUtils.isBlank(p)) {
             CorePlugin core = VrApp.getBean(CorePlugin.class);
             AppConfig appConfig = core.getCurrentConfig();
             if (appConfig != null && appConfig.getMainPeriod() != null) {
@@ -106,16 +106,16 @@ public class TeacherLoadFilterComponent {
     public DefaultTeacherPeriodFilter getTeacherFilter() {
         DefaultTeacherPeriodFilter defaultTeacherFilter = new DefaultTeacherPeriodFilter();
         for (String s : getModel().getSelectedDegrees()) {
-            defaultTeacherFilter.addAcceptedDegree(StringUtils.isEmpty(s) ? null : Integer.parseInt(s));
+            defaultTeacherFilter.addAcceptedDegree(StringUtils.isBlank(s) ? null : Integer.parseInt(s));
         }
         for (String s : getModel().getSelectedDepartments()) {
-            defaultTeacherFilter.addAcceptedDepartment(StringUtils.isEmpty(s) ? null : Integer.parseInt(s));
+            defaultTeacherFilter.addAcceptedDepartment(StringUtils.isBlank(s) ? null : Integer.parseInt(s));
         }
         for (String s : getModel().getSelectedTeacherDisciplines()) {
-            defaultTeacherFilter.addAcceptedOfficialDisciplines(StringUtils.isEmpty(s) ? null : Integer.parseInt(s));
+            defaultTeacherFilter.addAcceptedOfficialDisciplines(StringUtils.isBlank(s) ? null : Integer.parseInt(s));
         }
         for (String s : getModel().getSelectedSituations()) {
-            defaultTeacherFilter.addAcceptedSituation(StringUtils.isEmpty(s) ? null : Integer.parseInt(s));
+            defaultTeacherFilter.addAcceptedSituation(StringUtils.isBlank(s) ? null : Integer.parseInt(s));
         }
         return defaultTeacherFilter;
     }

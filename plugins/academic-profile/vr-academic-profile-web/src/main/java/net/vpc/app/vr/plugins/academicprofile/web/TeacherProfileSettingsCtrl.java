@@ -5,6 +5,9 @@
  */
 package net.vpc.app.vr.plugins.academicprofile.web;
 
+import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
+import net.vpc.app.vainruling.core.service.pages.VrActionInfo;
+import net.vpc.app.vainruling.core.service.pages.VrActionEnabler;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppCompany;
@@ -19,11 +22,11 @@ import net.vpc.app.vainruling.core.web.themes.VrTheme;
 import net.vpc.app.vainruling.core.web.themes.VrThemeFace;
 import net.vpc.app.vainruling.core.web.themes.VrThemeFactory;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
 import net.vpc.app.vr.plugins.academicprofile.service.AcademicProfilePlugin;
-import net.vpc.app.vr.plugins.academicprofile.service.model.AcademicCVSection;
-import net.vpc.app.vr.plugins.academicprofile.service.model.AcademicTeacherCV;
-import net.vpc.app.vr.plugins.academicprofile.service.model.AcademicTeacherCVItem;
+import net.vpc.app.vr.plugins.academicprofile.model.AcademicCVSection;
+import net.vpc.app.vr.plugins.academicprofile.model.AcademicTeacherCV;
+import net.vpc.app.vr.plugins.academicprofile.model.AcademicTeacherCVItem;
 import net.vpc.common.io.PathInfo;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.vfs.VFile;
@@ -42,10 +45,12 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.vpc.app.vainruling.core.service.model.AppUser;
+import net.vpc.app.vainruling.core.service.pages.VrPage;
+import net.vpc.app.vainruling.core.service.pages.VrPathItem;
 
-@VrController(
+@VrPage(
         breadcrumb = {
-            @UPathItem(title = "Paramètres", css = "fa-dashboard", ctrl = "")},
+            @VrPathItem(title = "Paramètres", css = "fa-dashboard", ctrl = "")},
         title = "Mon profil enseignant",
         menu = "/Config",
         url = "modules/academic/profile/teacher-profile-settings",
@@ -148,7 +153,7 @@ public class TeacherProfileSettingsCtrl implements DocumentUploadListener, VrAct
     }
 
     public void onSaveNewItem(AcademicCVSection section) {
-        RequestContext.getCurrentInstance().closeDialog(null);
+        DialogBuilder.closeCurrent();
         getModel().item.setTeacherCV(getModel().teacherCV);
         getModel().item.setSection(section);
         //add section !
@@ -168,7 +173,7 @@ public class TeacherProfileSettingsCtrl implements DocumentUploadListener, VrAct
     }
 
     public void onCloseDialog() {
-        RequestContext.getCurrentInstance().closeDialog(null);
+        DialogBuilder.closeCurrent();
     }
 
     public void updateBasicInformationSection() {

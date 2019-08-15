@@ -1,7 +1,7 @@
 package net.vpc.app.vainruling.plugins.academic.pbl.service.dto;
 
 import net.vpc.app.vainruling.plugins.academic.pbl.service.dto.ApblTeacherInfo;
-import net.vpc.app.vainruling.plugins.academic.pbl.service.model.ApblSession;
+import net.vpc.app.vainruling.plugins.academic.pbl.model.ApblSession;
 
 import java.util.ArrayList;
 import java.util.List;

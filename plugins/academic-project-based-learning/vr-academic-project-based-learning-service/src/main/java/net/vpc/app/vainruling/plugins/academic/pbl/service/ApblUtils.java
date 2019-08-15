@@ -7,7 +7,7 @@ package net.vpc.app.vainruling.plugins.academic.pbl.service;
 
 import java.util.Comparator;
 import java.util.Date;
-import net.vpc.app.vainruling.plugins.academic.pbl.service.model.ApblSession;
+import net.vpc.app.vainruling.plugins.academic.pbl.model.ApblSession;
 import net.vpc.common.strings.StringUtils;
 
 /**

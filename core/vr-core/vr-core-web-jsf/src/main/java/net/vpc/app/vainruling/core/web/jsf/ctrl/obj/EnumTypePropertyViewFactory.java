@@ -8,8 +8,8 @@ package net.vpc.app.vainruling.core.web.jsf.ctrl.obj;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.app.vainruling.core.web.jsf.VrJsf;
-import net.vpc.app.vainruling.core.web.jsf.ctrl.ObjCtrl;
-import net.vpc.app.vainruling.core.web.obj.ViewContext;
+import net.vpc.app.vainruling.core.web.jsf.ctrl.EditorCtrl;
+import net.vpc.app.vainruling.core.service.editor.ViewContext;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.upa.Field;
 import net.vpc.upa.types.DataType;
@@ -58,7 +58,7 @@ public class EnumTypePropertyViewFactory implements PropertyViewFactory {
                 public void processValueChange(ValueChangeEvent event) throws AbortProcessingException {
                     if(event!=null){
                         propView.setSelectedItem(event.getNewValue());
-                        ObjCtrl obj = VrApp.getBean(ObjCtrl.class);
+                        EditorCtrl obj = VrApp.getBean(EditorCtrl.class);
                         obj.currentViewToModel();
                         obj.updatePropertyViews();
                     }

@@ -27,7 +27,7 @@ public class UrlRewriteServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String path = getPath(request);
-        if(StringUtils.isEmpty(path)){
+        if(StringUtils.isBlank(path)){
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
@@ -68,7 +68,7 @@ public class UrlRewriteServlet extends HttpServlet {
 //    }
 
     protected String getPathRewritten(String path) {
-        if(StringUtils.isEmpty(path)){
+        if(StringUtils.isBlank(path)){
             return null;
         }
         AppUrl userUrl = UPA.getPersistenceUnit().findByField(AppUrl.class, "userUrl", path);
@@ -80,7 +80,7 @@ public class UrlRewriteServlet extends HttpServlet {
 
     protected String getPath(HttpServletRequest request) {
         String pathInfo = request.getPathInfo();
-        if (StringUtils.isEmpty(pathInfo)) {
+        if (StringUtils.isBlank(pathInfo)) {
             return null;
         }
         String filename = null;

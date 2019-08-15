@@ -25,11 +25,15 @@ and open the template in the editor.
             <h:form id="myform" style="margin-top: 10px;">
                 <p:commandButton icon="ui-icon-search"
                                  actionListener="#{generateFeedbackActionCtrl.fireEventExtraDialogApply()}"
-                                 value="Accepter" styleClass="btn btn-primary"
+                                 value="Générer" styleClass="btn btn-primary"
                                  style="margin-top: 10px;"/>
                 <p:commandButton icon="ui-icon-search"
-                                 actionListener="#{generateFeedbackActionCtrl.fireEventExtraDialogCancel()}"
-                                 value="Fermer"  styleClass="btn btn-default"
+                                 actionListener="#{generateFeedbackActionCtrl.fireEventExtraDialogCleanup()}"
+                                 value="Réinitialiser" styleClass="btn btn-primary"
+                                 style="margin-top: 10px;"/>
+                <p:commandButton icon="ui-icon-search"
+                                 actionListener="#{generateFeedbackActionCtrl.fireEventExtraDialogReset()}"
+                                 value="Supprimer"  styleClass="btn btn-default"
                                  style="margin-top: 10px;"/>
             </h:form>
         </ui:define>

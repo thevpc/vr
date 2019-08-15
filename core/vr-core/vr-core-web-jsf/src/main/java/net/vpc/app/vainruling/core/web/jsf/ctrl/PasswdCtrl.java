@@ -8,18 +8,18 @@ package net.vpc.app.vainruling.core.web.jsf.ctrl;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.CorePluginSecurity;
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.upa.UPA;
 import net.vpc.upa.VoidAction;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.vpc.app.vainruling.core.service.pages.VrPage;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@VrController(
+@VrPage(
         url = "modules/config/passwd",
         menu = "/Desktop",
         securityKey = CorePluginSecurity.RIGHT_CUSTOM_ADMIN_PASSWD

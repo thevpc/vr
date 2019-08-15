@@ -1,6 +1,6 @@
 package net.vpc.app.vainruling.plugins.academic.perfeval.service.dto;
 
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicStudent;
 
 public class Studentinfo {
     private AcademicStudent student;

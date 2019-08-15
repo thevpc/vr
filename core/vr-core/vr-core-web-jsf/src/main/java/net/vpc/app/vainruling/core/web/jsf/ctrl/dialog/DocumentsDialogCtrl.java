@@ -11,11 +11,10 @@ import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.fs.VFileInfo;
 import net.vpc.app.vainruling.core.service.fs.VFileKind;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
-import net.vpc.app.vainruling.core.web.VrController;
 import net.vpc.app.vainruling.core.web.jsf.DialogBuilder;
 import net.vpc.app.vainruling.core.web.jsf.ctrl.DocumentsCtrl;
 import net.vpc.app.vainruling.core.web.jsf.ctrl.FileUploadEventHandler;
-import net.vpc.app.vainruling.core.web.obj.DialogResult;
+import net.vpc.app.vainruling.core.service.editor.DialogResult;
 import net.vpc.app.vainruling.core.web.util.DocumentsUtils;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
@@ -34,11 +33,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.vpc.app.vainruling.core.service.pages.VrPage;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@VrController
+@VrPage
 @Controller
 public class DocumentsDialogCtrl {
 
@@ -155,13 +155,13 @@ public class DocumentsDialogCtrl {
             c = new Config();
         }
         String title = c.getTitle();
-        if (StringUtils.isEmpty(title)) {
+        if (StringUtils.isBlank(title)) {
             title = "Documents";
         }
         getModel().setTitle(title);
 
         String fspath = cmd.getFspath();
-        if (StringUtils.isEmpty(fspath)) {
+        if (StringUtils.isBlank(fspath)) {
             fspath = "";
         }
         VirtualFileSystem rootfs = UPA.getContext().invokePrivileged(new Action<VirtualFileSystem>() {
@@ -176,13 +176,13 @@ public class DocumentsDialogCtrl {
             fs = rootfs;
         } else if ("user".equals(c.getType())) {
             String v = c.getValue();
-            if (StringUtils.isEmpty(v)) {
+            if (StringUtils.isBlank(v)) {
                 v = login;
             }
             fs = core.getUserFileSystem(v);
         } else if ("profile".equals(c.getType())) {
             String v = c.getValue();
-            if (StringUtils.isEmpty(v)) {
+            if (StringUtils.isBlank(v)) {
                 v = "user";
             }
             fs = core.getProfileFileSystem(v);
@@ -199,7 +199,7 @@ public class DocumentsDialogCtrl {
         getModel().setFileSystem(fs);
         getModel().setCurrent(DocumentsUtils.createFileInfo("/", VFileKind.ROOT, getModel().getFileSystem().get("/")));
         String initialPath = c.getPath();
-        if (!(StringUtils.isEmpty(initialPath))) {
+        if (!(StringUtils.isBlank(initialPath))) {
             VFile pp = null;//
             try {
                 pp = getModel().getFileSystem().get(initialPath);

@@ -28,10 +28,6 @@ import net.vpc.upa.types.DateTime;
                 @Property(name = "ui.auto-filter.company", value = "{expr='this.company',order=3}")
             ,
                 @Property(name = "ui.auto-filter.positionTitle1", value = "{expr='this.positionTitle1',order=4}")
-            ,
-                @Property(name = "ui.main-photo-provider", value = "net.vpc.app.vainruling.core.service.obj.AppUserMainPhotoProvider")
-            ,
-                @Property(name = UIConstants.ENTITY_TEXT_SEARCH_FACTORY, value = "net.vpc.app.vainruling.core.service.obj.AppUserObjSearchFactory")
         })
 public class AppUser extends AppPersonContactBase implements Cloneable {
 

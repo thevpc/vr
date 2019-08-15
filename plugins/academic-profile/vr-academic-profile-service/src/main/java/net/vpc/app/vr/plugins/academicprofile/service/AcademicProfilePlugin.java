@@ -1,5 +1,10 @@
 package net.vpc.app.vr.plugins.academicprofile.service;
 
+import net.vpc.app.vr.plugins.academicprofile.model.AcademicStudentCVItem;
+import net.vpc.app.vr.plugins.academicprofile.model.AcademicTeacherCV;
+import net.vpc.app.vr.plugins.academicprofile.model.AcademicTeacherCVItem;
+import net.vpc.app.vr.plugins.academicprofile.model.AcademicCVSection;
+import net.vpc.app.vr.plugins.academicprofile.model.AcademicStudentCV;
 import java.util.List;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.CorePluginSecurity;
@@ -9,9 +14,8 @@ import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.plugins.Install;
 import net.vpc.app.vainruling.core.service.plugins.Start;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicStudent;
-import net.vpc.app.vainruling.plugins.academic.service.model.config.AcademicTeacher;
-import net.vpc.app.vr.plugins.academicprofile.service.model.*;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicStudent;
+import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
 import net.vpc.upa.Action;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.UPA;

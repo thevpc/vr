@@ -7,12 +7,10 @@ package net.vpc.app.vainruling.plugins.academic.web;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.core.web.VrController;
-import net.vpc.app.vainruling.core.web.UPathItem;
+import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.app.vainruling.core.web.jsf.VrJsf;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.app.vainruling.plugins.academic.service.model.imp.AcademicTeacherImport;
+import net.vpc.app.vainruling.plugins.academic.model.imp.AcademicTeacherImport;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.upa.UPA;
 import net.vpc.upa.VoidAction;
@@ -21,13 +19,15 @@ import javax.faces.model.SelectItem;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import net.vpc.app.vainruling.core.service.pages.VrPage;
+import net.vpc.app.vainruling.core.service.pages.VrPathItem;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@VrController(
+@VrPage(
         breadcrumb = {
-                @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
+                @VrPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
 //        css = "fa-table",
 //        title = "Inscription Enseignant",
         url = "modules/academic/subscribe-teacher",
