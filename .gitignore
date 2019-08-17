@@ -148,3 +148,8 @@ private/
 /core/vr-nb-integration/target/
 /core/vr-nb-integration-ide/application/target/
 /core/vr-nb-integration-ide/branding/target/
+/core/vr-box/src/main/resources/META-INF/templates/plugins/themes/vr-public-theme-infusion/target/
+/core/vr-box/src/main/resources/META-INF/templates/plugins/themes/vr-private-theme-sb-admin/target/
+/core/vr-box/src/main/resources/META-INF/templates/plugins/themes/vr-private-theme-adminlte/target/
+/core/vr-box/src/main/resources/META-INF/templates/plugins/themes/vr-public-theme-crew/target/
+/core/vr-box/src/main/resources/META-INF/templates/plugins/theme-back/target/
