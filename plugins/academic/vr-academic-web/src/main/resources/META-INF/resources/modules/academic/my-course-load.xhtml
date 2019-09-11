@@ -269,7 +269,7 @@ and open the template in the editor.
 
                         <div>
                             <p:commandButton 
-                                rendered="#{!myCourseLoadCtrl.model.enableLoadConfirmation and !myCourseLoadCtrl.model.loadConfirmed}"
+                                rendered="#{myCourseLoadCtrl.model.enableLoadConfirmation and !myCourseLoadCtrl.model.loadConfirmed}"
                                 value="Je confirme ma charge!" icon="vr-form-field vr-form-fixed-width-medium ui-ribbonicon-refresh"
                                 styleClass="ui-ribbon-bigbutton " ajax="true"
                                 actionListener="#{myCourseLoadCtrl.onConfirmLoad}" update=":listForm"
@@ -307,11 +307,11 @@ and open the template in the editor.
                                                     />
                                             </f:facet>
                                             <p:selectBooleanCheckbox
-                                                rendered="#{myCourseLoadCtrl.model.enableLoadEditing and myCourseLoadCtrl.model.multipleSelection and !i.assigned}"
+                                                rendered="#{myCourseLoadCtrl.model.enableLoadEditing and myCourseLoadCtrl.model.multipleSelection and !i.currentAssigned}"
                                                 value="#{i.selected}"
                                                 update=":listForm" title="Clickez ici pour supprimer le voeux"/>
                                             <p:commandButton
-                                                rendered="#{myCourseLoadCtrl.model.enableLoadEditing and !myCourseLoadCtrl.model.multipleSelection}"
+                                                rendered="#{myCourseLoadCtrl.model.enableLoadEditing and !myCourseLoadCtrl.model.multipleSelection and !i.currentAssigned}"
                                                 disabled="#{i.assigned}"
                                                 value="-"
                                                 actionListener="#{myCourseLoadCtrl.removeFromMine(i.assignment.id)}"

@@ -35,9 +35,11 @@ public class PlanningTime implements Comparable<PlanningTime> {
     }
 
     public PlanningTime(Date time, int dayIndex, int hourIndex) {
-        this.time = time;
         this.dayIndex = dayIndex;
         this.hourIndex = hourIndex;
+        if(time==null){
+            this.time = new MutableDate().setYear(2000).setMonth(1).setDayOfMonth(dayIndex).setHour(hourIndex).getDateTime();
+        }
     }
 
     public PlanningTime(String date) {
@@ -144,7 +146,7 @@ public class PlanningTime implements Comparable<PlanningTime> {
         return new MutableDate(time).clearDate().getDateTime();
     }
 
-    public Date getTime() {
+    public Date getDateTime() {
         return time;
     }
 
@@ -156,15 +158,15 @@ public class PlanningTime implements Comparable<PlanningTime> {
 
     @Override
     public int compareTo(PlanningTime o) {
-        return this.getTime().compareTo(o.getTime());
+        return this.getDateTime().compareTo(o.getDateTime());
     }
 
     public int dayDistance(PlanningTime o) {
-        return Math.abs(Days.daysBetween(new LocalDateTime(this.getTime()), new LocalDateTime(o.getTime())).getDays());
+        return Math.abs(Days.daysBetween(new LocalDateTime(this.getDateTime()), new LocalDateTime(o.getDateTime())).getDays());
     }
 
     public int minutesDistance(PlanningTime o) {
-        return Math.abs(Minutes.minutesBetween(new LocalDateTime(this.getTime()), new LocalDateTime(o.getTime())).getMinutes());
+        return Math.abs(Minutes.minutesBetween(new LocalDateTime(this.getDateTime()), new LocalDateTime(o.getDateTime())).getMinutes());
     }
 
     @Override

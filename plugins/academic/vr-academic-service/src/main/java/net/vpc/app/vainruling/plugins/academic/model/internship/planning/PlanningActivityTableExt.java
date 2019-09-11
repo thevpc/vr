@@ -128,7 +128,7 @@ public class PlanningActivityTableExt {
         return findSpaceTime;
     }
 
-    Chromosome marshall(Configuration conf) throws InvalidConfigurationException {
+    public Chromosome marshall(Configuration conf) throws InvalidConfigurationException {
         List<Gene> sampleGenes = new ArrayList<>();
         for (ChromosomeMarshaller marshaller : getMarshallers()) {
             sampleGenes.add(marshaller.marshall(this));
@@ -136,7 +136,7 @@ public class PlanningActivityTableExt {
         return new Chromosome(conf, sampleGenes.toArray(new Gene[sampleGenes.size()]));
     }
 
-    void unmarshall(IChromosome iChromosome) {
+    public void unmarshall(IChromosome iChromosome) {
         for (ChromosomeMarshaller marshaller : getMarshallers()) {
             marshaller.unmarshall(iChromosome, this);
         }

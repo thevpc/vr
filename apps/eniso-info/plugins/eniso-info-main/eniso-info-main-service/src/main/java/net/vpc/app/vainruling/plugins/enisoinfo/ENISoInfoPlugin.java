@@ -59,7 +59,7 @@ public class ENISoInfoPlugin {
         //force to Education
         education.setDescription("Education");
         education.setActionName("Education");
-        core.save("ArticlesDisposition", education);
+        core.save("AppArticleDisposition", education);
 
     }
 

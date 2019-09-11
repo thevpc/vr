@@ -11,10 +11,10 @@ import java.util.List;
  * Created by vpc on 5/20/16.
  */
 public class FitnessValue {
-    String name;
-    boolean valid;
-    double value;
-    List<FitnessValue> children;
+    public String name;
+    public boolean valid;
+    public double value;
+    public List<FitnessValue> children;
 
     public FitnessValue(String name, boolean valid, double value, List<FitnessValue> children) {
             if(name.startsWith("teacher:") && !valid){

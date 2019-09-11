@@ -38,6 +38,7 @@ import java.util.*;
 import java.util.logging.Level;
 import net.vpc.app.vainruling.core.service.pages.VrPage;
 import net.vpc.app.vainruling.core.service.pages.VrPathItem;
+import net.vpc.app.vainruling.plugins.academic.service.tools.pfe.PFEPlanning;
 
 /**
  * internships for teachers
@@ -190,7 +191,7 @@ public class InternshipsPlanningCtrl {
                 }
             }
             table2.setActivities(activities);
-            VrApp.getBean(PlanningService.class).storeFetXml(table2, byteArrayOutputStream);
+            new PFEPlanning().storeFetXml(table2, byteArrayOutputStream);
             return createStreamedContent(byteArrayOutputStream, "text/xml","fet");
         } catch (Exception e) {
             e.printStackTrace();
@@ -214,7 +215,7 @@ public class InternshipsPlanningCtrl {
 
     public void updateTable() {
         List<Column> columns = getModel().getColumns();
-        Map<String, PlanningTeacherStats> stringPlanningTeacherStatsMap = VrApp.getBean(PlanningService.class).evalTeacherStats(getModel().getTable(), false);
+        Map<String, PlanningTeacherStats> stringPlanningTeacherStatsMap = new PFEPlanning().evalTeacherStats(getModel().getTable(), false);
         resetErrors();
         int tableWidth = 0;
         for (Column column : columns) {
@@ -347,7 +348,7 @@ public class InternshipsPlanningCtrl {
 
     public void onGenerateJury() {
         try {
-            PlanningResult r = VrApp.getBean(PlanningService.class).generateActivitiesJury(getModel().getTable());
+            PlanningResult r = new PFEPlanning().generateActivitiesJury(getModel().getTable());
             loadActivityTable(r.getResut());
             FacesUtils.addInfoMessage("Generation reussie");
         } catch (Exception ex) {
