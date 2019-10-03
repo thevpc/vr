@@ -45,40 +45,41 @@ public class CorePluginCompletionProvider implements CompletionProvider {
         }
         switch (objectType) {
             case "AppUser": {
-                if (objectId == null) {
-                    objectId = monitorUserId;
-                }
-                AppUser o = core.findUser((Integer) objectId);
-                Map<Date, Integer> s = core.findLatestDayLoginsCount(o.getLogin(), true, false, 30);
+                if (minLevel == null || minLevel.intValue() <= Level.SEVERE.intValue()) {
+                    if (objectId == null) {
+                        objectId = monitorUserId;
+                    }
+                    AppUser o = core.findUser((Integer) objectId);
+                    Map<Date, Integer> s = core.findLatestDayLoginsCount(o.getLogin(), true, false, 30);
 
-                StringBuilder details = new StringBuilder();
-                details.append("Vos dernières connexion :");
-                details.append("<ul>\n");
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                for (Map.Entry<Date, Integer> e : s.entrySet()) {
-                    details.append("<li>" + sdf.format(e.getKey()) + " : " + e.getValue() + "</li>\n");
+                    StringBuilder details = new StringBuilder();
+                    details.append("Vos dernières connexion :");
+                    details.append("<ul>\n");
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                    for (Map.Entry<Date, Integer> e : s.entrySet()) {
+                        details.append("<li>" + sdf.format(e.getKey()) + " : " + e.getValue() + "</li>\n");
+                    }
+                    details.append("</ul>\n");
+                    all.add(new DefaultCompletionInfo(
+                            "Access",
+                            "Access",
+                            o.getId(),
+                            o.getFullName(),
+                            objectType,
+                            "Utilisateur",
+                            (float) 1,
+                            "Connexions",
+                            details.toString(),
+                            Level.SEVERE,
+                            new String[]{
+                                o.getDepartment() == null ? null : o.getDepartment().getName(),},
+                            Arrays.asList(new DefaultCompletionInfoAction(
+                                    "corriger",
+                                    "",
+                                    ""
+                            ))
+                    ));
                 }
-                details.append("</ul>\n");
-                all.add(new DefaultCompletionInfo(
-                        "Access",
-                        "Access",
-                        o.getId(),
-                        o.getFullName(),
-                        objectType,
-                        "Utilisateur",
-                        (float) 1,
-                        "Connexions",
-                        details.toString(),
-                        Level.SEVERE,
-                        new String[]{
-                            o.getDepartment() == null ? null : o.getDepartment().getName(),},
-                        Arrays.asList(new DefaultCompletionInfoAction(
-                                "corriger",
-                                "",
-                                ""
-                        ))
-                ));
-
                 break;
             }
         }

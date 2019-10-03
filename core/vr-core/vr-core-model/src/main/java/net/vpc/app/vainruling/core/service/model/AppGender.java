@@ -19,7 +19,6 @@ public class AppGender {
     @Sequence
 
     private int id;
-    //    @Unique
     @Summary
     private String code;
     @Main
@@ -28,6 +27,8 @@ public class AppGender {
     private String name2;
     @Summary
     private String name3;
+
+    private String otherNames;
 
     public AppGender() {
     }
@@ -97,4 +98,14 @@ public class AppGender {
     public int hashCode() {
         return id;
     }
+
+    public String getOtherNames() {
+        return otherNames;
+    }
+
+    public void setOtherNames(String otherNames) {
+        this.otherNames = otherNames;
+    }
+    
+    
 }

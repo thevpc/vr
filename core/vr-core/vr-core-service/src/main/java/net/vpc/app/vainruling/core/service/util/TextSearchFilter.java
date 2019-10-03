@@ -78,7 +78,7 @@ public class TextSearchFilter {
             return "";
         }
         String ss = String.valueOf(s);
-        return StringUtils.normalizeString(ss).toLowerCase();
+        return VrUtils.normalizeName(ss);
     }
 
     public String getExpression() {

@@ -25,33 +25,33 @@ public abstract class AbstractCmsTextService implements CmsTextService {
     @Autowired
     protected CorePlugin core;
     private String[] imageSwitchEffects = new String[]{
-            "blindX",
-            "blindY",
-            "blindZ",
-            "cover",
-            "curtainX",
-            "curtainY",
-            "fade",
-            "fadeZoom",
-            "growX",
-            "growY",
-            "none",
-            "scrollUp",
-            "scrollDown",
-            "scrollLeft",
-            "scrollRight",
-            "scrollVert",
-            "shuffle",
-            "slideX",
-            "slideY",
-            "toss",
-            "turnUp",
-            "turnDown",
-            "turnLeft",
-            "turnRight",
-            "uncover",
-            "wipe",
-            "zoom"
+        "blindX",
+        "blindY",
+        "blindZ",
+        "cover",
+        "curtainX",
+        "curtainY",
+        "fade",
+        "fadeZoom",
+        "growX",
+        "growY",
+        "none",
+        "scrollUp",
+        "scrollDown",
+        "scrollLeft",
+        "scrollRight",
+        "scrollVert",
+        "shuffle",
+        "slideX",
+        "slideY",
+        "toss",
+        "turnUp",
+        "turnDown",
+        "turnLeft",
+        "turnRight",
+        "uncover",
+        "wipe",
+        "zoom"
     };
 
     public abstract AbstractCmsModel getModel();
@@ -59,7 +59,7 @@ public abstract class AbstractCmsTextService implements CmsTextService {
     public void refresh() {
     }
 
-
+    @Override
     public void loadContentTexts(String disposition) {
         List<FullArticle> a = findArticles(disposition);
         getModel().setDisposition(disposition);
@@ -85,7 +85,6 @@ public abstract class AbstractCmsTextService implements CmsTextService {
         return imageSwitchEffects[(int) (Math.random() * imageSwitchEffects.length)];
     }
 
-
     public FullArticle getFullArticle(String disposition, int pos) {
         List<FullArticle> a = getModel().getArticles().get(disposition);
         if (a != null && a.size() > pos && pos >= 0) {
@@ -110,6 +109,7 @@ public abstract class AbstractCmsTextService implements CmsTextService {
         return list;
     }
 
+    @Override
     public void setSelectedContentTextById(String disposition, int id) {
         getModel().setCurrent(findArticle(id));
         FullArticle c = getModel().getCurrent();
@@ -119,6 +119,7 @@ public abstract class AbstractCmsTextService implements CmsTextService {
         }
     }
 
+    @Override
     public List<ContentText> getContentTextListHead(String id, int max) {
         List<ContentText> list = getContentTextList(id);
         if (list.size() > max) {
@@ -126,7 +127,6 @@ public abstract class AbstractCmsTextService implements CmsTextService {
         }
         return list;
     }
-
 
     @Override
     public CmsTextDisposition getContentDisposition() {
@@ -155,7 +155,7 @@ public abstract class AbstractCmsTextService implements CmsTextService {
         return false;
     }
 
-
+    @Override
     public boolean isDispositionEnabled(String disposition) {
         CmsTextDisposition articleDisposition = getContentDispositionByName(disposition);
         if (articleDisposition != null) {
@@ -164,6 +164,7 @@ public abstract class AbstractCmsTextService implements CmsTextService {
         return false;
     }
 
+    @Override
     public String getDispositionActionName(String disposition) {
         CmsTextDisposition articleDisposition = getContentDispositionByName(disposition);
         String actionName = null;
@@ -175,7 +176,6 @@ public abstract class AbstractCmsTextService implements CmsTextService {
         }
         return actionName;
     }
-
 
     protected FullArticle findArticle(int id) {
         for (List<FullArticle> fullArticles : getModel().getArticles().values()) {
@@ -189,7 +189,6 @@ public abstract class AbstractCmsTextService implements CmsTextService {
     }
 
     protected abstract List<FullArticle> findArticles(String disposition);
-
 
     public abstract void updateVisit(int articleId);
 }

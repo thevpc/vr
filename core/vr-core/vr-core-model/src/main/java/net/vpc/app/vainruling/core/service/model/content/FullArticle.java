@@ -7,7 +7,6 @@ package net.vpc.app.vainruling.core.service.model.content;
 
 import net.vpc.app.vainruling.core.service.content.ContentPath;
 import net.vpc.app.vainruling.core.service.content.ContentText;
-import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.model.strict.AppUserStrict;
 
 import java.util.ArrayList;

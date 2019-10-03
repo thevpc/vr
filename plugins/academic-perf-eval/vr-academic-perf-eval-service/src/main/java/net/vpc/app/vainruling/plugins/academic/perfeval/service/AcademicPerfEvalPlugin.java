@@ -73,41 +73,6 @@ public class AcademicPerfEvalPlugin {
     private void onStart() {
         VrApp.getBean(CorePlugin.class).createRight(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_STUDENT_FEEDBACK, AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_STUDENT_FEEDBACK);
         VrApp.getBean(CorePlugin.class).createRight(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_TEACHER_STAT_FEEDBACK, AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_TEACHER_STAT_FEEDBACK);
-        Map<String, AcademicFeedbackSession> sessions = new HashMap<>();
-        PersistenceUnit pu = UPA.getPersistenceUnit();
-        for (AcademicFeedbackSession session : pu.<AcademicFeedbackSession>findAll(AcademicFeedbackSession.class)) {
-            int periodId = session.getPeriod().getId();
-            int semesterId = session.getSemester().getId();
-            String key = periodId + ";" + semesterId;
-            sessions.put(key, session);
-        }
-        for (AcademicFeedback academicFeedback : findFeedbacks(null, null, null, null, null, null, null, null, null, null, null)) {
-            if (academicFeedback.getSession() == null) {
-                AcademicCoursePlan coursePlan = academicFeedback.getCourse().getCoursePlan();
-                //reload it
-                coursePlan = pu.findById(AcademicCoursePlan.class, coursePlan.getId());
-                AppPeriod period = coursePlan.getPeriod();
-                AcademicSemester semester = coursePlan.getCourseLevel().getSemester();
-                if (period != null && semester != null) {
-                    int periodId = period.getId();
-                    int semesterId = semester.getId();
-                    String key = periodId + ";" + semesterId;
-                    AcademicFeedbackSession session = sessions.get(key);
-                    if (session == null) {
-                        session = new AcademicFeedbackSession();
-                        session.setName(period.getName() + "-" + semester.getCode());
-                        session.setPeriod(period);
-                        session.setSemester(semester);
-                        pu.persist(session);
-                        sessions.put(key, session);
-                    }
-                    academicFeedback.setSession(session);
-                    pu.merge(academicFeedback);
-                } else {
-                    System.out.println("Why : " + academicFeedback.getCourse());
-                }
-            }
-        }
     }
 
     public List<AcademicFeedbackSession> findAllReadableSessions() {
@@ -368,10 +333,11 @@ public class AcademicPerfEvalPlugin {
         return pu.createQuery("Select f from AcademicFeedbackModel f").getResultList();
     }
 
-    public List<AcademicFeedback> findStudentFeedbacks(int periodId, int studentId, Boolean validated, Boolean archived, Boolean enabled, Boolean readable, Boolean writable) {
+    public List<AcademicFeedback> findStudentFeedbacks(Integer periodId, int studentId, Boolean validated, Boolean archived, Boolean enabled, Boolean readable, Boolean writable) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
 //        if (!checkEnableStudentFeedbacks(enabled)) return Collections.EMPTY_LIST;
-        return pu.createQuery("Select f from AcademicFeedback f where f.studentId= :studentId and f.course.coursePlan.periodId=:periodId"
+        return pu.createQuery("Select f from AcademicFeedback f where f.studentId= :studentId"
+                + (periodId != null ? (" and f.course.coursePlan.periodId=:periodId") : "")
                 + (readable != null ? (" and f.session.read=" + readable) : "")
                 + (writable != null ? (" and f.session.write=" + writable) : "")
                 + (validated != null ? (" and f.validated=" + validated) : "")
@@ -380,7 +346,7 @@ public class AcademicPerfEvalPlugin {
                 + " order by f.name"
         )
                 .setParameter("studentId", studentId)
-                .setParameter("periodId", periodId)
+                .setParameter("periodId", periodId, periodId != null)
                 //                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 3)
                 .getResultList();
     }

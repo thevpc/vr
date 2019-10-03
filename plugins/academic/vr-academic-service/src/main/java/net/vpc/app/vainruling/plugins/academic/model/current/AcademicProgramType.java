@@ -34,7 +34,7 @@ public class AcademicProgramType {
     @Path("Trace")
 //    @Properties(
 //            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
-    @Field(protectionLevel = ProtectionLevel.PRIVATE,excludeModifiers = UserFieldModifier.UPDATE)
+    @Field(protectionLevel = ProtectionLevel.PROTECTED,excludeModifiers = UserFieldModifier.UPDATE)
     @Formula(value = "CurrentTimestamp()", formulaType = FormulaType.PERSIST)
     private Timestamp creationDate;
     @Formula(value = "CurrentTimestamp()", formulaType = {FormulaType.PERSIST, FormulaType.UPDATE})

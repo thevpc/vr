@@ -8,19 +8,14 @@ package net.vpc.app.vainruling.core.web.jsf.ctrl;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.content.CmsTextDisposition;
 import net.vpc.app.vainruling.core.service.model.content.AppArticleDisposition;
-import net.vpc.app.vainruling.core.service.model.content.AppArticleStrict;
 import net.vpc.app.vainruling.core.service.model.content.FullArticle;
-import net.vpc.app.vainruling.core.service.util.CompletionInfo;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
-import net.vpc.app.vainruling.core.service.model.content.ArticlesDispositionStrict;
-import net.vpc.app.vainruling.core.service.model.strict.AppUserStrict;
 
 /**
  * @author vpc
@@ -28,8 +23,6 @@ import net.vpc.app.vainruling.core.service.model.strict.AppUserStrict;
 @Controller
 @Scope(value = "singleton")
 public class HotCmsTextService extends AbstractCmsTextService {
-
-
 
     @Override
     public int getSupport(String name) {
@@ -65,43 +58,19 @@ public class HotCmsTextService extends AbstractCmsTextService {
         return a;
     }
 
-    public FullArticle convert(CompletionInfo x,ArticlesDispositionStrict dispo) {
-        AppArticleStrict a = new AppArticleStrict();
-        a.setContent(x.getContent());
-        a.setSubject(x.getMessage());
-        a.setDisposition(dispo);
-        AppUserStrict sender = new AppUserStrict();
-        sender.setFullName("Système");
-        sender.setFullName("Système");
-        a.setSender(sender);
-        FullArticle fa=new FullArticle(a, new ArrayList<>());
-        return fa;
-    }
-
+    @Override
     public List<FullArticle> findArticles(String disposition) {
-        List<FullArticle> list=new ArrayList<>();
-        int id=1;
-        ArticlesDispositionStrict dispo = new ArticlesDispositionStrict();
-        dispo.setName(disposition);
-        dispo.setEnabled(true);
-        List<CompletionInfo> allCompletions = core.findAllCompletions(core.getCurrentUserId(), null, null, null, Level.WARNING);
-        for (CompletionInfo c : allCompletions) {
-            FullArticle aa = convert(c,dispo);
-            aa.getArticle().setId(id);
-            list.add(aa);
-            id++;
-        }
-        return list;
+        return core.findAllCompletionFullArticles(core.getCurrentUserId(), disposition, null, null, null, Level.WARNING);
     }
 
-
+    @Override
     public void updateVisit(int articleId) {
 //        core.markArticleVisited(articleId);
     }
 
+    @Override
     public AbstractCmsModel getModel() {
         return VrApp.getBean(HotModel.class);
     }
-
 
 }

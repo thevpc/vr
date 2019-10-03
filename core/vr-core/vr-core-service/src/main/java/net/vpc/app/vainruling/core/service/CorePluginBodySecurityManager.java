@@ -9,6 +9,7 @@ import net.vpc.upa.*;
 
 import java.util.*;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 import net.vpc.upa.types.I18NString;
 
@@ -100,18 +101,36 @@ class CorePluginBodySecurityManager extends CorePluginBody {
         return getContext().getCacheService().getList(AppProfile.class).getByKey(profileId);
     }
 
-    public boolean createRight(String rightName, String desc) {
+    public AppRightName createRight(String rightName, String desc) {
         CorePluginSecurity.requireAdmin();
         PersistenceUnit pu = UPA.getPersistenceUnit();
         AppRightName r = pu.findById(AppRightName.class, rightName);
         if (r != null) {
-            return false;
+            return r;
         }
         r = new AppRightName();
         r.setName(rightName);
         r.setDescription(desc);
         pu.persist(r);
-        return true;
+        return r;
+    }
+
+    public List<AppRightName> findProfileRights() {
+        return UPA.getPersistenceUnit().findAll(AppRightName.class);
+    }
+
+    public List<AppRightName> findProfileRights(int profileId) {
+        Map<String, AppRightName> existing = new HashMap<>();
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        List<AppRightName> oldRigths = pu.createQuery("Select u.`right` from AppProfileRight u where u.profileId=:profileId")
+                .setParameter("profileId", profileId)
+                .getResultList();
+        for (AppRightName r : oldRigths) {
+            if (r != null) {
+                existing.put(r.getName(), r);
+            }
+        }
+        return oldRigths;
     }
 
     public List<AppRightName>[] findProfileRightNamesDualList(int profileId) {
@@ -310,6 +329,48 @@ class CorePluginBodySecurityManager extends CorePluginBody {
         return false;
     }
 
+    public boolean addProfileRights(int profileId, String... rightName) {
+        CorePluginSecurity.requireAdmin();
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        AppProfile p = pu.findById(AppProfile.class, profileId);
+        if (p == null) {
+            throw new IllegalArgumentException("Profile not found " + profileId);
+        }
+        Map<String, AppRightName> rights = new HashMap<>(findProfileRights().stream().collect(Collectors.toMap(AppRightName::getName, java.util.function.Function.identity())));
+        for (String s : rightName) {
+            if (!rights.containsKey(s)) {
+                log.log(Level.SEVERE, "Right " + rightName + " not found");
+            }
+        }
+        boolean added=false;
+        List<AppRightName> profileRightsList = findProfileRights(profileId);
+        Map<String, AppRightName> profileRights = new HashMap<>(profileRightsList.stream().collect(Collectors.toMap(AppRightName::getName, java.util.function.Function.identity(),
+                (v1,v2)->
+                {
+                    return v2;
+                }
+                )));
+        for (String rn : rightName) {
+            if (!profileRights.containsKey(rn)) {
+                AppRightName rn2 = rights.get(rn);
+                if (rn2 == null) {
+                    log.log(Level.SEVERE, "Right " + rn + " not found");
+//                    rn2 = createRight(rn, rn);
+//                    rights.put(rn, rn2);
+                }
+                if (rn2 != null) {
+                    AppProfileRight pr = new AppProfileRight();
+                    pr.setProfile(p);
+                    pr.setRight(rn2);
+                    pu.persist(pr);
+                    added=true;
+                    profileRights.put(rn, rn2);
+                }
+            }
+        }
+        return added;
+    }
+
     public boolean removeUserProfile(int userId, int profileId) {
         CorePluginSecurity.requireAdmin();
         PersistenceUnit pu = UPA.getPersistenceUnit();
@@ -417,6 +478,8 @@ class CorePluginBodySecurityManager extends CorePluginBody {
 //        if (p == null) {
 //            p = findProfileByCode(profileCode);
 //        }
+        boolean merge = false;
+        PersistenceUnit pu = UPA.getPersistenceUnit();
         if (p == null) {
             p = new AppProfile();
             p.setCode(profileCode);
@@ -426,20 +489,27 @@ class CorePluginBodySecurityManager extends CorePluginBody {
                     new Arg("name", p.getName())
             ));
             p.setCustom(true);
-            UPA.getPersistenceUnit().persist(p);
+            pu.persist(p);
         } else if (!p.isCustom()) {
             //force to custom
             p.setCustom(true);
             p.setCustomType(customType);
-            UPA.getPersistenceUnit().merge(p);
+            merge = true;
         }
-        if (StringUtils.isBlank(p.getCode())) {
-            p.setCode(p.getName());
-            UPA.getPersistenceUnit().merge(p);
+        if (StringUtils.isBlank(p.getCode()) || !profileCode.equals(p.getCode())) {
+            p.setCode(profileCode);
+            merge = true;
         }
         if (StringUtils.isBlank(p.getName())) {
             p.setName(p.getCode());
-            UPA.getPersistenceUnit().merge(p);
+            merge = true;
+        }
+        if (StringUtils.isBlank(p.getCustomType()) || (customType != null && !customType.equals(p.getCustomType()))) {
+            p.setCustomType(customType);
+            merge = true;
+        }
+        if (merge) {
+            pu.merge(p);
         }
         return p;
     }
@@ -881,9 +951,9 @@ class CorePluginBodySecurityManager extends CorePluginBody {
 //                .getResultList();
     }
 
-    public List<AppUser> findEnabledUsers(Integer typeId,Integer departmentId) {
+    public List<AppUser> findEnabledUsers(Integer typeId, Integer departmentId) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        StringBuilder sb=new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         sb.append("Select u from AppUser  u where u.enabled=true and u.deleted=false");
         if (typeId != null) {
             sb.append(" and u.typeId=:typeId");
@@ -892,8 +962,8 @@ class CorePluginBodySecurityManager extends CorePluginBody {
             sb.append(" and u.departmentId=:departmentId");
         }
         return pu.createQuery(sb.toString())
-                .setParameter("typeId", typeId,typeId!=null)
-                .setParameter("departmentId", departmentId,departmentId!=null)
+                .setParameter("typeId", typeId, typeId != null)
+                .setParameter("departmentId", departmentId, departmentId != null)
                 .getResultList();
     }
 
@@ -902,7 +972,6 @@ class CorePluginBodySecurityManager extends CorePluginBody {
 //        return pu.createQuery("Select u from AppUser  u where u.enabled=true and u.deleted=false")
 //                .getResultList();
 //    }
-
     public AppUser findUser(String login, String password) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return (AppUser) pu
@@ -1029,7 +1098,7 @@ class CorePluginBodySecurityManager extends CorePluginBody {
         if (currentUser == null) {
             return false;
         }
-        return filterUsersByProfileFilter(Arrays.asList(currentUser), profilePattern, null,null).size() > 0;
+        return filterUsersByProfileFilter(Arrays.asList(currentUser), profilePattern, null, null).size() > 0;
     }
 
     //    public boolean isUserMatchesProfileFilter(int userId, String profileExpr) {
@@ -1045,7 +1114,7 @@ class CorePluginBodySecurityManager extends CorePluginBody {
         if (currentUser == null) {
             return false;
         }
-        return filterUsersByProfileFilter(Arrays.asList(currentUser), profilePattern, null,null).size() > 0;
+        return filterUsersByProfileFilter(Arrays.asList(currentUser), profilePattern, null, null).size() > 0;
     }
 
     public List<AppUser> filterUsersByProfileFilter(List<AppUser> users, String profilePattern, Integer userType, Integer department) {
@@ -1067,7 +1136,7 @@ class CorePluginBodySecurityManager extends CorePluginBody {
         int departmentInt = department == null ? -1 : department.intValue();
         for (AppUser u : users) {
             if (userType == null || (u.getType() != null && u.getType().getId() == userTypeInt)) {
-                if (userType == null || (u.getDepartment()!= null && u.getDepartment().getId() == departmentInt)) {
+                if (userType == null || (u.getDepartment() != null && u.getDepartment().getId() == departmentInt)) {
                     if (isUserMatchesProfileFilter(u.getId(), u.getLogin(), profilesOnlyExpr, cache)) {
                         all.add(u);
                     }
@@ -1077,8 +1146,8 @@ class CorePluginBodySecurityManager extends CorePluginBody {
         return filterUsersByExpression(all, ee.getFilterExpression());
     }
 
-    public List<AppUser> findUsersByProfileFilter(String profilePattern, Integer userTypeId,Integer departmentId) {
-        return filterUsersByProfileFilter(findEnabledUsers(userTypeId,departmentId), profilePattern, null,null);
+    public List<AppUser> findUsersByProfileFilter(String profilePattern, Integer userTypeId, Integer departmentId) {
+        return filterUsersByProfileFilter(findEnabledUsers(userTypeId, departmentId), profilePattern, null, null);
     }
 
     private List<AppUser> filterUsersByExpression(List<AppUser> all, String expression) {
@@ -1331,7 +1400,7 @@ class CorePluginBodySecurityManager extends CorePluginBody {
         if (ln == null) {
             ln = "";
         }
-        return StringUtils.normalizeString(fn.toLowerCase()).replace(" ", "") + "." + StringUtils.normalizeString(ln.toLowerCase()).replace(" ", "");
+        return VrUtils.normalizeName(fn).replace(" ", "") + "." + VrUtils.normalizeName(ln).replace(" ", "");
     }
 
     public String resolveLoginProposal(String fn, String ln) {
@@ -1347,7 +1416,7 @@ class CorePluginBodySecurityManager extends CorePluginBody {
         if (ln.isEmpty()) {
             ln = Integer.toHexString((int) (Math.random() * 1000)).toLowerCase();
         }
-        return StringUtils.normalizeString(fn.toLowerCase()).replace(" ", "") + "." + StringUtils.normalizeString(ln.toLowerCase()).replace(" ", "");
+        return VrUtils.normalizeName(fn).replace(" ", "") + "." + VrUtils.normalizeName(ln).replace(" ", "");
     }
 
     //    public AppUser findUserByContact(int contactId) {

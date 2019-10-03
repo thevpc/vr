@@ -42,6 +42,7 @@ import net.vpc.common.io.PathInfo;
 import net.vpc.common.util.MutableDate;
 
 class CorePluginBodyContentManager extends CorePluginBody {
+
     private static final java.util.logging.Logger log = java.util.logging.Logger.getLogger(CorePluginBodyContentManager.class.getName());
 
     @Override
@@ -122,12 +123,16 @@ class CorePluginBodyContentManager extends CorePluginBody {
             core.save(a);
         }
         AppProfile publisher = core.findOrCreateProfile("Publisher");
+
+        ProfileRightBuilder prb = new ProfileRightBuilder();
+
         for (String right : CorePluginSecurity.getEntityRights(pu.getEntity(AppArticle.class), true, true, true, false, false)) {
-            core.addProfileRight(publisher.getId(), right);
+            prb.addProfileRight(publisher.getId(), right);
         }
         for (String right : CorePluginSecurity.getEntityRights(pu.getEntity(AppArticleFile.class), true, true, true, false, false)) {
-            core.addProfileRight(publisher.getId(), right);
+            prb.addProfileRight(publisher.getId(), right);
         }
+        prb.execute();
     }
 
     public AppArticle findArticle(int articleId) {
@@ -331,13 +336,16 @@ class CorePluginBodyContentManager extends CorePluginBody {
 //    public List<FullArticle> findFullArticlesByCategory(String disposition) {
 //        return findFullArticlesByDisposition(null, disposition);
 //    }
-    public List<FullArticle> findFullArticlesByDisposition(String group, String disposition) {
+    public List<FullArticle> findFullArticlesByDisposition(Integer userId, String group, String disposition) {
         if (group == null) {
             if (!getContext().getCorePlugin().isStarted()) {
                 group = "";
             } else {
-                UserSession userSession = getContext().getCorePlugin().getCurrentSession();
-                group = userSession == null ? null : userSession.getSelectedSiteFilter();
+                Integer cuid = getContext().getCorePlugin().getCurrentUserId();
+                if (userId == null || userId.equals(cuid)) {
+                    UserSession userSession = getContext().getCorePlugin().getCurrentSession();
+                    group = userSession == null ? null : userSession.getSelectedSiteFilter();
+                }
             }
         }
         if (StringUtils.isBlank(group)) {
@@ -347,25 +355,35 @@ class CorePluginBodyContentManager extends CorePluginBody {
         if (g == null) {
             g = findArticleDispositionGroup("II");
         }
-        return findFullArticlesByDisposition(g == null ? -1 : g.getId(), true, disposition);
+        return findFullArticlesByDisposition(userId/*current user*/, g == null ? -1 : g.getId(), true, disposition);
     }
 
-    public List<FullArticle> findFullArticlesByDisposition(int dispositionGroupId, boolean includeNoDept, final String disposition) {
-        AppUser u = getContext().getCorePlugin().getCurrentUser();
-        return findFullArticlesByUserAndDisposition(u == null ? null : u.getLogin(), dispositionGroupId, includeNoDept, disposition);
+    public List<FullArticle> findFullArticlesByDisposition(Integer userId, int dispositionGroupId, boolean includeNoDept, final String disposition) {
+        if (userId == null) {
+            AppUser u = getContext().getCorePlugin().getCurrentUser();
+            if (u == null) {
+                return findFullArticlesByUserAndDisposition(null, dispositionGroupId, includeNoDept, disposition);
+            }
+            return findFullArticlesByUserAndDisposition(u.getId(), dispositionGroupId, includeNoDept, disposition);
+        }
+        AppUser u = getContext().getCorePlugin().findUser(userId);
+        if (u == null) {
+            return new ArrayList<>();
+        }
+        return findFullArticlesByUserAndDisposition(userId, dispositionGroupId, includeNoDept, disposition);
     }
 
     public List<FullArticle> findFullArticlesByAnonymousDisposition(int dispositionGroupId, boolean includeNoDept, final String disposition) {
         return findFullArticlesByUserAndDisposition(null, dispositionGroupId, includeNoDept, disposition);
     }
 
-    protected List<FullArticle> findFullArticlesByUserAndDisposition(final String login, int dispositionGroupId, boolean includeNoDept, final String disposition) {
+    protected List<FullArticle> findFullArticlesByUserAndDisposition(final Integer userId, int dispositionGroupId, boolean includeNoDept, final String disposition) {
         return UPA.getContext().invokePrivileged(new Action<List<FullArticle>>() {
 
             @Override
             public List<FullArticle> run() {
                 List<FullArticle> all = new ArrayList<>();
-                List<AppArticle> articles = findArticlesByUserAndCategory(login, dispositionGroupId, includeNoDept, disposition);
+                List<AppArticle> articles = findArticlesByUserAndCategory(userId, dispositionGroupId, includeNoDept, disposition);
                 int[] articleIds = new int[articles.size()];
                 for (int i = 0; i < articleIds.length; i++) {
                     articleIds[i] = articles.get(i).getId();
@@ -392,10 +410,10 @@ class CorePluginBodyContentManager extends CorePluginBody {
                         if (periodCalendarType > 0) {
                             DateTime dd = a.getSendTime();
                             MutableDate d2 = new MutableDate().addField(periodCalendarType, -d.getMaxPeriod());
-                            if(dd==null){
-                                log.log(Level.SEVERE, "Article with null SendTime : Article.id="+a.getId());
+                            if (dd == null) {
+                                log.log(Level.SEVERE, "Article with null SendTime : Article.id=" + a.getId());
                             }
-                            if (dd!=null && dd.compareTo(d2.getDateTime()) < 0) {
+                            if (dd != null && dd.compareTo(d2.getDateTime()) < 0) {
                                 continue;
                             }
                         }
@@ -470,7 +488,7 @@ class CorePluginBodyContentManager extends CorePluginBody {
         }, null);
     }
 
-    protected List<AppArticle> findArticlesByUserAndCategory(String login, int dispositionGroupId, boolean includeNoDept, String... dispositions) {
+    protected List<AppArticle> findArticlesByUserAndCategory(Integer userId, int dispositionGroupId, boolean includeNoDept, String... dispositions) {
         if (dispositions.length == 0) {
             return Collections.EMPTY_LIST;
         }
@@ -484,7 +502,7 @@ class CorePluginBodyContentManager extends CorePluginBody {
             if (i > 0) {
                 queryStr.append(" or ");
             }
-            if (login == null) {
+            if (userId == null) {
                 queryStr.append(" (u.disposition.name=:disposition" + i + " and u.disposition.requiresAuthentication=false)");
             } else {
                 queryStr.append(" u.disposition.name=:disposition" + i);
@@ -510,7 +528,7 @@ class CorePluginBodyContentManager extends CorePluginBody {
         Query query = UPA.getPersistenceUnit().createQuery(queryStr.toString()).setParameters(disps);
         List<AppArticle> all = query.getResultList();
 
-        return getContext().getCorePlugin().filterByProfilePattern(all, null, login, new ProfilePatternFilter<AppArticle>() {
+        return getContext().getCorePlugin().filterByProfilePattern(all, userId, null, new ProfilePatternFilter<AppArticle>() {
             @Override
             public String getProfilePattern(AppArticle t) {
                 AppUser s = t.getSender();
@@ -560,7 +578,7 @@ class CorePluginBodyContentManager extends CorePluginBody {
     public void getRSS(String rss, OutputStream out) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         AppArticleDisposition t = pu.findByMainField(AppArticleDisposition.class, "rss." + rss);
-        List<FullArticle> articles = findFullArticlesByDisposition(-1, true, "rss." + rss);
+        List<FullArticle> articles = findFullArticlesByDisposition(null, -1, true, "rss." + rss);
         try {
             String feedType = "rss_2.0";
 //            String fileName = "feed.xml";

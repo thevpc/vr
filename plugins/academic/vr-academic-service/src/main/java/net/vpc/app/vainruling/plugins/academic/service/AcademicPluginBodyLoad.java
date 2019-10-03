@@ -33,6 +33,7 @@ import net.vpc.upa.UPA;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.vpc.app.vainruling.core.service.ProfileRightBuilder;
 
 public class AcademicPluginBodyLoad extends AcademicPluginBody {
 
@@ -56,9 +57,11 @@ public class AcademicPluginBodyLoad extends AcademicPluginBody {
         core.createRight(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_TEACHER_COURSE_LOAD, "Charge Detaillee");
         core.createRight(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_GLOBAL_STAT, "Stat Charge");
         AppProfile director = core.findOrCreateCustomProfile("Director", "UserType");
-        core.addProfileRight(director.getId(), AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_TEACHER_COURSE_LOAD);
-        core.addProfileRight(director.getId(), AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_GLOBAL_STAT);
-        core.addProfileRight(director.getId(), AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_ALL_TEACHERS_COURSE_LOAD);
+        ProfileRightBuilder prb = new ProfileRightBuilder();
+        prb.addProfileRight(director.getId(), AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_TEACHER_COURSE_LOAD);
+        prb.addProfileRight(director.getId(), AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_GLOBAL_STAT);
+        prb.addProfileRight(director.getId(), AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_ALL_TEACHERS_COURSE_LOAD);
+        prb.execute();
 
     }
 
@@ -235,7 +238,7 @@ public class AcademicPluginBodyLoad extends AcademicPluginBody {
     }
 
     public double evalValueEquiv(LoadValue v, AcademicTeacherDegree dd, AcademicConversionTableHelper table) {
-        if (dd == null || dd.getConversionRule()==null || table==null) {
+        if (dd == null || dd.getConversionRule() == null || table == null) {
             return 0;
         }
         AcademicLoadConversionRow r = table.get(dd.getConversionRule().getId());
@@ -574,8 +577,8 @@ public class AcademicPluginBodyLoad extends AcademicPluginBody {
         ghost.setTeacherPeriod(getContext().getPlugin().findTeacherPeriod(periodId, ghost.getTeacher().getId()));
         AcademicTeacherPeriod trs = getContext().getPlugin().findTeacherPeriod(periodId, teacher.getId());
         ghost.setPopulation(new TeacherValuePopulation(
-                trs==null || trs.getSituation() ==null ?  teacher.getSituation():trs.getSituation(),
-                trs==null || trs.getDegree() ==null ?  teacher.getDegree():trs.getDegree(),
+                trs == null || trs.getSituation() == null ? teacher.getSituation() : trs.getSituation(),
+                trs == null || trs.getDegree() == null ? teacher.getDegree() : trs.getDegree(),
                 teacher.getOfficialDiscipline()
         ));
         ghost.setCourseAssignmentFilter(courseAssignmentFilter);

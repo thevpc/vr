@@ -3,7 +3,7 @@
  *
  * and open the template in the editor.
  */
-package net.vpc.app.vainruling.core.web.jsf.ctrl;
+package net.vpc.app.vainruling.core.web.jsf.ctrl.admin;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.CorePluginSecurity;
@@ -15,13 +15,13 @@ import net.vpc.app.vainruling.core.service.pages.VrPage;
  */
 @VrPage(
         menu = "/Admin",
-        securityKey = CorePluginSecurity.RIGHT_CUSTOM_ADMIN_INVALIDATE_CACHE
+        securityKey = CorePluginSecurity.RIGHT_CUSTOM_ADMIN_UPDATE_ALL_FORMULAS
 )
-public class InvalidateCacheCtrl {
+public class UpdateAllFormulasCtrl {
 
     @OnPageLoad
     public void onInvoke() {
-        CorePlugin.get().invalidateCache();
+        CorePlugin.get().updateAllEntitiesFormulas();
     }
 
 }

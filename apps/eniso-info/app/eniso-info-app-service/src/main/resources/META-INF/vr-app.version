@@ -10,9 +10,13 @@ config.company=ENISo
 config.country=Tunisie
 config.industry=Education
 
-version = 1.2.7
-build-date = 2019-08-01
-build-number = 171
+version = 1.2.8
+build-date = 2019-09-23
+build-number = 172
+
+#version[OLD] = 1.2.7
+#build-date[OLD] = 2019-08-01
+#build-number[OLD] = 171
 
 #version[OLD] = 1.2.6
 #build-date[OLD] = 2019-06-24

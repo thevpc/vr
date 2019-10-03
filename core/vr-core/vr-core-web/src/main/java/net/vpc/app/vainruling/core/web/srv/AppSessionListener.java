@@ -31,15 +31,17 @@ public class AppSessionListener implements HttpSessionListener {
         try {
             String sid = se.getSession().getId();
             CorePlugin core = VrApp.getBean(CorePlugin.class);
-            UPA.getContext().invokePrivileged(new VoidAction() {
-                @Override
-                public void run() {
-                    PersistenceUnit persistenceUnit = UPA.getPersistenceUnit();
-                    Session s = persistenceUnit.getCurrentSession();
-                    s.setParam(persistenceUnit,"Event","SessionDestroyed");
-                    core.logout(sid);
-                }
-            });
+            if (UPA.getBootstrap().isContextInitialized()) {
+                UPA.getContext().invokePrivileged(new VoidAction() {
+                    @Override
+                    public void run() {
+                        PersistenceUnit persistenceUnit = UPA.getPersistenceUnit();
+                        Session s = persistenceUnit.getCurrentSession();
+                        s.setParam(persistenceUnit, "Event", "SessionDestroyed");
+                        core.logout(sid);
+                    }
+                });
+            }
         } catch (Exception e) {
             System.err.println(e);
         }

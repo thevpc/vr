@@ -433,25 +433,21 @@ public class EquipmentPlugin {
 
         AppUserType technicianType = core.findOrCreate(new AppUserType("Technician", "Technician"));
 
-        AppProfile technicianProfile;
-        technicianProfile = new AppProfile();
-        technicianProfile.setName("Technician");
-        technicianProfile = core.findOrCreate(technicianProfile);
+        AppProfile technicianProfile=core.findOrCreateCustomProfile("Technician", "UserType");
 
-        AppProfile headOfDepartment;
-        headOfDepartment = new AppProfile();
-        headOfDepartment.setName(CorePlugin.PROFILE_HEAD_OF_DEPARTMENT);
-        headOfDepartment = core.findOrCreate(headOfDepartment);
+        AppProfile headOfDepartment=core.findOrCreateCustomProfile(CorePlugin.PROFILE_HEAD_OF_DEPARTMENT, "UserType");
 
 //        core.profileAddRight(headOfDepartment.getId(),AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_MY_COURSE_LOAD);
+        ProfileRightBuilder prb = new ProfileRightBuilder();
         for (net.vpc.upa.Entity ee : UPA.getPersistenceUnit().getPackage("Equipment").getEntities(true)) {
             for (String right : CorePluginSecurity.getEntityRights(ee, true, true, true, false, false)) {
-                core.addProfileRight(headOfDepartment.getId(), right);
+                prb.addProfileRight(headOfDepartment.getId(), right);
             }
             for (String right : CorePluginSecurity.getEntityRights(ee, true, true, false, false, false)) {
-                core.addProfileRight(technicianProfile.getId(), right);
+                prb.addProfileRight(technicianProfile.getId(), right);
             }
         }
+        prb.execute();
 
 //        AppContact techContact = new AppContact();
 //        AppUser tech1 = new AppUser();

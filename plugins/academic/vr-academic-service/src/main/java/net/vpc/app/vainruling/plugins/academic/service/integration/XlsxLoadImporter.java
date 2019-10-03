@@ -134,8 +134,8 @@ public class XlsxLoadImporter {
         }
         TraceService trace = TraceService.get();
         ch.stop();
-        trace.trace("Academic.import-departments", "success", MapUtils.map("path", file.getPath(), "time", ch.toString(), "rows", count)
-                , getClass().getSimpleName(), Level.INFO);
+        trace.trace("Academic.import-departments", "success", MapUtils.map("path", file.getPath(), "time", ch.toString(), "rows", count),
+                getClass().getSimpleName(), Level.INFO);
     }
 
     public void importTeacherDegrees(VFile file) throws IOException {
@@ -169,9 +169,8 @@ public class XlsxLoadImporter {
         }
         TraceService trace = TraceService.get();
         ch.stop();
-        trace.trace("Academic.import-teacher-degrees", "success", 
-                MapUtils.map("path", file.getPath(), "time", ch.toString(), "rows", count), 
-                
+        trace.trace("Academic.import-teacher-degrees", "success",
+                MapUtils.map("path", file.getPath(), "time", ch.toString(), "rows", count),
                 getClass().getSimpleName(), Level.INFO);
     }
 
@@ -227,8 +226,8 @@ public class XlsxLoadImporter {
         }
         TraceService trace = TraceService.get();
         ch.stop();
-        trace.trace("Academic.import-load-conversion-table", "success", 
-                MapUtils.map("path", file.getPath(), "time", ch.toString(), "rows", count), 
+        trace.trace("Academic.import-load-conversion-table", "success",
+                MapUtils.map("path", file.getPath(), "time", ch.toString(), "rows", count),
                 getClass().getSimpleName(), Level.INFO);
     }
 
@@ -571,8 +570,8 @@ public class XlsxLoadImporter {
         }
         TraceService trace = TraceService.get();
         ch.stop();
-        trace.trace("Academic.import-teachers", "success", 
-                MapUtils.map("path", file.getPath(), "time", ch.toString(), "rows", count), 
+        trace.trace("Academic.import-teachers", "success",
+                MapUtils.map("path", file.getPath(), "time", ch.toString(), "rows", count),
                 getClass().getSimpleName(), Level.INFO);
     }
 
@@ -592,6 +591,7 @@ public class XlsxLoadImporter {
             a.setPreClassPrepName(values.getString(sm.COL_PREP));
             a.setPreClassTypeName(values.getString(sm.COL_PREP_SECTION));
             a.setPreClassPrepRank(values.getInt(sm.COL_PREP_RANK));
+            a.setPreClassChoice(values.getInt(sm.COL_PREP_RANK_ASSIGNMENT));
             a.setPreClassPrepRankMax(values.getInt(sm.COL_PREP_RANK_MAX));
             a.setPreClassBacName(values.getString(sm.COL_BAC));
             a.setPreClassPrepScore(values.getDouble(sm.COL_PREP_SCORE));
@@ -665,7 +665,18 @@ public class XlsxLoadImporter {
                 throw new NoSuchElementException("Bac Not Found " + a.getPreClassBacId());
             }
         } else if (!StringUtils.isBlank(a.getPreClassBacName())) {
-            bac = service.findAcademicBac(a.getPreClassBacName().trim());
+            Map<String, AcademicBac> all = (Map<String, AcademicBac>) ctx.getCache().get(AcademicBac.class.getName());
+            if (all == null) {
+                all = new HashMap<>();
+                ctx.getCache().put(AcademicBac.class.getName(), all);
+                for (AcademicBac b : service.findAcademicBacs()) {
+                    all.put(VrUtils.normalizeName(b.getName()), b);
+                    for (String v : VrUtils.parseNormalizedOtherNames(b.getOtherNames())) {
+                        all.put(v, b);
+                    }
+                }
+            }
+            bac = all.get(VrUtils.normalizeName(a.getPreClassBacName().trim()));
             if (bac == null) {
                 throw new NoSuchElementException("Bac Not Found " + a.getPreClassBacName());
             }
@@ -678,7 +689,19 @@ public class XlsxLoadImporter {
                 throw new NoSuchElementException("Prep Not Found " + a.getPreClassBacId());
             }
         } else if (!StringUtils.isBlank(a.getPreClassPrepName())) {
-            prep = service.findAcademicPreClass(a.getPreClassPrepName().trim());
+            Map<String, AcademicPreClass> all = (Map<String, AcademicPreClass>) ctx.getCache().get(AcademicPreClass.class.getName());
+            if (all == null) {
+                all = new HashMap<>();
+                ctx.getCache().put(AcademicPreClass.class.getName(), all);
+                for (AcademicPreClass b : service.findAcademicPreClasses()) {
+                    all.put(VrUtils.normalizeName(b.getName()), b);
+                    for (String v : VrUtils.parseNormalizedOtherNames(b.getOtherNames())) {
+                        all.put(v, b);
+                    }
+                }
+            }
+
+            prep = all.get(VrUtils.normalizeName(a.getPreClassPrepName().trim()));
             if (prep == null) {
                 throw new NoSuchElementException("Prep Not Found " + a.getPreClassPrepName());
             }
@@ -691,7 +714,19 @@ public class XlsxLoadImporter {
                 throw new NoSuchElementException("Prep Type Not Found " + a.getPreClassTypeId());
             }
         } else if (!StringUtils.isBlank(a.getPreClassTypeName())) {
-            prepType = service.findAcademicPreClassType(a.getPreClassTypeName().trim());
+            Map<String, AcademicPreClassType> all = (Map<String, AcademicPreClassType>) ctx.getCache().get(AcademicPreClassType.class.getName());
+            if (all == null) {
+                all = new HashMap<>();
+                ctx.getCache().put(AcademicPreClassType.class.getName(), all);
+                for (AcademicPreClassType b : service.findAcademicPreClassTypes()) {
+                    all.put(VrUtils.normalizeName(b.getName()), b);
+                    for (String v : VrUtils.parseNormalizedOtherNames(b.getOtherNames())) {
+                        all.put(v, b);
+                    }
+                }
+            }
+
+            prepType = all.get(VrUtils.normalizeName(a.getPreClassTypeName().trim()));
             if (prepType == null) {
                 throw new NoSuchElementException("Prep Not Found " + a.getPreClassTypeName());
             }
@@ -704,6 +739,18 @@ public class XlsxLoadImporter {
                 throw new NoSuchElementException("Class Not Found " + a.getPreClassBacId());
             }
         } else {
+            Map<String, AcademicClass> all = (Map<String, AcademicClass>) ctx.getCache().get(AcademicClass.class.getName());
+            if (all == null) {
+                all = new HashMap<>();
+                ctx.getCache().put(AcademicClass.class.getName(), all);
+                for (AcademicClass b : service.findAcademicClasses()) {
+                    all.put(VrUtils.normalizeName(b.getName()), b);
+                    for (String v : VrUtils.parseNormalizedOtherNames(b.getOtherNames())) {
+                        all.put(v, b);
+                    }
+                }
+            }
+
             studentclass = service.findAcademicClass(a.getClassName().trim());
             if (studentclass == null) {
                 throw new NoSuchElementException("Class Not Found " + a.getClassName());
@@ -721,6 +768,8 @@ public class XlsxLoadImporter {
         user.setFirstName(VrUtils.validateContactName(a.getFirstName()));
         user.setLastName(VrUtils.validateContactName(a.getLastName()));
         user.setFullName(VrUtils.validateContactName(AppContact.getName(user)));
+        AppUserType studentType = core.findUserType("Student");
+        user.setType(studentType);
         String fs2 = a.getFirstName2();
         if (ctx.isSimulate()) {
             AppUser old = core.findUser(user);
@@ -875,12 +924,11 @@ public class XlsxLoadImporter {
         }
         TraceService trace = TraceService.get();
         ch.stop();
-        trace.trace("Academic.import-students" + (simulate ? "-simulation" : ""), "success", 
-                MapUtils.map("path", file.getPath(), "time", ch.toString(), "rows", count), 
+        trace.trace("Academic.import-students" + (simulate ? "-simulation" : ""), "success",
+                MapUtils.map("path", file.getPath(), "time", ch.toString(), "rows", count),
                 "/Education/Import", Level.INFO);
         return count;
     }
-
 
     public void importCourseAssignments(int periodId, VFile file, ImportOptions importOptions) throws IOException {
         final AcademicPlugin service = VrApp.getBean(AcademicPlugin.class);
@@ -1156,8 +1204,8 @@ public class XlsxLoadImporter {
         }
         TraceService trace = TraceService.get();
         ch.stop();
-        trace.trace("Academic.import-course-assignments", "success", 
-                MapUtils.map("path", file.getPath(), "time", ch.toString(), "rows", count), 
+        trace.trace("Academic.import-course-assignments", "success",
+                MapUtils.map("path", file.getPath(), "time", ch.toString(), "rows", count),
                 getClass().getSimpleName(), Level.INFO);
         log.log(Level.INFO, "importCourseAssignments from {0} in {1}", new Object[]{file, ch.stop()});
         service.updateAllCoursePlanValuesByLoadValues(periodId);

@@ -14,7 +14,6 @@ import net.vpc.app.vainruling.core.web.jsf.DialogBuilder;
 import net.vpc.app.vainruling.core.service.editor.DialogResult;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.util.CourseAssignmentFilter;
-import net.vpc.app.vainruling.plugins.academic.web.admin.AcademicAdminToolsCtrl;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.Convert;
@@ -152,7 +151,7 @@ public class GenerateLoadDialogCtrl {
                     });
                     FacesUtils.addInfoMessage("Successful Operation");
                 } catch (Exception ex) {
-                    Logger.getLogger(AcademicAdminToolsCtrl.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(GenerateLoadDialogCtrl.class.getName()).log(Level.SEVERE, null, ex);
                     FacesUtils.addErrorMessage(ex.getMessage());
                 }
                 fireEventExtraDialogClosed();

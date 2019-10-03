@@ -20,6 +20,8 @@ public class CorePluginSecurity {
     public static final String RIGHT_CUSTOM_ADMIN_ACTIVE_SESSIONS = "Custom.Admin.ActiveSessions";
     public static final String RIGHT_CUSTOM_ADMIN_IMPERSONATE = "Custom.Admin.Impersonate";
     public static final String RIGHT_CUSTOM_ADMIN_INVALIDATE_CACHE = "Custom.Admin.InvalidateCache";
+    public static final String RIGHT_CUSTOM_ADMIN_UPDATE_ALL_FORMULAS = "Custom.Admin.UpdateAllFormulas";
+    public static final String RIGHT_CUSTOM_ADMIN_IMPORT_FILE = "Custom.Admin.ImportFile";
     public static final String RIGHT_CUSTOM_MY_PROFILE = "Custom.MyProfile";
     public static final String RIGHT_CUSTOM_UTIL_NAVIGATION_HISTORY = "Custom.Util.NavigationHistory";
     public static final String RIGHT_CUSTOM_ADMIN = "Custom.Admin";

@@ -5,7 +5,6 @@
  */
 package net.vpc.app.vainruling.core.service.model;
 
-import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.upa.*;
 import net.vpc.upa.config.*;
 import net.vpc.upa.config.Entity;
@@ -56,11 +55,11 @@ public class AppUser extends AppPersonContactBase implements Cloneable {
 
     @Path("Trace")
     @Summary
-    @Field(protectionLevel = ProtectionLevel.PRIVATE)
+    @Field(protectionLevel = ProtectionLevel.PROTECTED)
     private DateTime lastConnexionDate;
 
     @Summary
-    @Field(protectionLevel = ProtectionLevel.PRIVATE)
+    @Field(protectionLevel = ProtectionLevel.PROTECTED)
     private long connexionCount;
 
     @Summary

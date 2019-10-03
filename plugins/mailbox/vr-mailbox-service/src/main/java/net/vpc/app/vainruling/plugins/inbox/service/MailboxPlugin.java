@@ -47,6 +47,7 @@ import java.util.*;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.vpc.app.vainruling.core.service.ProfileRightBuilder;
 import net.vpc.app.vainruling.core.service.plugins.VrPlugin;
 
 /**
@@ -104,9 +105,10 @@ public class MailboxPlugin {
                 "LocalMailUser", "HeadOfDepartment", "DirectorOfStudies", "Director", "Student"
         ));
         PersistenceUnit pu = UPA.getPersistenceUnit();
+        ProfileRightBuilder prb = new ProfileRightBuilder();
         for (AppProfile prof : core.findProfiles()) {
             if (goodProfiles.contains(prof.getCode())) {
-                core.addProfileRight(prof.getId(), MailboxPluginSecurity.RIGHT_CUSTOM_SITE_MAILBOX);
+                prb.addProfileRight(prof.getId(), MailboxPluginSecurity.RIGHT_CUSTOM_SITE_MAILBOX);
                 for (String entityName : new String[]{"MailboxReceived","MailboxSent"}) {
                     Entity entity=pu.getEntity(entityName);
                     for (String right : CorePluginSecurity.getEntityRights(
@@ -118,13 +120,15 @@ public class MailboxPlugin {
                             false
                     )) {
                         if(!CorePluginSecurity.getEntityRightEditor(entity).equals(right)) {
-                            core.addProfileRight(prof.getId(), right);
+                            prb.addProfileRight(prof.getId(), right);
                         }
                     }
                 }
             }
         }
 
+        prb.execute();
+        
         MailboxMessageFormat w = getWelcomeTemplate();
         if (w == null) {
             w = new MailboxMessageFormat();

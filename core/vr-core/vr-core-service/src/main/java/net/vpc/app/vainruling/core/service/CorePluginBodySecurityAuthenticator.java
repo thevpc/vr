@@ -120,7 +120,7 @@ class CorePluginBodySecurityAuthenticator extends CorePluginBody {
         if (login == null) {
             login = "";
         }
-        login = StringUtils.normalizeString(login.trim()).toLowerCase();
+        login = VrUtils.normalizeName(login);
         StringBuilder sb = new StringBuilder();
         boolean firstSpace = true;
         for (char c : login.toCharArray()) {
@@ -138,7 +138,13 @@ class CorePluginBodySecurityAuthenticator extends CorePluginBody {
 
     private AppUser authenticateByLoginPassword(String login, String password, UserToken token, String clientAppId, String clientApp) {
         login = toUniformLogin(login);
-        AppUser user = findEnabledUser(login, password);
+        String flogin=login;
+        AppUser user = UPA.getPersistenceUnit().invokePrivileged(new Action<AppUser>() {
+            @Override
+            public AppUser run() {
+                return findEnabledUser(flogin, password);
+            }
+        });
         if (user == null) {
             AppUser user2 = getContext().getCorePlugin().findUser(login);
             if (user2 == null) {

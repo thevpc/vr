@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.model.AppGender;
-import net.vpc.common.strings.StringUtils;
+import net.vpc.app.vainruling.core.service.util.VrUtils;
 
 /**
  *
@@ -29,10 +29,11 @@ public class AppGenderParser {
             gendersById = new HashMap<>();
             for (AppGender g : CorePlugin.get().findGenders()) {
                 gendersByCode.put(g.getCode(), g);
-                gendersByName.put(StringUtils.normalizeString(g.getName().trim()), g);
-                gendersById.put(g.getId(), g);
+                gendersByName.put(VrUtils.normalizeName(g.getName()), g);
+                    for (String v : VrUtils.parseNormalizedOtherNames(g.getOtherNames())) {
+                        gendersByName.put(v, g);
+                    }
             }
-
         }
     }
 
@@ -48,7 +49,7 @@ public class AppGenderParser {
         } else if (genderName != null) {
             gender = gendersByCode.get(genderName);
             if (gender == null) {
-                gender = gendersByName.get(StringUtils.normalizeString(genderName.trim()));
+                gender = gendersByName.get(VrUtils.normalizeName(genderName));
             }
             if (gender == null && required) {
                 throw new NoSuchElementException("Gender Not Found " + genderName);

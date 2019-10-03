@@ -79,11 +79,7 @@ public class MyBorrowEquipmentsTrackingCtrl {
         EquipmentPlugin eqm = EquipmentPlugin.get();
         EquipmentBorrowService ebs = VrApp.getBean(EquipmentBorrowService.class);
         AppDepartment d = getModel().getDepartment();
-        if (d != null) {
-            getModel().setUsers(Vr.get().toEntitySelectItemsNullable(ebs.findBorrowerUsers(d.getId()), "AppUser"));
-        } else {
-            getModel().setUsers(Vr.get().toEntitySelectItemsNullable(ebs.findBorrowerUsers(null), "AppUser"));
-        }
+        getModel().setUsers(Vr.get().toEntitySelectItemsNullable(ebs.findBorrowerUsers(d == null ? null : d.getId(),true,false), "AppUser"));
         if (!VrWebHelper.containsSelectItemId(getModel().getUsers(), getModel().getUser() == null ? null : getModel().getUser().getId())) {
             getModel().setUser(null);
         }

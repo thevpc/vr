@@ -117,10 +117,10 @@ public class SimpleJavaEvaluator implements InSetEvaluator {
     public boolean evaluateExpression(String expression, Collection<String> set) {
         Set<String> items = new HashSet<>();
         for (String string : set) {
-            items.add(StringUtils.normalizeString(string).toLowerCase());
+            items.add(VrUtils.normalizeName(string));
         }
 
-        expression = StringUtils.normalizeString(expression).toLowerCase();
+        expression = VrUtils.normalizeName(expression);
         try {
             ExpressionEvaluator expressionEvaluator = evaluator.createEvaluator(expression);
             expressionEvaluator.getUserProperties().put("set",items);

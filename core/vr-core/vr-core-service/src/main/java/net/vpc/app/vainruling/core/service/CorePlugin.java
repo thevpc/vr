@@ -48,6 +48,9 @@ import net.vpc.upa.types.DataType;
 import org.springframework.context.annotation.DependsOn;
 import net.vpc.app.vainruling.core.service.editor.EntityEditorSearchFactory;
 import net.vpc.app.vainruling.core.service.editor.EntityEditorMainPhotoProvider;
+import net.vpc.app.vainruling.core.service.model.content.AppArticleStrict;
+import net.vpc.app.vainruling.core.service.model.content.ArticlesDispositionStrict;
+import net.vpc.app.vainruling.core.service.model.strict.AppUserStrict;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -234,7 +237,7 @@ public class CorePlugin {
         return bodySecurityManager.findProfile(profileId);
     }
 
-    public boolean createRight(String rightName, String desc) {
+    public AppRightName createRight(String rightName, String desc) {
         return bodySecurityManager.createRight(rightName, desc);
     }
 
@@ -252,6 +255,10 @@ public class CorePlugin {
 
     public int setProfileUsers(int profileId, List<String> logins) {
         return bodySecurityManager.setProfileUsers(profileId, logins);
+    }
+
+    public boolean addProfileRights(int profileId, String... rightNames) {
+        return bodySecurityManager.addProfileRights(profileId, rightNames);
     }
 
     public boolean addProfileRight(int profileId, String rightName) {
@@ -812,11 +819,19 @@ public class CorePlugin {
 //        return bodyContentManager.findFullArticlesByCategory(disposition);
 //    }
     public List<FullArticle> findFullArticlesByDisposition(String group, String disposition) {
-        return bodyContentManager.findFullArticlesByDisposition(group, disposition);
+        return bodyContentManager.findFullArticlesByDisposition(null, group, disposition);
+    }
+
+    public List<FullArticle> findFullArticlesByDisposition(Integer userId, String group, String disposition) {
+        return bodyContentManager.findFullArticlesByDisposition(userId, group, disposition);
     }
 
     public List<FullArticle> findFullArticlesByDisposition(int dispositionGroupId, boolean includeNoDept, final String disposition) {
-        return bodyContentManager.findFullArticlesByDisposition(dispositionGroupId, includeNoDept, disposition);
+        return bodyContentManager.findFullArticlesByDisposition(null, dispositionGroupId, includeNoDept, disposition);
+    }
+
+    public List<FullArticle> findFullArticlesByDisposition(Integer userId, int dispositionGroupId, boolean includeNoDept, final String disposition) {
+        return bodyContentManager.findFullArticlesByDisposition(userId, dispositionGroupId, includeNoDept, disposition);
     }
 
     public List<FullArticle> findFullArticlesByAnonymousDisposition(int dispositionGroupId, boolean includeNoDept, final String disposition) {
@@ -972,6 +987,34 @@ public class CorePlugin {
             cats.addAll(bean.getCompletionLists(monitorUserId));
         }
         return new ArrayList<>(cats);
+    }
+
+    public List<FullArticle> findAllCompletionFullArticles(int monitorUserId, String disposition, String category, String objectType, Object objectId, Level minLevel) {
+        List<FullArticle> list = new ArrayList<>();
+        int id = 1;
+        ArticlesDispositionStrict dispo = new ArticlesDispositionStrict();
+        dispo.setName(disposition);
+        dispo.setEnabled(true);
+        List<CompletionInfo> allCompletions = findAllCompletions(monitorUserId, category, objectType, objectId, minLevel);
+        for (CompletionInfo c : allCompletions) {
+            FullArticle aa = convert(c, dispo);
+            aa.getArticle().setId(id);
+            list.add(aa);
+            id++;
+        }
+        return list;
+    }
+
+    public FullArticle convert(CompletionInfo x, ArticlesDispositionStrict dispo) {
+        AppArticleStrict a = new AppArticleStrict();
+        a.setContent(x.getContent());
+        a.setSubject(x.getMessage());
+        a.setDisposition(dispo);
+        AppUserStrict sender = new AppUserStrict();
+        sender.setFullName("Système");
+        a.setSender(sender);
+        FullArticle fa = new FullArticle(a, new ArrayList<>());
+        return fa;
     }
 
     public List<CompletionInfo> findAllCompletions(int monitorUserId, String category, String objectType, Object objectId, Level minLevel) {
@@ -1481,4 +1524,5 @@ public class CorePlugin {
     public void invalidateUserProfileMap() {
         bodySecurityManager.invalidateUserProfileMap();
     }
+
 }

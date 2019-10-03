@@ -85,6 +85,7 @@ public class MyBorrowableEquipmentsCtrl {
             EquipmentBorrowService ebs = VrApp.getBean(EquipmentBorrowService.class);
             ebs.addEquipmentBorrowRequest(req);
             onClearForm();
+            FacesUtils.addInfoMessage("Reservation "+(getModel().getSelectedEquipment().getName())+" réussie");
         } catch (Exception ex) {
             FacesUtils.addErrorMessage(ex);
         }

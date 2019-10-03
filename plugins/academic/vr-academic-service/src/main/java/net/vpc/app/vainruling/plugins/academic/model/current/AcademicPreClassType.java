@@ -5,9 +5,7 @@
  */
 package net.vpc.app.vainruling.plugins.academic.model.current;
 
-import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.common.strings.StringUtils;
-import net.vpc.upa.AccessLevel;
 import net.vpc.upa.FormulaType;
 import net.vpc.upa.ProtectionLevel;
 import net.vpc.upa.UserFieldModifier;
@@ -30,6 +28,8 @@ public class AcademicPreClassType {
     @Main
     @Unique
     private String name;
+
+    private String otherNames;
 
     @Path("Trace")
 //    @Properties(
@@ -106,4 +106,14 @@ public class AcademicPreClassType {
         result = 31 * result + (updateDate != null ? updateDate.hashCode() : 0);
         return result;
     }
+
+    public String getOtherNames() {
+        return otherNames;
+    }
+
+    public void setOtherNames(String otherNames) {
+        this.otherNames = otherNames;
+    }
+    
+    
 }

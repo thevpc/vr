@@ -35,16 +35,16 @@ import net.vpc.upa.UPA;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.logging.Level;
-import net.vpc.app.vainruling.core.service.util.JsonUtils;
 import net.vpc.common.util.MapUtils;
 
 public class AcademicPluginBodyInternships extends AcademicPluginBody {
 
     public void onStart() {
-        VrApp.getBean(CorePlugin.class).createRight(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_MY_INTERNSHIPS, AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_MY_INTERNSHIPS);
-        VrApp.getBean(CorePlugin.class).createRight(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_MY_INTERNSHIP_BOARDS, AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_MY_INTERNSHIP_BOARDS);
-        VrApp.getBean(CorePlugin.class).createRight(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_ALL_INTERNSHIPS, AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_ALL_INTERNSHIPS);
-        VrApp.getBean(CorePlugin.class).createRight(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_INTERNSHIP_BOARDS_STAT, AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_INTERNSHIP_BOARDS_STAT);
+        CorePlugin core = VrApp.getBean(CorePlugin.class);
+        core.createRight(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_MY_INTERNSHIPS, AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_MY_INTERNSHIPS);
+        core.createRight(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_MY_INTERNSHIP_BOARDS, AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_MY_INTERNSHIP_BOARDS);
+        core.createRight(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_ALL_INTERNSHIPS, AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_ALL_INTERNSHIPS);
+        core.createRight(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_INTERNSHIP_BOARDS_STAT, AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_INTERNSHIP_BOARDS_STAT);
     }
 
     public Map<String, Number> statEvalInternshipAssignmentCount(List<AcademicInternship> internships) {

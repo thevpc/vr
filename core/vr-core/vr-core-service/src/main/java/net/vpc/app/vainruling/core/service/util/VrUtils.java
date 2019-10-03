@@ -46,8 +46,12 @@ import net.vpc.common.strings.StringConverter;
 import net.vpc.upa.Action;
 import net.vpc.upa.UPA;
 import org.springframework.context.expression.BeanFactoryResolver;
+import org.springframework.expression.AccessException;
+import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
+import org.springframework.expression.PropertyAccessor;
+import org.springframework.expression.TypedValue;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 
@@ -1357,11 +1361,60 @@ public class VrUtils {
         return message;
     }
 
+    public static String normalizeName(String name) {
+        if (name == null) {
+            name = "";
+        }
+        return StringUtils.normalizeString(name.trim().toLowerCase());
+    }
+
+    public static Set<String> parseNormalizedOtherNames(String otherNames) {
+        LinkedHashSet<String> n = new LinkedHashSet<>();
+        for (String v : StringUtils.split(otherNames, ",;")) {
+            v = VrUtils.normalizeName(v);
+            if (v.length() > 0) {
+                n.add(v);
+            }
+        }
+        return n;
+    }
+
     public static Object evalSpringExpr(String expr) {
         if (StringUtils.isBlank(expr)) {
             return null;
         }
         StandardEvaluationContext context = new StandardEvaluationContext();
+        context.addPropertyAccessor(new PropertyAccessor() {
+            @Override
+            public boolean canWrite(EvaluationContext arg0, Object arg1, String arg2) throws AccessException {
+                return false;
+            }
+
+            @Override
+            public Class<?>[] getSpecificTargetClasses() {
+                return null;
+            }
+
+            @Override
+            public boolean canRead(EvaluationContext context, Object target, String name) throws AccessException {
+                return target == null;
+            }
+
+            @Override
+            public TypedValue read(EvaluationContext context, Object target, String name) throws AccessException {
+                if (target == null) {
+                    Object value = VrApp.getContext().getBean(name);
+                    return new TypedValue(value);
+                }
+                throw new UnsupportedOperationException("Not supported.");
+            }
+
+            @Override
+            public void write(EvaluationContext context, Object target, String name, Object value) throws AccessException {
+                throw new UnsupportedOperationException("Not supported.");
+            }
+
+        });
         context.setBeanResolver(new BeanFactoryResolver(VrApp.getContext()));
         ExpressionParser parser = new SpelExpressionParser();
         Expression expression = parser.parseExpression(expr);

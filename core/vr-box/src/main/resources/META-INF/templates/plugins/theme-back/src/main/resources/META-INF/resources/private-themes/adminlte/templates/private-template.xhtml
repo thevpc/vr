@@ -414,7 +414,7 @@
                                                                 <ui:repeat value="#{p2.resolveLeaves()}" var="p3">
                                                                     <li class="#{p3.selected ?'active':''}">
                                                                         <h:outputLink value="#{vr.getPrettyURL(p3)}"><i
-                                                                                class="fa #{vr.nvl(p3.icon,vr.mapValue(p3.type,'fa-cube','obj','fa-circle-o'))}"></i> #{p3.name}
+                                                                                class="fa #{vr.nvl(p3.icon,vr.mapValue(p3.type,'fa-cube','editor','fa-circle-o'))}"></i> #{p3.name}
                                                                             <h:panelGroup styleClass="pull-right-container">
                                                                                 <ui:repeat value="#{p3.labels}" var="l">
                                                                                     <small class="label pull-right #{vr.mapValue(l.type,'bg-black','success','bg-green','info','bg-light-blue','warn','bg-orange','severe','bg-red')}">#{l.name}</small>
@@ -429,7 +429,7 @@
                                                     <ui:repeat value="#{p1.resolveLeaves()}" var="p2">
                                                         <li class="#{p2.selected ?'active':''}">
                                                             <h:outputLink value="#{vr.getPrettyURL(p2)}"><i
-                                                                    class="fa #{vr.nvl(p2.icon,vr.mapValue(p2.type,'fa-cube','obj','fa-circle-o'))}"></i> #{p2.name}
+                                                                    class="fa #{vr.nvl(p2.icon,vr.mapValue(p2.type,'fa-cube','editor','fa-circle-o'))}"></i> #{p2.name}
                                                                 <h:panelGroup styleClass="pull-right-container">
                                                                     <ui:repeat value="#{p2.labels}" var="l">
                                                                         <small class="label pull-right #{vr.mapValue(l.type,'bg-black','success','bg-green','info','bg-light-blue','warn','bg-orange','severe','bg-red')}">#{l.name}</small>
@@ -444,7 +444,7 @@
                                         <ui:repeat value="#{p0.resolveLeaves()}" var="p1">
                                             <li class="#{p1.selected ?'active':''}">
                                                 <h:outputLink value="#{vr.getPrettyURL(p1)}">
-                                                    <i class="fa #{vr.nvl(p1.icon,vr.mapValue(p1.type,'fa-cube','obj','fa-circle-o'))}"></i> #{p1.name}
+                                                    <i class="fa #{vr.nvl(p1.icon,vr.mapValue(p1.type,'fa-cube','editor','fa-circle-o'))}"></i> #{p1.name}
                                                     <h:panelGroup styleClass="pull-right-container">
                                                         <ui:repeat value="#{p1.labels}" var="l">
                                                             <small class="label pull-right #{vr.mapValue(l.type,'bg-black','success','bg-green','info','bg-light-blue','warn','bg-orange','severe','bg-red')}">#{l.name}</small>
@@ -459,7 +459,7 @@
                             <ui:repeat value="#{vr.menu.resolveLeaves()}" var="p0">
                                 <li class="#{p0.selected ?'active':''}">
                                     <h:outputLink value="#{vr.getPrettyURL(p0)}"><i
-                                            class="fa vr.nvl(p0.icon,vr.mapValue(p0.type,'fa-cube','obj','fa-circle-o'))"></i> #{p0.name}
+                                            class="fa vr.nvl(p0.icon,vr.mapValue(p0.type,'fa-cube','editor','fa-circle-o'))"></i> #{p0.name}
                                         <h:panelGroup styleClass="pull-right-container">
                                             <ui:repeat value="#{p0.labels}" var="l">
                                                 <small class="label pull-right #{vr.mapValue(l.type,'bg-black','success','bg-green','info','bg-light-blue','warn','bg-orange','severe','bg-red')}">#{l.name}</small>

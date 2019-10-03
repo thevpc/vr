@@ -28,6 +28,7 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import net.vpc.app.vainruling.core.service.ProfileRightBuilder;
 
 public class AcademicPluginBodyTeachers extends AcademicPluginBody {
 
@@ -54,17 +55,19 @@ public class AcademicPluginBodyTeachers extends AcademicPluginBody {
             teacherProfile.setInherited(stringCollection.toString());
         }
 
-        core.addProfileRight(teacherProfile.getId(), AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_MY_COURSE_LOAD);
+        ProfileRightBuilder prb = new ProfileRightBuilder();
+        prb.addProfileRight(teacherProfile.getId(), AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_MY_COURSE_LOAD);
 
-        core.addProfileRight(teacherProfile.getId(), CorePluginSecurity.getEntityRightPersist("AcademicCourseIntent"));
-        core.addProfileRight(teacherProfile.getId(), CorePluginSecurity.getEntityRightRemove("AcademicCourseIntent"));
-        core.addProfileRight(teacherProfile.getId(), CorePluginSecurity.getEntityRightLoad("AppContact"));
-        core.addProfileRight(teacherProfile.getId(), CorePluginSecurity.getEntityRightNavigate("AcademicCoursePlan"));
+        prb.addProfileRight(teacherProfile.getId(), CorePluginSecurity.getEntityRightPersist("AcademicCourseIntent"));
+        prb.addProfileRight(teacherProfile.getId(), CorePluginSecurity.getEntityRightRemove("AcademicCourseIntent"));
+        prb.addProfileRight(teacherProfile.getId(), CorePluginSecurity.getEntityRightLoad("AppContact"));
+        prb.addProfileRight(teacherProfile.getId(), CorePluginSecurity.getEntityRightNavigate("AcademicCoursePlan"));
 
-        core.addProfileRight(teacherProfile.getId(), CorePluginSecurity.RIGHT_CUSTOM_FILE_SYSTEM_MY_FILE_SYSTEM);
+        prb.addProfileRight(teacherProfile.getId(), CorePluginSecurity.RIGHT_CUSTOM_FILE_SYSTEM_MY_FILE_SYSTEM);
         for (String navigateOnlyEntity : new String[]{"AppContact"}) {
-            core.addProfileRight(teacherProfile.getId(), CorePluginSecurity.getEntityRightNavigate(navigateOnlyEntity));
+            prb.addProfileRight(teacherProfile.getId(), CorePluginSecurity.getEntityRightNavigate(navigateOnlyEntity));
         }
+        
         for (String readOnlyEntity : new String[]{"AcademicTeacher", "AcademicClass", "AcademicCoursePlan", "AcademicCourseLevel", "AcademicCourseGroup", "AcademicCourseType", "AcademicProgram", "AcademicDiscipline", "AcademicStudent"
                 //,"AcademicCourseAssignment"
         }) {
@@ -72,20 +75,12 @@ public class AcademicPluginBodyTeachers extends AcademicPluginBody {
                     CorePluginSecurity.getEntityRightEditor(readOnlyEntity),
                     CorePluginSecurity.getEntityRightLoad(readOnlyEntity),
                     CorePluginSecurity.getEntityRightNavigate(readOnlyEntity),}) {
-                core.addProfileRight(teacherProfile.getId(), right);
+                prb.addProfileRight(teacherProfile.getId(), right);
             }
         }
+        prb.execute();
 
 //        PersistenceUnit pu = UPA.getPersistenceUnit();
-        AppConfig appConfig = core.getCurrentConfig();
-        if (appConfig != null) {
-            AppPeriod mainPeriod = appConfig.getMainPeriod();
-            if (mainPeriod != null) {
-                for (AcademicTeacher academicTeacher : getContext().getPlugin().findTeachers()) {
-                    getContext().getPlugin().updateTeacherPeriod(mainPeriod.getId(), academicTeacher.getId(), -1);
-                }
-            }
-        }
     }
 
     public AcademicTeacher findTeacherByUser(int userId) {

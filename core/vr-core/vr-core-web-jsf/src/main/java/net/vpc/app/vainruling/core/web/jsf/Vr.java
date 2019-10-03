@@ -66,8 +66,6 @@ import java.util.regex.Pattern;
 import javax.faces.bean.ManagedBean;
 import net.vpc.app.vainruling.core.service.pages.VrPageHistoryItem;
 import net.vpc.app.vainruling.core.service.util.I18n;
-import static net.vpc.app.vainruling.core.web.util.VrWebHelper.getPrivateThemePath;
-import static net.vpc.app.vainruling.core.web.util.VrWebHelper.getPublicThemePath;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -1509,6 +1507,27 @@ public class Vr {
             String name = e.getMainFieldValue(x);
             String id = VrUPAUtils.objToJson(x, e.getDataType()).toString();
             list.add(FacesUtils.createSelectItem(id, name));
+        }
+        return list;
+    }
+
+    public List<SelectItem> entitySelectItems(String entityName, boolean selectNone, boolean selectNull, List values) {
+        //should cache this?
+        List<SelectItem> list = new ArrayList<>();
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        Entity e = pu.getEntity(entityName);
+        if (selectNone) {
+            list.add(FacesUtils.createSelectItem("", "Non Spécifié"));
+        }
+        if (selectNull) {
+            list.add(FacesUtils.createSelectItem(NULL_VALUE_STR, "--Valeur Nulle--"));
+        }
+        if (values != null) {
+            for (Object x : values) {
+                String name = e.getMainFieldValue(x);
+                String id = VrUPAUtils.objToJson(x, e.getDataType()).toString();
+                list.add(FacesUtils.createSelectItem(id, name));
+            }
         }
         return list;
     }

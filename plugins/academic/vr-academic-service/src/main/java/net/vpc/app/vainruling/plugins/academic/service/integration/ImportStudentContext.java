@@ -5,6 +5,7 @@
  */
 package net.vpc.app.vainruling.plugins.academic.service.integration;
 
+import java.util.HashMap;
 import java.util.Map;
 import net.vpc.app.vainruling.core.service.model.AppCompany;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
@@ -17,13 +18,18 @@ import net.vpc.app.vainruling.plugins.academic.service.integration.parsers.AppGe
  * @author vpc
  */
 public class ImportStudentContext {
-    
+
     private AppGenderParser genders = new AppGenderParser();
     private AppCivilityParser civilities = new AppCivilityParser();
     private Map<String, AppProfile> profiles;
+    private Map<String, Object> cache = new HashMap<>();
     private AppCompany mainCompany;
     private AppPeriod mainPeriod;
     private boolean simulate;
+
+    public Map<String, Object> getCache() {
+        return cache;
+    }
 
     public Map<String, AppProfile> getProfiles() {
         return profiles;

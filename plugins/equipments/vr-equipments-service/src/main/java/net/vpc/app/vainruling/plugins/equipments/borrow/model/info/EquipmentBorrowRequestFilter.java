@@ -12,10 +12,10 @@ import net.vpc.app.vainruling.plugins.equipments.borrow.model.EquipmentBorrowReq
  * @author vpc
  */
 public class EquipmentBorrowRequestFilter {
-    private EquipmentBorrowRequestStatus visaStatus;
-    private EquipmentBorrowRequestStatus superOperatorStatus;
-    private EquipmentBorrowRequestStatus operatorStatus;
-    private EquipmentBorrowRequestStatus finalStatus;
+    private EquipmentBorrowRequestStatus[] visaStatus;
+    private EquipmentBorrowRequestStatus[] superOperatorStatus;
+    private EquipmentBorrowRequestStatus[] operatorStatus;
+    private EquipmentBorrowRequestStatus[] finalStatus;
 
     private Integer borrowerUserId;
     private Integer visaUserId;
@@ -25,29 +25,29 @@ public class EquipmentBorrowRequestFilter {
     private Integer departmentId;
     private Boolean archive;
 
-    public EquipmentBorrowRequestStatus getVisaStatus() {
+    public EquipmentBorrowRequestStatus[] getVisaStatus() {
         return visaStatus;
     }
 
-    public EquipmentBorrowRequestFilter setVisaStatus(EquipmentBorrowRequestStatus visaStatus) {
+    public EquipmentBorrowRequestFilter setVisaStatus(EquipmentBorrowRequestStatus... visaStatus) {
         this.visaStatus = visaStatus;
         return this;
     }
 
-    public EquipmentBorrowRequestStatus getSuperOperatorStatus() {
+    public EquipmentBorrowRequestStatus[] getSuperOperatorStatus() {
         return superOperatorStatus;
     }
 
-    public EquipmentBorrowRequestFilter setSuperOperatorStatus(EquipmentBorrowRequestStatus superOperatorStatus) {
+    public EquipmentBorrowRequestFilter setSuperOperatorStatus(EquipmentBorrowRequestStatus... superOperatorStatus) {
         this.superOperatorStatus = superOperatorStatus;
         return this;
     }
 
-    public EquipmentBorrowRequestStatus getOperatorStatus() {
+    public EquipmentBorrowRequestStatus[] getOperatorStatus() {
         return operatorStatus;
     }
 
-    public EquipmentBorrowRequestFilter setOperatorStatus(EquipmentBorrowRequestStatus operatorStatus) {
+    public EquipmentBorrowRequestFilter setOperatorStatus(EquipmentBorrowRequestStatus... operatorStatus) {
         this.operatorStatus = operatorStatus;
         return this;
     }
@@ -115,11 +115,11 @@ public class EquipmentBorrowRequestFilter {
         return this;
     }
 
-    public EquipmentBorrowRequestStatus getFinalStatus() {
+    public EquipmentBorrowRequestStatus[] getFinalStatus() {
         return finalStatus;
     }
 
-    public EquipmentBorrowRequestFilter setFinalStatus(EquipmentBorrowRequestStatus finalStatus) {
+    public EquipmentBorrowRequestFilter setFinalStatus(EquipmentBorrowRequestStatus... finalStatus) {
         this.finalStatus = finalStatus;
         return this;
     }

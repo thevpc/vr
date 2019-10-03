@@ -30,7 +30,7 @@ public class VRDefaultFieldsCallback {
                 || name.equals("archived")
                 || name.equals("archivedOn")
                 || name.equals("archivedBy")) {
-            f.setPersistProtectionLevel(ProtectionLevel.PRIVATE);
+            f.setPersistProtectionLevel(ProtectionLevel.PROTECTED);
             f.setUpdateProtectionLevel(ProtectionLevel.PROTECTED);
             f.setReadProtectionLevel(ProtectionLevel.PROTECTED);
         }

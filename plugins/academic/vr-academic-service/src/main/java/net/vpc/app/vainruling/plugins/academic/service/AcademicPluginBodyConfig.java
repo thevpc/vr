@@ -34,10 +34,12 @@ import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.UPA;
 
 import java.util.*;
+import net.vpc.app.vainruling.core.service.ProfileRightBuilder;
 import net.vpc.common.util.MutableDate;
 import net.vpc.upa.VoidAction;
 
 public class AcademicPluginBodyConfig extends AcademicPluginBody {
+
     public static final int DEFAULT_SEMESTER_MAX_WEEKS = 14;
     CorePlugin core;
     CacheService cacheService;
@@ -66,59 +68,37 @@ public class AcademicPluginBodyConfig extends AcademicPluginBody {
         AppProfile studentProfile = core.findOrCreateCustomProfile("Student", "UserType");
         AppProfile director = core.findOrCreateCustomProfile("Director", "UserType");
         AppProfile headOfDepartment = core.findOrCreateCustomProfile(CorePlugin.PROFILE_HEAD_OF_DEPARTMENT, "UserType");
-        AppProfile directorOfStudies = core.findOrCreateCustomProfile("DirectorOfStudies","UserType");
+        AppProfile directorOfStudies = core.findOrCreateCustomProfile("DirectorOfStudies", "UserType");
 
-
-        core.addProfileRight(director.getId(), CorePluginSecurity.RIGHT_CUSTOM_FILE_SYSTEM_MY_FILE_SYSTEM);
+        ProfileRightBuilder prb = new ProfileRightBuilder();
+        prb.addProfileRight(director.getId(), CorePluginSecurity.RIGHT_CUSTOM_FILE_SYSTEM_MY_FILE_SYSTEM);
 
         for (net.vpc.upa.Entity ee : pu.getPackage("Education").getEntities(true)) {
             for (String right : CorePluginSecurity.getEntityRights(ee, true, true, true, false, false)) {
-                core.addProfileRight(headOfDepartment.getId(), right);
+                prb.addProfileRight(headOfDepartment.getId(), right);
             }
             for (String right : CorePluginSecurity.getEntityRights(ee, true, false, false, false, false)) {
-                core.addProfileRight(director.getId(), right);
-                core.addProfileRight(directorOfStudies.getId(), right);
+                prb.addProfileRight(director.getId(), right);
+                prb.addProfileRight(directorOfStudies.getId(), right);
             }
         }
 
+        prb.addProfileRight(headOfDepartment.getId(), AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_TEACHER_COURSE_LOAD);
+        prb.addProfileRight(headOfDepartment.getId(), AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_GLOBAL_STAT);
+        prb.addProfileRight(headOfDepartment.getId(), AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_ALL_TEACHERS_COURSE_LOAD);
+        prb.addProfileRight(headOfDepartment.getId(), AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_COURSE_LOAD_UPDATE_INTENTS);
+        prb.addProfileRight(headOfDepartment.getId(), AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_COURSE_LOAD_UPDATE_ASSIGNMENTS);
+        prb.addProfileRight(headOfDepartment.getId(), CorePluginSecurity.RIGHT_CUSTOM_FILE_SYSTEM_MY_FILE_SYSTEM);
 
-        core.addProfileRight(headOfDepartment.getId(), AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_TEACHER_COURSE_LOAD);
-        core.addProfileRight(headOfDepartment.getId(), AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_GLOBAL_STAT);
-        core.addProfileRight(headOfDepartment.getId(), AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_ALL_TEACHERS_COURSE_LOAD);
-        core.addProfileRight(headOfDepartment.getId(), AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_COURSE_LOAD_UPDATE_INTENTS);
-        core.addProfileRight(headOfDepartment.getId(), AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_COURSE_LOAD_UPDATE_ASSIGNMENTS);
-        core.addProfileRight(headOfDepartment.getId(), CorePluginSecurity.RIGHT_CUSTOM_FILE_SYSTEM_MY_FILE_SYSTEM);
-
-
-        core.addProfileRight(directorOfStudies.getId(), AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_TEACHER_COURSE_LOAD);
-        core.addProfileRight(directorOfStudies.getId(), AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_GLOBAL_STAT);
-        core.addProfileRight(directorOfStudies.getId(), AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_ALL_TEACHERS_COURSE_LOAD);
-        core.addProfileRight(directorOfStudies.getId(), CorePluginSecurity.RIGHT_CUSTOM_FILE_SYSTEM_MY_FILE_SYSTEM);
-
-
-        AppConfig appConfig = core.getCurrentConfig();
-        if (appConfig != null) {
-            AppPeriod mainPeriod = appConfig.getMainPeriod();
-            if (mainPeriod != null) {
-                List<AcademicCoursePlan> academicCoursePlanList = pu.findAll(AcademicCoursePlan.class);
-                for (AcademicCoursePlan p : academicCoursePlanList) {
-                    if (p.getPeriod() == null) {
-                        p.setPeriod(mainPeriod);
-                        pu.createUpdateQuery(p).update("period").execute();
-                    }
-                }
-                List<AcademicTeacherSemestrialLoad> academicTeacherSemestrialLoadList = pu.findAll(AcademicTeacherSemestrialLoad.class);
-                for (AcademicTeacherSemestrialLoad p : academicTeacherSemestrialLoadList) {
-                    if (p.getPeriod() == null) {
-                        p.setPeriod(mainPeriod);
-                        pu.createUpdateQuery(p).update("period").execute();
-                    }
-                }
-            }
-        }
+        prb.addProfileRight(directorOfStudies.getId(), AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_TEACHER_COURSE_LOAD);
+        prb.addProfileRight(directorOfStudies.getId(), AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_GLOBAL_STAT);
+        prb.addProfileRight(directorOfStudies.getId(), AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_ALL_TEACHERS_COURSE_LOAD);
+        prb.addProfileRight(directorOfStudies.getId(), CorePluginSecurity.RIGHT_CUSTOM_FILE_SYSTEM_MY_FILE_SYSTEM);
+        prb.addProfileRight(teacherProfile.getId(), AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_CONFIG_READ);
+        prb.execute();
+        
         core.getManagerProfiles().add("Director");
         core.getManagerProfiles().add("DirectorOfStudies");
-        core.addProfileRight("Teacher", AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_CONFIG_READ);
     }
 
     public List<AcademicProgramType> findProgramTypes() {
@@ -132,7 +112,6 @@ public class AcademicPluginBodyConfig extends AcademicPluginBody {
         }
         return labels;
     }
-
 
     public AcademicTeacher findCurrentHeadOfDepartment() {
         AppUser user = core.getCurrentUser();
@@ -257,15 +236,15 @@ public class AcademicPluginBodyConfig extends AcademicPluginBody {
     }
 
     public AcademicSemester findSemester(int id) {
-        return UPA.getPersistenceUnit().findById(AcademicSemester.class,id);
+        return UPA.getPersistenceUnit().findById(AcademicSemester.class, id);
     }
 
     public AcademicCoursePlan findCoursePlan(int periodId, int courseLevelId, String courseName) {
         return UPA.getPersistenceUnit().
-                createQuery("Select a from AcademicCoursePlan a where " +
-                        "a.name=:courseName " +
-                        "and a.courseLevelId=:courseLevelId " +
-                        "and a.periodId=:periodId")
+                createQuery("Select a from AcademicCoursePlan a where "
+                        + "a.name=:courseName "
+                        + "and a.courseLevelId=:courseLevelId "
+                        + "and a.periodId=:periodId")
                 .setParameter("courseName", courseName)
                 .setParameter("courseLevelId", courseLevelId)
                 .setParameter("periodId", periodId)
@@ -403,17 +382,16 @@ public class AcademicPluginBodyConfig extends AcademicPluginBody {
                 .getResultList();
     }
 
-
-    public List<AcademicCoursePlan> findCoursePlans(int periodId,int semesterId,int programId) {
-        return UPA.getPersistenceUnit().createQuery("Select a from AcademicCoursePlan a where 1==1 " +
-                " and a.periodId=:periodId " +
-                (programId>0?" and a.courseLevel.academicClass.programId=:programId ":"") +
-                (semesterId>0?" and a.courseLevel.semesterId=:semesterId":"")
+    public List<AcademicCoursePlan> findCoursePlans(int periodId, int semesterId, int programId) {
+        return UPA.getPersistenceUnit().createQuery("Select a from AcademicCoursePlan a where 1==1 "
+                + " and a.periodId=:periodId "
+                + (programId > 0 ? " and a.courseLevel.academicClass.programId=:programId " : "")
+                + (semesterId > 0 ? " and a.courseLevel.semesterId=:semesterId" : "")
         )
-//                                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 5)
+                //                                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 5)
                 .setParameter("periodId", periodId)
-                .setParameter("programId", programId,programId>0)
-                .setParameter("semesterId", semesterId,semesterId>0)
+                .setParameter("programId", programId, programId > 0)
+                .setParameter("semesterId", semesterId, semesterId > 0)
                 .getResultList();
     }
 
@@ -423,13 +401,12 @@ public class AcademicPluginBodyConfig extends AcademicPluginBody {
                     @Override
                     public List<AcademicCoursePlan> run() {
                         return UPA.getPersistenceUnit().createQuery("Select a from AcademicCoursePlan a where a.periodId=:periodId ")
-//                                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 5)
+                                //                                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 5)
                                 .setParameter("periodId", periodId)
                                 .getResultList();
                     }
                 });
     }
-
 
     public AcademicClass findAcademicClass(String t) {
         return UPA.getPersistenceUnit().createQuery("Select a from AcademicClass a where a.name=:t")
@@ -546,7 +523,6 @@ public class AcademicPluginBodyConfig extends AcademicPluginBody {
         return ok;
     }
 
-
     public AppPeriod findAcademicYear(String name, String snapshot) {
 //        VrUtils.requireRight(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_CONFIG_READ);
         return (AppPeriod) UPA.getPersistenceUnit()
@@ -596,6 +572,11 @@ public class AcademicPluginBodyConfig extends AcademicPluginBody {
                 .findByField(AcademicPreClassType.class, "name", name);
     }
 
+    public List<AcademicPreClassType> findAcademicPreClassTypes() {
+        return UPA.getPersistenceUnit()
+                .findAll(AcademicPreClassType.class);
+    }
+
     public AppPeriod findAcademicYearSnapshot(String t, String snapshotName) {
         return (AppPeriod) UPA.getPersistenceUnit()
                 .createQuery("Select a from AppPeriod a where a.name=:t and a.snapshotName=:s")
@@ -636,7 +617,6 @@ public class AcademicPluginBodyConfig extends AcademicPluginBody {
 
         return z;
     }
-
 
     public List<AcademicClass> findAcademicUpHierarchyList(AcademicClass[] classes, Map<Integer, AcademicClass> allClasses) {
         HashSet<Integer> visited = new HashSet<>();
@@ -778,7 +758,6 @@ public class AcademicPluginBodyConfig extends AcademicPluginBody {
         return result;
     }
 
-
     public void validateAcademicData(int periodId) {
         CorePluginSecurity.requireRight(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_CONFIG_WRITE);
         Map<Integer, AcademicClass> academicClasses = findAcademicClassesMap();
@@ -819,14 +798,14 @@ public class AcademicPluginBodyConfig extends AcademicPluginBody {
             if (d.getDepartment() == null || d.getPeriod() == null) {
                 throw new RuntimeException("Invalid");
             }
-            AppDepartmentPeriod fd=d;
+            AppDepartmentPeriod fd = d;
             pu.invokePrivileged(new VoidAction() {
                 @Override
                 public void run() {
                     pu.persist(fd);
                 }
             });
-            
+
         }
         return d;
     }
@@ -846,7 +825,7 @@ public class AcademicPluginBodyConfig extends AcademicPluginBody {
         return (AcademicCoursePlan) UPA.getPersistenceUnit()
                 .createQueryBuilder(AcademicCoursePlan.class)
                 .byField("id", id)
-//                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 5)
+                //                .setHint(QueryHints.MAX_NAVIGATION_DEPTH, 5)
                 .getFirstResultOrNull();
     }
 
@@ -860,11 +839,11 @@ public class AcademicPluginBodyConfig extends AcademicPluginBody {
                 fromDate.setYear(2000);
                 toDate.setYear(2000);
                 if (fromDate.before(toDate)) {
-                    if(date.compareTo(fromDate)>=0 && date.compareTo(toDate)<=0){
+                    if (date.compareTo(fromDate) >= 0 && date.compareTo(toDate) <= 0) {
                         return semester;
                     }
                 } else {
-                    if(date.compareTo(fromDate)<=0 && date.compareTo(toDate)>=0){
+                    if (date.compareTo(fromDate) <= 0 && date.compareTo(toDate) >= 0) {
                         return semester;
                     }
                 }

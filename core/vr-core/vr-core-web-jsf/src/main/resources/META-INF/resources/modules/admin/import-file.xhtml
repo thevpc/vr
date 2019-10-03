@@ -21,21 +21,12 @@ and open the template in the editor.
         <ui:define name="content">
             <h:form id="itemForm" enctype="multipart/form-data">
                 <p:growl id="growl" showDetail="true" sticky="true"/>
-                <p:fileUpload fileUploadListener="#{academicAdminToolsCtrl.handleTeachingLoadFileUpload}"
+                <p:fileUpload fileUploadListener="#{importFileCtrl.handleFileUpload}"
                               label="Import any Academic File"
                               mode="advanced"
                               update="growl"
                               auto="true" sizeLimit="100000000" allowTypes="/(\.|\/)(xlsx)$/"/>
                 <p:separator/>
-                <!--                    <h1>Misc</h1>
-                                    <p:commandButton value="Update all formulas" actionListener="# {academicAdminToolsCtrl.updateData}"  update="growl"/>
-                                    <p:separator/>-->
-                <!--
-                <h1>Import</h1>
-                <p:commandButton value="Import Local Teaching Load Folder" actionListener="# {academicAdminToolsCtrl.importTeachingLoad}" update="growl"
-                                 style="margin-bottom: 20px;"
-                                 />
-                -->
             </h:form>
         </ui:define>
 

@@ -1073,6 +1073,10 @@ public class AcademicPlugin {
         return config.findAcademicPreClassType(name);
     }
 
+    public List<AcademicPreClassType> findAcademicPreClassTypes() {
+        return config.findAcademicPreClassTypes();
+    }
+
     public AppPeriod findAcademicYearSnapshot(String t, String snapshotName) {
         return config.findAcademicYearSnapshot(t, snapshotName);
     }

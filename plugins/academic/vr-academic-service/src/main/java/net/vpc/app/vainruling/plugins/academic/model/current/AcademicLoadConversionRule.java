@@ -33,7 +33,7 @@ public class AcademicLoadConversionRule {
     @Path("Trace")
 //    @Properties(
 //            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
-    @Field(updateProtectionLevel = ProtectionLevel.PRIVATE,excludeModifiers = UserFieldModifier.UPDATE)
+    @Field(updateProtectionLevel = ProtectionLevel.PROTECTED,excludeModifiers = UserFieldModifier.UPDATE)
     @Formula(value = "CurrentTimestamp()", formulaType = FormulaType.PERSIST)
     private Timestamp creationDate;
     @Formula(value = "CurrentTimestamp()", formulaType = {FormulaType.PERSIST, FormulaType.UPDATE})

@@ -12,7 +12,6 @@ import net.vpc.app.vainruling.core.web.jsf.DialogBuilder;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.Convert;
 import net.vpc.common.util.IntegerParserConfig;
-import org.primefaces.context.RequestContext;
 import org.primefaces.model.DualListModel;
 import org.springframework.beans.factory.annotation.Autowired;
 
