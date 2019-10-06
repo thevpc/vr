@@ -14,6 +14,8 @@ public interface ContentText {
     String getCategory();
 
     String getDecoration();
+    
+    String getRecipients();
 
     String getSubject();
 

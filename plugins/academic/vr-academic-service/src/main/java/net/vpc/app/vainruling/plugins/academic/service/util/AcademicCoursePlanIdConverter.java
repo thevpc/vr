@@ -1,11 +1,11 @@
 package net.vpc.app.vainruling.plugins.academic.service.util;
 
+import java.util.function.Function;
 import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCoursePlan;
-import net.vpc.common.util.Converter;
 
-public class AcademicCoursePlanIdConverter implements Converter<AcademicCoursePlan,Integer> {
+public class AcademicCoursePlanIdConverter implements Function<AcademicCoursePlan,Integer> {
     @Override
-    public Integer convert(AcademicCoursePlan value) {
+    public Integer apply(AcademicCoursePlan value) {
         return value.getId();
     }
 }

@@ -18,8 +18,6 @@ import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.Convert;
 import net.vpc.common.util.IntegerParserConfig;
-import net.vpc.common.util.mon.ProgressMessage;
-import net.vpc.common.util.mon.ProgressMonitorTracker;
 import net.vpc.upa.Action;
 import net.vpc.upa.UPA;
 import net.vpc.upa.VoidAction;
@@ -33,6 +31,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.vpc.common.mon.ProgressMessage;
+import net.vpc.common.mon.ProgressMonitorTracker;
 
 /**
  * @author taha.bensalah@gmail.com

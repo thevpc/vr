@@ -55,7 +55,7 @@ and open the template in the editor.
                                         <ui:repeat value="#{vr.splitListBy(2,page)}" var="col">
                                             <div class="col-md-6">
                                                 <ui:repeat value="#{col}" var="a">
-                                                    <div class="box #{vr.mapToken(a.article.decoration,'box-default','default','box-default','primary','box-primary','danger','box-danger','warning','box-warning','info','box-info','success','box-success')}">
+                                                    <div class="box #{vr.mapToken(a.decoration,'box-default','default','box-default','primary','box-primary','danger','box-danger','warning','box-warning','info','box-info','success','box-success')}">
                                                         <div class="box-header with-border">
                                                             <h3 class="box-title">#{a.subject}</h3>
                                                             <ui:fragment rendered="#{not vr.isEmpty(a.subTitle)}">
@@ -63,7 +63,7 @@ and open the template in the editor.
                                                             </ui:fragment>
                                                             <div class="box-tools pull-right">
                                                                 <ui:repeat
-                                                                    value="#{vr.extractLabels(a.article.decoration)}"
+                                                                    value="#{vr.extractLabels(a.decoration)}"
                                                                     var="lab">
                                                                     <ui:fragment
                                                                         rendered="#{lab.type eq 'button' and lab.value eq 'collapse'}">
@@ -81,31 +81,31 @@ and open the template in the editor.
                                                                         <span class="badge label-#{lab.kind}">#{lab.value}</span>
                                                                     </ui:fragment>
                                                                 </ui:repeat>
-                                                                <ui:fragment rendered="#{vr.getCmsTextService('hot').isEnabledAction('delete',a.article.id)}">
-                                                                    <p:commandLink action="#{vr.cmsTextSgetCmsTextService('hot').onAction('delete',a.article.id)}" update=":itemForm">
+                                                                <ui:fragment rendered="#{vr.getCmsTextService('hot').isEnabledAction('delete',a)}">
+                                                                    <p:commandLink action="#{vr.cmsTextSgetCmsTextService('hot').onAction('delete',a)}" update=":itemForm">
                                                                         <button type="button" class="btn btn-box-tool">
                                                                             <i class="fa fa-trash"></i>
                                                                         </button>
                                                                     </p:commandLink>
                                                                 </ui:fragment>
-                                                                <ui:fragment rendered="#{vr.getCmsTextService('hot').isEnabledAction('archive',a.article.id)}">
-                                                                    <p:commandLink action="#{vr.getCmsTextService('hot').onAction('archive',a.article.id)}" update=":itemForm">
+                                                                <ui:fragment rendered="#{vr.getCmsTextService('hot').isEnabledAction('archive',a)}">
+                                                                    <p:commandLink action="#{vr.getCmsTextService('hot').onAction('archive',a)}" update=":itemForm">
                                                                         <button type="button" class="btn btn-box-tool">
                                                                             <i class="fa fa-archive"></i>
                                                                         </button>
                                                                     </p:commandLink>
                                                                 </ui:fragment>
-                                                                <ui:fragment rendered="#{vr.getCmsTextService('hot').isEnabledAction('edit',a.article.id)}">
-                                                                    <p:commandLink action="#{vr.getCmsTextService('hot').onAction('edit',a.article.id)}" update=":itemForm">
+                                                                <ui:fragment rendered="#{vr.getCmsTextService('hot').isEnabledAction('edit',a)}">
+                                                                    <p:commandLink action="#{vr.getCmsTextService('hot').onAction('edit',a)}" update=":itemForm">
                                                                         <button type="button" class="btn btn-box-tool">
                                                                             <i class="fa fa-wrench"></i>
                                                                         </button>
                                                                     </p:commandLink>
                                                                 </ui:fragment>
-                                                                <ui:fragment rendered="#{vr.getCmsTextService('hot').isEnabledAction('important',a.article.id)}">
-                                                                    <p:commandLink action="#{vr.getCmsTextService('hot').onAction('important',a.article.id)}" update=":itemForm">
+                                                                <ui:fragment rendered="#{vr.getCmsTextService('hot').isEnabledAction('important',a)}">
+                                                                    <p:commandLink action="#{vr.getCmsTextService('hot').onAction('important',a)}" update=":itemForm">
                                                                         <button type="button" class="btn btn-box-tool">
-                                                                            <i class="fa #{a.article.important ? 'fa-bookmark':'fa-bookmark-o'}" style="#{a.article.important ? 'color: #dd4b39;':''}"></i>
+                                                                            <i class="fa #{a.important ? 'fa-bookmark':'fa-bookmark-o'}" style="#{a.important ? 'color: #dd4b39;':''}"></i>
                                                                         </button>
                                                                     </p:commandLink>
                                                                 </ui:fragment>
@@ -149,7 +149,7 @@ and open the template in the editor.
                                                         <!-- /.box-body -->
 
                                                         <div class="box-footer"
-                                                             title="Destination : #{a.article.recipientProfiles}">
+                                                             title="Destination : #{a.recipients}">
                                                             écrit par #{(a.user eq null)?'//inconnu//':a.user.fullName} #{(a.publishTime eq null)?'' : (vr.str(' - (le ',vr.date(a.publishTime,'dd MMM yyyy') ,')'))}
                                                         </div>
                                                     </div>

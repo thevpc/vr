@@ -5,11 +5,14 @@
  */
 package net.vpc.app.vainruling.plugins.equipments.borrow.model;
 
+import java.sql.Timestamp;
 import java.util.Date;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.app.vainruling.plugins.equipments.core.model.Equipment;
+import net.vpc.upa.FormulaType;
 import net.vpc.upa.config.Entity;
+import net.vpc.upa.config.Formula;
 import net.vpc.upa.config.Id;
 import net.vpc.upa.config.Main;
 import net.vpc.upa.config.Path;
@@ -18,7 +21,9 @@ import net.vpc.upa.config.Sequence;
 import net.vpc.upa.config.Summary;
 
 /**
- *
+ * This entity describes the request for booking an equipment.
+ * It will end up with a valid instance of EquipmentBorrowLog (fields borrow)
+ * when the book is confirmed.
  * @author vpc
  */
 @Entity(listOrder = "this.fromDate")
@@ -31,6 +36,12 @@ public class EquipmentBorrowRequest {
     private AppUser borrowerUser;
     @Main
     private Equipment equipment;
+
+    @Summary
+    @Formula(value = "CurrentTimestamp()", formulaType = FormulaType.PERSIST)
+    private Timestamp creationDate;
+
+    @Path("EquipmentRequest")
     @Summary
     private Date fromDate;
     @Summary
@@ -39,18 +50,22 @@ public class EquipmentBorrowRequest {
     private double quantity;
     private Date borrowerDate;
 
+    @Path("EquipmentVisa")
     private AppUser visaUser;
     private EquipmentBorrowVisaStatus visaUserStatus;
     private Date visaUserStatusDate;
 
+    @Path("EquipmentOperator")
     private AppUser operatorUser;
     private EquipmentBorrowVisaStatus operatorUserStatus;
     private Date operatorUserStatusDate;
 
+    @Path("EquipmentSuperOperator")
     private AppUser superOperatorUser;
     private EquipmentBorrowVisaStatus superOperatorUserStatus;
     private Date superOperatorUserStatusDate;
 
+    @Path("EquipmentCurrent")
     @Summary
     private EquipmentBorrowRequestStatus finalStatus;
     @Summary
@@ -59,6 +74,7 @@ public class EquipmentBorrowRequest {
 
     private EquipmentBorrowLog borrow;
 
+    @Path("Observations")
     @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
     private String description;
 
@@ -253,6 +269,14 @@ public class EquipmentBorrowRequest {
 
     public void setBorrow(EquipmentBorrowLog borrow) {
         this.borrow = borrow;
+    }
+
+    public Timestamp getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Timestamp creationDate) {
+        this.creationDate = creationDate;
     }
 
 }

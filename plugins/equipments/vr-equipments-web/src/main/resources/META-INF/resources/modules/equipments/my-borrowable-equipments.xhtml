@@ -31,32 +31,46 @@ and open the template in the editor.
                     <p:panelGrid id="details" columns="2" styleClass="vr-no-border-grid">
                         <p:outputLabel value="réserver"/>
                         <p:outputLabel 
-                             style="margin-left: 5px;margin-top: 5px"
-                            value="#{myBorrowableEquipmentsCtrl.model.selectedEquipment.equipment.type.name}/#{myBorrowableEquipmentsCtrl.model.selectedEquipment.equipment.brandLine.name}/#{myBorrowableEquipmentsCtrl.model.selectedEquipment.equipment.name}"/>
+                            style="margin-left: 5px;margin-top: 5px"
+                            value="#{myBorrowableEquipmentsCtrl.selectedEquipmentString}"/>
                         <p:outputLabel value="quantité"/>
                         <p:inputText 
-                             style="margin-left: 5px;margin-top: 5px"
+                            style="margin-left: 5px;margin-top: 5px"
                             value="#{myBorrowableEquipmentsCtrl.model.quantity}"/>
                         <p:outputLabel value="de la date"/>
                         <p:calendar  style="margin-left: 5px;margin-top: 5px"
-                            value="#{myBorrowableEquipmentsCtrl.model.fromDate}" />
+                                     value="#{myBorrowableEquipmentsCtrl.model.fromDate}" />
                         <p:outputLabel value="à la date"/>
                         <p:calendar  style="margin-left: 5px;margin-top: 5px"
-                            value="#{myBorrowableEquipmentsCtrl.model.toDate}" />
+                                     value="#{myBorrowableEquipmentsCtrl.model.toDate}" />
                         <p:outputLabel value="confirmer avec"/>
                         <p:selectOneMenu  style="margin-left: 5px;margin-top: 5px"
-                            class="form-control vr-form-control"
-                                         value="#{myBorrowableEquipmentsCtrl.model.visaUser}"
-                                         converter="#{vr.entityObjConverter('AppUser')}"
-                                         filter="true" filterMatchMode="contains"
-                                         >
+                                          class="form-control vr-form-control"
+                                          value="#{myBorrowableEquipmentsCtrl.model.visaUser}"
+                                          converter="#{vr.entityObjConverter('AppUser')}"
+                                          filter="true" filterMatchMode="contains"
+                                          >
                             <f:selectItems value="#{myBorrowableEquipmentsCtrl.model.visaUsers}"/>
+                        </p:selectOneMenu>
+                        <p:outputLabel value="emprunter à" rendered="#{myBorrowableEquipmentsCtrl.model.delegatedBorrow}"/>
+                        <p:selectOneMenu  style="margin-left: 5px;margin-top: 5px"  rendered="#{myBorrowableEquipmentsCtrl.model.delegatedBorrow}"
+                                          class="form-control vr-form-control"
+                                          value="#{myBorrowableEquipmentsCtrl.model.borrowUser}"
+                                          filter="true" filterMatchMode="contains"
+                                          >
+                            <f:selectItems value="#{myBorrowableEquipmentsCtrl.model.borrowUsers}"/>
                         </p:selectOneMenu>
                     </p:panelGrid>
 
                     <p:commandButton value="Launcer une réservation" 
                                      styleClass="btn btn-primary" 
-                                     action="#{myBorrowableEquipmentsCtrl.onAddRequest}"
+                                     action="#{myBorrowableEquipmentsCtrl.onAddRequest(false)}"
+                                     update=":listForm" style="margin-bottom: 20px;margin-top: 20px;" />
+
+                    <p:commandButton value="Prêter directement" 
+                                     styleClass="btn btn-primary" 
+                                     rendered="#{myBorrowableEquipmentsCtrl.model.delegatedBorrow}"
+                                     action="#{myBorrowableEquipmentsCtrl.onAddRequest(true)}"
                                      update=":listForm" style="margin-bottom: 20px;margin-top: 20px;" />
 
                     <p:fieldset legend="Filtre" toggleable="true">
@@ -64,21 +78,19 @@ and open the template in the editor.
                             <p:outputLabel value="Type"/>
                             <p:selectOneMenu class="form-control vr-form-control"
                                              value="#{myBorrowableEquipmentsCtrl.model.filterEquipmentType}"
-                                             converter="#{vr.entityObjConverter('EquipmentType')}"
                                              filter="true" filterMatchMode="contains"
                                              style="margin-left: 5px;margin-top: 5px"
                                              >
-                                <f:selectItems value="#{vr.entitySelectItemsNullable('EquipmentType')}"/>
+                                <f:selectItems value="#{myBorrowableEquipmentsCtrl.model.equipmentTypes}"/>
                                 <p:ajax listener="#{myBorrowableEquipmentsCtrl.onChangeFilter}"
                                         update="listForm"/>
                             </p:selectOneMenu>
                             <p:outputLabel value="Departement"/>
                             <p:selectOneMenu class="form-control vr-form-control"
                                              value="#{myBorrowableEquipmentsCtrl.model.filterDepartment}"
-                                             converter="#{vr.entityObjConverter('AppDepartment')}"
                                              filter="true" filterMatchMode="contains" style="margin-left: 5px;margin-top: 5px"
                                              >
-                                <f:selectItems value="#{vr.entitySelectItemsNullable('AppDepartment')}"/>
+                                <f:selectItems value="#{myBorrowableEquipmentsCtrl.model.departments}"/>
                                 <p:ajax listener="#{myBorrowableEquipmentsCtrl.onChangeFilter}"
                                         update="listForm"/>
                             </p:selectOneMenu>
@@ -108,24 +120,20 @@ and open the template in the editor.
                         </p:column>
                         <!--styleClass="ui-widget-header"--> 
                         <p:column headerText="# Série">
-                            <p:outputLabel value="#{i.serial}"  style="width: 200px;"/>
+                            <p:outputLabel value="#{i.serial}"/>
                         </p:column>
                         <p:column headerText="Type" style="width: 200px;">
                             <p:outputLabel value="#{i.equipment.type.name}"/>
                         </p:column>
                         <p:column headerText="Marque">
-                            <p:outputLabel value="#{i.equipment.brandLine.name}"  style="width: 200px;"/>
+                            <p:outputLabel value="#{i.equipment.brandLine.name}"/>
                         </p:column>
                         <p:column headerText="Libellé">
-                            <p:outputLabel value="#{i.name}" />
+                            <p:outputLabel value="#{i.equipment.department.code} - #{i.name}"/>
                         </p:column>
-                        <p:column headerText="Disponible" style="width: 80px;">
-                            <p:outputLabel value="#{i.actualQuantity}" />
+                        <p:column headerText="Disponible">
+                            <p:outputLabel value="#{i.actualQuantity} (#{i.availableQuantity2})" />
                         </p:column>
-                        <p:column headerText="Departement">
-                            <p:outputLabel value="#{i.equipment.department.name}"  style="width: 200px;"/>
-                        </p:column>
-
                         <f:facet name="footer">
                             <p:outputLabel value="Total #{myBorrowableEquipmentsCtrl.model.equipments.size()}"/>
 

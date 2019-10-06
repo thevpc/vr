@@ -77,7 +77,6 @@ import net.vpc.app.vainruling.plugins.academic.service.integration.ImportOptions
 import net.vpc.app.vainruling.plugins.academic.service.util.TeacherPeriodFilter;
 import net.vpc.common.strings.StringComparator;
 import net.vpc.common.util.*;
-import net.vpc.common.util.mon.ProgressMonitor;
 import net.vpc.common.vfs.VFile;
 import net.vpc.upa.Document;
 import net.vpc.upa.NamedId;
@@ -85,6 +84,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Function;
 import java.util.logging.Logger;
 
 import net.vpc.app.vainruling.core.service.plugins.VrPlugin;
@@ -95,6 +95,7 @@ import net.vpc.app.vainruling.plugins.academic.service.dto.TeacherLoadInfoFilter
 import net.vpc.app.vainruling.plugins.academic.service.dto.TeacherLoadInfo;
 import net.vpc.app.vainruling.plugins.academic.service.dto.TeacherPeriodStatExt;
 import net.vpc.app.vainruling.plugins.academic.service.util.DefaultCourseAssignmentFilter;
+import net.vpc.common.mon.ProgressMonitor;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.UPA;
@@ -105,12 +106,7 @@ import net.vpc.upa.UPA;
 @VrPlugin()
 public class AcademicPlugin {
 
-    public static final Converter<AcademicTeacher, Integer> AcademicTeacherIdConverter = new Converter<AcademicTeacher, Integer>() {
-        @Override
-        public Integer convert(AcademicTeacher value) {
-            return value.getId();
-        }
-    };
+    public static final Function<AcademicTeacher, Integer> AcademicTeacherIdConverter = AcademicTeacher::getId;
 
     private static final Logger log = Logger.getLogger(AcademicPlugin.class.getName());
     private AcademicPluginBodyContext bodyContext = new AcademicPluginBodyContext(this);
@@ -1609,15 +1605,10 @@ public class AcademicPlugin {
         final AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
         List<AcademicCourseAssignment> courseAssignments = p.findCourseAssignments(fromPeriodId);
         HashMap<String, AcademicCourseAssignment> visited = new HashMap<>();
-        Converter<AcademicCourseAssignment, String> converter = new Converter<AcademicCourseAssignment, String>() {
-            @Override
-            public String convert(AcademicCourseAssignment value) {
-                return value.getFullName();
-            }
-        };
+        Function<AcademicCourseAssignment, String> converter = AcademicCourseAssignment::getFullName;
         Map<Integer, AcademicCourseAssignment> toUpdate = new HashMap<>();
         for (AcademicCourseAssignment assignment : courseAssignments) {
-            String item = converter.convert(assignment);
+            String item = converter.apply(assignment);
             if (visited.containsKey(item)) {
                 if (!toUpdate.containsKey(visited.get(item).getId())) {
                     toUpdate.put(visited.get(item).getId(), visited.get(item));
@@ -1688,15 +1679,10 @@ public class AcademicPlugin {
         public static List<AcademicCourseAssignment> filterNonUniqueAcademicCourseAssignments(List<AcademicCourseAssignment> courseAssignments) {
             final AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
             HashMap<String, AcademicCourseAssignment> visited = new HashMap<>();
-            Converter<AcademicCourseAssignment, String> converter = new Converter<AcademicCourseAssignment, String>() {
-                @Override
-                public String convert(AcademicCourseAssignment value) {
-                    return value.getFullName();
-                }
-            };
+            Function<AcademicCourseAssignment, String> converter = AcademicCourseAssignment::getFullName;
             Map<Integer, AcademicCourseAssignment> toUpdate = new HashMap<>();
             for (AcademicCourseAssignment assignment : courseAssignments) {
-                String item = converter.convert(assignment);
+                String item = converter.apply(assignment);
                 if (visited.containsKey(item)) {
                     if (!toUpdate.containsKey(visited.get(item).getId())) {
                         toUpdate.put(visited.get(item).getId(), visited.get(item));
@@ -1714,15 +1700,10 @@ public class AcademicPlugin {
         public static List<Document> filterNonUniqueAcademicCourseAssignmentDocuments(List<Document> courseAssignments) {
             final AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
             HashMap<String, Document> visited = new HashMap<>();
-            Converter<Document, String> converter = new Converter<Document, String>() {
-                @Override
-                public String convert(Document value) {
-                    return value.getString("fullName");
-                }
-            };
+            Function<Document, String> converter = (Document value) -> value.getString("fullName");
             Map<Integer, Document> toUpdate = new HashMap<>();
             for (Document assignment : courseAssignments) {
-                String item = converter.convert(assignment);
+                String item = converter.apply(assignment);
                 if (visited.containsKey(item)) {
                     Document aa = visited.get(item);
                     if (!toUpdate.containsKey(aa.getInt("id"))) {

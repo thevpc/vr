@@ -156,6 +156,23 @@ public abstract class AbstractCmsTextService implements CmsTextService {
     }
 
     @Override
+    public boolean isEnabledAction(String action, ContentText a) {
+        if (a == null) {
+            return false;
+        }
+        AppUser currentUser = core.getCurrentUser();
+        if (currentUser != null) {
+            if (a.getUser() != null && currentUser.getId() == a.getUser().getId()) {
+                return true;
+            }
+            if (core.isCurrentSessionAdmin()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
     public boolean isDispositionEnabled(String disposition) {
         CmsTextDisposition articleDisposition = getContentDispositionByName(disposition);
         if (articleDisposition != null) {

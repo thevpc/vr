@@ -43,6 +43,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
 import net.vpc.common.strings.StringConverter;
+import net.vpc.common.util.IntegerParserConfig;
 import net.vpc.upa.Action;
 import net.vpc.upa.UPA;
 import org.springframework.context.expression.BeanFactoryResolver;
@@ -59,7 +60,6 @@ import org.springframework.expression.spel.support.StandardEvaluationContext;
  * @author taha.bensalah@gmail.com
  */
 public class VrUtils {
-
     public static SimpleDateFormat UNIVERSAL_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     public static NullAsEmptyStringComparator NULL_AS_EMPTY_STRING_COMPARATOR = new NullAsEmptyStringComparator();
     public static Comparator<Date> DATE_COMPARATOR = new NullComparator<Date>() {

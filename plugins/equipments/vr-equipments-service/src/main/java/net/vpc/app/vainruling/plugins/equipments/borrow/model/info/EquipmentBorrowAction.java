@@ -3,16 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package net.vpc.app.vainruling.plugins.equipments.borrow.model;
+package net.vpc.app.vainruling.plugins.equipments.borrow.model.info;
 
 /**
  *
  * @author vpc
  */
-public enum EquipmentBorrowRequestStatus {
-    PENDING,
-    ACCEPTED,
-    REJECTED,
-    DELIVERED,
-    RETURNED,
+public enum EquipmentBorrowAction {
+    ACCEPT,
+    REJECT,
+    APPLY
 }

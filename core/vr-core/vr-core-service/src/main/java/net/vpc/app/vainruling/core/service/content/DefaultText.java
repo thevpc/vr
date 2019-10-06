@@ -9,6 +9,7 @@ import java.util.List;
  * Created by vpc on 9/11/16.
  */
 public class DefaultText implements ContentText {
+
     private int id;
     private String category;
     private String decoration;
@@ -24,10 +25,12 @@ public class DefaultText implements ContentText {
     private boolean important;
     private boolean noSubject;
     private String linkText;
+    private String recipients;
     private String linkURL;
     private Date publishTime;
     private int visitCount;
 
+    @Override
     public String getSubTitle() {
         return subTitle;
     }
@@ -188,4 +191,13 @@ public class DefaultText implements ContentText {
     public void setVisitCount(int visitCount) {
         this.visitCount = visitCount;
     }
+
+    public String getRecipients() {
+        return recipients;
+    }
+
+    public void setRecipients(String recipients) {
+        this.recipients = recipients;
+    }
+
 }

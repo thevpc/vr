@@ -8,23 +8,16 @@ package net.vpc.app.vainruling.core.web.jsf.ctrl;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.content.CmsTextDisposition;
-import net.vpc.app.vainruling.core.service.content.CmsTextService;
 import net.vpc.app.vainruling.core.service.content.ContentText;
 import net.vpc.app.vainruling.core.service.model.AppUser;
-import net.vpc.app.vainruling.core.service.model.content.AppArticleDisposition;
-import net.vpc.app.vainruling.core.service.model.content.AppArticleFile;
 import net.vpc.app.vainruling.core.service.model.content.AppArticle;
 import net.vpc.app.vainruling.core.service.model.content.FullArticle;
 import net.vpc.app.vainruling.core.web.jsf.Vr;
-import net.vpc.common.strings.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
-import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -36,38 +29,96 @@ public class ArticlesCtrl extends AbstractCmsTextService {
 
     @Override
     public boolean onAction(String action, int id) {
+        if (id <= 0) {
+            return false;
+        }
+        CorePlugin core = CorePlugin.get();
+        AppArticle a = core.findArticle(id);
+        if (a == null) {
+            return false;
+        }
+        return onAction(action, a);
+    }
+
+//    @Override
+    public boolean onAction(String action, AppArticle a) {
+        if (a == null) {
+            return false;
+        }
         ExternalContext ec = FacesContext.getCurrentInstance()
                 .getExternalContext();
         try {
             if ("edit".equals(action)) {
                 if (ec != null) {
-                    Vr.get().redirect(Vr.get().gotoPageObjItem(AppArticle.class.getSimpleName(), String.valueOf(id)));
+                    Vr.get().redirect(Vr.get().gotoPageObjItem(AppArticle.class.getSimpleName(), String.valueOf(a.getId())));
                     return true;
                 }
             } else if ("delete".equals(action)) {
-                CorePlugin core = CorePlugin.get();
-                AppArticle a = core.findArticle(id);
-                if (a != null && !a.isDeleted()) {
+                if (!a.isDeleted()) {
                     core.remove("AppArticle", a.getId());
                     return true;
                 }
             } else if ("archive".equals(action)) {
-                CorePlugin core = CorePlugin.get();
-                AppArticle a = core.findArticle(id);
-                if (a != null && !a.isArchived()) {
+                if (!a.isArchived()) {
                     core.archive("AppArticle", a);
                     return true;
                 }
             } else if ("important".equals(action)) {
-                CorePlugin core = CorePlugin.get();
-                AppArticle a = core.findArticle(id);
-                if (a != null) {
-                    a.setImportant(!a.isImportant());
-                    core.save("AppArticle", a);
+                a.setImportant(!a.isImportant());
+                core.save("AppArticle", a);
+                return true;
+            }
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    @Override
+    public boolean onAction(String action, ContentText a) {
+        if (a instanceof FullArticle) {
+            return onAction(action, (FullArticle) a);
+        }
+        return false;
+    }
+
+//    @Override
+    public boolean onAction(String action, FullArticle a) {
+        if (a == null) {
+            return false;
+        }
+        ExternalContext ec = FacesContext.getCurrentInstance()
+                .getExternalContext();
+        try {
+            if ("edit".equals(action)) {
+                if (ec != null) {
+                    Vr.get().redirect(Vr.get().gotoPageObjItem(AppArticle.class.getSimpleName(), String.valueOf(a.getId())));
                     return true;
                 }
+            } else if ("delete".equals(action)) {
+                if (!a.getArticle().isDeleted()) {
+                    core.remove("AppArticle", a.getId());
+                    return true;
+                }
+            } else if ("archive".equals(action)) {
+                if (!a.getArticle().isArchived()) {
+                    AppArticle aa = core.findArticle(a.getId());
+                    if (aa != null && !aa.isArchived()) {
+                        aa.setArchived(true);
+                        core.archive("AppArticle", aa);
+                    }
+                    return true;
+                }
+            } else if ("important".equals(action)) {
+                AppArticle aa = core.findArticle(a.getId());
+                if (aa != null && !aa.isArchived()) {
+                    aa.setImportant(aa.isImportant());
+                    core.save("AppArticle", aa);
+                }
+                return true;
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
@@ -82,21 +133,22 @@ public class ArticlesCtrl extends AbstractCmsTextService {
         return -1;
     }
 
-
     @Override
     public CmsTextDisposition getContentDispositionByName(String name) {
         return core.findArticleDisposition(name);
     }
 
+    @Override
     public FullArticle findArticle(int id) {
         return core.findFullArticle(id);
     }
 
+    @Override
     public List<FullArticle> findArticles(String disposition) {
         return core.findFullArticlesByDisposition(null, disposition);
     }
 
-
+    @Override
     public void updateVisit(int articleId) {
         core.markArticleVisited(articleId);
     }
@@ -121,4 +173,22 @@ public class ArticlesCtrl extends AbstractCmsTextService {
         }
         return false;
     }
+
+    @Override
+    public boolean isEnabledAction(String action, ContentText a) {
+        if (a == null) {
+            return false;
+        }
+        AppUser currentUser = core.getCurrentUser();
+        if (currentUser != null) {
+            if (a.getUser() != null && currentUser.getId() == a.getUser().getId()) {
+                return true;
+            }
+            if (core.isCurrentSessionAdmin()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

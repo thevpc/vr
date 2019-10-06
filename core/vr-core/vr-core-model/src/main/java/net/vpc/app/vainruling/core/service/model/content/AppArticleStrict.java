@@ -5,6 +5,7 @@ import net.vpc.app.vainruling.core.service.model.strict.AppUserStrict;
 import java.util.Date;
 
 public class AppArticleStrict {
+
     private int id;
     private ArticlesDispositionStrict disposition;
     private AppArticleDispositionGroup dispositionGroup;
@@ -23,29 +24,50 @@ public class AppArticleStrict {
     private int visitCount;
     private boolean noSubject;
     private boolean important;
+    private boolean deleted;
+    private boolean archived;
 
     public AppArticleStrict() {
 
     }
+
     public AppArticleStrict(AppArticle item) {
-        id=item.getId();
-        disposition=new ArticlesDispositionStrict(item.getDisposition());
-        imageURL=item.getImageURL();
-        linkClassStyle=item.getLinkClassStyle();
-        recipientProfiles=item.getRecipientProfiles();
-        decoration=item.getDecoration();
-        content=item.getContent();
-        subject=item.getSubject();
-        subTitle=item.getSubTitle();
-        dispositionGroup=item.getDispositionGroup();
-        position=item.getPosition();
-        visitCount=item.getVisitCount();
-        sender=new AppUserStrict(item.getSender());
-        noSubject=item.isNoSubject();
-        important=item.isImportant();
-        linkText=item.getLinkText();
-        linkURL=item.getLinkURL();
-        sendTime=item.getSendTime();
+        id = item.getId();
+        disposition = new ArticlesDispositionStrict(item.getDisposition());
+        imageURL = item.getImageURL();
+        linkClassStyle = item.getLinkClassStyle();
+        recipientProfiles = item.getRecipientProfiles();
+        decoration = item.getDecoration();
+        content = item.getContent();
+        subject = item.getSubject();
+        subTitle = item.getSubTitle();
+        dispositionGroup = item.getDispositionGroup();
+        position = item.getPosition();
+        visitCount = item.getVisitCount();
+        sender = new AppUserStrict(item.getSender());
+        noSubject = item.isNoSubject();
+        important = item.isImportant();
+        deleted = item.isDeleted();
+        archived = item.isArchived();
+        linkText = item.getLinkText();
+        linkURL = item.getLinkURL();
+        sendTime = item.getSendTime();
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    public boolean isArchived() {
+        return archived;
+    }
+
+    public void setArchived(boolean archived) {
+        this.archived = archived;
     }
 
     public boolean isImportant() {
@@ -194,8 +216,12 @@ public class AppArticleStrict {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         AppArticleStrict that = (AppArticleStrict) o;
 

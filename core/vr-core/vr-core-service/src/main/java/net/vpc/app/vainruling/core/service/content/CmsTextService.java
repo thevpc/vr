@@ -5,7 +5,7 @@ package net.vpc.app.vainruling.core.service.content;
  */
 public interface CmsTextService extends ContentTextService {
 
-    void setSelectedContentTextById(String disposition,int id);
+    void setSelectedContentTextById(String disposition, int id);
 
     ContentText getSelectedContentText(String name);
 
@@ -15,15 +15,20 @@ public interface CmsTextService extends ContentTextService {
 
     CmsTextDisposition getContentDisposition();
 
+    boolean isEnabledAction(String action, ContentText ctx);
+
     boolean isEnabledAction(String action, int id);
 
     /**
      * executes action and return true if the action wa
+     *
      * @param action
      * @param id
      * @return
      */
     boolean onAction(String action, int id);
+
+    public boolean onAction(String action, ContentText a);
 
     boolean isDispositionEnabled(String disposition);
 

@@ -38,6 +38,7 @@ import net.vpc.upa.filters.ObjectFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
+import java.util.function.Predicate;
 
 import net.vpc.app.vainruling.core.service.plugins.VrPlugin;
 
@@ -1287,9 +1288,9 @@ public class ApblPlugin {
         } else {
             sessions = findOpenVisibleSessions();
         }
-        sessions = (List<ApblSession>) CollectionUtils.retainAll(new ArrayList<>(sessions), new Filter<ApblSession>() {
+        sessions = (List<ApblSession>) CollectionUtils.retainAll(new ArrayList<>(sessions), new Predicate<ApblSession>() {
             @Override
-            public boolean accept(ApblSession value) {
+            public boolean test(ApblSession value) {
                 if (currentTeacher != null && currentTeacher.getUser() != null) {
                     return true;
                 }

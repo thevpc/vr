@@ -18,6 +18,7 @@ import net.vpc.app.vainruling.plugins.equipments.core.service.EquipmentPluginSec
 import org.primefaces.event.SelectEvent;
 import net.vpc.app.vainruling.core.service.pages.VrPage;
 import net.vpc.app.vainruling.core.service.pages.VrPathItem;
+import net.vpc.app.vainruling.plugins.equipments.borrow.model.EquipmentBorrowVisaStatus;
 
 //import javax.annotation.PostConstruct;
 /**
@@ -28,7 +29,7 @@ import net.vpc.app.vainruling.core.service.pages.VrPathItem;
             @VrPathItem(title = "Site", css = "fa-dashboard", ctrl = "")},
         menu = "/Equipment",
         url = "modules/equipments/my-borrow-equipments-visas",
-         securityKey = EquipmentPluginSecurity.RIGHT_CUSTOM_EQUIPMENT_BORROW_VISA
+        securityKey = EquipmentPluginSecurity.RIGHT_CUSTOM_EQUIPMENT_BORROW_VISA
 )
 @ManagedBean
 public class MyBorrowEquipmentsVisasCtrl {
@@ -49,10 +50,87 @@ public class MyBorrowEquipmentsVisasCtrl {
         EquipmentPlugin eqm = EquipmentPlugin.get();
         EquipmentBorrowService ebs = VrApp.getBean(EquipmentBorrowService.class);
         Integer u = CorePlugin.get().getCurrentUserId();
-        getModel().setEquipments(ebs.findBorrowEquipmentsVisasForResponsibleInfo(u));
         getModel().setVisa(ebs.isBorrowVisaUser(u));
         getModel().setOperator(ebs.isBorrowOperatorUser(u));
         getModel().setSuperOperator(ebs.isBorrowSuperOperatorUser(u));
+        onRefreshEquipments();
+    }
+
+    public void onRefreshEquipments() {
+        EquipmentBorrowService ebs = VrApp.getBean(EquipmentBorrowService.class);
+        Integer u = CorePlugin.get().getCurrentUserId();
+        getModel().setEquipments(ebs.findBorrowEquipmentsVisasForResponsibleInfo(u));
+    }
+
+    public boolean isVisaVisible(EquipmentForResponsibleInfo info) {
+        if (info == null || info.getRequest().getVisaUser()== null) {
+            return false;
+        }
+        return true;
+    }
+
+    public boolean isVisaAccept(EquipmentForResponsibleInfo info, boolean accept) {
+        if (info == null || info.getRequest().getVisaUserStatus() == null || !getModel().isVisa()) {
+            return false;
+        }
+        if (info.getVisaUser() == null || info.getVisaUser().getId() != CorePlugin.get().getCurrentUserId()) {
+            return false;
+        }
+        switch (info.getRequest().getVisaUserStatus()) {
+            case ACCEPTED:
+                return !accept;
+            case REJECTED:
+                return accept;
+            case PENDING:
+                return true;
+            case IGNORED:
+                return false;
+        }
+        return false;
+    }
+
+    public boolean isOperatorAccept(EquipmentForResponsibleInfo info, boolean accept) {
+        if (info == null || info.getRequest().getOperatorUserStatus() == null || !getModel().isOperator()) {
+            return false;
+        }
+        switch (info.getRequest().getOperatorUserStatus()) {
+            case ACCEPTED:
+                return !accept;
+            case REJECTED:
+                return accept;
+            case PENDING:
+                return true;
+            case IGNORED:
+                return false;
+        }
+        return false;
+    }
+
+    public boolean isSuperOperatorAccept(EquipmentForResponsibleInfo info, boolean accept) {
+        if (info == null || info.getRequest().getSuperOperatorUserStatus() == null || !getModel().isSuperOperator()) {
+            return false;
+        }
+        switch (info.getRequest().getSuperOperatorUserStatus()) {
+            case ACCEPTED:
+                return !accept;
+            case REJECTED:
+                return accept;
+            case PENDING:
+                return true;
+            case IGNORED:
+                return false;
+        }
+        return false;
+    }
+
+    public boolean isDeliver(EquipmentForResponsibleInfo info) {
+        if (info == null || info.getRequest().getSuperOperatorUserStatus() != EquipmentBorrowVisaStatus.ACCEPTED || !getModel().isSuperOperator()) {
+            return false;
+        }
+        if(info.getRequest().getBorrow()!=null){
+            return false;
+        }
+        return true;
     }
 
     public void onChangeFilter() {
@@ -64,22 +142,32 @@ public class MyBorrowEquipmentsVisasCtrl {
 //        getModel().setSelectedEquipment(((EquipmenForResponsibleInfo) event.getObject()));
     }
 
-    public void onAcceptVisa(boolean accept) {
+    public void onAcceptVisa(EquipmentForResponsibleInfo info, boolean accept) {
 //        EquipmentPlugin eqm = EquipmentPlugin.get();
         EquipmentBorrowService ebs = VrApp.getBean(EquipmentBorrowService.class);
-        ebs.applyEquipmentRequestByVisaUser(getModel().getSelectedEquipment().getRequest().getId(), EquipmentBorrowOperatorType.VISA, null, accept);
+        ebs.applyEquipmentRequestByVisaUser(info.getRequest().getId(), EquipmentBorrowOperatorType.VISA, null, accept, false);
+        onRefreshEquipments();
     }
 
-    public void onAcceptOperator(boolean accept) {
+    public void onAcceptOperator(EquipmentForResponsibleInfo info, boolean accept) {
 //        EquipmentPlugin eqm = EquipmentPlugin.get();
         EquipmentBorrowService ebs = VrApp.getBean(EquipmentBorrowService.class);
-        ebs.applyEquipmentRequestByVisaUser(getModel().getSelectedEquipment().getRequest().getId(), EquipmentBorrowOperatorType.OPERATOR, null, accept);
+        ebs.applyEquipmentRequestByVisaUser(info.getRequest().getId(), EquipmentBorrowOperatorType.OPERATOR, null, accept, false);
+        onRefreshEquipments();
     }
 
-    public void onAcceptSuperOperator(boolean accept) {
+    public void onAcceptSuperOperator(EquipmentForResponsibleInfo info, boolean accept) {
 //        EquipmentPlugin eqm = EquipmentPlugin.get();
         EquipmentBorrowService ebs = VrApp.getBean(EquipmentBorrowService.class);
-        ebs.applyEquipmentRequestByVisaUser(getModel().getSelectedEquipment().getRequest().getId(), EquipmentBorrowOperatorType.SUPER_OPERATOR, null, accept);
+        ebs.applyEquipmentRequestByVisaUser(info.getRequest().getId(), EquipmentBorrowOperatorType.SUPER_OPERATOR, null, accept, false);
+        onRefreshEquipments();
+    }
+
+    public void onDeliverEquipment(EquipmentForResponsibleInfo info) {
+//        EquipmentPlugin eqm = EquipmentPlugin.get();
+        EquipmentBorrowService ebs = VrApp.getBean(EquipmentBorrowService.class);
+        ebs.deliverOrDeliverBackEquipment(info.getRequest().getId(), null);
+        onRefreshEquipments();
     }
 
     public static class Model {

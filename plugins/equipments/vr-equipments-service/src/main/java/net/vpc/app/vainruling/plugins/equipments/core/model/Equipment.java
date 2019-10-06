@@ -47,8 +47,10 @@ public class Equipment {
     @Formula(value = "concat(this.name,'-',this.serial)", formulaOrder = 1)
     private String fullName;
     @Summary
-    @Formula(value = "this.quantity+Coalesce((Select sum(a.quantity) from EquipmentStatusLog a where a.equipmentId=this.id),0)", formulaOrder = 1)
+    @Formula(value = "this.quantity+Coalesce((Select sum(a.inQty-a.outQty) from EquipmentStatusLog a where a.equipmentId=this.id),0)", formulaOrder = 1)
     private double actualQuantity;
+    @Formula(value = "Coalesce((Select sum(a.quantity) from EquipmentBorrowRequest a where a.equipmentId=this.id and (a.finalStatus='PENDING' or a.finalStatus='ACCEPTED')),0)", formulaOrder = 1)
+    private double requestedQuantity;
     private double quantity;
     @Summary
     @ToString
@@ -105,6 +107,15 @@ public class Equipment {
 
     @Field(defaultValue = "true")
     private boolean borrowable = true;
+
+    @Field(defaultValue = "false")
+    private boolean inStore = false;
+
+    @Field(defaultValue = "fragile")
+    private boolean fragile = false;
+
+    @Field(defaultValue = "true")
+    private boolean usable = true;
 
     @Path("Trace")
 //    @Properties(
@@ -362,6 +373,38 @@ public class Equipment {
             return false;
         }
         return true;
+    }
+
+    public double getRequestedQuantity() {
+        return requestedQuantity;
+    }
+
+    public void setRequestedQuantity(double requestedQuantity) {
+        this.requestedQuantity = requestedQuantity;
+    }
+
+    public boolean isInStore() {
+        return inStore;
+    }
+
+    public void setInStore(boolean inStore) {
+        this.inStore = inStore;
+    }
+
+    public boolean isUsable() {
+        return usable;
+    }
+
+    public void setUsable(boolean usable) {
+        this.usable = usable;
+    }
+
+    public boolean isFragile() {
+        return fragile;
+    }
+
+    public void setFragile(boolean fragile) {
+        this.fragile = fragile;
     }
 
 }

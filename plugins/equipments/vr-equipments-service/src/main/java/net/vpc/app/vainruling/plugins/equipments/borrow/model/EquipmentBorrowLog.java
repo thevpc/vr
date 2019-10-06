@@ -7,13 +7,16 @@ package net.vpc.app.vainruling.plugins.equipments.borrow.model;
 
 import net.vpc.app.vainruling.plugins.equipments.core.model.EquipmentStatusLog;
 import net.vpc.app.vainruling.core.service.model.AppUser;
-import net.vpc.app.vainruling.core.service.util.UIConstants;
-import net.vpc.upa.ProtectionLevel;
 import net.vpc.upa.config.*;
 
 import java.sql.Timestamp;
 
 /**
+ * This entity describes a validated/confirmed Borrow of an equipment.
+ * Each instance of EquipmentBorrowLog is bound an instance of EquipmentStatusLog
+ * that describes a change in the equipment status!
+ * An EquipmentBorrowLog has also a set (on or multiple) children of type 
+ * EquipmentReturnBorrowedLog which define the partial/total return of the quantities.
  * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "this.startDate desc")

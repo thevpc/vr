@@ -20,6 +20,7 @@ public class AppDepartment {
     @Sequence
     private int id;
     @Unique
+    @Summary
     private String code;
     @Main
     private String name;

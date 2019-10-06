@@ -32,13 +32,12 @@ import net.vpc.app.vainruling.core.service.pages.VrPathItem;
  */
 @VrPage(
         breadcrumb = {
-                @VrPathItem(title = "Site", css = "fa-dashboard", ctrl = "")},
-//        css = "fa-table",
-//        title = "Apercu Messages",
+            @VrPathItem(title = "Site", css = "fa-dashboard", ctrl = "")},
+        //        css = "fa-table",
+        //        title = "Apercu Messages",
         securityKey = MailboxPluginSecurity.RIGHT_CUSTOM_INBOX
 )
-public class MailboxPreviewCtrl implements PollAware,MessageTextService {
-
+public class MailboxPreviewCtrl implements PollAware, MessageTextService {
 
     @Override
     public void onPoll() {
@@ -47,13 +46,15 @@ public class MailboxPreviewCtrl implements PollAware,MessageTextService {
 
     @Override
     public int getSupport(String name) {
-        return "Mailbox".equals(name)?1:-1;
+        return "Mailbox".equals(name) ? 1 : -1;
     }
 
     @OnPageLoad
 //    @PostConstruct
     public void onRefresh() {
-        if(true) return; //TODO FIX ME!!!!
+        if (true) {
+            return; //TODO FIX ME!!!!
+        }
         MailboxPlugin p = VrApp.getBean(MailboxPlugin.class);
         AppUser user = CorePlugin.get().getCurrentUser();
         MailboxPreviewModel model = getModel();
@@ -65,6 +66,7 @@ public class MailboxPreviewCtrl implements PollAware,MessageTextService {
                 String cat = lo.getCategory();
                 String subject = lo.getSubject();
                 String content = lo.getContent();
+                String recipients = lo.getToProfiles();
 //            String content = lo.getContent();
                 previews.add(new MessagePreview(
                         lo,
@@ -73,7 +75,8 @@ public class MailboxPreviewCtrl implements PollAware,MessageTextService {
                         VrUtils.strcut(cat, 36),
                         VrUtils.strcut(subject, 36),
                         VrUtils.strcut(content, 36),
-                        VrUtils.getRelativeDateMessage(lo.getSendTime(), null)));
+                        VrUtils.getRelativeDateMessage(lo.getSendTime(), null), recipients)
+                );
             }
             model.setInbox(previews);
             model.setUnreadCount(p.getLocalUnreadInboxCount(userId));
@@ -95,7 +98,7 @@ public class MailboxPreviewCtrl implements PollAware,MessageTextService {
 
     @Override
     public List<ContentText> getContentTextList(String id) {
-        return (List)getModel().getInbox();
+        return (List) getModel().getInbox();
     }
 
     @Override
@@ -111,7 +114,7 @@ public class MailboxPreviewCtrl implements PollAware,MessageTextService {
         return VrApp.getBean(MailboxPreviewModel.class);
     }
 
-    public static class MessagePreview implements ContentText{
+    public static class MessagePreview implements ContentText {
 
         private MailboxReceived mailboxReceived;
         private AppUserStrict user;
@@ -120,8 +123,9 @@ public class MailboxPreviewCtrl implements PollAware,MessageTextService {
         private String subject;
         private String text;
         private String date;
+        private String recipients;
 
-        public MessagePreview(MailboxReceived mailboxReceived,AppUser user,String from, String category, String subject,String text, String date) {
+        public MessagePreview(MailboxReceived mailboxReceived, AppUser user, String from, String category, String subject, String text, String date, String recipients) {
             this.mailboxReceived = mailboxReceived;
             this.user = new AppUserStrict(user);
             this.from = from;
@@ -129,6 +133,12 @@ public class MailboxPreviewCtrl implements PollAware,MessageTextService {
             this.subject = subject;
             this.text = text;
             this.date = date;
+            this.recipients = recipients;
+        }
+
+        @Override
+        public String getRecipients() {
+            return recipients;
         }
 
         @Override
@@ -242,7 +252,7 @@ public class MailboxPreviewCtrl implements PollAware,MessageTextService {
 
         @Override
         public int getVisitCount() {
-            return mailboxReceived.isRead()?1:0;
+            return mailboxReceived.isRead() ? 1 : 0;
         }
     }
 

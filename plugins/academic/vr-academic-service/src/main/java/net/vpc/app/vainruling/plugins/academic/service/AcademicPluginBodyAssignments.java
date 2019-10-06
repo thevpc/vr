@@ -22,13 +22,11 @@ import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.plugins.academic.service.integration.AcademicConversionTableHelper;
 import net.vpc.app.vainruling.plugins.academic.service.integration.TeacherGenerationHelper;
 import net.vpc.app.vainruling.plugins.academic.service.stat.*;
-import net.vpc.app.vainruling.plugins.academic.service.util.AcademicCourseAssignmentIdConverter;
 import net.vpc.app.vainruling.plugins.academic.service.util.CourseAssignmentFilter;
 import net.vpc.app.vainruling.plugins.academic.service.util.CourseAssignmentFilterAnd;
 import net.vpc.app.vainruling.plugins.academic.service.util.DefaultCourseAssignmentFilter;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.*;
-import net.vpc.common.util.mon.ProgressMonitor;
 import net.vpc.common.vfs.VFile;
 import net.vpc.upa.Action;
 import net.vpc.upa.PersistenceUnit;
@@ -37,13 +35,15 @@ import net.vpc.upa.VoidAction;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Function;
 import java.util.logging.Logger;
+import net.vpc.common.mon.ProgressMonitor;
 import net.vpc.upa.types.DateTime;
 
 public class AcademicPluginBodyAssignments extends AcademicPluginBody {
 
     private static final Logger log = Logger.getLogger(AcademicPluginBodyAssignments.class.getName());
-    public static final Converter<AcademicCourseAssignment, Integer> academicCourseAssignmentIdConverter = new AcademicCourseAssignmentIdConverter();
+    public static final Function<AcademicCourseAssignment, Integer> academicCourseAssignmentIdConverter = AcademicCourseAssignment::getId;
 
     private static TeacherGenerationHelper teacherGenerationHelper = new TeacherGenerationHelper();
 

@@ -217,7 +217,7 @@ public class CorePlugin {
         return bodySecurityManager.findUser(user);
     }
 
-    public AppUser findUser(int id) {
+    public AppUser findUser(Integer id) {
         return bodySecurityManager.findUser(id);
     }
 

@@ -1,10 +1,10 @@
 package net.vpc.app.vainruling.core.service.util;
 
-import net.vpc.common.util.Converter;
 import net.vpc.common.util.DefaultMapList;
 import net.vpc.upa.Entity;
 
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * Created by vpc on 6/1/16.
@@ -22,7 +22,7 @@ public class EntityMapList<K, V> extends DefaultMapList<K, V> {
         this.entity = e;
     }
 
-    private static class EntityMapper<V, K> implements Converter<V, K> {
+    private static class EntityMapper<V, K> implements Function<V, K> {
         Entity entity;
 
         public EntityMapper(Entity entity) {
@@ -30,7 +30,7 @@ public class EntityMapList<K, V> extends DefaultMapList<K, V> {
         }
 
         @Override
-        public K convert(V value) {
+        public K apply(V value) {
             return (K) entity.getBuilder().objectToId(value);
         }
     }

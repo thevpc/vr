@@ -1,11 +1,11 @@
 package net.vpc.app.vainruling.plugins.academic.service.util;
 
+import java.util.function.Function;
 import net.vpc.app.vainruling.plugins.academic.service.stat.TeacherPeriodStat;
-import net.vpc.common.util.Converter;
 
-public class TeacherPeriodStatMapListConverter implements Converter<TeacherPeriodStat,Integer> {
+public class TeacherPeriodStatMapListConverter implements Function<TeacherPeriodStat,Integer> {
     @Override
-    public Integer convert(TeacherPeriodStat value) {
+    public Integer apply(TeacherPeriodStat value) {
         return value.getTeacher().getId();
     }
 }

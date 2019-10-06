@@ -11,7 +11,6 @@ import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
-import net.vpc.common.util.Converter;
 import net.vpc.common.util.DefaultMapList;
 import net.vpc.common.util.MapList;
 import net.vpc.upa.PersistenceUnit;
@@ -21,6 +20,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.vpc.common.util.MapUtils;
@@ -36,12 +36,7 @@ public class CopyAcademicDataHelper {
         final AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
         Map<Integer, AcademicTeacherSemestrialLoad> oldIdToNewObject = new HashMap<>();
 //copy AcademicTeacherSemestrialLoad
-        Converter<AcademicTeacherSemestrialLoad, String> converter = new Converter<AcademicTeacherSemestrialLoad, String>() {
-            @Override
-            public String convert(AcademicTeacherSemestrialLoad value) {
-                return value.getTeacher().getId() + "-" + value.getSemester();
-            }
-        };
+        Function<AcademicTeacherSemestrialLoad, String> converter = (AcademicTeacherSemestrialLoad value) -> value.getTeacher().getId() + "-" + value.getSemester();
         MapList<String, AcademicTeacherSemestrialLoad> fromList = new DefaultMapList<String, AcademicTeacherSemestrialLoad>(
                 p.findTeacherSemestrialLoadsByPeriod(fromPeriodId),
                 converter
@@ -52,7 +47,7 @@ public class CopyAcademicDataHelper {
                 converter
         );
         for (AcademicTeacherSemestrialLoad v : fromList) {
-            if (!toList.containsKey(converter.convert(v))) {
+            if (!toList.containsKey(converter.apply(v))) {
                 AcademicTeacherSemestrialLoad v2 = pu.copyObject(v);
                 v2.setId(0);
                 v2.setPeriod(toPeriod);
@@ -68,12 +63,7 @@ public class CopyAcademicDataHelper {
     private Map<Integer, AcademicCoursePlan> _copyAcademicDataAcademicCoursePlan(int fromPeriodId, AppPeriod toPeriod, Map<Integer, AcademicCourseGroup> groupsByOlId, PersistenceUnit pu) {
         final AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
         Map<Integer, AcademicCoursePlan> oldIdToNewObject = new HashMap<>();
-        Converter<AcademicCoursePlan, String> converter = new Converter<AcademicCoursePlan, String>() {
-            @Override
-            public String convert(AcademicCoursePlan value) {
-                return value.getFullName();
-            }
-        };
+        Function<AcademicCoursePlan, String> converter = AcademicCoursePlan::getFullName;
         MapList<String, AcademicCoursePlan> fromList = new DefaultMapList<>(
                 p.findCoursePlans(fromPeriodId),
                 converter
@@ -84,7 +74,7 @@ public class CopyAcademicDataHelper {
                 converter
         );
         for (AcademicCoursePlan v : fromList) {
-            if (!toList.containsKey(converter.convert(v))) {
+            if (!toList.containsKey(converter.apply(v))) {
                 AcademicCoursePlan v2 = pu.copyObject(v);
                 v2.setId(0);
                 v2.setPeriod(toPeriod);
@@ -101,9 +91,9 @@ public class CopyAcademicDataHelper {
     private Map<Integer, AcademicCourseGroup> _copyAcademicDataAcademicCourseGroup(int fromPeriodId, AppPeriod toPeriod, PersistenceUnit pu) {
         final AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
         Map<Integer, AcademicCourseGroup> oldIdToNewObject = new HashMap<>();
-        Converter<AcademicCourseGroup, String> converter = new Converter<AcademicCourseGroup, String>() {
+        Function<AcademicCourseGroup, String> converter = new Function<AcademicCourseGroup, String>() {
             @Override
-            public String convert(AcademicCourseGroup value) {
+            public String apply(AcademicCourseGroup value) {
                 return value.getAcademicClass().getName() + "-" + value.getName();
             }
         };
@@ -117,7 +107,7 @@ public class CopyAcademicDataHelper {
                 converter
         );
         for (AcademicCourseGroup v : fromList) {
-            if (!toList.containsKey(converter.convert(v))) {
+            if (!toList.containsKey(converter.apply(v))) {
                 AcademicCourseGroup v2 = pu.copyObject(v);
                 v2.setId(0);
                 v2.setPeriod(toPeriod);
@@ -171,12 +161,7 @@ public class CopyAcademicDataHelper {
         CorePlugin core = CorePlugin.get();
         AppPeriod fromPeriodObj = core.findPeriod(fromPeriodId);
         Map<Integer, AcademicCourseAssignment> oldIdToNewObject = new HashMap<>();
-        Converter<AcademicCourseAssignment, String> converter = new Converter<AcademicCourseAssignment, String>() {
-            @Override
-            public String convert(AcademicCourseAssignment value) {
-                return value.getFullName();
-            }
-        };
+        Function<AcademicCourseAssignment, String> converter = AcademicCourseAssignment::getFullName;
         List<AcademicCourseAssignment> courseAssignments = p.findCourseAssignments(fromPeriodId);
 
         if (true) {
@@ -185,7 +170,7 @@ public class CopyAcademicDataHelper {
             StringBuilder error = new StringBuilder();
             error.append("Some Course Assignments have similar names. Here are the problems").append("\n");
             for (AcademicCourseAssignment assignment : courseAssignments) {
-                String item = converter.convert(assignment);
+                String item = converter.apply(assignment);
                 if (visited.containsKey(item)) {
                     if (!reported.contains(item)) {
                         reported.add(item);
@@ -221,7 +206,7 @@ public class CopyAcademicDataHelper {
             StringBuilder error = new StringBuilder();
             error.append("Some Course Assignments have similar names. Here are the problems").append("\n");
             for (AcademicCourseAssignment assignment : courseAssignments) {
-                String item = converter.convert(assignment);
+                String item = converter.apply(assignment);
                 if (visited.containsKey(item)) {
                     if (!reported.contains(item)) {
                         reported.add(item);
@@ -262,12 +247,7 @@ public class CopyAcademicDataHelper {
     private Map<Integer, AcademicCourseIntent> _copyAcademicDataAcademicCourseIntent(int fromPeriodId, AppPeriod toPeriod, Map<Integer, AcademicCourseAssignment> courseAssignmentsMap, PersistenceUnit pu) {
         final AcademicPlugin p = VrApp.getBean(AcademicPlugin.class);
         Map<Integer, AcademicCourseIntent> oldIdToNewObject = new HashMap<>();
-        Converter<AcademicCourseIntent, String> converter = new Converter<AcademicCourseIntent, String>() {
-            @Override
-            public String convert(AcademicCourseIntent value) {
-                return value.getTeacher().getId() + ":" + value.getAssignment().getFullName();
-            }
-        };
+        Function<AcademicCourseIntent, String> converter = (AcademicCourseIntent value) -> value.getTeacher().getId() + ":" + value.getAssignment().getFullName();
         MapList<String, AcademicCourseIntent> fromList = new DefaultMapList<>(
                 p.findCourseIntents(fromPeriodId),
                 converter

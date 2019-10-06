@@ -40,25 +40,22 @@ and open the template in the editor.
                                          $('#' + PF('photodlg').id).find('.ui-dialog-title')[0].textContent = '#{i.name}';
                                          PF('photodlg').show();"/>
                         </p:column>
-                        <p:column headerText="# Serie" style="width: 200px;">
+                        <p:column headerText="# Serie">
                             <p:outputLabel value="#{i.serial}"/>
                         </p:column>
-                        <p:column headerText="Type" style="width: 200px;">
+                        <p:column headerText="Type">
                             <p:outputLabel value="#{i.equipment.type.name}"/>
                         </p:column>
-                        <p:column headerText="Marque">
-                            <p:outputLabel value="#{i.equipment.brandLine.name}"/>
-                        </p:column>
                         <p:column headerText="Libellé" >
-                            <p:outputLabel value="#{i.name}" />
+                            <p:outputLabel value="#{i.equipment.department.code}-#{i.name}" />
                         </p:column>
-                        <p:column headerText="Quantité"  style="width: 80px;">
+                        <p:column headerText="Quantité">
                             <p:outputLabel value="#{i.borrowQuantity}" />
                         </p:column>
-                        <p:column headerText="Département">
-                            <p:outputLabel value="#{i.equipment.department.name}"  style="width: 200px;"/>
+                        <p:column headerText="Disponible">
+                            <p:outputLabel value="#{i.actualQuantity} ( #{i.availableQuantity2} )" />
                         </p:column>
-                        <p:column headerText="Etat"  style="width: 200px;">
+                        <p:column headerText="Etat"  >
                             <p:outputLabel value="#{vr.str(i.status)}" />
                         </p:column>
                         <p:column headerText="De">
@@ -67,20 +64,25 @@ and open the template in the editor.
                         <p:column headerText="A">
                             <p:outputLabel value="#{i.toDate}" />
                         </p:column>
+                        <p:column headerText="Demandeur">
+                            <p:outputLabel value="#{i.borrowerUser.fullTitle}"/>
+                        </p:column>
                         <p:column headerText="Visa">
-                            <p:outputLabel value="#{vr.str(i.visaUser.fullName)} : #{vr.str(i.request.visaUserStatus)}" />
-                            <p:commandButton rendered="#{myBorrowEquipmentsVisasCtrl.model.visa}" value="accept" action="#{myBorrowEquipmentsVisasCtrl.onAcceptVisa(true)}" update=":listForm"/>
-                            <p:commandButton rendered="#{myBorrowEquipmentsVisasCtrl.model.visa}" value="reject" action="#{myBorrowEquipmentsVisasCtrl.onAcceptVisa(false)}" update=":listForm"/>
+                            <p:outputLabel rendered="#{myBorrowEquipmentsVisasCtrl.isVisaVisible(i)}" value="#{vr.str(i.visaUser.fullName)} : #{vr.str(i.request.visaUserStatus)}" />
+                            <p:commandButton rendered="#{myBorrowEquipmentsVisasCtrl.isVisaAccept(i, true)}" value="accepter" action="#{myBorrowEquipmentsVisasCtrl.onAcceptVisa(i,true)}" update=":listForm"/>
+                            <p:commandButton rendered="#{myBorrowEquipmentsVisasCtrl.isVisaAccept(i, false)}" value="rejeter" action="#{myBorrowEquipmentsVisasCtrl.onAcceptVisa(i,false)}" update=":listForm"/>
                         </p:column>
                         <p:column headerText="Technicien">
                             <p:outputLabel value="#{vr.str(i.request.operatorUser.fullName)} : #{vr.str(i.request.operatorUserStatus)}" />
-                            <p:commandButton rendered="#{myBorrowEquipmentsVisasCtrl.model.operator}" value="accept" action="#{myBorrowEquipmentsVisasCtrl.onAcceptOperator(true)}" update=":listForm"/>
-                            <p:commandButton rendered="#{myBorrowEquipmentsVisasCtrl.model.operator}" value="reject" action="#{myBorrowEquipmentsVisasCtrl.onAcceptOperator(false)}" update=":listForm"/>
+                            <p:commandButton rendered="#{myBorrowEquipmentsVisasCtrl.isOperatorAccept(i, true)}" value="accepter" action="#{myBorrowEquipmentsVisasCtrl.onAcceptOperator(i,true)}" update=":listForm"/>
+                            <p:commandButton rendered="#{myBorrowEquipmentsVisasCtrl.isOperatorAccept(i, false)}" value="rejeter" action="#{myBorrowEquipmentsVisasCtrl.onAcceptOperator(i,false)}" update=":listForm"/>
+                            <p:commandButton rendered="#{myBorrowEquipmentsVisasCtrl.isDeliver(i)}" value="prêter" action="#{myBorrowEquipmentsVisasCtrl.onDeliver(i)}" update=":listForm"/>
                         </p:column>
                         <p:column headerText="Direction">
-                            <p:outputLabel value="#{vr.str(i.request.superOperator.fullName)} : #{vr.str(i.request.superOperatorUserStatus)}" />
-                            <p:commandButton rendered="#{myBorrowEquipmentsVisasCtrl.model.superOperator}" value="accept" action="#{myBorrowEquipmentsVisasCtrl.onAcceptSuperOperator(true)}" update=":listForm"/>
-                            <p:commandButton rendered="#{myBorrowEquipmentsVisasCtrl.model.superOperator}" value="reject" action="#{myBorrowEquipmentsVisasCtrl.onAcceptSuperOperator(false)}" update=":listForm"/>
+                            <p:outputLabel value="#{vr.str(i.request.superOperatorUser.fullName)} : #{vr.str(i.request.superOperatorUserStatus)}" />
+                            <p:commandButton rendered="#{myBorrowEquipmentsVisasCtrl.isSuperOperatorAccept(i, true)}" value="accepter" action="#{myBorrowEquipmentsVisasCtrl.onAcceptSuperOperator(i,true)}" update=":listForm"/>
+                            <p:commandButton rendered="#{myBorrowEquipmentsVisasCtrl.isSuperOperatorAccept(i, false)}" value="rejeter" action="#{myBorrowEquipmentsVisasCtrl.onAcceptSuperOperator(i,false)}" update=":listForm"/>
+                            <p:commandButton rendered="#{myBorrowEquipmentsVisasCtrl.isDeliver(i)}" value="prêter" action="#{myBorrowEquipmentsVisasCtrl.onDeliver(i)}" update=":listForm"/>
                         </p:column>
                         <f:facet name="footer">
                             <p:outputLabel value="Total #{myBorrowEquipmentsVisasCtrl.model.equipments.size()}"/>

@@ -10,12 +10,12 @@ package net.vpc.app.vainruling.plugins.equipments.borrow.model.info;
  * @author vpc
  */
 public enum EquipmentBorrowStatusExt {
-    REQUEST_PENDING,
-    REQUEST_NEW,
-    REQUEST_ACCEPTED,
-    REQUEST_REJECTED,
+    PENDING,
+    ACCEPTED,
+    REJECTED,
     BORROWED,
     BORROWABLE,
     RETURN_LATER,
-    MUST_RETURN,
+    RETURN_IMMEDIATELY,
+    RETURNED,
 }

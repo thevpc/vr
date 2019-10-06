@@ -18,6 +18,7 @@ public enum EquipmentStatusType {
     BROKEN(-1),
     UNUSABLE(-1),
     USABLE_WITH_CARE(0),
+    @Deprecated
     TEMPORARILY_UNAVAILABLE(-1),
     @Deprecated
     PLANNED_INTERVENTION(0),
@@ -30,6 +31,8 @@ public enum EquipmentStatusType {
     ACQUISITION(1),
     @Deprecated
     BORROWABLE(1),
+    @Deprecated
+    INSTORE(0),
     ;
 
     private int sign;

@@ -40,7 +40,7 @@ and open the template in the editor.
                                          $('#' + PF('photodlg').id).find('.ui-dialog-title')[0].textContent = '#{i.name}';
                                          PF('photodlg').show();"/>
                         </p:column>
-                        <p:column headerText="# Serie" style="width: 120px;">
+                        <p:column headerText="# Serie">
                             <p:outputLabel value="#{i.serial}" style="width: 200px;"/>
                         </p:column>
                         <p:column headerText="Type">
@@ -49,14 +49,11 @@ and open the template in the editor.
                         <p:column headerText="Marque">
                             <p:outputLabel value="#{i.equipment.brandLine.name}"/>
                         </p:column>
-                        <p:column headerText="Libellé" style="width:25%;">
-                            <p:outputLabel value="#{i.name}" />
+                        <p:column headerText="Libellé">
+                            <p:outputLabel value="#{i.equipment.department.code} - #{i.name}" />
                         </p:column>
-                        <p:column headerText="Quantité"  style="width: 60px;">
+                        <p:column headerText="Quantité" >
                             <p:outputLabel value="#{i.borrowQuantity}" />
-                        </p:column>
-                        <p:column headerText="Departement" >
-                            <p:outputLabel value="#{i.equipment.department.name}"  style="width: 200px;"/>
                         </p:column>
                         <p:column headerText="Etat" >
                             <p:outputLabel value="#{vr.str(i.status)}" />

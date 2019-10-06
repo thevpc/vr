@@ -12,7 +12,8 @@ import net.vpc.app.vainruling.core.service.content.ContentText;
 /**
  * Created by vpc on 9/11/16.
  */
-public class TodoText implements ContentText{
+public class TodoText implements ContentText {
+
     private Todo todo;
 
     public TodoText(Todo todo) {
@@ -112,4 +113,10 @@ public class TodoText implements ContentText{
     public int getVisitCount() {
         return 0;
     }
+
+    @Override
+    public String getRecipients() {
+        return todo.getResponsible() == null ? null : todo.getResponsible().getFullName();
+    }
+
 }

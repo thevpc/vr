@@ -10,7 +10,6 @@ package net.vpc.app.vainruling.plugins.equipments.borrow.model;
  * @author vpc
  */
 public enum EquipmentBorrowVisaStatus {
-    NEW,
     PENDING,
     ACCEPTED,
     REJECTED,

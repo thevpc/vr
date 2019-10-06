@@ -25,6 +25,7 @@ import net.vpc.common.jsf.FacesUtils;
 import org.primefaces.event.SelectEvent;
 import net.vpc.app.vainruling.core.service.pages.VrPage;
 import net.vpc.app.vainruling.core.service.pages.VrPathItem;
+import net.vpc.common.strings.StringUtils;
 
 //import javax.annotation.PostConstruct;
 /**
@@ -69,7 +70,7 @@ public class MyBorrowEquipmentsTrackingCtrl {
             }
         }
         getModel().setDepartments(Vr.get().toEntitySelectItemsNullable(departments, "AppDepartment"));
-        if (!VrWebHelper.containsSelectItemId(getModel().getDepartments(), getModel().getDepartment() == null ? null : getModel().getDepartment().getId())) {
+        if (!VrWebHelper.containsSelectItemId(getModel().getDepartments(), getModel().getDepartment())) {
             getModel().setDepartment(null);
         }
         onChangeDepartment();
@@ -78,9 +79,9 @@ public class MyBorrowEquipmentsTrackingCtrl {
     public void onChangeDepartment() {
         EquipmentPlugin eqm = EquipmentPlugin.get();
         EquipmentBorrowService ebs = VrApp.getBean(EquipmentBorrowService.class);
-        AppDepartment d = getModel().getDepartment();
-        getModel().setUsers(Vr.get().toEntitySelectItemsNullable(ebs.findBorrowerUsers(d == null ? null : d.getId(),true,false), "AppUser"));
-        if (!VrWebHelper.containsSelectItemId(getModel().getUsers(), getModel().getUser() == null ? null : getModel().getUser().getId())) {
+        Integer d = getModel().getDepartment();
+        getModel().setUsers(Vr.get().toEntitySelectItemsNullable(ebs.findBorrowerUsers(d, true, false), "AppUser"));
+        if (!VrWebHelper.containsSelectItemId(getModel().getUsers(), getModel().getUser())) {
             getModel().setUser(null);
         }
         onChangeUser();
@@ -89,12 +90,8 @@ public class MyBorrowEquipmentsTrackingCtrl {
     public void onChangeUser() {
 //        EquipmentPlugin eqm = EquipmentPlugin.get();
         EquipmentBorrowService ebs = VrApp.getBean(EquipmentBorrowService.class);
-        AppUser u = getModel().getUser();
-        if (u != null) {
-            getModel().setEquipments(ebs.findBorrowedEquipmentsInfo(u.getId()));
-        } else {
-            getModel().setEquipments(ebs.findBorrowedEquipmentsInfo(null));
-        }
+        Integer u = getModel().getUser();
+        getModel().setEquipments(ebs.findBorrowedEquipmentsInfo(u));
     }
 
     public void onRowSelect(SelectEvent event) {
@@ -106,6 +103,36 @@ public class MyBorrowEquipmentsTrackingCtrl {
         }
     }
 
+    public String getSelectedEquipmentString() {
+        EquipmentForResponsibleInfo e = getModel().getSelectedEquipment();
+        if (e == null) {
+            return "?";
+        }
+        if (e.getEquipment() == null) {
+            return "?";
+        }
+        StringBuilder sb = new StringBuilder();
+        if (e.getEquipment().getType() != null && !StringUtils.isBlank(e.getEquipment().getType().getName())) {
+            if (sb.length() > 0) {
+                sb.append("/");
+            }
+            sb.append(e.getEquipment().getType().getName());
+        }
+        if (e.getEquipment().getBrandLine() != null && !StringUtils.isBlank(e.getEquipment().getBrandLine().getName())) {
+            if (sb.length() > 0) {
+                sb.append("/");
+            }
+            sb.append(e.getEquipment().getBrandLine().getName());
+        }
+        if (!StringUtils.isBlank(e.getEquipment().getName())) {
+            if (sb.length() > 0) {
+                sb.append("/");
+            }
+            sb.append(e.getEquipment().getName());
+        }
+        return sb.toString();
+    }
+
     public void onReturnEquipment() {
         EquipmentForResponsibleInfo r = getModel().getSelectedEquipment();
         if (r != null && getModel().getQuantity() > 0) {
@@ -114,6 +141,7 @@ public class MyBorrowEquipmentsTrackingCtrl {
             try {
                 ebs.returnBorrowed(getModel().getSelectedEquipment().getEquipment().getId(), null, null, getModel().getQuantity(), null, null, null);
                 getModel().setQuantity(0);
+                getModel().setSelectedEquipment(null);
             } catch (Exception ex) {
                 FacesUtils.addErrorMessage(ex);
             }
@@ -124,8 +152,8 @@ public class MyBorrowEquipmentsTrackingCtrl {
     public static class Model {
 
         private List<EquipmentForResponsibleInfo> equipments;
-        private AppDepartment department;
-        private AppUser user;
+        private Integer department;
+        private Integer user;
         private List<SelectItem> departments;
         private List<SelectItem> users;
         private EquipmentForResponsibleInfo selectedEquipment;
@@ -139,19 +167,19 @@ public class MyBorrowEquipmentsTrackingCtrl {
             this.quantity = quantity;
         }
 
-        public AppDepartment getDepartment() {
+        public Integer getDepartment() {
             return department;
         }
 
-        public void setDepartment(AppDepartment department) {
+        public void setDepartment(Integer department) {
             this.department = department;
         }
 
-        public AppUser getUser() {
+        public Integer getUser() {
             return user;
         }
 
-        public void setUser(AppUser user) {
+        public void setUser(Integer user) {
             this.user = user;
         }
 

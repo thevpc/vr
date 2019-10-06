@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * @author taha.bensalah@gmail.com
  */
-public class FullArticle implements ContentText{
+public class FullArticle implements ContentText {
 
     private AppArticleStrict article;
     private List<ContentPath> attachments;
@@ -40,8 +40,6 @@ public class FullArticle implements ContentText{
             }
         }
     }
-
-
 
     public ArticlesDispositionStrict getDisposition() {
         return article.getDisposition();
@@ -100,13 +98,18 @@ public class FullArticle implements ContentText{
     }
 
     @Override
+    public String getRecipients() {
+        return article.getRecipientProfiles();
+    }
+
+    @Override
     public String getContent() {
         return article.getContent();
     }
 
     @Override
     public String getCategory() {
-        return article.getDisposition()==null?null:article.getDisposition().getName();
+        return article.getDisposition() == null ? null : article.getDisposition().getName();
     }
 
     @Override
@@ -156,15 +159,24 @@ public class FullArticle implements ContentText{
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         FullArticle that = (FullArticle) o;
 
-        if (article != null ? !article.equals(that.article) : that.article != null) return false;
-        if (attachments != null ? !attachments.equals(that.attachments) : that.attachments != null) return false;
-        if (imageAttachments != null ? !imageAttachments.equals(that.imageAttachments) : that.imageAttachments != null)
+        if (article != null ? !article.equals(that.article) : that.article != null) {
             return false;
+        }
+        if (attachments != null ? !attachments.equals(that.attachments) : that.attachments != null) {
+            return false;
+        }
+        if (imageAttachments != null ? !imageAttachments.equals(that.imageAttachments) : that.imageAttachments != null) {
+            return false;
+        }
         return nonImageAttachments != null ? nonImageAttachments.equals(that.nonImageAttachments) : that.nonImageAttachments == null;
 
     }

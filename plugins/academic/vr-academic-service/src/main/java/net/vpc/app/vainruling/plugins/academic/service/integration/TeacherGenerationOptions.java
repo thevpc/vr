@@ -8,7 +8,7 @@ package net.vpc.app.vainruling.plugins.academic.service.integration;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.plugins.academic.service.stat.DeviationConfig;
 import net.vpc.app.vainruling.plugins.academic.service.util.CourseAssignmentFilter;
-import net.vpc.common.util.mon.ProgressMonitor;
+import net.vpc.common.mon.ProgressMonitor;
 
 /**
  * @author taha.bensalah@gmail.com

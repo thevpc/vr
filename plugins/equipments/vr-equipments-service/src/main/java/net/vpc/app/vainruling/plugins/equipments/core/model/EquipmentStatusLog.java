@@ -11,7 +11,7 @@ import net.vpc.upa.ProtectionLevel;
 import net.vpc.upa.config.*;
 
 import java.sql.Timestamp;
-import org.springframework.beans.factory.annotation.Qualifier;
+import net.vpc.upa.FormulaType;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -51,6 +51,10 @@ public class EquipmentStatusLog {
     @Property(name = UIConstants.Grid.COLUMN_STYLE_CLASS, value = "#{hashCssColor(this.type)}")
     private EquipmentStatusType type = EquipmentStatusType.AVAILABLE;
 
+    @Main
+    @Formula("concat(this.action.code,'-',this.equipment.serial,'-',this.type)")
+    private String label;
+
     @Field(defaultValue = "1")
     @Summary
     @Deprecated
@@ -85,6 +89,9 @@ public class EquipmentStatusLog {
      */
     @Main
     private String name;
+
+    @Formula(value = "CurrentTimestamp()", formulaType = FormulaType.PERSIST)
+    private Timestamp creationDate;
 
     @Field(max = "1024")
     @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
@@ -210,6 +217,22 @@ public class EquipmentStatusLog {
 
     public void setOutQty(double outQty) {
         this.outQty = outQty;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public Timestamp getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Timestamp creationDate) {
+        this.creationDate = creationDate;
     }
 
 }

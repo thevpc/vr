@@ -16,6 +16,7 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import java.util.List;
 import java.util.logging.Level;
+import net.vpc.app.vainruling.core.service.content.ContentText;
 
 /**
  * @author vpc
@@ -30,6 +31,29 @@ public class HotCmsTextService extends AbstractCmsTextService {
             return 1;
         }
         return -1;
+    }
+
+    @Override
+    public boolean isEnabledAction(String action, ContentText ctx) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public boolean onAction(String action, ContentText a) {
+        ExternalContext ec = FacesContext.getCurrentInstance()
+                .getExternalContext();
+        try {
+            if ("edit".equals(action)) {
+//                if (ec != null) {
+//                    Vr.get().redirect(Vr.get().gotoPageObjItem(AppArticle.class.getSimpleName(), String.valueOf(id)));
+//                    return true;
+//                }
+            }
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return false;
     }
 
     @Override

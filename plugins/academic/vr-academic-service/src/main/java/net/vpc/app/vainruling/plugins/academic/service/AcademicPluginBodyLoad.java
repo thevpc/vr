@@ -25,15 +25,16 @@ import net.vpc.app.vainruling.plugins.academic.service.integration.AcademicConve
 import net.vpc.app.vainruling.plugins.academic.model.history.AcademicHistTeacherDegree;
 import net.vpc.app.vainruling.plugins.academic.service.stat.*;
 import net.vpc.common.util.*;
-import net.vpc.common.util.mon.ProgressMonitor;
-import net.vpc.common.util.mon.ProgressMonitorFactory;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.UPA;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.vpc.app.vainruling.core.service.ProfileRightBuilder;
+import net.vpc.common.mon.ProgressMonitor;
+import net.vpc.common.mon.ProgressMonitorFactory;
 
 public class AcademicPluginBodyLoad extends AcademicPluginBody {
 
@@ -42,8 +43,8 @@ public class AcademicPluginBodyLoad extends AcademicPluginBody {
             DeviationGroup.DEPARTMENT, DeviationGroup.DEGREE, DeviationGroup.SITUATION, DeviationGroup.DISCIPLINE
     )));
     public static final Comparator<GlobalAssignmentStat> GLOBAL_ASSIGNMENT_STAT_COMPARATOR = new GlobalAssignmentStatComparator();
-    public static final Converter<AcademicCoursePlan, Integer> academicCoursePlanIdConverter = new AcademicCoursePlanIdConverter();
-    private static Converter<TeacherPeriodStat, Integer> teacherPeriodStatMapListConverter = new TeacherPeriodStatMapListConverter();
+    public static final Function<AcademicCoursePlan, Integer> academicCoursePlanIdConverter = AcademicCoursePlan::getId;
+    private static Function<TeacherPeriodStat, Integer> teacherPeriodStatMapListConverter = x -> x.getTeacher().getId();
 
     private CorePlugin core;
     private AcademicPlugin academic;

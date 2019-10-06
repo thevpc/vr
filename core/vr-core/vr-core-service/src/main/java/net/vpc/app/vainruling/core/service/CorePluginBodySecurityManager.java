@@ -48,6 +48,9 @@ class CorePluginBodySecurityManager extends CorePluginBody {
     }
 
     public AppUser findUser(String login) {
+        if (login == null) {
+            return null;
+        }
         final EntityCache entityCache = getContext().getCacheService().get(AppUser.class);
         Map<String, AppUser> m = entityCache.getProperty("findUserByLogin", new Action<Map<String, AppUser>>() {
             @Override
@@ -69,7 +72,10 @@ class CorePluginBodySecurityManager extends CorePluginBody {
 //        return (AppUser) pu.findByField(AppUser.class, "login", login);
     }
 
-    public AppUser findUser(int id) {
+    public AppUser findUser(Integer id) {
+        if (id == null) {
+            return null;
+        }
         CorePluginSecurity.requireUser(id);
         return getContext().getCacheService().getList(AppUser.class).getByKey(id);
 //        PersistenceUnit pu = UPA.getPersistenceUnit();
@@ -342,14 +348,14 @@ class CorePluginBodySecurityManager extends CorePluginBody {
                 log.log(Level.SEVERE, "Right " + rightName + " not found");
             }
         }
-        boolean added=false;
+        boolean added = false;
         List<AppRightName> profileRightsList = findProfileRights(profileId);
         Map<String, AppRightName> profileRights = new HashMap<>(profileRightsList.stream().collect(Collectors.toMap(AppRightName::getName, java.util.function.Function.identity(),
-                (v1,v2)->
-                {
-                    return v2;
-                }
-                )));
+                (v1, v2)
+                -> {
+            return v2;
+        }
+        )));
         for (String rn : rightName) {
             if (!profileRights.containsKey(rn)) {
                 AppRightName rn2 = rights.get(rn);
@@ -363,7 +369,7 @@ class CorePluginBodySecurityManager extends CorePluginBody {
                     pr.setProfile(p);
                     pr.setRight(rn2);
                     pu.persist(pr);
-                    added=true;
+                    added = true;
                     profileRights.put(rn, rn2);
                 }
             }
