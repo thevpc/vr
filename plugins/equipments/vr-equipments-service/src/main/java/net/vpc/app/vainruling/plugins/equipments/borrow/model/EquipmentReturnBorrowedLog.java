@@ -14,7 +14,7 @@ import java.sql.Timestamp;
  * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "this.returnDate desc")
-@Path("Equipment")
+@Path("Equipment/Details/Borrow")
 @Properties(
         {
             @Property(name = "ui.auto-filter.department", value = "{expr='this.statusLog.equipment.department',order=1}"),
@@ -28,6 +28,7 @@ public class EquipmentReturnBorrowedLog {
     @Sequence
     private int id;
 
+    @Summary
     private EquipmentBorrowLog borrowLog;
 
     private EquipmentStatusLog statusLog;

@@ -12,7 +12,7 @@ import net.vpc.upa.config.*;
  */
 @Entity(listOrder = "this.name")
 @Path("Todo/Config")
-public class TodoStatus {
+public class TodoStatusGroup {
 
     @Path("Main")
     @Id
@@ -20,12 +20,6 @@ public class TodoStatus {
     private int id;
     @Main
     private String name;
-    @Summary
-    @ToString
-    private TodoStatusType type;
-
-    @Summary
-    private TodoStatusGroup statusGroup;
 
     public int getId() {
         return id;
@@ -41,22 +35,6 @@ public class TodoStatus {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public TodoStatusGroup getStatusGroup() {
-        return statusGroup;
-    }
-
-    public void setStatusGroup(TodoStatusGroup statusGroup) {
-        this.statusGroup = statusGroup;
-    }
-
-    public TodoStatusType getType() {
-        return type;
-    }
-
-    public void setType(TodoStatusType type) {
-        this.type = type;
     }
 
 }

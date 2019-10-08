@@ -31,6 +31,7 @@ import org.w3c.dom.NodeList;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.util.*;
+import net.vpc.app.vainruling.core.service.ProfileRightBuilder;
 import net.vpc.app.vainruling.core.service.plugins.VrPlugin;
 import net.vpc.app.vainruling.plugins.calendars.service.AppWeekCalendarProvider;
 
@@ -54,8 +55,10 @@ public class AcademicPlanningPlugin {
         if (core == null) {
             core = CorePlugin.get();
         }
-        core.createRight(AcademicPlanningPluginSecurity.RIGHT_CUSTOM_EDUCATION_TEACHER_PLANNING, "TeacherPlanning");
-        core.createRight(AcademicPlanningPluginSecurity.RIGHT_CUSTOM_EDUCATION_CLASS_PLANNING, "ClassPlanning");
+        ProfileRightBuilder b = new ProfileRightBuilder();
+        b.addName(AcademicPlanningPluginSecurity.RIGHT_CUSTOM_EDUCATION_TEACHER_PLANNING);
+        b.addName(AcademicPlanningPluginSecurity.RIGHT_CUSTOM_EDUCATION_CLASS_PLANNING);
+        b.execute();
     }
 
 

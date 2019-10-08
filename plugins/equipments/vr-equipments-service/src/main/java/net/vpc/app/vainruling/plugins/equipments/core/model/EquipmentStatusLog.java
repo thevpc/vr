@@ -17,7 +17,7 @@ import net.vpc.upa.FormulaType;
  * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "this.startDate desc")
-@Path("Equipment")
+@Path("Equipment/Details")
 @Properties(
         {
             @Property(name = "ui.auto-filter.department", value = "{expr='this.equipment.department',order=1}"),
@@ -50,10 +50,6 @@ public class EquipmentStatusLog {
     //@Properties({@Property(name = UIConstants.Form.SUBMIT_ON_CHANGE, value = "true")})
     @Property(name = UIConstants.Grid.COLUMN_STYLE_CLASS, value = "#{hashCssColor(this.type)}")
     private EquipmentStatusType type = EquipmentStatusType.AVAILABLE;
-
-    @Main
-    @Formula("concat(this.action.code,'-',this.equipment.serial,'-',this.type)")
-    private String label;
 
     @Field(defaultValue = "1")
     @Summary
@@ -88,6 +84,7 @@ public class EquipmentStatusLog {
      * description of the status, for instance when borrowed tell why
      */
     @Main
+    @Formula("concat(coalesce(this.action.code,''),'-',coalesce(this.equipment.serial,''),'-',coalesce(this.type,''))")
     private String name;
 
     @Formula(value = "CurrentTimestamp()", formulaType = FormulaType.PERSIST)
@@ -217,14 +214,6 @@ public class EquipmentStatusLog {
 
     public void setOutQty(double outQty) {
         this.outQty = outQty;
-    }
-
-    public String getLabel() {
-        return label;
-    }
-
-    public void setLabel(String label) {
-        this.label = label;
     }
 
     public Timestamp getCreationDate() {

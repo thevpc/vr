@@ -42,7 +42,7 @@ public class CalendarsPlugin {
     public void onStart() {
         weekCalendarProviders = VrApp.getContext().getBeansOfType(AppWeekCalendarProvider.class);
         calendarEventServices = VrApp.getContext().getBeansOfType(AppCalendarService.class);
-        core.createRight(CalendarsPluginSecurity.RIGHT_CUSTOM_EDUCATION_MY_PLANNING, "MyPlanning");
+        core.addProfileRightName(CalendarsPluginSecurity.RIGHT_CUSTOM_EDUCATION_MY_PLANNING, "MyPlanning");
     }
 
     public WeekCalendar findMergedUserPublicWeekCalendar(int userId) {

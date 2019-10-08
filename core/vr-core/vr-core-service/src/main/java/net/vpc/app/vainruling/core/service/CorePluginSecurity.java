@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CorePluginSecurity {
+
     public static final String RIGHT_CUSTOM_FILESYSTEM_ROOT_FILE_SYSTEM = "Custom.FileSystem.RootFileSystem";
     public static final String RIGHT_FILESYSTEM_WRITE = "Custom.FileSystem.Write";
     public static final String RIGHT_FILESYSTEM_ASSIGN_RIGHTS = "Custom.FileSystem.AssignRights";
@@ -26,7 +27,7 @@ public class CorePluginSecurity {
     public static final String RIGHT_CUSTOM_UTIL_NAVIGATION_HISTORY = "Custom.Util.NavigationHistory";
     public static final String RIGHT_CUSTOM_ADMIN = "Custom.Admin";
     public static final String RIGHT_CUSTOM_UPDATE_MY_PROFILES = "Custom.Admin.UpdateMyProfiles";
-    public static final String[] RIGHTS_CORE = VrPlatformUtils.getStringArrayConstantsValues(CorePluginSecurity.class,"RIGHT_*");
+    public static final String[] RIGHTS_CORE = VrPlatformUtils.getStringArrayConstantsValues(CorePluginSecurity.class, "RIGHT_*");
 
     public static void requireRight(String right) {
         if (right == null) {
@@ -55,6 +56,18 @@ public class CorePluginSecurity {
         }
     }
 
+    public static void requireAllOfProfiles(String... profileNames) {
+        if (!CorePlugin.get().isCurrentSessionAdminOrAllOfProfiles(profileNames)) {
+            throw new SecurityException("Not Allowed");
+        }
+    }
+
+    public static void requireAnyOfProfiles(String... profileNames) {
+        if (!CorePlugin.get().isCurrentSessionAdminOrAnyOfProfiles(profileNames)) {
+            throw new SecurityException("Not Allowed");
+        }
+    }
+
     public static void requireUser(int userId) {
         if (!CorePlugin.get().isCurrentSessionAdminOrUser(userId)) {
             throw new SecurityException("Not Allowed");
@@ -66,27 +79,24 @@ public class CorePluginSecurity {
 //            throw new SecurityException("Not Allowed");
 //        }
 //    }
-
     public static String[] getEntityRights(Entity entity) {
         return new String[]{
-                getEntityRightEditor(entity),
-                getEntityRightLoad(entity),
-                getEntityRightNavigate(entity),
-                getEntityRightPersist(entity),
-                getEntityRightUpdate(entity),
-                getEntityRightRemove(entity),
-        };
+            getEntityRightEditor(entity),
+            getEntityRightLoad(entity),
+            getEntityRightNavigate(entity),
+            getEntityRightPersist(entity),
+            getEntityRightUpdate(entity),
+            getEntityRightRemove(entity),};
     }
 
     public static String[] getEntityRights(String entity) {
         return new String[]{
-                getEntityRightEditor(entity),
-                getEntityRightLoad(entity),
-                getEntityRightNavigate(entity),
-                getEntityRightPersist(entity),
-                getEntityRightUpdate(entity),
-                getEntityRightRemove(entity),
-        };
+            getEntityRightEditor(entity),
+            getEntityRightLoad(entity),
+            getEntityRightNavigate(entity),
+            getEntityRightPersist(entity),
+            getEntityRightUpdate(entity),
+            getEntityRightRemove(entity),};
     }
 
     public static String[] getEntityRights(Entity entity, boolean read, boolean write, boolean remove, boolean actions, boolean fields) {
@@ -107,7 +117,7 @@ public class CorePluginSecurity {
                 all.add(getEntityRightRemove(entity));
             }
         }
-        if(actions) {
+        if (actions) {
             String extraActions = entity.getProperties().getString("actions");
             if (extraActions != null) {
                 for (String a : extraActions.split(" ,|;")) {
@@ -117,15 +127,15 @@ public class CorePluginSecurity {
                 }
             }
         }
-        if(fields){
+        if (fields) {
             for (Field field : entity.getFields()) {
                 if (field.getUpdateProtectionLevel() == ProtectionLevel.PROTECTED || field.getPersistProtectionLevel() == ProtectionLevel.PROTECTED) {
-                    if(write) {
+                    if (write) {
                         all.add(getFieldRightWrite(field));
                     }
                 }
                 if (field.getReadProtectionLevel() == ProtectionLevel.PROTECTED || field.getUpdateProtectionLevel() == ProtectionLevel.PROTECTED || field.getPersistProtectionLevel() == ProtectionLevel.PROTECTED) {
-                    if(read) {
+                    if (read) {
                         all.add(getFieldRightRead(field));
                     }
                 }
@@ -136,8 +146,8 @@ public class CorePluginSecurity {
 
     public static String[] getRights(Field field) {
         return new String[]{
-                getFieldRightWrite(field),
-                getFieldRightRead(field)
+            getFieldRightWrite(field),
+            getFieldRightRead(field)
         };
     }
 
@@ -164,7 +174,6 @@ public class CorePluginSecurity {
     public static String getEntityRightRemove(Entity entity) {
         return getEntityRightRemove(entity.getName());
     }
-
 
     public static String getEntityRightEditor(String entity) {
         return entity + ".DefaultEditor";

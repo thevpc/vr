@@ -37,6 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import net.vpc.app.vainruling.core.service.ProfileRightBuilder;
 import net.vpc.app.vainruling.core.service.plugins.VrPlugin;
 import net.vpc.common.util.MapUtils;
 
@@ -71,8 +72,10 @@ public class AcademicPerfEvalPlugin {
 
     @Start
     private void onStart() {
-        VrApp.getBean(CorePlugin.class).createRight(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_STUDENT_FEEDBACK, AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_STUDENT_FEEDBACK);
-        VrApp.getBean(CorePlugin.class).createRight(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_TEACHER_STAT_FEEDBACK, AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_TEACHER_STAT_FEEDBACK);
+        ProfileRightBuilder b = new ProfileRightBuilder();
+        b.addName(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_STUDENT_FEEDBACK);
+        b.addName(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_TEACHER_STAT_FEEDBACK);
+        b.execute();
     }
 
     public List<AcademicFeedbackSession> findAllReadableSessions() {

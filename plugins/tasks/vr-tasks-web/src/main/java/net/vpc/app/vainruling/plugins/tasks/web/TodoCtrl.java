@@ -39,11 +39,11 @@ import net.vpc.app.vainruling.core.service.pages.VrPathItem;
  */
 @VrPage(
         breadcrumb = {
-                @VrPathItem(title = "Todo", css = "fa-dashboard", ctrl = "")
+            @VrPathItem(title = "Todo", css = "fa-dashboard", ctrl = "")
         }, url = "modules/todo/todos"
 )
 @Scope("singleton")
-public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuProvider, VrPageInfoResolver, TaskTextService{
+public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuProvider, VrPageInfoResolver, TaskTextService {
 
     @Autowired
     private TaskPlugin todoService;
@@ -76,11 +76,14 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuProvider
         return b;
     }
 
-    @Override
-    public int getSupport(String name) {
-        return "Todo".equals(name)?1:-1;
+    public void onProgressSlideEnd() {
+
     }
 
+    @Override
+    public int getSupport(String name) {
+        return "Todo".equals(name) ? 1 : -1;
+    }
 
     @Override
     protected Todo delegated_newInstance() {
@@ -91,6 +94,8 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuProvider
         todo.setPriority(TodoPriority.DEFAULT);
         TodoList list = todoService.findTodoList(getModel().getListName());
         todo.setList(list);
+        TodoStatus s = todoService.findStartStatus(list.getStatusGroup().getId());
+        todo.setStatus(s);
         return todo;
     }
 
@@ -101,6 +106,10 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuProvider
     }
 
     public boolean isEnabledButton(String buttonId) {
+        if ("Archive".equals(buttonId)) {
+            return getModel().getMode() == AccessMode.UPDATE
+                    && getModel().getCurrent().getStatus().getType() == TodoStatusType.DONE;
+        }
         if ("Assign".equals(buttonId)) {
             return getModel().getMode() == AccessMode.UPDATE
                     && todoService.findNextStatus(getModel().getCurrent().getStatus(), TodoStatusType.ASSIGNED) != null;
@@ -127,6 +136,9 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuProvider
                     && (getModel().getCurrent().getStatus().getType() == TodoStatusType.TO_VERIFY || getModel().getCurrent().getStatus().getType() == TodoStatusType.DONE)
                     && todoService.findNextStatus(getModel().getCurrent().getStatus(), TodoStatusType.ASSIGNED) != null;
         }
+        if ("New".equals(buttonId)) {
+            return getModel().getMode() == AccessMode.READ;
+        }
         return super.isEnabledButton(buttonId);
     }
 
@@ -137,6 +149,7 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuProvider
             c.setResponsible(coreService.getCurrentUser());
             c.setStatus(s);
             todoService.saveTodo(c);
+            reloadPage(true);
         }
     }
 
@@ -147,6 +160,7 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuProvider
             c.setResponsible(coreService.getCurrentUser());
             c.setStatus(s);
             todoService.saveTodo(c);
+            reloadPage(true);
         }
     }
 
@@ -157,6 +171,7 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuProvider
             c.setResponsible(coreService.getCurrentUser());
             c.setStatus(s);
             todoService.saveTodo(c);
+            reloadPage(true);
         }
     }
 
@@ -167,6 +182,7 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuProvider
             c.setResponsible(coreService.getCurrentUser());
             c.setStatus(s);
             todoService.saveTodo(c);
+            reloadPage(true);
         }
     }
 
@@ -177,6 +193,7 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuProvider
             c.setResponsible(coreService.getCurrentUser());
             c.setStatus(s);
             todoService.saveTodo(c);
+            reloadPage(true);
         }
     }
 
@@ -202,6 +219,7 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuProvider
     public void onDeleteCurrent() {
         Todo c = getModel().getCurrent();
         todoService.removeTodo(c.getId());
+        reloadPage(true);
         getModel().setMode(AccessMode.READ);
     }
 
@@ -209,10 +227,20 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuProvider
         Todo c = getModel().getCurrent();
         todoService.archiveTodo(c.getId());
         getModel().setCurrent(new Todo());
+        reloadPage(true);
         getModel().setMode(AccessMode.READ);
     }
 
     @OnPageLoad
+    public void reloadPage(String cmd) {
+        reloadPage(cmd, true);
+    }
+
+    public void onAddConsumption(double value) {
+        Todo v = getModel().getCurrent();
+        v.setConsumption(v.getConsumption() + value);
+    }
+
     @Override
     public void reloadPage(String cmd, boolean ustomization) {
         if (!StringUtils.isBlank(cmd)) {
@@ -226,7 +254,7 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuProvider
         getModel().setToVerify(todoService.findTodosByResponsible(currentListId, null, new TodoStatusType[]{TodoStatusType.TO_VERIFY}));
         getModel().setDone(todoService.findTodosByResponsible(currentListId, null, new TodoStatusType[]{TodoStatusType.DONE}));
 
-        getModel().setStatuses(todoService.findTodoStatuses(currentListId));
+        getModel().setStatuses(todoService.findTodoStatuses(list.getStatusGroup().getId()));
         getModel().setStatusItems(VrJsf.toSelectItemList(getModel().getStatuses()));
         getModel().setCategories(todoService.findTodoCategories(currentListId));
         getModel().setCategoryItems(VrJsf.toSelectItemList(getModel().getCategories()));
@@ -237,17 +265,16 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuProvider
         List<VRMenuInfo> ok = new ArrayList<>();
         for (TodoList findTodoListsByResp : todoService.findTodoListsByResp(null)) {
             AppUser user = coreService.getCurrentUser();
-            int count=user==null?0:todoService.findTodosByResponsible(findTodoListsByResp.getId(),
+            int count = user == null ? 0 : todoService.findTodosByResponsible(findTodoListsByResp.getId(),
                     user.getId(),
                     new TodoStatusType[]{
                         TodoStatusType.ASSIGNED,
-                        TodoStatusType.TO_VERIFY,
-                    }
-                    ).size();
+                        TodoStatusType.TO_VERIFY,}
+            ).size();
             final VRMenuInfo vrMenuDef = new VRMenuInfo(findTodoListsByResp.getName(), "/Todo", "todo", findTodoListsByResp.getName(),
-                    TaskPluginSecurity.PREFIX_RIGHT_CUSTOM_TODO + findTodoListsByResp.getName(), null,"",100,
+                    TaskPluginSecurity.PREFIX_RIGHT_CUSTOM_TODO + findTodoListsByResp.getName(), null, "", 100,
                     new VRMenuLabel[]{
-                        new VRMenuLabel(String.valueOf(count),"severe")
+                        new VRMenuLabel(String.valueOf(count), "severe")
                     }
             );
 //            vrMenuDef.
@@ -274,20 +301,22 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuProvider
         d.setTitle(title);
         d.setSecurityKey(TaskPluginSecurity.PREFIX_RIGHT_CUSTOM_TODO + listName);
         List<VrBreadcrumbItem> items = new ArrayList<>();
-        items.add(new VrBreadcrumbItem("Todo","Mes taches à faire","fa-dashboard", "", ""));
+        items.add(new VrBreadcrumbItem("Todo", "Mes taches à faire", "fa-dashboard", "", ""));
         d.setBreadcrumb(items.toArray(new VrBreadcrumbItem[items.size()]));
         return d;
     }
 
     @Override
     public void loadContentTexts(String name) {
-        if(true) return;//TODO FIX ME
-        reloadPage(null,true);
+        if (true) {
+            return;//TODO FIX ME
+        }
+        reloadPage(null, true);
     }
 
     @Override
     public List<ContentText> getContentTextList(String id) {
-        return (List)getModel().getTodoText();
+        return (List) getModel().getTodoText();
     }
 
     public List<ContentText> getContentTextListHead(String id, int max) {
@@ -301,6 +330,6 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuProvider
     @Override
     public int getActiveCount() {
         List<ContentText> contentTextList = getContentTextList(null);
-        return contentTextList==null?0:contentTextList.size();
+        return contentTextList == null ? 0 : contentTextList.size();
     }
 }

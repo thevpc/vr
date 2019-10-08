@@ -97,7 +97,7 @@ public class MyBorrowEquipmentsTrackingCtrl {
     public void onRowSelect(SelectEvent event) {
         EquipmentForResponsibleInfo e = (EquipmentForResponsibleInfo) event.getObject();
         if (e != null) {
-            getModel().setQuantity(e.getBorrowQuantity());
+            getModel().setQuantity(e.getBorrowRemainingQuantity());
         } else {
             getModel().setQuantity(1.0);
         }
@@ -133,13 +133,16 @@ public class MyBorrowEquipmentsTrackingCtrl {
         return sb.toString();
     }
 
-    public void onReturnEquipment() {
-        EquipmentForResponsibleInfo r = getModel().getSelectedEquipment();
-        if (r != null && getModel().getQuantity() > 0) {
+    public void onReturnSelectedEquipment(EquipmentForResponsibleInfo r) {
+        onReturnSelectedEquipment(r,r.getBorrowRemainingQuantity());
+    }
+
+    public void onReturnSelectedEquipment(EquipmentForResponsibleInfo r, double qty) {
+        if (r != null && qty > 0) {
 //            EquipmentPlugin eqm = EquipmentPlugin.get();
             EquipmentBorrowService ebs = VrApp.getBean(EquipmentBorrowService.class);
             try {
-                ebs.returnBorrowed(getModel().getSelectedEquipment().getEquipment().getId(), null, null, getModel().getQuantity(), null, null, null);
+                ebs.returnBorrowed(r.getEquipment().getId(), null, null, qty, null, null, null);
                 getModel().setQuantity(0);
                 getModel().setSelectedEquipment(null);
             } catch (Exception ex) {
@@ -147,6 +150,10 @@ public class MyBorrowEquipmentsTrackingCtrl {
             }
             onRefresh();
         }
+    }
+
+    public void onReturnEquipment() {
+        onReturnSelectedEquipment(getModel().getSelectedEquipment(), getModel().getQuantity());
     }
 
     public static class Model {

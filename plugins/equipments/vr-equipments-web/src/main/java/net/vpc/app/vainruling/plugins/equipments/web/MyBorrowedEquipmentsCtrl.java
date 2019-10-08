@@ -25,7 +25,7 @@ import net.vpc.app.vainruling.core.service.pages.VrPathItem;
             @VrPathItem(title = "Site", css = "fa-dashboard", ctrl = "")},
         menu = "/Equipment",
         url = "modules/equipments/my-borrowed-equipments",
-         securityKey = EquipmentPluginSecurity.RIGHT_CUSTOM_EQUIPMENT_BORROWED
+        securityKey = EquipmentPluginSecurity.RIGHT_CUSTOM_EQUIPMENT_BORROWED
 )
 @ManagedBean
 public class MyBorrowedEquipmentsCtrl {
@@ -36,15 +36,34 @@ public class MyBorrowedEquipmentsCtrl {
         return model;
     }
 
-    @OnPageLoad
-//    @PostConstruct
-    public void onRefresh() {
-        EquipmentBorrowService ebs=VrApp.getBean(EquipmentBorrowService.class);
-        getModel().setEquipments(ebs.findBorrowedEquipmentsForResponsibleInfo(CorePlugin.get().getCurrentUserIdFF(), null, null));
+    public boolean isCancelEnabled(EquipmentForResponsibleInfo r) {
+        return r.isCancelEnabled();
     }
 
-    public void onCancel(EquipmentForResponsibleInfo i) {
-        //
+    public boolean isArchiveEnabled(EquipmentForResponsibleInfo r) {
+        return r.isArchiveEnabled();
+    }
+
+    public void onCancel(EquipmentForResponsibleInfo r) {
+        if (r.getRequest() != null) {
+            EquipmentBorrowService ebs = VrApp.getBean(EquipmentBorrowService.class);
+            ebs.cancelRequest(r.getRequest().getId(), null);
+            onRefresh();
+        }
+    }
+
+    public void onArchive(EquipmentForResponsibleInfo r) {
+        if (r.getRequest() != null) {
+            EquipmentBorrowService ebs = VrApp.getBean(EquipmentBorrowService.class);
+            ebs.archiveRequest(r.getRequest().getId(), null);
+            onRefresh();
+        }
+    }
+
+    @OnPageLoad
+    public void onRefresh() {
+        EquipmentBorrowService ebs = VrApp.getBean(EquipmentBorrowService.class);
+        getModel().setEquipments(ebs.findBorrowedEquipmentsForResponsibleInfo(CorePlugin.get().getCurrentUserIdFF(), null, null));
     }
 
     public static class Model {

@@ -192,7 +192,7 @@ public class TodoRequestsCtrl extends AbstractObjectCtrl<Todo> {
 //        TodoList list = todoService.findTodoList(getModel().getListName());
 //        int currentListId = list.getId();
 
-        getModel().setStatuses(todoService.findTodoStatuses(getModel().getTodoList().getId()));
+        getModel().setStatuses(todoService.findTodoStatuses(getModel().getTodoList().getStatusGroup().getId()));
         getModel().setStatusItems(VrJsf.toSelectItemList(getModel().getStatuses()));
         getModel().setCategories(todoService.findTodoCategories(getModel().getTodoList().getId()));
         getModel().setCategoryItems(VrJsf.toSelectItemList(getModel().getCategories()));

@@ -24,6 +24,7 @@ public class EquipmentBorrowRequestFilter {
     private Integer equipmentTypeId;
     private Integer departmentId;
     private Boolean archive;
+    private Boolean cancelled;
 
     public EquipmentBorrowRequestStatus[] getVisaStatus() {
         return visaStatus;
@@ -123,5 +124,15 @@ public class EquipmentBorrowRequestFilter {
         this.finalStatus = finalStatus;
         return this;
     }
+
+    public Boolean getCancelled() {
+        return cancelled;
+    }
+
+    public EquipmentBorrowRequestFilter setCancelled(Boolean cancelled) {
+        this.cancelled = cancelled;
+        return this;
+    }
+    
     
 }

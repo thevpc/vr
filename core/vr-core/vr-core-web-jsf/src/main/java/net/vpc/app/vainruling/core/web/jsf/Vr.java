@@ -5,6 +5,7 @@
  */
 package net.vpc.app.vainruling.core.web.jsf;
 
+import com.google.gson.JsonPrimitive;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.content.*;
@@ -61,6 +62,7 @@ import java.text.MessageFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.faces.bean.ManagedBean;
@@ -565,18 +567,17 @@ public class Vr {
         StringBuilder sb = new StringBuilder();
         if (a != null) {
             for (Object x : a) {
-                if (x != null) {
-                    sb.append(String.valueOf(x));
-                }
+                sb.append(_str0(x));
             }
         }
         return sb.toString();
     }
 
     public String nvlstr(Object... a) {
+        I18n p = I18n.get();
         if (a != null) {
             for (Object x : a) {
-                String s = x == null ? "" : String.valueOf(x);
+                String s = _str0(x);
                 if (!StringUtils.isBlank(s)) {
                     return s;
                 }
@@ -601,6 +602,11 @@ public class Vr {
     }
 
     public String strFormat(String format, Object... args) {
+        for (int i = 0; i < args.length; i++) {
+            if (args[i] instanceof Enum) {
+                args[i] = _str0(args[i]);
+            }
+        }
         return String.format(format, args);
     }
 
@@ -618,6 +624,31 @@ public class Vr {
             }
         }
         return sb.toString();
+    }
+
+    private String _str0(Object x) {
+        I18n p = I18n.get();
+        String s = "";
+        if (x != null) {
+            if (x instanceof Enum) {
+                String name = p.getEnum(x);
+                s = String.valueOf(name);
+            } else {
+                s = String.valueOf(x);
+            }
+        }
+        return s;
+    }
+
+    private Object _str1(Object x) {
+        I18n p = I18n.get();
+        String s = "";
+        if (x instanceof Enum) {
+            String name = p.getEnum(x);
+            return String.valueOf(name);
+        } else {
+            return x;
+        }
     }
 
     public String strcatsep(String sep, Object... a) {
@@ -1483,6 +1514,29 @@ public class Vr {
         for (Object x : objects) {
             String name = e.getMainFieldValue(x);
             String id = VrUPAUtils.objToJson(x, e.getDataType()).toString();
+            list.add(FacesUtils.createSelectItem(id, name));
+        }
+        return list;
+    }
+
+    public <T> List<SelectItem> toSelectItems(List<T> objects, Function<T, Tuple2<String, String>> converter) {
+        return toSelectItems(objects, converter, true, false);
+    }
+
+    public <T> List<SelectItem> toSelectItems(List<T> objects, Function<T, Tuple2<String, String>> converter, boolean selectNone, boolean selectNull) {
+        boolean json = false;
+        //should cache this?
+        List<SelectItem> list = new ArrayList<>();
+        if (selectNone) {
+            list.add(FacesUtils.createSelectItem("", "Non Spécifié"));
+        }
+        if (selectNull) {
+            list.add(FacesUtils.createSelectItem(NULL_VALUE_STR, "--Valeur Nulle--"));
+        }
+        for (T x : objects) {
+            Tuple2<String, String> s = converter.apply(x);
+            String id = json ? new JsonPrimitive((String) s.getValue1()).toString() : ((String) s.getValue1());
+            String name = s.getValue2();
             list.add(FacesUtils.createSelectItem(id, name));
         }
         return list;

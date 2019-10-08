@@ -43,13 +43,14 @@ and open the template in the editor.
                         <p:outputLabel value="à la date"/>
                         <p:calendar  style="margin-left: 5px;margin-top: 5px"
                                      value="#{myBorrowableEquipmentsCtrl.model.toDate}" />
-                        <p:outputLabel value="confirmer avec"/>
-                        <p:selectOneMenu  style="margin-left: 5px;margin-top: 5px"
-                                          class="form-control vr-form-control"
-                                          value="#{myBorrowableEquipmentsCtrl.model.visaUser}"
-                                          converter="#{vr.entityObjConverter('AppUser')}"
-                                          filter="true" filterMatchMode="contains"
-                                          >
+                        <p:outputLabel rendered="#{myBorrowableEquipmentsCtrl.model.requireVisaUser}"  value="confirmer avec"/>
+                        <p:selectOneMenu  
+                            rendered="#{myBorrowableEquipmentsCtrl.model.requireVisaUser}"                 
+                            style="margin-left: 5px;margin-top: 5px"
+                            class="form-control vr-form-control"
+                            value="#{myBorrowableEquipmentsCtrl.model.visaUser}"
+                            filter="true" filterMatchMode="contains"
+                            >
                             <f:selectItems value="#{myBorrowableEquipmentsCtrl.model.visaUsers}"/>
                         </p:selectOneMenu>
                         <p:outputLabel value="emprunter à" rendered="#{myBorrowableEquipmentsCtrl.model.delegatedBorrow}"/>
@@ -115,13 +116,10 @@ and open the template in the editor.
                                  style="width: 40px ; height: 40px; margin-right: 10px;"
                                  alt="Image"
                                  onclick="document.getElementById('mainPhotoImg').src = '#{vr.getImageUrl(i.photo,null)}';
-                                         $('#' + PF('photodlg').id).find('.ui-dialog-title')[0].textContent = '#{i.name}';
-                                         PF('photodlg').show();"/>
+                                 $('#' + PF('photodlg').id).find('.ui-dialog-title')[0].textContent = '#{i.name}';
+                                 PF('photodlg').show();"/>
                         </p:column>
                         <!--styleClass="ui-widget-header"--> 
-                        <p:column headerText="# Série">
-                            <p:outputLabel value="#{i.serial}"/>
-                        </p:column>
                         <p:column headerText="Type" style="width: 200px;">
                             <p:outputLabel value="#{i.equipment.type.name}"/>
                         </p:column>

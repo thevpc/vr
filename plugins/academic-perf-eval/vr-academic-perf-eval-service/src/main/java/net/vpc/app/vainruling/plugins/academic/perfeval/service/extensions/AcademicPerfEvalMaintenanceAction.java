@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 import java.util.logging.Logger;
+import net.vpc.app.vainruling.core.service.ProfileRightBuilder;
 import net.vpc.app.vainruling.core.service.extensions.VrMaintenanceAction;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.AcademicPerfEvalPlugin;
 import org.springframework.stereotype.Service;
@@ -44,8 +45,10 @@ public class AcademicPerfEvalMaintenanceAction implements VrMaintenanceAction{
 
     @Override
     public void run() {
-        VrApp.getBean(CorePlugin.class).createRight(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_STUDENT_FEEDBACK, AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_STUDENT_FEEDBACK);
-        VrApp.getBean(CorePlugin.class).createRight(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_TEACHER_STAT_FEEDBACK, AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_TEACHER_STAT_FEEDBACK);
+        ProfileRightBuilder b = new ProfileRightBuilder();
+        b.addName(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_STUDENT_FEEDBACK);
+        b.addName(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_TEACHER_STAT_FEEDBACK);
+        b.execute();
         Map<String, AcademicFeedbackSession> sessions = new HashMap<>();
         PersistenceUnit pu = UPA.getPersistenceUnit();
         for (AcademicFeedbackSession session : pu.<AcademicFeedbackSession>findAll(AcademicFeedbackSession.class)) {

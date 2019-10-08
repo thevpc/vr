@@ -86,6 +86,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.function.Function;
 import java.util.logging.Logger;
+import net.vpc.app.vainruling.core.service.ProfileRightBuilder;
 
 import net.vpc.app.vainruling.core.service.plugins.VrPlugin;
 import net.vpc.app.vainruling.core.service.util.DefaultObjectToMapConverter;
@@ -142,9 +143,11 @@ public class AcademicPlugin {
         if (core == null) {
             core = CorePlugin.get();
         }
+        ProfileRightBuilder b = new ProfileRightBuilder();
         for (String r : AcademicPluginSecurity.RIGHTS_ACADEMIC) {
-            core.createRight(r, r);
+            b.addName(r);
         }
+        b.execute();
 
         for (AcademicPluginBody body : bodies) {
             body.setContext(bodyContext);

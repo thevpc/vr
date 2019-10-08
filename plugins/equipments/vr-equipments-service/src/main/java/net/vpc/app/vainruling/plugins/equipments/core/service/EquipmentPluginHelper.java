@@ -16,7 +16,7 @@ public class EquipmentPluginHelper {
         UPA.getPersistenceUnit().invokePrivileged(new VoidAction() {
             @Override
             public void run() {
-                CorePlugin.get().createRight(_rightName, _rightName);
+                CorePlugin.get().addProfileRightName(_rightName, _rightName);
             }
         });
     }

@@ -16,13 +16,19 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.stream.Collectors;
 import net.vpc.app.vainruling.core.service.CorePlugin;
+import net.vpc.app.vainruling.core.service.CorePluginSecurity;
+import net.vpc.app.vainruling.core.service.ProfileRightBuilder;
+import net.vpc.app.vainruling.core.service.VrApp;
+import net.vpc.app.vainruling.core.service.model.AppProfile;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.model.AppUserType;
+import net.vpc.app.vainruling.core.service.model.strict.AppUserStrict;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.plugins.equipments.borrow.model.EquipmentBorrowLog;
 import net.vpc.app.vainruling.plugins.equipments.borrow.model.EquipmentBorrowRequest;
 import net.vpc.app.vainruling.plugins.equipments.borrow.model.EquipmentBorrowRequestStatus;
 import net.vpc.app.vainruling.plugins.equipments.borrow.model.EquipmentBorrowVisaStatus;
+import net.vpc.app.vainruling.plugins.equipments.borrow.model.EquipmentBorrowWorkflow;
 import net.vpc.app.vainruling.plugins.equipments.borrow.model.EquipmentReturnBorrowedLog;
 import net.vpc.app.vainruling.plugins.equipments.borrow.model.info.EquipmentBorrowOperatorType;
 import net.vpc.app.vainruling.plugins.equipments.borrow.model.info.EquipmentBorrowRequestFilter;
@@ -32,6 +38,9 @@ import net.vpc.app.vainruling.plugins.equipments.core.model.Equipment;
 import net.vpc.app.vainruling.plugins.equipments.core.model.EquipmentActionType;
 import net.vpc.app.vainruling.plugins.equipments.core.model.EquipmentStatusLog;
 import net.vpc.app.vainruling.plugins.equipments.core.model.EquipmentStatusType;
+import net.vpc.app.vainruling.plugins.equipments.core.model.EquipmentType;
+import net.vpc.app.vainruling.plugins.equipments.core.service.EquipmentPluginSecurity;
+import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.UPA;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,24 +57,106 @@ public class EquipmentBorrowService {
     private CorePlugin core;
 
     public void startService() {
-        core.findOrCreateProfile("BorrowSuperOperator");
-        core.findOrCreateProfile("BorrowOperator");
-        core.findOrCreateProfile("BorrowVisa");
+        AppProfile sop = core.findOrCreateProfile("BorrowSuperOperator");
+        AppProfile op = core.findOrCreateProfile("BorrowOperator");
+        AppProfile v = core.findOrCreateProfile("BorrowVisa");
+        AppProfile br = core.findOrCreateProfile("Borrower");
+        AppProfile t = core.findOrCreateProfile("Teacher");
+        AppProfile s = core.findOrCreateProfile("Student");
+        AppProfile tp = core.findOrCreateProfile("TechnicianPlus");
+        ProfileRightBuilder b = new ProfileRightBuilder();
+        b.addNames(EquipmentPluginSecurity.RIGHTS_CORE);
+
+        b.addProfileRight(sop.getId(), EquipmentPluginSecurity.RIGHT_CUSTOM_EQUIPMENT_BORROW_VISA);
+        b.addProfileRight(v.getId(), EquipmentPluginSecurity.RIGHT_CUSTOM_EQUIPMENT_BORROW_VISA);
+        b.addProfileRight(op.getId(), EquipmentPluginSecurity.RIGHT_CUSTOM_EQUIPMENT_BORROW_VISA);
+
+        b.addProfileRight(sop.getId(), EquipmentPluginSecurity.RIGHT_CUSTOM_EQUIPMENT_RETURN_BORROWED);
+        b.addProfileRight(v.getId(), EquipmentPluginSecurity.RIGHT_CUSTOM_EQUIPMENT_RETURN_BORROWED);
+        b.addProfileRight(op.getId(), EquipmentPluginSecurity.RIGHT_CUSTOM_EQUIPMENT_RETURN_BORROWED);
+
+        b.addProfileRight(sop.getId(), EquipmentPluginSecurity.RIGHT_CUSTOM_EQUIPMENT_BORROWABLE);
+        b.addProfileRight(op.getId(), EquipmentPluginSecurity.RIGHT_CUSTOM_EQUIPMENT_BORROWABLE);
+        b.addProfileRight(br.getId(), EquipmentPluginSecurity.RIGHT_CUSTOM_EQUIPMENT_BORROWABLE);
+
+        b.addProfileRight(br.getId(), EquipmentPluginSecurity.RIGHT_CUSTOM_EQUIPMENT_BORROWED);
+        b.execute();
+        core.addProfileParents("Teacher", "Borrower", "BorrowVisa");
+        core.addProfileParents("Student", "Borrower");
+        core.addProfileParents("HeadOfDepartment", "BorrowSuperOperator");
+        core.addProfileParents("TechnicianPlus", "BorrowOperator");
+
+        ProfileRightBuilder pb = new ProfileRightBuilder();
+        pb.add(br.getId(), "EquipmentActionType.Load", "Equipment.Load", "EquipmentBorrowRequest.Load", "EquipmentBorrowRequest.Persist", "EquipmentBorrowRequest.Update");
+        pb.add(v.getId(), "EquipmentActionType.Load", "Equipment.Load", "EquipmentBorrowRequest.Load", "EquipmentBorrowRequest.Persist", "EquipmentBorrowRequest.Update");
+        pb.add(sop.getId(), "EquipmentActionType.Load", "Equipment.Load", "EquipmentBorrowRequest.Load", "EquipmentBorrowRequest.Persist", "EquipmentBorrowRequest.Update", "Equipment.Update");
+        pb.add(op.getId(), "EquipmentActionType.Load", "Equipment.Load", "EquipmentBorrowRequest.Load", "EquipmentBorrowRequest.Persist", "EquipmentBorrowRequest.Update", "Equipment.Update");
+        pb.execute();
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        Map<String, EquipmentBorrowWorkflow> r = new HashMap<>();
+        for (EquipmentBorrowWorkflow w : pu.<EquipmentBorrowWorkflow>findAll(EquipmentBorrowWorkflow.class)) {
+            r.put(w.getName(), w);
+        }
+        if (r.containsKey("NoVisa")) {
+            EquipmentBorrowWorkflow tt = new EquipmentBorrowWorkflow();
+            tt.setName("NoVisa");
+            tt.setRequireUser(false);
+            tt.setRequireOperator(true);
+            tt.setRequireSuperOperator(false);
+            tt.setImpl("superThenOpEquipmentBorrowWorkflowExtension");
+            pu.persist(tt);
+        }
+        if (r.containsKey("UserVisa")) {
+            EquipmentBorrowWorkflow tt = new EquipmentBorrowWorkflow();
+            tt.setName("UserVisa");
+            tt.setRequireUser(true);
+            tt.setRequireOperator(true);
+            tt.setRequireSuperOperator(false);
+            tt.setImpl("superThenOpEquipmentBorrowWorkflowExtension");
+            pu.persist(tt);
+        }
+        if (r.containsKey("UserAndSuperVisa")) {
+            EquipmentBorrowWorkflow tt = new EquipmentBorrowWorkflow();
+            tt.setName("UserAndSuperVisa");
+            tt.setRequireUser(true);
+            tt.setRequireOperator(true);
+            tt.setRequireSuperOperator(true);
+            tt.setImpl("superOperatorEquipmentBorrowWorkflowExtension");
+            pu.persist(tt);
+        }
+        if (r.containsKey("SuperVisa")) {
+            EquipmentBorrowWorkflow tt = new EquipmentBorrowWorkflow();
+            tt.setName("SuperVisa");
+            tt.setRequireUser(false);
+            tt.setRequireOperator(true);
+            tt.setRequireSuperOperator(true);
+            tt.setImpl("superOperatorEquipmentBorrowWorkflowExtension");
+            pu.persist(tt);
+        }
     }
 
     public EquipmentBorrowLog findBorrowLogByStatusLogId(int statusLogId) {
-        return UPA.getPersistenceUnit().createQuery("Select a from EquipmentBorrowLog a where a.statusLogId=:statusLogId")
-                .setParameter("statusLogId", statusLogId).getSingleResultOrNull();
+        _requireBorrowRole();
+        return UPA.getPersistenceUnit().invokePrivileged(() -> {
+            return UPA.getPersistenceUnit().createQuery("Select a from EquipmentBorrowLog a where a.statusLogId=:statusLogId")
+                    .setParameter("statusLogId", statusLogId).getSingleResultOrNull();
+        });
     }
 
     public EquipmentReturnBorrowedLog findReturnBorrowedLogByStatusLogId(int statusLogId) {
-        return UPA.getPersistenceUnit().createQuery("Select a from EquipmentReturnBorrowedLog a where a.statusLogId=:statusLogId")
-                .setParameter("statusLogId", statusLogId).getSingleResultOrNull();
+        _requireBorrowRole();
+        return UPA.getPersistenceUnit().invokePrivileged(() -> {
+            return UPA.getPersistenceUnit().createQuery("Select a from EquipmentReturnBorrowedLog a where a.statusLogId=:statusLogId")
+                    .setParameter("statusLogId", statusLogId).getSingleResultOrNull();
+        });
     }
 
     public List<EquipmentReturnBorrowedLog> findReturnBorrowedLogByBorrowLogId(int statusLogId) {
-        return UPA.getPersistenceUnit().createQuery("Select a from EquipmentReturnBorrowedLog a where a.borrowLogId=:borrowLogId")
-                .setParameter("borrowLogId", statusLogId).getResultList();
+        _requireBorrowRole();
+        return UPA.getPersistenceUnit().invokePrivileged(() -> {
+            return UPA.getPersistenceUnit().createQuery("Select a from EquipmentReturnBorrowedLog a where a.borrowLogId=:borrowLogId")
+                    .setParameter("borrowLogId", statusLogId).getResultList();
+        });
     }
 
 //    public List<EquipmentBorrowLog> findBorrowedEquipments(Integer actorId, Integer resposibleId) {
@@ -99,26 +190,30 @@ public class EquipmentBorrowService {
 //        return ret;
 //    }
     public List<Equipment> findBorrowableEquipments(Integer userId, Integer equipmentTypeId, Integer departmentId) {
-        PersistenceUnit pu = UPA.getPersistenceUnit();
-        StringBuilder sb = new StringBuilder();
-        sb.append("Select a from Equipment a where a.statusType=:statusType");
-        sb.append(" and a.borrowable=true");
-        sb.append(" and a.actualQuantity>0");
-        if (equipmentTypeId != null && equipmentTypeId >= 0) {
-            sb.append(" and a.typeId=:typeId");
-        }
-        if (departmentId != null && departmentId >= 0) {
-            sb.append(" and a.departmentId=:departmentId");
-        }
-        sb.append(" order by a.name asc");
-        return pu.createQuery(sb.toString())
-                .setParameter("statusType", EquipmentStatusType.AVAILABLE)
-                .setParameter("typeId", equipmentTypeId, equipmentTypeId != null && equipmentTypeId >= 0)
-                .setParameter("departmentId", departmentId, departmentId != null && departmentId >= 0)
-                .getResultList();
+        _requireBorrowRole();
+        return UPA.getPersistenceUnit().invokePrivileged(() -> {
+            PersistenceUnit pu = UPA.getPersistenceUnit();
+            StringBuilder sb = new StringBuilder();
+            sb.append("Select a from Equipment a where a.statusType=:statusType");
+            sb.append(" and a.borrowable=true");
+            sb.append(" and a.actualQuantity>0");
+            if (equipmentTypeId != null && equipmentTypeId >= 0) {
+                sb.append(" and a.typeId=:typeId");
+            }
+            if (departmentId != null && departmentId >= 0) {
+                sb.append(" and a.departmentId=:departmentId");
+            }
+            sb.append(" order by a.name asc");
+            return pu.createQuery(sb.toString())
+                    .setParameter("statusType", EquipmentStatusType.AVAILABLE)
+                    .setParameter("typeId", equipmentTypeId, equipmentTypeId != null && equipmentTypeId >= 0)
+                    .setParameter("departmentId", departmentId, departmentId != null && departmentId >= 0)
+                    .getResultList();
+        });
     }
 
     public List<Equipment> findEquipments() {
+        _requireBorrowRole();
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return pu.createQuery("Select a from Equipment a order by a.name")
                 .getResultList();
@@ -126,11 +221,13 @@ public class EquipmentBorrowService {
     }
 
     public List<Equipment> findEquipmentsByType(int typeId) {
-        PersistenceUnit pu = UPA.getPersistenceUnit();
-        return pu.createQuery("Select a from Equipment a where a.typeId=:typeId order by a.name")
-                .setParameter("typeId", typeId)
-                .getResultList();
-
+        _requireBorrowRole();
+        return UPA.getPersistenceUnit().invokePrivileged(() -> {
+            PersistenceUnit pu = UPA.getPersistenceUnit();
+            return pu.createQuery("Select a from Equipment a where a.typeId=:typeId order by a.name")
+                    .setParameter("typeId", typeId)
+                    .getResultList();
+        });
     }
 
     public boolean isBorrowed(int equipmentId) {
@@ -138,49 +235,60 @@ public class EquipmentBorrowService {
     }
 
     public double findEquipmentBorrowLogRemainingQuantity(int equipmentBorrowLogId) {
-        PersistenceUnit pu = UPA.getPersistenceUnit();
-        EquipmentBorrowLog e = pu.findById(EquipmentBorrowLog.class, equipmentBorrowLogId);
-        if (e == null) {
-            throw new NoSuchElementException();
-        }
-        Double d = pu.createQuery(
-                "Select sum(a.quantity) from EquipmentReturnBorrowedLog a where a.borrowLogId=:borrowLogId")
-                .setParameter("borrowLogId", equipmentBorrowLogId)
-                .getDouble();
-        double q = e.getQuantity();
-        if (d == null) {
-            return q;
-        }
-        return q - d;
+        _requireBorrowRole();
+        return UPA.getPersistenceUnit().invokePrivileged(() -> {
+            PersistenceUnit pu = UPA.getPersistenceUnit();
+            EquipmentBorrowLog e = pu.findById(EquipmentBorrowLog.class, equipmentBorrowLogId);
+            if (e == null) {
+                throw new NoSuchElementException();
+            }
+            Double d = pu.createQuery(
+                    "Select sum(a.quantity) from EquipmentReturnBorrowedLog a where a.borrowLogId=:borrowLogId")
+                    .setParameter("borrowLogId", equipmentBorrowLogId)
+                    .getDouble();
+            double q = e.getQuantity();
+            if (d == null) {
+                return q;
+            }
+            return q - d;
+        });
     }
 
     public List<EquipmentBorrowLog> findOpenBorrowLogs(Integer equipmentId, Integer borrowerId) {
-        PersistenceUnit pu = UPA.getPersistenceUnit();
-        return pu.createQuery(
-                "Select a from EquipmentBorrowLog a where a.archive=false"
-                + (VrUtils.isValidId(borrowerId) ? " and a.borrowerId=:borrowerId" : "")
-                + (VrUtils.isValidId(equipmentId) ? " and a.statusLog.equipmentId=:equipmentId" : "")
-        )
-                .setParameter("borrowerId", borrowerId, VrUtils.isValidId(borrowerId))
-                .setParameter("equipmentId", equipmentId, VrUtils.isValidId(equipmentId))
-                .getResultList();
+        _requireBorrowRole();
+        return UPA.getPersistenceUnit().invokePrivileged(() -> {
+            PersistenceUnit pu = UPA.getPersistenceUnit();
+            return pu.createQuery(
+                    "Select a from EquipmentBorrowLog a where a.archive=false"
+                    + (VrUtils.isValidId(borrowerId) ? " and a.borrowerId=:borrowerId" : "")
+                    + (VrUtils.isValidId(equipmentId) ? " and a.statusLog.equipmentId=:equipmentId" : "")
+                    + " order by a.startDate asc"
+            )
+                    .setParameter("borrowerId", borrowerId, VrUtils.isValidId(borrowerId))
+                    .setParameter("equipmentId", equipmentId, VrUtils.isValidId(equipmentId))
+                    .getResultList();
+        });
     }
 
     public List<EquipmentBorrowRequest> findOpenBorrowRequests(Integer equipmentId, Integer borrowerId) {
-        PersistenceUnit pu = UPA.getPersistenceUnit();
-        return pu.createQuery(
-                "Select a from EquipmentBorrowRequest a where a.archive=false"
-                + " and a.finalStatus != :delivered"
-                + (VrUtils.isValidId(borrowerId) ? " and a.borrowerUserId=:borrowerId" : "")
-                + (VrUtils.isValidId(equipmentId) ? " and a.equipmentId=:equipmentId" : "")
-        )
-                .setParameter("borrowerId", borrowerId, VrUtils.isValidId(borrowerId))
-                .setParameter("equipmentId", equipmentId, VrUtils.isValidId(equipmentId))
-                .setParameter("delivered", EquipmentBorrowRequestStatus.DELIVERED)
-                .getResultList();
+        _requireBorrowRole();
+        return UPA.getPersistenceUnit().invokePrivileged(() -> {
+            PersistenceUnit pu = UPA.getPersistenceUnit();
+            return pu.createQuery(
+                    "Select a from EquipmentBorrowRequest a where a.archive=false"
+                    + " and a.finalStatus != :delivered"
+                    + (VrUtils.isValidId(borrowerId) ? " and a.borrowerUserId=:borrowerId" : "")
+                    + (VrUtils.isValidId(equipmentId) ? " and a.equipmentId=:equipmentId" : "")
+                    + " order by a.creationDate asc"
+            )
+                    .setParameter("borrowerId", borrowerId, VrUtils.isValidId(borrowerId))
+                    .setParameter("equipmentId", equipmentId, VrUtils.isValidId(equipmentId))
+                    .setParameter("delivered", EquipmentBorrowRequestStatus.BORROWED)
+                    .getResultList();
+        });
     }
 
-    private AppUser resolveActor(Integer actorId) {
+    private AppUser _resolveActor(Integer actorId) {
         AppUser actorInstance = null;
         if (actorId == null || actorId <= 0) {
             actorInstance = CorePlugin.get().getCurrentUser();
@@ -197,126 +305,118 @@ public class EquipmentBorrowService {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         EquipmentBorrowRequest request = null;
         if (requestId != null) {
-            request = pu.findById(EquipmentBorrowRequest.class, requestId);
+            _requireBorrowRole();
+            request = UPA.getPersistenceUnit().invokePrivileged(() -> pu.findById(EquipmentBorrowRequest.class, requestId));
         }
         return _addBorrow(equipmentId, request, borrowerId, actorId, qty, startDate, endDate, shortDesc, longDesc);
     }
 
     private EquipmentBorrowLog _addBorrow(int equipmentId, EquipmentBorrowRequest request, int borrowerId, Integer actorId, double qty, Timestamp startDate, Timestamp endDate, String shortDesc, String longDesc) {
-        if (request.getFinalStatus() == EquipmentBorrowRequestStatus.DELIVERED || request.getFinalStatus() == null) {
+        _requireBorrowRole();
+        if (actorId == null || actorId <= 0) {
+            actorId = CorePlugin.get().getCurrentUserIdFF();
+        }
+        if(request.getBorrow()!=null){
+            return request.getBorrow();
+        }
+        Integer actorId0 = actorId;
+        return UPA.getPersistenceUnit().invokePrivileged(() -> {
+
+            if (request.getFinalStatus() == EquipmentBorrowRequestStatus.BORROWED || request.getFinalStatus() == null) {
+                if (request.getBorrow() == null) {
+                    request.setFinalStatus(EquipmentBorrowRequestStatus.ACCEPTED);
+                    request.setFinalStatusDate(new Date());
+                } else {
+                    return request.getBorrow();
+                }
+            }
+            if (request.getFinalStatus() != EquipmentBorrowRequestStatus.ACCEPTED) {
+                return null;
+            }
+            PersistenceUnit pu = UPA.getPersistenceUnit();
+            AppUser borrower = pu.findById(AppUser.class, borrowerId);
+            if (borrower == null) {
+                throw new IllegalArgumentException("Missing borrower");
+            }
+            Equipment e = pu.findById(Equipment.class, equipmentId);
+            if (e == null || !e.isBorrowable()) {
+                throw new IllegalArgumentException("Not Borrowable");
+            }
+            if (qty <= 0) {
+                throw new IllegalArgumentException("Invalid quantity");
+            }
             if (request.getBorrow() == null) {
-                request.setFinalStatus(EquipmentBorrowRequestStatus.ACCEPTED);
-                request.setFinalStatusDate(new Date());
-            } else {
-                return request.getBorrow();
-            }
-        }
-        if (request.getFinalStatus() != EquipmentBorrowRequestStatus.ACCEPTED) {
-            return null;
-        }
-        PersistenceUnit pu = UPA.getPersistenceUnit();
-        AppUser borrower = pu.findById(AppUser.class, borrowerId);
-        if (borrower == null) {
-            throw new IllegalArgumentException("Missing borrower");
-        }
-        Equipment e = pu.findById(Equipment.class, equipmentId);
-        if (e == null || !e.isBorrowable()) {
-            throw new IllegalArgumentException("Not Borrowable");
-        }
-        if (qty <= 0) {
-            throw new IllegalArgumentException("Invalid quantity");
-        }
-        if (request.getBorrow() == null) {
-            EquipmentBorrowLog borr = new EquipmentBorrowLog();
-            if (startDate == null) {
-                startDate = new Timestamp(System.currentTimeMillis());
-            }
-            if (endDate == null) {
-                endDate = startDate;
-            }
-            borr.setStartDate(startDate);
-            borr.setEndDate(endDate);
-            borr.setQuantity(qty);
-            borr.setBorrower(borrower);
+                EquipmentBorrowLog borr = new EquipmentBorrowLog();
+                Timestamp startDate0 = startDate;
+                Timestamp endDate0 = endDate;
+                if (startDate0 == null) {
+                    startDate0 = new Timestamp(System.currentTimeMillis());
+                }
+                if (endDate0 == null) {
+                    endDate0 = startDate0;
+                }
+                borr.setStartDate(startDate0);
+                borr.setEndDate(endDate0);
+                borr.setQuantity(qty);
+                borr.setBorrower(borrower);
 
-            EquipmentStatusLog statusLog = new EquipmentStatusLog();
-            statusLog.setEquipment(e);
-            statusLog.setAction(getBorrowAction());
-            statusLog.setActor(resolveActor(actorId));
-            statusLog.setName(shortDesc);
-            statusLog.setDescription(longDesc);
-            statusLog.setStartDate(borr.getStartDate());
-            statusLog.setEndDate(borr.getEndDate());
-            statusLog.setOutQty(borr.getQuantity());
-            statusLog.setResponsible(borr.getBorrower());
-            statusLog.setType(EquipmentStatusType.AVAILABLE);
+                EquipmentStatusLog statusLog = new EquipmentStatusLog();
+                statusLog.setEquipment(e);
+                statusLog.setAction(getBorrowAction());
+                statusLog.setActor(_resolveActor(actorId0));
+                statusLog.setName(shortDesc);
+                statusLog.setDescription(longDesc);
+                statusLog.setStartDate(borr.getStartDate());
+                statusLog.setEndDate(borr.getEndDate());
+                statusLog.setOutQty(borr.getQuantity());
+                statusLog.setResponsible(borr.getBorrower());
+                statusLog.setType(EquipmentStatusType.AVAILABLE);
 
-            pu.persist(statusLog);
+                pu.persist(statusLog);
 
-            borr.setStatusLog(statusLog);
-            pu.persist(borr);
-            request.setBorrow(borr);
-            request.setFinalStatus(EquipmentBorrowRequestStatus.DELIVERED);
-            request.setFinalStatusDate(new Date());
-            pu.merge(request);
-            pu.updateFormulas(Equipment.class, e.getId());
-            return borr;
-        } else {
-            if (request.getFinalStatus() != EquipmentBorrowRequestStatus.DELIVERED) {
-                request.setFinalStatus(EquipmentBorrowRequestStatus.DELIVERED);
+                borr.setStatusLog(statusLog);
+                pu.persist(borr);
+                request.setBorrow(borr);
+                request.setFinalStatus(EquipmentBorrowRequestStatus.BORROWED);
                 request.setFinalStatusDate(new Date());
                 pu.merge(request);
+                pu.updateFormulas(Equipment.class, e.getId());
+                return borr;
+            } else {
+                if (request.getFinalStatus() != EquipmentBorrowRequestStatus.BORROWED) {
+                    request.setFinalStatus(EquipmentBorrowRequestStatus.BORROWED);
+                    request.setFinalStatusDate(new Date());
+                    pu.merge(request);
+                    pu.updateFormulas(Equipment.class, e.getId());
+                }
             }
-        }
-        return request.getBorrow();
+            return request.getBorrow();
+        });
     }
 
     public boolean returnBorrowed(int equipmentId, Integer borrowerId, Integer actorId, double qty, Timestamp returnDate, String shortDesc, String longDesc) {
+        if (qty <= 0 || Double.isNaN(qty) || Double.isInfinite(qty)) {
+            return true;
+        }
+        double qty0 = qty;
         if (returnDate == null) {
             returnDate = new Timestamp(System.currentTimeMillis());
         }
-        PersistenceUnit pu = UPA.getPersistenceUnit();
-        for (EquipmentBorrowLog borrowLog : findOpenBorrowLogs(equipmentId, borrowerId)) {
-            if (qty <= 0) {
-                return true;
-            }
-            double q = findEquipmentBorrowLogRemainingQuantity(borrowLog.getId());
-            if (q <= 0) {
-                if (!borrowLog.isArchive()) {
-                    borrowLog.setArchive(true);
-                    pu.merge(borrowLog);
-                }
-                EquipmentBorrowRequest r = findBorrowRequestByBorrowLog(borrowLog.getId());
-                if (r != null && !r.isArchive()) {
-                    r.setArchive(true);
-                }
-            } else {
-                if (qty >= q) {
-                    qty -= q;
-                }
-                EquipmentReturnBorrowedLog rblog = new EquipmentReturnBorrowedLog();
-                rblog.setBorrowLog(borrowLog);
-                rblog.setQuantity(q);
-                rblog.setReturnDate(returnDate);
+        Timestamp returnDate0 = returnDate;
+        Integer actorId0 = actorId;
+        if (actorId == null || actorId <= 0) {
+            actorId = CorePlugin.get().getCurrentUserIdFF();
+        }
 
-                EquipmentStatusLog slog = new EquipmentStatusLog();
-                slog.setActor(resolveActor(actorId));
-                slog.setAction(getReturnBorrowedAction());
-                slog.setEquipment(borrowLog.getStatusLog().getEquipment());
-                slog.setDescription(longDesc);
-                slog.setName(shortDesc);
-                slog.setInQty(q);
-                slog.setResponsible(borrowLog.getBorrower());
-                slog.setStartDate(returnDate);
-                slog.setEndDate(returnDate);
-                slog.setType(EquipmentStatusType.AVAILABLE);
-                slog.setAcquisition(null);
-                pu.persist(slog);
-
-                rblog.setStatusLog(slog);
-                pu.persist(rblog);
-                double q2 = findEquipmentBorrowLogRemainingQuantity(borrowLog.getId());
-                if (q2 <= 0) {
+        return UPA.getPersistenceUnit().invokePrivileged(() -> {
+            double qty2 = qty0;
+            PersistenceUnit pu = UPA.getPersistenceUnit();
+            for (EquipmentBorrowLog borrowLog : findOpenBorrowLogs(equipmentId, borrowerId)) {
+                if (qty2 <= 0) {
+                    return true;
+                }
+                double q = findEquipmentBorrowLogRemainingQuantity(borrowLog.getId());
+                if (q <= 0) {
                     if (!borrowLog.isArchive()) {
                         borrowLog.setArchive(true);
                         pu.merge(borrowLog);
@@ -325,10 +425,51 @@ public class EquipmentBorrowService {
                     if (r != null && !r.isArchive()) {
                         r.setArchive(true);
                     }
+                } else {
+                    if (qty2 >= q) {
+                        qty2 -= q;
+                    }
+                    EquipmentReturnBorrowedLog rblog = new EquipmentReturnBorrowedLog();
+                    rblog.setBorrowLog(borrowLog);
+                    rblog.setQuantity(q);
+                    rblog.setReturnDate(returnDate0);
+
+                    EquipmentStatusLog slog = new EquipmentStatusLog();
+                    slog.setActor(_resolveActor(actorId0));
+                    slog.setAction(getReturnBorrowedAction());
+                    slog.setEquipment(borrowLog.getStatusLog().getEquipment());
+                    slog.setDescription(longDesc);
+                    slog.setName(shortDesc);
+                    slog.setInQty(q);
+                    slog.setResponsible(borrowLog.getBorrower());
+                    slog.setStartDate(returnDate0);
+                    slog.setEndDate(returnDate0);
+                    slog.setType(EquipmentStatusType.AVAILABLE);
+                    slog.setAcquisition(null);
+                    pu.persist(slog);
+
+                    rblog.setStatusLog(slog);
+                    pu.persist(rblog);
+                    double q2 = findEquipmentBorrowLogRemainingQuantity(borrowLog.getId());
+                    if (q2 <= 0) {
+                        if (!borrowLog.isArchive()) {
+                            borrowLog.setArchive(true);
+                            pu.merge(borrowLog);
+                        }
+                        EquipmentBorrowRequest r = findBorrowRequestByBorrowLog(borrowLog.getId());
+                        if (r != null && (!r.isArchive() || r.getFinalStatus() != EquipmentBorrowRequestStatus.RETURNED)) {
+                            r.setArchive(true);
+                            r.setFinalStatus(EquipmentBorrowRequestStatus.RETURNED);
+                            r.setFinalStatusDate(new Date());
+                            pu.merge(r);
+                        }
+                    }
                 }
+                pu.updateFormulas(EquipmentBorrowLog.class, borrowLog.getId());
             }
-        }
-        return qty != 0;
+            pu.updateFormulas(Equipment.class, equipmentId);
+            return qty2 != 0;
+        });
     }
 
     public EquipmentActionType getReturnBorrowedAction() {
@@ -383,83 +524,99 @@ public class EquipmentBorrowService {
                 .getResultList();
     }
 
-    public List<AppUser> findBorrowVisaUsers() {
-        return CorePlugin.get().findUsersByProfile("BorrowVisa");
+    private void _requireBorrowRole() {
+        CorePluginSecurity.requireAnyOfProfiles("Borrower", "BorrowVisa", "BorrowOperator", "BorrowSuperOperator");
+    }
+
+    public List<AppUserStrict> findBorrowVisaUsers() {
+        _requireBorrowRole();
+        return UPA.getPersistenceUnit().invokePrivileged(() -> CorePlugin.get().findUsersByProfile("BorrowVisa").stream().map(AppUserStrict::new).collect(Collectors.toList()));
+    }
+
+    public List<AppUserStrict> findBorrowUsers() {
+        _requireBorrowRole();
+        return UPA.getPersistenceUnit().invokePrivileged(() -> CorePlugin.get().findUsersByProfile("Borrower").stream().map(AppUserStrict::new).collect(Collectors.toList()));
     }
 
     public boolean isBorrowVisaUser(Integer userId) {
-        Set<String> profiles = CorePlugin.get().findProfilesByUser(userId).stream().map(x -> x.getCode()).collect(Collectors.toSet());
+        _requireBorrowRole();
+        Set<String> profiles = UPA.getPersistenceUnit().invokePrivileged(() -> CorePlugin.get().findProfilesByUser(userId).stream().map(x -> x.getCode()).collect(Collectors.toSet()));
         return profiles.contains("BorrowVisa");
     }
 
     public boolean isBorrowOperatorUser(Integer userId) {
-        Set<String> profiles = CorePlugin.get().findProfilesByUser(userId).stream().map(x -> x.getCode()).collect(Collectors.toSet());
+        _requireBorrowRole();
+        Set<String> profiles = UPA.getPersistenceUnit().invokePrivileged(() -> CorePlugin.get().findProfilesByUser(userId).stream().map(x -> x.getCode()).collect(Collectors.toSet()));
         return profiles.contains("BorrowOperator");
     }
 
     public boolean isBorrowSuperOperatorUser(Integer userId) {
-        Set<String> profiles = CorePlugin.get().findProfilesByUser(userId).stream().map(x -> x.getCode()).collect(Collectors.toSet());
+        _requireBorrowRole();
+        Set<String> profiles = UPA.getPersistenceUnit().invokePrivileged(() -> CorePlugin.get().findProfilesByUser(userId).stream().map(x -> x.getCode()).collect(Collectors.toSet()));
         return profiles.contains("BorrowSuperOperator");
     }
 
     public List<AppUser> findBorrowerUsers(Integer equipmentDepartmentId, boolean includeBorrowUser, boolean includeVisaUser) {
-        final CorePlugin core = CorePlugin.get();
-        List<Integer> allUsers = new ArrayList<>();
+        _requireBorrowRole();
+        return UPA.getPersistenceUnit().invokePrivileged(() -> {
+            final CorePlugin core = CorePlugin.get();
+            List<Integer> allUsers = new ArrayList<>();
 
-        List<Integer> userIds = null;
-        if (includeBorrowUser) {
-            userIds = UPA.getPersistenceUnit().createQuery("Select distinct(a.borrowerUserId) from EquipmentBorrowRequest a where a.archive=false"
-                    + ((equipmentDepartmentId != null && equipmentDepartmentId >= 0) ? " and a.statusLog.equipment.departmentId=:departmentId" : "")
-            )
-                    .setParameter("departmentId", equipmentDepartmentId, equipmentDepartmentId != null && equipmentDepartmentId >= 0)
-                    .<Integer>getResultList();
-            allUsers.addAll(userIds);
-        }
+            List<Integer> userIds = null;
+            if (includeBorrowUser) {
+                userIds = UPA.getPersistenceUnit().createQuery("Select distinct(a.borrowerUserId) from EquipmentBorrowRequest a where a.archive=false"
+                        + ((equipmentDepartmentId != null && equipmentDepartmentId >= 0) ? " and a.statusLog.equipment.departmentId=:departmentId" : "")
+                )
+                        .setParameter("departmentId", equipmentDepartmentId, equipmentDepartmentId != null && equipmentDepartmentId >= 0)
+                        .<Integer>getResultList();
+                allUsers.addAll(userIds);
+            }
 
-        if (includeVisaUser) {
-            userIds = UPA.getPersistenceUnit().createQuery("Select distinct(a.visaUserId) from EquipmentBorrowRequest a where a.archive=false"
-                    + ((equipmentDepartmentId != null && equipmentDepartmentId >= 0) ? " and a.statusLog.equipment.departmentId=:departmentId" : "")
-            )
-                    .setParameter("departmentId", equipmentDepartmentId, equipmentDepartmentId != null && equipmentDepartmentId >= 0)
-                    .<Integer>getResultList();
-            allUsers.addAll(userIds);
+            if (includeVisaUser) {
+                userIds = UPA.getPersistenceUnit().createQuery("Select distinct(a.visaUserId) from EquipmentBorrowRequest a where a.archive=false"
+                        + ((equipmentDepartmentId != null && equipmentDepartmentId >= 0) ? " and a.statusLog.equipment.departmentId=:departmentId" : "")
+                )
+                        .setParameter("departmentId", equipmentDepartmentId, equipmentDepartmentId != null && equipmentDepartmentId >= 0)
+                        .<Integer>getResultList();
+                allUsers.addAll(userIds);
 
-            userIds = UPA.getPersistenceUnit().createQuery("Select distinct(a.operatorUserId) from EquipmentBorrowRequest a where a.archive=false"
-                    + ((equipmentDepartmentId != null && equipmentDepartmentId >= 0) ? " and a.statusLog.equipment.departmentId=:departmentId" : "")
-            )
-                    .setParameter("departmentId", equipmentDepartmentId, equipmentDepartmentId != null && equipmentDepartmentId >= 0)
-                    .<Integer>getResultList();
-            allUsers.addAll(userIds);
+                userIds = UPA.getPersistenceUnit().createQuery("Select distinct(a.operatorUserId) from EquipmentBorrowRequest a where a.archive=false"
+                        + ((equipmentDepartmentId != null && equipmentDepartmentId >= 0) ? " and a.statusLog.equipment.departmentId=:departmentId" : "")
+                )
+                        .setParameter("departmentId", equipmentDepartmentId, equipmentDepartmentId != null && equipmentDepartmentId >= 0)
+                        .<Integer>getResultList();
+                allUsers.addAll(userIds);
 
-            userIds = UPA.getPersistenceUnit().createQuery("Select distinct(a.superOperatorUserId) from EquipmentBorrowRequest a where a.archive=false"
-                    + ((equipmentDepartmentId != null && equipmentDepartmentId >= 0) ? " and a.statusLog.equipment.departmentId=:departmentId" : "")
-            )
-                    .setParameter("departmentId", equipmentDepartmentId, equipmentDepartmentId != null && equipmentDepartmentId >= 0)
-                    .<Integer>getResultList();
-            allUsers.addAll(userIds);
+                userIds = UPA.getPersistenceUnit().createQuery("Select distinct(a.superOperatorUserId) from EquipmentBorrowRequest a where a.archive=false"
+                        + ((equipmentDepartmentId != null && equipmentDepartmentId >= 0) ? " and a.statusLog.equipment.departmentId=:departmentId" : "")
+                )
+                        .setParameter("departmentId", equipmentDepartmentId, equipmentDepartmentId != null && equipmentDepartmentId >= 0)
+                        .<Integer>getResultList();
+                allUsers.addAll(userIds);
 
-            List<Integer> deptIds = UPA.getPersistenceUnit().createQuery("Select distinct(a.statusLog.equipment.departmentId) from EquipmentBorrowRequest a where a.archive=false"
-                    + ((equipmentDepartmentId != null && equipmentDepartmentId >= 0) ? " and a.statusLog.equipment.departmentId=:departmentId" : "")
-            )
-                    .setParameter("departmentId", equipmentDepartmentId, equipmentDepartmentId != null && equipmentDepartmentId >= 0)
-                    .<Integer>getResultList();
-            deptIds.remove(null);
-            for (Integer deptId : deptIds) {
-                AppUser h = core.findHeadOfDepartment(deptId);
-                if (h != null) {
-                    allUsers.add(h.getId());
-                }
-                AppUserType tech = core.findUserType("Technician");
-                if (tech != null) {
-                    for (AppUser appUser : core.findUsersByProfileFilter(null, tech.getId(), deptId)) {
-                        allUsers.add(deptId);
+                List<Integer> deptIds = UPA.getPersistenceUnit().createQuery("Select distinct(a.statusLog.equipment.departmentId) from EquipmentBorrowRequest a where a.archive=false"
+                        + ((equipmentDepartmentId != null && equipmentDepartmentId >= 0) ? " and a.statusLog.equipment.departmentId=:departmentId" : "")
+                )
+                        .setParameter("departmentId", equipmentDepartmentId, equipmentDepartmentId != null && equipmentDepartmentId >= 0)
+                        .<Integer>getResultList();
+                deptIds.remove(null);
+                for (Integer deptId : deptIds) {
+                    AppUser h = core.findHeadOfDepartment(deptId);
+                    if (h != null) {
+                        allUsers.add(h.getId());
+                    }
+                    AppUserType tech = core.findUserType("Technician");
+                    if (tech != null) {
+                        for (AppUser appUser : core.findUsersByProfileFilter(null, tech.getId(), deptId)) {
+                            allUsers.add(deptId);
+                        }
                     }
                 }
             }
-        }
 
-        allUsers.remove(null);
-        return allUsers.stream().map(x -> core.findUser(x)).filter(x -> x != null).collect(Collectors.toList());
+            allUsers.remove(null);
+            return allUsers.stream().map(x -> core.findUser(x)).filter(x -> x != null).collect(Collectors.toList());
+        });
     }
 
     public List<EquipmentForResponsibleInfo> findBorrowedEquipmentsInfo(Integer borrowerId) {
@@ -473,7 +630,7 @@ public class EquipmentBorrowService {
             return Collections.emptyList();
         }
         AppUser uu = core.findUser(userId);
-        if (uu==null) {
+        if (uu == null) {
             return Collections.emptyList();
         }
         Map<Integer, EquipmentForResponsibleInfo> map = new HashMap<>();
@@ -481,22 +638,24 @@ public class EquipmentBorrowService {
         if (profiles.contains("BorrowVisa")) {
             for (EquipmentBorrowRequest e : findRequestsByBorrower(new EquipmentBorrowRequestFilter()
                     .setVisaUserId(userId)
-//                    .setVisaStatus(EquipmentBorrowRequestStatus.PENDING)
-                    .setFinalStatus(EquipmentBorrowRequestStatus.PENDING,EquipmentBorrowRequestStatus.ACCEPTED)
+                    //                    .setVisaStatus(EquipmentBorrowRequestStatus.PENDING)
+                    .setFinalStatus(EquipmentBorrowRequestStatus.PENDING, EquipmentBorrowRequestStatus.ACCEPTED)
                     .setArchive(false)
+                    .setCancelled(false)
             )) {
                 EquipmentForResponsibleInfo old = map.get(e.getEquipment().getId());
                 if (old == null) {
-                    map.put(e.getEquipment().getId(), new EquipmentForResponsibleInfo(EquipmentBorrowOperatorType.VISA, e));
+                    map.put(e.getEquipment().getId(), new EquipmentForResponsibleInfo(EquipmentBorrowOperatorType.USER, e));
                 }
             }
         }
         if (profiles.contains("BorrowOperator")) {
             for (EquipmentBorrowRequest e : findRequestsByBorrower(new EquipmentBorrowRequestFilter()
-//                    .setOperatorStatus(EquipmentBorrowRequestStatus.PENDING)
-                    .setFinalStatus(EquipmentBorrowRequestStatus.PENDING,EquipmentBorrowRequestStatus.ACCEPTED)
+                    //                    .setOperatorStatus(EquipmentBorrowRequestStatus.PENDING)
+                    .setFinalStatus(EquipmentBorrowRequestStatus.PENDING, EquipmentBorrowRequestStatus.ACCEPTED)
                     .setDepartmentId(uu.getDepartment().getId())
                     .setArchive(false)
+                    .setCancelled(false)
             )) {
                 EquipmentForResponsibleInfo old = map.get(e.getEquipment().getId());
                 if (old == null) {
@@ -506,10 +665,11 @@ public class EquipmentBorrowService {
         }
         if (profiles.contains("BorrowSuperOperator")) {
             for (EquipmentBorrowRequest e : findRequestsByBorrower(new EquipmentBorrowRequestFilter()
-//                    .setSuperOperatorStatus(EquipmentBorrowRequestStatus.PENDING)
-                    .setFinalStatus(EquipmentBorrowRequestStatus.PENDING,EquipmentBorrowRequestStatus.ACCEPTED)
+                    //                    .setSuperOperatorStatus(EquipmentBorrowRequestStatus.PENDING)
+                    .setFinalStatus(EquipmentBorrowRequestStatus.PENDING, EquipmentBorrowRequestStatus.ACCEPTED)
                     .setDepartmentId(uu.getDepartment().getId())
                     .setArchive(false)
+                    .setCancelled(false)
             )) {
                 EquipmentForResponsibleInfo old = map.get(e.getEquipment().getId());
                 if (old == null) {
@@ -526,132 +686,156 @@ public class EquipmentBorrowService {
         if (userId == null || userId < 0) {
             return Collections.emptyList();
         }
-        Map<Integer, EquipmentForResponsibleInfo> map = new HashMap<>();
-        for (Equipment e : findBorrowableEquipments(userId, equipmentTypeId, departmentId)) {
-            map.put(e.getId(), new EquipmentForResponsibleInfo(EquipmentBorrowOperatorType.BORROWER, e));
-        }
-        for (EquipmentBorrowLog item : findOpenBorrowLogs(null, userId)) {
-            map.remove(item.getStatusLog().getEquipment().getId());
-        }
-        for (EquipmentBorrowRequest item : findOpenBorrowRequests(null, userId)) {
-            map.remove(item.getEquipment().getId());
-        }
-        ArrayList<EquipmentForResponsibleInfo> list = new ArrayList<>(map.values());
-        list.sort(null);
-        return list;
+        return UPA.getPersistenceUnit().invokePrivileged(() -> {
+            Map<Integer, EquipmentForResponsibleInfo> map = new HashMap<>();
+            for (Equipment e : findBorrowableEquipments(userId, equipmentTypeId, departmentId)) {
+                map.put(e.getId(), new EquipmentForResponsibleInfo(EquipmentBorrowOperatorType.BORROWER, e));
+            }
+            for (EquipmentBorrowLog item : findOpenBorrowLogs(null, userId)) {
+                map.remove(item.getStatusLog().getEquipment().getId());
+            }
+            for (EquipmentBorrowRequest item : findOpenBorrowRequests(null, userId)) {
+                map.remove(item.getEquipment().getId());
+            }
+            ArrayList<EquipmentForResponsibleInfo> list = new ArrayList<>(map.values());
+            list.sort(null);
+            return list;
+        });
     }
 
     public List<EquipmentForResponsibleInfo> findBorrowedEquipmentsForResponsibleInfo(Integer userId, Integer equipmentTypeId, Integer departmentId) {
-//        if (userId < 0) {
-//            return Collections.emptyList();
-//        }
-        Map<Integer, EquipmentForResponsibleInfo> map = new HashMap<>();
-        for (EquipmentBorrowLog e : findOpenBorrowLogs(null, userId)) {
-            map.put(e.getId(), new EquipmentForResponsibleInfo(EquipmentBorrowOperatorType.BORROWER, e));
-        }
-        for (EquipmentBorrowRequest e : findRequestsByBorrower(
-                new EquipmentBorrowRequestFilter().setBorrowerUserId(userId)
-                        .setEquipmentTypeId(equipmentTypeId).setDepartmentId(departmentId)
-                        .setArchive(false))) {
-            EquipmentForResponsibleInfo old = map.get(e.getEquipment().getId());
-            if (old == null) {
-                map.put(e.getEquipment().getId(), new EquipmentForResponsibleInfo(EquipmentBorrowOperatorType.BORROWER, e));
+        return UPA.getPersistenceUnit().invokePrivileged(() -> {
+            Map<Integer, EquipmentForResponsibleInfo> logMap = new HashMap<>();
+            Map<Integer, EquipmentForResponsibleInfo> reqMap = new HashMap<>();
+            for (EquipmentBorrowLog e : findOpenBorrowLogs(null, userId)) {
+                logMap.put(e.getId(), new EquipmentForResponsibleInfo(EquipmentBorrowOperatorType.BORROWER, e));
             }
-        }
-        ArrayList<EquipmentForResponsibleInfo> list = new ArrayList<>(map.values());
-        list.sort(null);
-        return list;
+            for (EquipmentBorrowRequest e : findRequestsByBorrower(
+                    new EquipmentBorrowRequestFilter().setBorrowerUserId(userId)
+                            .setEquipmentTypeId(equipmentTypeId).setDepartmentId(departmentId)
+                            .setArchive(false))) {
+                EquipmentBorrowLog b = e.getBorrow();
+                if (b != null && logMap.containsKey(b.getId())) {
+                    logMap.remove(b.getId());
+                }
+                reqMap.put(e.getId(), new EquipmentForResponsibleInfo(EquipmentBorrowOperatorType.BORROWER, e));
+            }
+            ArrayList<EquipmentForResponsibleInfo> list = new ArrayList<>(logMap.values());
+            list.addAll(reqMap.values());
+            list.sort(null);
+            return list;
+        });
     }
 
-//    public List<EquipmentBorrowRequest> findEquipmentRequestsByBorrowerUser(Integer userId, Integer visaUserId,Integer equipmentTypeId, Integer departmentId, Boolean requestHistory) {
     public List<EquipmentBorrowRequest> findRequestsByBorrower(EquipmentBorrowRequestFilter filter) {
-//        EquipmentBorrowRequest prototype;
+        return UPA.getPersistenceUnit().invokePrivileged(() -> {
 
-        StringBuilder sb = new StringBuilder();
-        Map<String, Object> extra = new HashMap<>();
-        int pIndex = 0;
+            StringBuilder sb = new StringBuilder();
+            Map<String, Object> extra = new HashMap<>();
+            int pIndex = 0;
 
-        sb.append("Select a from EquipmentBorrowRequest a where 1=1");
+            sb.append("Select a from EquipmentBorrowRequest a where 1=1");
 
-        if (VrUtils.isValidId(filter.getBorrowerUserId())) {
-            sb.append(" and a.borrowerUserId=:borrowerUserId");
-        }
-        if (VrUtils.isValidId(filter.getVisaUserId())) {
-            sb.append(" and a.visaUserId=:visaUserId");
-        }
-        if (VrUtils.isValidId(filter.getOperatorUserId())) {
-            sb.append(" and a.operatorUserId=:operatorUserId");
-        }
-        if (VrUtils.isValidId(filter.getSuperOperatorUserId())) {
-            sb.append(" and a.superOperatorUserId=:superOperatorUserId");
-        }
-        if (filter.getVisaStatus() != null && filter.getVisaStatus().length > 0) {
-            sb.append(" and a.visaUserStatus in (");
-            boolean first = true;
-            for (EquipmentBorrowRequestStatus s : filter.getVisaStatus()) {
-                if (first) {
-                    first = false;
-                } else {
-                    sb.append(",");
-                }
-                pIndex++;
-                String v = "visaUserStatus" + pIndex;
-                sb.append(":").append(v);
-                extra.put(v, s);
+            if (VrUtils.isValidId(filter.getBorrowerUserId())) {
+                sb.append(" and a.borrowerUserId=:borrowerUserId");
             }
-            sb.append(" )");
-        }
-        if (filter.getOperatorStatus() != null && filter.getOperatorStatus().length > 0) {
-            sb.append(" and a.operatorUserStatus in (");
-            boolean first = true;
-            for (EquipmentBorrowRequestStatus s : filter.getOperatorStatus()) {
-                if (first) {
-                    first = false;
-                } else {
-                    sb.append(",");
-                }
-                pIndex++;
-                String v = "operatorUserStatus" + pIndex;
-                sb.append(":").append(v);
-                extra.put(v, s);
+            if (VrUtils.isValidId(filter.getVisaUserId())) {
+                sb.append(" and a.visaUserId=:visaUserId");
             }
-            sb.append(" )");
-        }
-        if (filter.getSuperOperatorStatus() != null && filter.getSuperOperatorStatus().length > 0) {
-            sb.append(" and a.superOperatorUserStatus in (");
-            boolean first = true;
-            for (EquipmentBorrowRequestStatus s : filter.getSuperOperatorStatus()) {
-                if (first) {
-                    first = false;
-                } else {
-                    sb.append(",");
-                }
-                pIndex++;
-                String v = "superOperatorUserStatus" + pIndex;
-                sb.append(":").append(v);
-                extra.put(v, s);
+            if (VrUtils.isValidId(filter.getOperatorUserId())) {
+                sb.append(" and a.operatorUserId=:operatorUserId");
             }
-            sb.append(" )");
-        }
-        if (filter.getArchive() != null) {
-            sb.append(" and a.archive=:archive");
-        }
-        if (VrUtils.isValidId(filter.getEquipmentTypeId())) {
-            sb.append(" and a.equipment.typeId=:typeId");
-        }
-        if (VrUtils.isValidId(filter.getDepartmentId())) {
-            sb.append(" and a.equipment.departmentId=:departmentId");
-        }
-        return UPA.getPersistenceUnit().createQuery(sb.toString())
-                .setParameter("borrowerUserId", filter.getBorrowerUserId(), VrUtils.isValidId(filter.getBorrowerUserId()))
-                .setParameter("visaUserId", filter.getVisaUserId(), VrUtils.isValidId(filter.getVisaUserId()))
-                .setParameter("operatorUserId", filter.getOperatorUserId(), VrUtils.isValidId(filter.getOperatorUserId()))
-                .setParameter("superOperatorUserId", filter.getSuperOperatorUserId(), VrUtils.isValidId(filter.getSuperOperatorUserId()))
-                .setParameter("archive", filter.getArchive(), filter.getArchive() != null)
-                .setParameter("typeId", filter.getEquipmentTypeId(), VrUtils.isValidId(filter.getEquipmentTypeId()))
-                .setParameter("departmentId", filter.getDepartmentId(), VrUtils.isValidId(filter.getDepartmentId()))
-                .setParameters(extra)
-                .getResultList();
+            if (VrUtils.isValidId(filter.getSuperOperatorUserId())) {
+                sb.append(" and a.superOperatorUserId=:superOperatorUserId");
+            }
+            if (filter.getVisaStatus() != null && filter.getVisaStatus().length > 0) {
+                sb.append(" and a.visaUserStatus in (");
+                boolean first = true;
+                for (EquipmentBorrowRequestStatus s : filter.getVisaStatus()) {
+                    if (first) {
+                        first = false;
+                    } else {
+                        sb.append(",");
+                    }
+                    pIndex++;
+                    String v = "visaUserStatus" + pIndex;
+                    sb.append(":").append(v);
+                    extra.put(v, s);
+                }
+                sb.append(" )");
+            }
+            if (filter.getOperatorStatus() != null && filter.getOperatorStatus().length > 0) {
+                sb.append(" and a.operatorUserStatus in (");
+                boolean first = true;
+                for (EquipmentBorrowRequestStatus s : filter.getOperatorStatus()) {
+                    if (first) {
+                        first = false;
+                    } else {
+                        sb.append(",");
+                    }
+                    pIndex++;
+                    String v = "operatorUserStatus" + pIndex;
+                    sb.append(":").append(v);
+                    extra.put(v, s);
+                }
+                sb.append(" )");
+            }
+            if (filter.getSuperOperatorStatus() != null && filter.getSuperOperatorStatus().length > 0) {
+                sb.append(" and a.superOperatorUserStatus in (");
+                boolean first = true;
+                for (EquipmentBorrowRequestStatus s : filter.getSuperOperatorStatus()) {
+                    if (first) {
+                        first = false;
+                    } else {
+                        sb.append(",");
+                    }
+                    pIndex++;
+                    String v = "superOperatorUserStatus" + pIndex;
+                    sb.append(":").append(v);
+                    extra.put(v, s);
+                }
+                sb.append(" )");
+            }
+            if (filter.getFinalStatus() != null && filter.getFinalStatus().length > 0) {
+                sb.append(" and a.finalStatus in (");
+                boolean first = true;
+                for (EquipmentBorrowRequestStatus s : filter.getFinalStatus()) {
+                    if (first) {
+                        first = false;
+                    } else {
+                        sb.append(",");
+                    }
+                    pIndex++;
+                    String v = "finalStatus" + pIndex;
+                    sb.append(":").append(v);
+                    extra.put(v, s);
+                }
+                sb.append(" )");
+            }
+            if (filter.getArchive() != null) {
+                sb.append(" and a.archive=:archive");
+            }
+            if (filter.getCancelled() != null) {
+                sb.append(" and a.cancelled=:cancelled");
+            }
+            if (VrUtils.isValidId(filter.getEquipmentTypeId())) {
+                sb.append(" and a.equipment.typeId=:typeId");
+            }
+            if (VrUtils.isValidId(filter.getDepartmentId())) {
+                sb.append(" and a.equipment.departmentId=:departmentId");
+            }
+            return UPA.getPersistenceUnit().createQuery(sb.toString())
+                    .setParameter("borrowerUserId", filter.getBorrowerUserId(), VrUtils.isValidId(filter.getBorrowerUserId()))
+                    .setParameter("visaUserId", filter.getVisaUserId(), VrUtils.isValidId(filter.getVisaUserId()))
+                    .setParameter("operatorUserId", filter.getOperatorUserId(), VrUtils.isValidId(filter.getOperatorUserId()))
+                    .setParameter("superOperatorUserId", filter.getSuperOperatorUserId(), VrUtils.isValidId(filter.getSuperOperatorUserId()))
+                    .setParameter("archive", filter.getArchive(), filter.getArchive() != null)
+                    .setParameter("cancelled", filter.getCancelled(), filter.getCancelled() != null)
+                    .setParameter("typeId", filter.getEquipmentTypeId(), VrUtils.isValidId(filter.getEquipmentTypeId()))
+                    .setParameter("departmentId", filter.getDepartmentId(), VrUtils.isValidId(filter.getDepartmentId()))
+                    .setParameters(extra)
+                    .getResultList();
+        });
     }
 
     public boolean isEquipmentRequestAcceptVisaUser(int equipmentId, int userId) {
@@ -662,52 +846,109 @@ public class EquipmentBorrowService {
         return true;
     }
 
-    private boolean _updateRequestFinalStatus(EquipmentBorrowRequest req, AppUser u, Date dte, boolean apply) {
-        boolean requireSuper = false;
-        PersistenceUnit pu = UPA.getPersistenceUnit();
-        if (requireSuper) {
-            if (req.getSuperOperatorUserStatus() == EquipmentBorrowVisaStatus.ACCEPTED) {
-                req.setFinalStatus(EquipmentBorrowRequestStatus.ACCEPTED);
-                req.setFinalStatusDate(dte);
-                pu.merge(req);
-                if (apply && req.getBorrow() == null) {
-                    _addBorrow(req.getEquipment().getId(), req, req.getBorrowerUser().getId(), u.getId(), req.getQuantity(), new Timestamp(req.getFromDate().getTime()), new Timestamp(req.getToDate().getTime()), null, req.getDescription());
-                }
-                return true;
-            } else if (req.getSuperOperatorUserStatus() == EquipmentBorrowVisaStatus.REJECTED) {
-                req.setFinalStatus(EquipmentBorrowRequestStatus.REJECTED);
-                req.setFinalStatusDate(dte);
-                pu.merge(req);
-                return true;
-            }
-        } else {
-            if (req.getSuperOperatorUserStatus() == EquipmentBorrowVisaStatus.ACCEPTED
-                    || (req.getSuperOperatorUserStatus() != EquipmentBorrowVisaStatus.REJECTED
-                    && req.getOperatorUserStatus() == EquipmentBorrowVisaStatus.ACCEPTED)) {
-                req.setFinalStatus(EquipmentBorrowRequestStatus.ACCEPTED);
-                req.setFinalStatusDate(dte);
-                pu.merge(req);
-                if (apply && req.getBorrow() == null) {
-                    _addBorrow(req.getEquipment().getId(), req, req.getBorrowerUser().getId(), u.getId(), req.getQuantity(), new Timestamp(req.getFromDate().getTime()), new Timestamp(req.getToDate().getTime()), null, req.getDescription());
-                }
-                return true;
-            } else if (req.getSuperOperatorUserStatus() == EquipmentBorrowVisaStatus.REJECTED
-                    || (req.getSuperOperatorUserStatus() != EquipmentBorrowVisaStatus.ACCEPTED
-                    && req.getOperatorUserStatus() == EquipmentBorrowVisaStatus.REJECTED)) {
-                req.setFinalStatus(EquipmentBorrowRequestStatus.REJECTED);
-                req.setFinalStatusDate(dte);
-                pu.merge(req);
-                return true;
+//    private boolean _updateRequestFinalStatus(EquipmentBorrowRequest req, AppUser u, Date dte, boolean apply) {
+//        boolean requireSuper = false;
+//        PersistenceUnit pu = UPA.getPersistenceUnit();
+//        if (requireSuper) {
+//            if (req.getSuperOperatorUserStatus() == EquipmentBorrowVisaStatus.ACCEPTED) {
+//                req.setFinalStatus(EquipmentBorrowRequestStatus.ACCEPTED);
+//                req.setFinalStatusDate(dte);
+//                pu.merge(req);
+//                if (apply && req.getBorrow() == null) {
+//                    _addBorrow(req.getEquipment().getId(), req, req.getBorrowerUser().getId(), u.getId(), req.getQuantity(), new Timestamp(req.getFromDate().getTime()), new Timestamp(req.getToDate().getTime()), null, req.getDescription());
+//                }
+//                return true;
+//            } else if (req.getSuperOperatorUserStatus() == EquipmentBorrowVisaStatus.REJECTED) {
+//                req.setFinalStatus(EquipmentBorrowRequestStatus.REJECTED);
+//                req.setFinalStatusDate(dte);
+//                pu.merge(req);
+//                return true;
+//            }
+//        } else {
+//            if (req.getSuperOperatorUserStatus() == EquipmentBorrowVisaStatus.ACCEPTED
+//                    || (req.getSuperOperatorUserStatus() != EquipmentBorrowVisaStatus.REJECTED
+//                    && req.getOperatorUserStatus() == EquipmentBorrowVisaStatus.ACCEPTED)) {
+//                req.setFinalStatus(EquipmentBorrowRequestStatus.ACCEPTED);
+//                req.setFinalStatusDate(dte);
+//                pu.merge(req);
+//                if (apply && req.getBorrow() == null) {
+//                    _addBorrow(req.getEquipment().getId(), req, req.getBorrowerUser().getId(), u.getId(), req.getQuantity(), new Timestamp(req.getFromDate().getTime()), new Timestamp(req.getToDate().getTime()), null, req.getDescription());
+//                }
+//                return true;
+//            } else if (req.getSuperOperatorUserStatus() == EquipmentBorrowVisaStatus.REJECTED
+//                    || (req.getSuperOperatorUserStatus() != EquipmentBorrowVisaStatus.ACCEPTED
+//                    && req.getOperatorUserStatus() == EquipmentBorrowVisaStatus.REJECTED)) {
+//                req.setFinalStatus(EquipmentBorrowRequestStatus.REJECTED);
+//                req.setFinalStatusDate(dte);
+//                pu.merge(req);
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
+    public EquipmentBorrowWorkflow resolveBorrowWorkflow(Equipment eq) {
+        EquipmentBorrowWorkflowExtension s = null;
+        EquipmentBorrowWorkflow w = eq.getBorrowWorkflow();
+        if (w != null) {
+            return w;
+        }
+        EquipmentType t = eq.getType();
+        if (t != null && t.getBorrowWorkflow() != null) {
+            w = eq.getBorrowWorkflow();
+            if (w != null) {
+                return w;
             }
         }
-        return false;
+        EquipmentBorrowWorkflow e = new EquipmentBorrowWorkflow();
+        e.setId(-1);
+        e.setName("Default");
+        e.setRequireUser(false);
+        e.setRequireOperator(true);
+        e.setRequireSuperOperator(false);
+        return e;
+    }
+
+    public EquipmentBorrowWorkflowExtension resolveBorrowWorkflowExtension(Equipment eq) {
+        EquipmentBorrowWorkflowExtension s = null;
+        EquipmentBorrowWorkflow w = eq.getBorrowWorkflow();
+        if (w != null && !StringUtils.isBlank(w.getImpl())) {
+            try {
+                s = (EquipmentBorrowWorkflowExtension) VrApp.getBean(w.getImpl().trim());
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            if (s != null) {
+                return s;
+            }
+        }
+        EquipmentType t = eq.getType();
+        if (t != null && t.getBorrowWorkflow() != null) {
+            w = eq.getBorrowWorkflow();
+            if (w != null && !StringUtils.isBlank(w.getImpl())) {
+                try {
+                    s = (EquipmentBorrowWorkflowExtension) VrApp.getBean(w.getImpl().trim());
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+                if (s != null) {
+                    return s;
+                }
+            }
+        }
+        return VrApp.getBean(SuperThenOpEquipmentBorrowWorkflowExtension.class);
     }
 
     private boolean _updateRequestToBorrow(EquipmentBorrowRequest req, AppUser u) {
-        if (req.getSuperOperatorUserStatus() == EquipmentBorrowVisaStatus.ACCEPTED) {
+        if (req.getFromDate() == null || req.getToDate() == null) {
+            return false;
+        }
+        Equipment eq = req.getEquipment();
+        EquipmentBorrowWorkflowExtension ext = resolveBorrowWorkflowExtension(eq);
+        EquipmentBorrowVisaStatus s = ext.computeStatus(req);
+        if (s == EquipmentBorrowVisaStatus.ACCEPTED) {
             _addBorrow(req.getEquipment().getId(), req, req.getBorrowerUser().getId(), u.getId(), req.getQuantity(), new Timestamp(req.getFromDate().getTime()), new Timestamp(req.getToDate().getTime()), null, req.getDescription());
             return true;
-        } else if (req.getSuperOperatorUserStatus() == EquipmentBorrowVisaStatus.REJECTED) {
+        } else if (s == EquipmentBorrowVisaStatus.REJECTED) {
             EquipmentBorrowLog b = req.getBorrow();
             if (b != null) {
                 List<EquipmentReturnBorrowedLog> allReturns = findReturnBorrowedLogByBorrowLogId(b.getId());
@@ -737,7 +978,7 @@ public class EquipmentBorrowService {
 
     private boolean _updateRequest(EquipmentBorrowRequest req, EquipmentBorrowOperatorType operatorType, AppUser u, Date dte, EquipmentBorrowVisaStatus acceptedStatus) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        if (req.getFinalStatus() == EquipmentBorrowRequestStatus.DELIVERED || req.getFinalStatus() == EquipmentBorrowRequestStatus.RETURNED) {
+        if (req.getFinalStatus() == EquipmentBorrowRequestStatus.BORROWED || req.getFinalStatus() == EquipmentBorrowRequestStatus.RETURNED) {
             return false;
         }
         boolean updated = false;
@@ -745,7 +986,7 @@ public class EquipmentBorrowService {
             case BORROWER: {
                 break;
             }
-            case VISA: {
+            case USER: {
                 if (acceptedStatus != req.getVisaUserStatus()) {
                     req.setVisaUser(u);
                     req.setVisaUserStatus(acceptedStatus);
@@ -794,16 +1035,51 @@ public class EquipmentBorrowService {
             } else if (req.getSuperOperatorUserStatus() == EquipmentBorrowVisaStatus.REJECTED
                     || (req.getSuperOperatorUserStatus() != EquipmentBorrowVisaStatus.ACCEPTED
                     && req.getOperatorUserStatus() == EquipmentBorrowVisaStatus.REJECTED)) {
+                req.setFinalStatus(EquipmentBorrowRequestStatus.REJECTED);
+                req.setFinalStatusDate(dte);
                 updated = true;
             }
         }
         if (updated) {
-            pu.merge(req);
+            UPA.getPersistenceUnit().invokePrivileged(() -> {
+                pu.merge(req);
+                pu.updateFormulas(Equipment.class, req.getEquipment().getId());
+            });
         }
         return updated;
     }
 
-    public void applyEquipmentRequestByVisaUser(int requestId, EquipmentBorrowOperatorType operatorType, Integer userId, boolean accept, boolean deliverOrDeliverBack) {
+    public void archiveRequest(int requestId, Integer userId) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        if (!VrUtils.isValidId(userId)) {
+            userId = CorePlugin.get().getCurrentUserId();
+        }
+        if (userId == null) {
+            return;
+        }
+        EquipmentBorrowRequest req = pu.findById(EquipmentBorrowRequest.class, requestId);
+        if (!req.isArchive()) {
+            req.setArchive(true);
+            pu.merge(req);
+        }
+    }
+
+    public void cancelRequest(int requestId, Integer userId) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        if (!VrUtils.isValidId(userId)) {
+            userId = CorePlugin.get().getCurrentUserId();
+        }
+        if (userId == null) {
+            return;
+        }
+        EquipmentBorrowRequest req = pu.findById(EquipmentBorrowRequest.class, requestId);
+        if (!req.isCancelled()) {
+            req.setCancelled(true);
+            pu.merge(req);
+        }
+    }
+
+    public void applyVisa(int requestId, EquipmentBorrowOperatorType operatorType, Integer userId, boolean accept, boolean deliverOrDeliverBack) {
         Date dte = new Date();
         PersistenceUnit pu = UPA.getPersistenceUnit();
         if (!VrUtils.isValidId(userId)) {
@@ -871,6 +1147,25 @@ public class EquipmentBorrowService {
                 .getResultList();
     }
 
+    public EquipmentBorrowRequest addEquipmentBorrowRequest(Integer userId, int eqId, Date from, Date to, Integer visaUserId, double qty) {
+        AppUser bu = userId == null ? null : UPA.getPersistenceUnit().invokePrivileged(() -> core.findUser(userId));
+        AppUser vu = visaUserId == null ? null : UPA.getPersistenceUnit().invokePrivileged(() -> core.findUser(visaUserId));
+        Equipment eq = EquipmentPlugin.get().findEquipment(eqId);
+        if (bu == null) {
+            bu = core.getCurrentUser();
+        }
+
+        EquipmentBorrowRequest req = new EquipmentBorrowRequest();
+        req.setBorrowerUser(bu);
+        req.setEquipment(eq);
+        req.setFromDate(from);
+        req.setToDate(to);
+        req.setVisaUser(vu);
+        req.setQuantity(qty);
+        addEquipmentBorrowRequest(req);
+        return req;
+    }
+
     public void addEquipmentBorrowRequest(EquipmentBorrowRequest req) {
         AppUser u = req.getBorrowerUser();
         if (u == null) {
@@ -899,17 +1194,21 @@ public class EquipmentBorrowService {
         if (eq.getDepartment() == null) {
             throw new IllegalArgumentException("Invalid equipment, missing department");
         }
+        EquipmentBorrowWorkflow p = resolveBorrowWorkflow(eq);
+        if (p.isRequireUser() && req.getVisaUser() == null) {
+            throw new IllegalArgumentException("Missing Visa User");
+        }
         int exitingCount = findOpenBorrowRequests(eq.getId(), u.getId()).size();
-        pu.createQuery("Select a from EquipmentBorrowRequest a where a.equipmentId=:eid "
-                + " and a.archive=false "
-                + " and a.borrowerUserId=:uid"
-                + " and a.finalStatus!=:accepted  "
-                + " and a.finalStatus!=:rejected"
-        ).setParameter("uid", u.getId())
-                .setParameter("eid", eq.getId())
-                .setParameter("accepted", EquipmentBorrowRequestStatus.ACCEPTED)
-                .setParameter("rejected", EquipmentBorrowRequestStatus.REJECTED)
-                .getResultList().size();
+//        pu.createQuery("Select a from EquipmentBorrowRequest a where a.equipmentId=:eid "
+//                + " and a.archive=false "
+//                + " and a.borrowerUserId=:uid"
+//                + " and a.finalStatus!=:accepted  "
+//                + " and a.finalStatus!=:rejected"
+//        ).setParameter("uid", u.getId())
+//                .setParameter("eid", eq.getId())
+//                .setParameter("accepted", EquipmentBorrowRequestStatus.ACCEPTED)
+//                .setParameter("rejected", EquipmentBorrowRequestStatus.REJECTED)
+//                .getResultList().size();
         if (exitingCount > 0) {
             throw new IllegalArgumentException("Equipment already requested");
         }
@@ -937,6 +1236,7 @@ public class EquipmentBorrowService {
         req.setFinalStatus(EquipmentBorrowRequestStatus.PENDING);
         req.setFinalStatusDate(dte);
         pu.persist(req);
+        pu.updateFormulas(Equipment.class, req.getEquipment().getId());
     }
 
 }

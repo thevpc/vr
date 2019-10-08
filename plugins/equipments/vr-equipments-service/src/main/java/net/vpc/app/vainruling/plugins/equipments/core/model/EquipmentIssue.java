@@ -23,7 +23,7 @@ import net.vpc.upa.config.Summary;
  * @author vpc
  */
 @Entity
-@Path("Equipment")
+@Path("Equipment/Details")
 @Properties(
         {
             //                @Property(name = UIConstants.Grid.ROW_STYLE,

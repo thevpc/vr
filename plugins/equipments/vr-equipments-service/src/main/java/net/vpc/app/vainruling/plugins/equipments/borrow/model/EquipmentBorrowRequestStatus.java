@@ -13,6 +13,6 @@ public enum EquipmentBorrowRequestStatus {
     PENDING,
     ACCEPTED,
     REJECTED,
-    DELIVERED,
+    BORROWED,
     RETURNED,
 }

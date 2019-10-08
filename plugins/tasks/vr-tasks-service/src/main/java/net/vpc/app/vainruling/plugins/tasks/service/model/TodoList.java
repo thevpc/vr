@@ -27,7 +27,8 @@ public class TodoList {
     @Unique
     private String name;
     @Summary
-    @Properties(@Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA))
+    @Properties(
+            @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA))
     private String description;
     @Summary
     private boolean systemList;
@@ -35,6 +36,9 @@ public class TodoList {
     private AppUser respUser;
     @Summary
     private AppProfile respProfile;
+
+    @Summary
+    private TodoStatusGroup statusGroup;
 
     public int getId() {
         return id;
@@ -82,6 +86,14 @@ public class TodoList {
 
     public void setRespProfile(AppProfile ownerProfile) {
         this.respProfile = ownerProfile;
+    }
+
+    public TodoStatusGroup getStatusGroup() {
+        return statusGroup;
+    }
+
+    public void setStatusGroup(TodoStatusGroup statusGroup) {
+        this.statusGroup = statusGroup;
     }
 
 }

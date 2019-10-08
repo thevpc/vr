@@ -121,7 +121,42 @@ class CorePluginBodySecurityManager extends CorePluginBody {
         return r;
     }
 
-    public List<AppRightName> findProfileRights() {
+    public void addProfileParent(String child, String... parents) {
+        AppProfile p = findProfileByCode(child);
+        if (p != null) {
+            AppProfile[] a = parseProfileParents(p.getInherited());
+            if (a != null) {
+                Set<String> s = Arrays.stream(a).map(x -> x.getCode()).collect(Collectors.toSet());
+                for (String parent : parents) {
+                    if (!StringUtils.isBlank(parent)) {
+                        AppProfile p2 = findProfileByCode(parent);
+                        if (p2 != null) {
+                            s.add(p2.getCode());
+                        }
+                    }
+                }
+                p.setInherited(String.join(",", s));
+                UPA.getPersistenceUnit().merge(p);
+            }
+        }
+    }
+
+    public void removeProfileParent(String child, String... parents) {
+        AppProfile p = findProfileByCode(child);
+        if (p != null) {
+            AppProfile[] a = getProfileParents(child);
+            if (a != null) {
+                Set<String> s = Arrays.stream(a).map(x -> x.getCode()).collect(Collectors.toSet());
+                for (String parent : parents) {
+                    s.remove(parent);
+                }
+                p.setInherited(String.join(",", s));
+                UPA.getPersistenceUnit().merge(p);
+            }
+        }
+    }
+
+    public List<AppRightName> findProfileRightNames() {
         return UPA.getPersistenceUnit().findAll(AppRightName.class);
     }
 
@@ -342,7 +377,7 @@ class CorePluginBodySecurityManager extends CorePluginBody {
         if (p == null) {
             throw new IllegalArgumentException("Profile not found " + profileId);
         }
-        Map<String, AppRightName> rights = new HashMap<>(findProfileRights().stream().collect(Collectors.toMap(AppRightName::getName, java.util.function.Function.identity())));
+        Map<String, AppRightName> rights = new HashMap<>(findProfileRightNames().stream().collect(Collectors.toMap(AppRightName::getName, java.util.function.Function.identity())));
         for (String s : rightName) {
             if (!rights.containsKey(s)) {
                 log.log(Level.SEVERE, "Right " + rightName + " not found");
@@ -615,13 +650,13 @@ class CorePluginBodySecurityManager extends CorePluginBody {
                 for (AppProfile profile : values) {
                     String key = profile.getCode();
                     if (!StringUtils.isBlank(key)) {
-                        m.put(key.toLowerCase(), profile);
+                        m.put(VrUtils.normalizeName(key), profile);
                     }
                 }
                 return m;
             }
         });
-        return m.get(profileCode == null ? null : profileCode.toLowerCase());
+        return m.get(VrUtils.normalizeName(profileCode));
 //        PersistenceUnit pu = UPA.getPersistenceUnit();
 //        return pu.createQueryBuilder(AppProfile.class).byField("code", profileCode)
 //                .getEntity();
@@ -1630,6 +1665,28 @@ class CorePluginBodySecurityManager extends CorePluginBody {
                 return createUserProfileMap();
             }
         });
+    }
+
+    public AppProfile[] getProfileParents(String profileCode) {
+        AppProfile p = findProfileByCode(profileCode);
+        if (p != null) {
+            return parseProfileParents(p.getInherited());
+        }
+        return null;
+    }
+
+    public AppProfile[] parseProfileParents(String inheritedString) {
+        LinkedHashMap<Integer, AppProfile> a = new LinkedHashMap<>();
+        if (!StringUtils.isBlank(inheritedString)) {
+            String[] st = inheritedString.split("[ ,;]");
+            for (String s : st) {
+                AppProfile p = findProfileByCode(s);
+                if (p != null && !a.containsKey(p.getId())) {
+                    a.put(p.getId(), p);
+                }
+            }
+        }
+        return a.values().toArray(new AppProfile[0]);
     }
 
     private UserProfileMap createUserProfileMap() {

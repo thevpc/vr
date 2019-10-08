@@ -18,4 +18,6 @@ public enum EquipmentBorrowStatusExt {
     RETURN_LATER,
     RETURN_IMMEDIATELY,
     RETURNED,
+    ARCHIVED,
+    CANCELLED,
 }

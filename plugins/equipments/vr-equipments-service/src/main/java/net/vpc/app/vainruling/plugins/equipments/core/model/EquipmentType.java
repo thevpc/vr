@@ -5,6 +5,7 @@
  */
 package net.vpc.app.vainruling.plugins.equipments.core.model;
 
+import net.vpc.app.vainruling.plugins.equipments.borrow.model.EquipmentBorrowWorkflow;
 import net.vpc.upa.config.*;
 
 /**
@@ -22,6 +23,9 @@ public class EquipmentType {
     private String name;
     @Summary
     private EquipmentTypeGroup typeGroup;
+
+    @Summary
+    private EquipmentBorrowWorkflow borrowWorkflow;
 
     public int getId() {
         return id;
@@ -76,5 +80,13 @@ public class EquipmentType {
         }
         return true;
     }
-    
+
+    public EquipmentBorrowWorkflow getBorrowWorkflow() {
+        return borrowWorkflow;
+    }
+
+    public void setBorrowWorkflow(EquipmentBorrowWorkflow borrowWorkflow) {
+        this.borrowWorkflow = borrowWorkflow;
+    }
+
 }

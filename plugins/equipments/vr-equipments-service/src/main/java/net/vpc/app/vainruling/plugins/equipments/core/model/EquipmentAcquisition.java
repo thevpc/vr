@@ -18,7 +18,7 @@ import java.util.Date;
  * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "this.date desc")
-@Path("Equipment")
+@Path("Equipment/Details")
 @Properties(
         {
                 @Property(name = "ui.auto-filter.department", value = "{expr='this.department',order=1}"),

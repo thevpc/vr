@@ -40,23 +40,17 @@ and open the template in the editor.
                                          $('#' + PF('photodlg').id).find('.ui-dialog-title')[0].textContent = '#{i.name}';
                                          PF('photodlg').show();"/>
                         </p:column>
-                        <p:column headerText="# Serie">
-                            <p:outputLabel value="#{i.serial}" style="width: 200px;"/>
+                        <p:column headerText="Date">
+                            <p:outputLabel value="#{i.operationDate}"/>
                         </p:column>
                         <p:column headerText="Type">
                             <p:outputLabel value="#{i.equipment.type.name}"/>
-                        </p:column>
-                        <p:column headerText="Marque">
-                            <p:outputLabel value="#{i.equipment.brandLine.name}"/>
                         </p:column>
                         <p:column headerText="Libellé">
                             <p:outputLabel value="#{i.equipment.department.code} - #{i.name}" />
                         </p:column>
                         <p:column headerText="Quantité" >
                             <p:outputLabel value="#{i.borrowQuantity}" />
-                        </p:column>
-                        <p:column headerText="Etat" >
-                            <p:outputLabel value="#{vr.str(i.status)}" />
                         </p:column>
                         <p:column headerText="De">
                             <p:outputLabel value="#{i.fromDate}" />
@@ -67,8 +61,12 @@ and open the template in the editor.
                         <p:column headerText="Visa">
                             <p:outputLabel value="#{vr.str(i.visaUser.fullName)}" />
                         </p:column>
-                        <p:column headerText="Action">
-                            <p:commandButton value="Annuler" rendered="#{i.cancelEnabled}" action="#{myBorrowedEquipmentsCtrl.onCancel(i)}"/>
+                        <p:column headerText="Etat" >
+                            <p:outputLabel value="#{vr.str(i.status)}" />
+                        </p:column>
+                        <p:column headerText="Actions">
+                            <p:commandButton value="Annuler" rendered="#{i.cancelEnabled}" action="#{myBorrowedEquipmentsCtrl.onCancel(i)}" update=":listForm" />
+                            <p:commandButton value="Archiver" rendered="#{i.archiveEnabled}" action="#{myBorrowedEquipmentsCtrl.onArchive(i)}" update=":listForm" />
                         </p:column>
                         <f:facet name="footer">
                             <p:outputLabel value="Total #{myBorrowableEquipmentsCtrl.model.equipments.size()}"/>

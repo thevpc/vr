@@ -11,7 +11,7 @@ package net.vpc.app.vainruling.plugins.equipments.borrow.model.info;
  */
 public enum EquipmentBorrowOperatorType {
     BORROWER,
-    VISA,
+    USER,
     OPERATOR,
     SUPER_OPERATOR,
 }

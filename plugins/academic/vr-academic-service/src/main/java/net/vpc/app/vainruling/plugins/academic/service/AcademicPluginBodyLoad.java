@@ -53,10 +53,12 @@ public class AcademicPluginBodyLoad extends AcademicPluginBody {
     public void onStart() {
         core = CorePlugin.get();
         academic = AcademicPlugin.get();
-        core.createRight(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_ALL_TEACHERS_COURSE_LOAD, "Charge tous enseignats");
-        core.createRight(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_MY_COURSE_LOAD, "Ma charge");
-        core.createRight(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_TEACHER_COURSE_LOAD, "Charge Detaillee");
-        core.createRight(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_GLOBAL_STAT, "Stat Charge");
+        ProfileRightBuilder b = new ProfileRightBuilder();
+        b.addName(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_ALL_TEACHERS_COURSE_LOAD, "Charge tous enseignats");
+        b.addName(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_MY_COURSE_LOAD, "Ma charge");
+        b.addName(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_TEACHER_COURSE_LOAD, "Charge Detaillee");
+        b.addName(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_GLOBAL_STAT, "Stat Charge");
+        b.execute();
         AppProfile director = core.findOrCreateCustomProfile("Director", "UserType");
         ProfileRightBuilder prb = new ProfileRightBuilder();
         prb.addProfileRight(director.getId(), AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_TEACHER_COURSE_LOAD);

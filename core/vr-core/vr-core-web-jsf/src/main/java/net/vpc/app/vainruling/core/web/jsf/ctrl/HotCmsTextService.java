@@ -35,7 +35,15 @@ public class HotCmsTextService extends AbstractCmsTextService {
 
     @Override
     public boolean isEnabledAction(String action, ContentText ctx) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (action == null) {
+            return false;
+        }
+        switch (action) {
+            case "delete": {
+                return false;
+            }
+        }
+        return false;
     }
 
     @Override

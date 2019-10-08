@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.function.Function;
 import java.util.logging.Logger;
+import net.vpc.app.vainruling.core.service.ProfileRightBuilder;
 import net.vpc.common.mon.ProgressMonitor;
 import net.vpc.upa.types.DateTime;
 
@@ -55,11 +56,12 @@ public class AcademicPluginBodyAssignments extends AcademicPluginBody {
         cacheService = CacheService.get();
         core = CorePlugin.get();
         core.addProfileRight("Teacher", AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_ASSIGNMENTS);
-        core.createRight(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_COURSE_LOAD_UPDATE_INTENTS, "Mettre à jours les voeux de autres");
-        core.createRight(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_COURSE_LOAD_UPDATE_INTENTS, "Mettre à jours les affectations");
-        core.createRight(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_COURSE_LOAD_UPDATE_INTENTS, "Mettre à jours les voeux de autres");
-        core.createRight(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_COURSE_LOAD_UPDATE_ASSIGNMENTS, "Mettre à jours les affectations");
-
+        ProfileRightBuilder bb = new ProfileRightBuilder();
+        bb.addName(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_COURSE_LOAD_UPDATE_INTENTS, "Mettre à jours les voeux de autres");
+        bb.addName(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_COURSE_LOAD_UPDATE_INTENTS, "Mettre à jours les affectations");
+        bb.addName(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_COURSE_LOAD_UPDATE_INTENTS, "Mettre à jours les voeux de autres");
+        bb.addName(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_COURSE_LOAD_UPDATE_ASSIGNMENTS, "Mettre à jours les affectations");
+        bb.execute();
     }
 
     public void dupCourseAssignment(int assignmentId) {
@@ -191,7 +193,7 @@ public class AcademicPluginBodyAssignments extends AcademicPluginBody {
                         i.setAcceptedWish(true);
                         i.setWishDate(new DateTime());
                     }
-                    AcademicCourseIntent i2=i;
+                    AcademicCourseIntent i2 = i;
                     pu.invokePrivileged(new VoidAction() {
                         @Override
                         public void run() {

@@ -20,7 +20,7 @@ import java.sql.Timestamp;
  * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "this.startDate desc")
-@Path("Equipment")
+@Path("Equipment/Details/Borrow")
 @Properties(
         {
             @Property(name = "ui.auto-filter.department", value = "{expr='this.statusLog.equipment.department',order=1}"),
@@ -34,13 +34,14 @@ public class EquipmentBorrowLog {
     @Sequence
     private int id;
 
+    @Main
     private EquipmentStatusLog statusLog;
 
     @Field(defaultValue = "1")
     @Summary
     private double quantity;
 
-    @Formula("(this.quantity-(Select coalesce(sum(x.quantity)) from EquipmentReturnBorrowedLog x where x.borrowLogId=this.id))")
+    @Formula("(this.quantity-(Select coalesce(sum(x.quantity),0) from EquipmentReturnBorrowedLog x where x.borrowLogId=this.id))")
     private double remainingQuantity;
 
     @Summary

@@ -275,19 +275,18 @@ and open the template in the editor.
                             <!-- some crazy bug in PF cant help make this work (stackoverflow in dynaform) -->
                             <ui:repeat value="#{editorCtrl.model.actions}" var="aac">
                                 <p:commandButton value="#{aac.value}" rendered="#{(aac.type eq 'invoke') or (aac.type eq 'dialog')}"
-                                                 icon="#{aac.icon}"
                                                  styleClass="ui-ribbon-bigbutton  vr-toolbox-button"
                                                  process=":listForm :listForm:listTable @form"
                                                  actionListener="#{editorCtrl.openActionDialog(aac.key)}"
                                                  update=" :listForm   :pageTitleForm"/>
                                 <p:commandButton value="#{aac.value}" rendered="#{(aac.type eq 'goto')}"
                                                  title="#{aac.description}"
-                                                 icon="#{aac.icon}"
                                                  styleClass="ui-ribbon-bigbutton  vr-toolbox-button"
                                                  process=":listForm:listTable @form"
                                                  action="#{vr.gotoPage(aac.command[0],aac.command[1])}"
                                                  />
                             </ui:repeat><!-- -->
+                            
                         </p:outputPanel>
                     </div>
                     <div>

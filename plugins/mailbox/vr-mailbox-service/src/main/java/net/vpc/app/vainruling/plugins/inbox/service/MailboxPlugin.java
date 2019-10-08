@@ -55,6 +55,7 @@ import net.vpc.app.vainruling.core.service.plugins.VrPlugin;
  */
 @VrPlugin
 public class MailboxPlugin {
+
     public static final String SEND_EXTERNAL_MAIL_QUEUE = "sendExternalMailQueue";
 
     //    public void
@@ -100,7 +101,8 @@ public class MailboxPlugin {
     @Install
     private void installService() {
         CorePlugin core = VrApp.getBean(CorePlugin.class);
-        core.createRight(MailboxPluginSecurity.RIGHT_CUSTOM_SITE_MAILBOX, "Mailbox");
+        ProfileRightBuilder b = new ProfileRightBuilder();
+        b.addName(MailboxPluginSecurity.RIGHT_CUSTOM_SITE_MAILBOX);
         HashSet<String> goodProfiles = new HashSet<String>(Arrays.asList(
                 "LocalMailUser", "HeadOfDepartment", "DirectorOfStudies", "Director", "Student"
         ));
@@ -109,8 +111,8 @@ public class MailboxPlugin {
         for (AppProfile prof : core.findProfiles()) {
             if (goodProfiles.contains(prof.getCode())) {
                 prb.addProfileRight(prof.getId(), MailboxPluginSecurity.RIGHT_CUSTOM_SITE_MAILBOX);
-                for (String entityName : new String[]{"MailboxReceived","MailboxSent"}) {
-                    Entity entity=pu.getEntity(entityName);
+                for (String entityName : new String[]{"MailboxReceived", "MailboxSent"}) {
+                    Entity entity = pu.getEntity(entityName);
                     for (String right : CorePluginSecurity.getEntityRights(
                             entity,
                             true,
@@ -119,7 +121,7 @@ public class MailboxPlugin {
                             false,
                             false
                     )) {
-                        if(!CorePluginSecurity.getEntityRightEditor(entity).equals(right)) {
+                        if (!CorePluginSecurity.getEntityRightEditor(entity).equals(right)) {
                             prb.addProfileRight(prof.getId(), right);
                         }
                     }
@@ -128,7 +130,7 @@ public class MailboxPlugin {
         }
 
         prb.execute();
-        
+
         MailboxMessageFormat w = getWelcomeTemplate();
         if (w == null) {
             w = new MailboxMessageFormat();
@@ -220,8 +222,9 @@ public class MailboxPlugin {
             m.setFooterEmbeddedImage("/Config/VisualIdentity/Institution.jpg");
             core.findOrCreate(m);
         }
-        core.createRight(MailboxPluginSecurity.RIGHT_CUSTOM_ARTICLE_SEND_EXTERNAL_EMAIL, "Send External Email");
-        core.createRight(MailboxPluginSecurity.RIGHT_CUSTOM_ARTICLE_SEND_INTERNAL_EMAIL, "Send Internal Email");
+        b.addName(MailboxPluginSecurity.RIGHT_CUSTOM_ARTICLE_SEND_EXTERNAL_EMAIL, "Send External Email");
+        b.addName(MailboxPluginSecurity.RIGHT_CUSTOM_ARTICLE_SEND_INTERNAL_EMAIL, "Send Internal Email");
+        b.execute();
     }
 
     public boolean markRead(int mailboxReceivedId, boolean read) {
@@ -342,7 +345,7 @@ public class MailboxPlugin {
                 }
                 list = new ArrayList<MailboxReceived>(list);
                 HashSet<Integer> visited = new HashSet<Integer>();
-                for (Iterator<MailboxReceived> x = list.iterator(); x.hasNext(); ) {
+                for (Iterator<MailboxReceived> x = list.iterator(); x.hasNext();) {
                     MailboxReceived next = x.next();
                     if (next.getOwner().getId() != userId) {
                         //check if already visited
@@ -800,7 +803,7 @@ public class MailboxPlugin {
     public Set<String> createUsersEmails(String recipientProfiles) {
         Set<String> rows = new HashSet<>();
         CorePlugin core = VrApp.getBean(CorePlugin.class);
-        for (AppUser p : core.findUsersByProfileFilter(recipientProfiles, null,null)) {
+        for (AppUser p : core.findUsersByProfileFilter(recipientProfiles, null, null)) {
             String email = p.getEmail();
             if (!StringUtils.isBlank(email)) {
                 rows.add(email);
@@ -812,7 +815,7 @@ public class MailboxPlugin {
     public Set<String> createUsersLogins(String recipientProfiles) {
         Set<String> rows = new HashSet<>();
         CorePlugin core = VrApp.getBean(CorePlugin.class);
-        for (AppUser p : core.findUsersByProfileFilter(recipientProfiles, null,null)) {
+        for (AppUser p : core.findUsersByProfileFilter(recipientProfiles, null, null)) {
             String login = p.getLogin();
             if (!StringUtils.isBlank(login)) {
                 rows.add(login);
@@ -837,7 +840,7 @@ public class MailboxPlugin {
         }
         CorePlugin core = VrApp.getBean(CorePlugin.class);
         List<String[]> rows = new ArrayList<>();
-        for (AppUser p : core.findUsersByProfileFilter(recipientProfiles, null,null)) {
+        for (AppUser p : core.findUsersByProfileFilter(recipientProfiles, null, null)) {
             String email = p.getEmail();
             if (!StringUtils.isBlank(email)) {
                 Map<String, Object> allValues = new HashMap<>();
@@ -919,8 +922,8 @@ public class MailboxPlugin {
         m.namedDataSources().put("all", createUsersEmailDatasource(recipientProfiles));
         m.repeatDatasource(GoMailModuleSerializer.deserializeDataSource(
                 "all "
-                        + (StringUtils.isBlank(filterExpression) ? "" : " where " + filterExpression)
-                )
+                + (StringUtils.isBlank(filterExpression) ? "" : " where " + filterExpression)
+        )
         );
         String mailAddr = preferLogin ? "login" : "email";
         m.to().add("${" + mailAddr + "}");
@@ -981,35 +984,34 @@ public class MailboxPlugin {
 
         if (richText) {
 
-
-                if (u != null) {
-                    AppUser finalU = u;
-                    UPA.getContext().invokePrivileged(new VoidAction() {
-                        @Override
-                        public void run() {
-                            try {
-                                if (!StringUtils.isBlank(footerEmbeddedImage)) {
-                                    CorePlugin fs = VrApp.getBean(CorePlugin.class);
-                                    VirtualFileSystem ufs = fs.getUserFileSystem(finalU.getLogin());
-                                    VirtualFileSystem allfs = fs.getRootFileSystem();
-                                    if (ufs.exists(footerEmbeddedImage)) {
-                                        m.footer("<img src=\"cid:part1\" alt=\"ATTACHMENT\"/>", GoMail.HTML_CONTENT_TYPE);
-                                        VFile img = ufs.get(footerEmbeddedImage);
-                                        m.attachment(img.readBytes(), img.probeContentType());
-                                    } else if (allfs.exists(footerEmbeddedImage)) {
-                                        m.footer("<img src=\"cid:part1\" alt=\"ATTACHMENT\"/>", GoMail.HTML_CONTENT_TYPE);
-                                        VFile img = allfs.get(footerEmbeddedImage);
-                                        m.attachment(img.readBytes(), img.probeContentType());
-                                    }
-
+            if (u != null) {
+                AppUser finalU = u;
+                UPA.getContext().invokePrivileged(new VoidAction() {
+                    @Override
+                    public void run() {
+                        try {
+                            if (!StringUtils.isBlank(footerEmbeddedImage)) {
+                                CorePlugin fs = VrApp.getBean(CorePlugin.class);
+                                VirtualFileSystem ufs = fs.getUserFileSystem(finalU.getLogin());
+                                VirtualFileSystem allfs = fs.getRootFileSystem();
+                                if (ufs.exists(footerEmbeddedImage)) {
+                                    m.footer("<img src=\"cid:part1\" alt=\"ATTACHMENT\"/>", GoMail.HTML_CONTENT_TYPE);
+                                    VFile img = ufs.get(footerEmbeddedImage);
+                                    m.attachment(img.readBytes(), img.probeContentType());
+                                } else if (allfs.exists(footerEmbeddedImage)) {
+                                    m.footer("<img src=\"cid:part1\" alt=\"ATTACHMENT\"/>", GoMail.HTML_CONTENT_TYPE);
+                                    VFile img = allfs.get(footerEmbeddedImage);
+                                    m.attachment(img.readBytes(), img.probeContentType());
                                 }
-                            } catch (IOException ex) {
-                                Logger.getLogger(MailboxPlugin.class.getName()).log(Level.SEVERE, null, ex);
-                            }
-                        }
-                    });
 
-                }
+                            }
+                        } catch (IOException ex) {
+                            Logger.getLogger(MailboxPlugin.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                });
+
+            }
 
         }
     }
@@ -1065,8 +1067,7 @@ public class MailboxPlugin {
         if (!queryExpr.contains(" ") && !queryExpr.contains(",")
                 && !queryExpr.contains("(") && !queryExpr.contains(")")
                 && !queryExpr.contains("+") && !queryExpr.contains("|")
-                && !queryExpr.contains("&")
-                ) {
+                && !queryExpr.contains("&")) {
             all.addAll(autoCompleteCategory(queryExpr));
         }
         //reorder and remove duplicates
@@ -1183,6 +1184,5 @@ public class MailboxPlugin {
             throw new IllegalArgumentException("Could not send email to EVERY ONE");
         }
     }
-
 
 }

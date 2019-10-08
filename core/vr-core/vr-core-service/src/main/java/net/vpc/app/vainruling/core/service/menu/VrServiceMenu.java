@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.CorePluginSecurity;
+import net.vpc.app.vainruling.core.service.ProfileRightBuilder;
 import net.vpc.app.vainruling.core.service.TraceService;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.editor.ActionDialogAdapter;
@@ -315,7 +316,7 @@ public class VrServiceMenu {
             VrPageInfo ci = getModel().getControllerInfo();
             if (ci != null) {
                 String ctrlName = getPageUniformName(t.getType());
-                if (ci.getControllerName().endsWith(ctrlName)) {
+                if (ci.getControllerName()!=null && ci.getControllerName().endsWith(ctrlName)) {
                     String cmd = StringUtils.trim(ci.getCmd());
                     String cmd2 = StringUtils.trim(t.getCommand());
                     if (cmd.equals(cmd2)) {
@@ -343,6 +344,7 @@ public class VrServiceMenu {
             @Override
             public void run() {
                 Map<String, Object> beansMapForAnnotations = VrApp.getBeansMapForAnnotations(VrPage.class);
+                ProfileRightBuilder bb = new ProfileRightBuilder();
                 for (Map.Entry<String, Object> beanEntry : beansMapForAnnotations.entrySet()) {
                     Object b = beanEntry.getValue();
                     VrPage c = (VrPage) PlatformReflector.getTargetClass(b).getAnnotation(VrPage.class);
@@ -355,11 +357,11 @@ public class VrServiceMenu {
                         final String securityKey = c.securityKey();
                         final String[] securityKeys = c.declareSecurityKeys();
                         if (!StringUtils.isBlank(securityKey)) {
-                            core.createRight(securityKey, securityKey);
+                            bb.addName(securityKey);
                         }
                         for (String key : securityKeys) {
                             if (!StringUtils.isBlank(key)) {
-                                core.createRight(key, key);
+                                bb.addName(key);
                             }
                         }
 
@@ -371,7 +373,7 @@ public class VrServiceMenu {
                             if (md != null) {
                                 String securityKey = md.getSecurityKey();
                                 if (!StringUtils.isBlank(securityKey)) {
-                                    core.createRight(securityKey, securityKey);
+                                    bb.addName(securityKey);
                                 }
                                 applyVRMenuInfoSource(md, beanEntry.getKey());
                             }
@@ -383,10 +385,11 @@ public class VrServiceMenu {
                 for (Entity entity : UPA.getPersistenceUnit().getEntities()) {
                     for (ActionDialogAdapter a : actionDialogManager.findActionsByEntity(entity.getName())) {
                         if (!StringUtils.isBlank(a.getId())) {
-                            core.createRight(a.getId(), a.getId());
+                            bb.addName(a.getId());
                         }
                     }
                 }
+                bb.execute();
             }
 
         });

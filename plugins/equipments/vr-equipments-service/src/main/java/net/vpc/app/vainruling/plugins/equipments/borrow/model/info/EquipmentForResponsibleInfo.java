@@ -13,6 +13,7 @@ import net.vpc.app.vainruling.plugins.equipments.borrow.model.EquipmentBorrowLog
 import net.vpc.app.vainruling.plugins.equipments.core.model.Equipment;
 import net.vpc.app.vainruling.plugins.equipments.borrow.model.EquipmentBorrowRequest;
 import net.vpc.app.vainruling.plugins.equipments.core.model.EquipmentStatusLog;
+import net.vpc.common.util.Utils;
 
 /**
  *
@@ -25,8 +26,10 @@ public class EquipmentForResponsibleInfo implements Comparable<EquipmentForRespo
     private AppUser borrowerUser;
     private EquipmentBorrowRequest request;
     private boolean cancelEnabled;
+    private boolean archiveEnabled;
     private boolean requestEnabled;
     private double borrowQuantity;
+    private double borrowRemainingQuantity;
     private Timestamp operationDate;
     private Date fromDate;
     private Date toDate;
@@ -44,41 +47,77 @@ public class EquipmentForResponsibleInfo implements Comparable<EquipmentForRespo
         this.request = request;
         this.operatorType = operatorType;
         this.equipment = request.getEquipment();
-        this.operationDate = request.getFinalStatusDate() == null ? null : new Timestamp(request.getFinalStatusDate().getTime());
-        if (request.getFinalStatus() == null) {
-            this.status = EquipmentBorrowStatusExt.PENDING;
+        this.operationDate = request.getFinalStatusDate() == null ? request.getCreationDate() : new Timestamp(request.getFinalStatusDate().getTime());
+        if (request.isArchive()) {
+            this.status = EquipmentBorrowStatusExt.ARCHIVED;
+        } else if (request.isCancelled()) {
+            this.status = EquipmentBorrowStatusExt.CANCELLED;
         } else {
-            switch (request.getFinalStatus()) {
-                case ACCEPTED: {
-                    if (request.getBorrow() != null) {
-                        this.status = evalStatus(request.getBorrow());
-                    } else {
-                        this.status = EquipmentBorrowStatusExt.ACCEPTED;
+            if (request.getFinalStatus() == null) {
+                this.status = EquipmentBorrowStatusExt.PENDING;
+            } else {
+                switch (request.getFinalStatus()) {
+                    case ACCEPTED: {
+                        if (request.getBorrow() != null) {
+                            this.status = evalStatus(request.getBorrow());
+                        } else {
+                            this.status = EquipmentBorrowStatusExt.ACCEPTED;
+                        }
+                        break;
                     }
-                    break;
-                }
-                case PENDING: {
-                    this.status = EquipmentBorrowStatusExt.PENDING;
-                    break;
-                }
-                case REJECTED: {
-                    this.status = EquipmentBorrowStatusExt.REJECTED;
-                    break;
-                }
-                default: {
-                    this.status = EquipmentBorrowStatusExt.PENDING;
-                    break;
+                    case PENDING: {
+                        this.status = EquipmentBorrowStatusExt.PENDING;
+                        break;
+                    }
+                    case REJECTED: {
+                        this.status = EquipmentBorrowStatusExt.REJECTED;
+                        break;
+                    }
+                    case BORROWED: {
+                        if(request.getBorrow()!=null && request.getBorrow().getRemainingQuantity()<=0){
+                            this.status = EquipmentBorrowStatusExt.RETURNED;
+                        }else{
+                            this.status = EquipmentBorrowStatusExt.BORROWED;
+                        }
+                        break;
+                    }
+                    case RETURNED: {
+                        this.status = EquipmentBorrowStatusExt.RETURNED;
+                        break;
+                    }
+                    default: {
+                        this.status = EquipmentBorrowStatusExt.PENDING;
+                        break;
+                    }
                 }
             }
         }
         this.borrowQuantity = Math.abs(request.getQuantity());
         this.actualQuantity = equipment.getActualQuantity();
         this.requestedQuantity = equipment.getRequestedQuantity();
-        this.availableQuantity = equipment.getActualQuantity()-equipment.getRequestedQuantity();
+        this.availableQuantity = equipment.getActualQuantity() - equipment.getRequestedQuantity();
         this.fromDate = request.getFromDate();
         this.toDate = request.getToDate();
         this.borrowerUser = request.getBorrowerUser();
+        this.borrowRemainingQuantity = request.getBorrow() == null ? 0 : request.getBorrow().getRemainingQuantity();
         this.infoId = "Request-" + request.getId();
+        if (request.getBorrow() == null && !request.isCancelled()) {
+            this.cancelEnabled = true;
+        }
+        if (!this.cancelEnabled) {
+            if (request.isArchive()) {
+                this.archiveEnabled = false;
+            } else {
+                switch (this.status) {
+                    case CANCELLED:
+                    case REJECTED:
+                    case RETURNED: {
+                        this.archiveEnabled = true;
+                        break;
+                    }
+                }
+            }
+        }
     }
 
     public EquipmentForResponsibleInfo(EquipmentBorrowOperatorType operatorType, EquipmentBorrowLog log) {
@@ -87,30 +126,49 @@ public class EquipmentForResponsibleInfo implements Comparable<EquipmentForRespo
         this.operationDate = log.getStatusLog().getCreationDate();
         this.status = evalStatus(log);
         this.borrowQuantity = Math.abs(log.getQuantity());
+        this.borrowRemainingQuantity = log.getRemainingQuantity();
         this.actualQuantity = equipment.getActualQuantity();
         this.requestedQuantity = equipment.getRequestedQuantity();
-        this.availableQuantity = equipment.getActualQuantity()-equipment.getRequestedQuantity();
+        this.availableQuantity = equipment.getActualQuantity() - equipment.getRequestedQuantity();
         this.fromDate = log.getStartDate();
         this.toDate = log.getEndDate();
         this.borrowerUser = log.getBorrower();
         this.infoId = "Borrow-" + log.getId();
+//        if (request.getBorrow() == null && !request.isCancelled()) {
+//            this.cancelEnabled = true;
+//        }
+//        if (request.isArchive()) {
+//            this.archiveEnabled = false;
+//        } else {
+//            if (this.cancelEnabled) {
+//                this.archiveEnabled = true;
+//            } else {
+//                switch (this.status) {
+//                    case REJECTED:
+//                    case RETURNED: {
+//                        this.archiveEnabled = true;
+//                        break;
+//                    }
+//                }
+//            }
+//        }
     }
 
-    public EquipmentForResponsibleInfo(EquipmentBorrowOperatorType operatorType, EquipmentStatusLog log) {
-        this.operatorType = operatorType;
-        this.equipment = log.getEquipment();
-        this.operationDate = log.getCreationDate();
-        this.status = evalStatus(log);
-        this.borrowQuantity = Math.abs(log.getQuantity());
-        this.actualQuantity = equipment.getActualQuantity();
-        this.requestedQuantity = equipment.getRequestedQuantity();
-        this.availableQuantity = equipment.getActualQuantity()-equipment.getRequestedQuantity();
-        this.fromDate = log.getStartDate();
-        this.toDate = log.getEndDate();
-        this.borrowerUser = log.getActor();
-        this.infoId = "Status-" + log.getId();
-    }
-
+//    public EquipmentForResponsibleInfo(EquipmentBorrowOperatorType operatorType, EquipmentStatusLog log) {
+//        this.operatorType = operatorType;
+//        this.equipment = log.getEquipment();
+//        this.operationDate = log.getCreationDate();
+//        this.status = evalStatus(log);
+//        this.borrowQuantity = Math.abs(log.getQuantity());
+//        this.actualQuantity = equipment.getActualQuantity();
+//        this.requestedQuantity = equipment.getRequestedQuantity();
+//        this.availableQuantity = equipment.getActualQuantity()-equipment.getRequestedQuantity();
+//        this.remainingQuantity=log.getRemainingQuantity()
+//        this.fromDate = log.getStartDate();
+//        this.toDate = log.getEndDate();
+//        this.borrowerUser = log.getActor();
+//        this.infoId = "Status-" + log.getId();
+//    }
     public EquipmentForResponsibleInfo(EquipmentBorrowOperatorType operatorType, Equipment equipment) {
         this.operationDate = equipment.getLogStartDate();
         if (this.operationDate == null) {
@@ -120,9 +178,10 @@ public class EquipmentForResponsibleInfo implements Comparable<EquipmentForRespo
         this.equipment = equipment;
         this.status = EquipmentBorrowStatusExt.BORROWABLE;
         this.borrowQuantity = 0;
+        this.borrowRemainingQuantity = 0;
         this.actualQuantity = equipment.getActualQuantity();
         this.requestedQuantity = equipment.getRequestedQuantity();
-        this.availableQuantity = equipment.getActualQuantity()-equipment.getRequestedQuantity();
+        this.availableQuantity = equipment.getActualQuantity() - equipment.getRequestedQuantity();
         this.fromDate = equipment.getLogStartDate();
         this.toDate = equipment.getLogEndDate();
         this.borrowerUser = equipment.getActor();
@@ -196,7 +255,7 @@ public class EquipmentForResponsibleInfo implements Comparable<EquipmentForRespo
     }
 
     public String getName() {
-        return equipment.getName();
+        return equipment.getFullName();
     }
 
     public Date getFromDate() {
@@ -224,13 +283,11 @@ public class EquipmentForResponsibleInfo implements Comparable<EquipmentForRespo
 
     @Override
     public int compareTo(EquipmentForResponsibleInfo o) {
-        if (this.request != null && o.request == null) {
-            return -1;
+        int x = Utils.compare(this.getFromDate(), o.getFromDate());
+        if (x != 0) {
+            return x;
         }
-        if (this.request == null && o.request != null) {
-            return 1;
-        }
-        int x = Integer.compare(equipment.getId(), o.equipment.getId());
+        x = Utils.compare(this.getName(), o.getName());
         if (x != 0) {
             return x;
         }
@@ -238,7 +295,7 @@ public class EquipmentForResponsibleInfo implements Comparable<EquipmentForRespo
         if (x != 0) {
             return x;
         }
-        return equipment.getName().compareTo(o.equipment.getName());
+        return 0;
     }
 
     @Override
@@ -313,14 +370,28 @@ public class EquipmentForResponsibleInfo implements Comparable<EquipmentForRespo
     public double getAvailableQuantity() {
         return availableQuantity;
     }
+
     public double getAvailableQuantity2() {
-        switch(this.status){
-            case PENDING:{
-                return availableQuantity-borrowQuantity;
-            } 
+        switch (this.status) {
+            case PENDING:
+            case ACCEPTED:
+            case BORROWABLE: {
+                return availableQuantity - borrowQuantity;
+            }
         }
         return availableQuantity;
     }
 
-    
+    public double getBorrowRemainingQuantity() {
+        return borrowRemainingQuantity;
+    }
+
+    public boolean isArchiveEnabled() {
+        return archiveEnabled;
+    }
+
+    public void setArchiveEnabled(boolean archiveEnabled) {
+        this.archiveEnabled = archiveEnabled;
+    }
+
 }

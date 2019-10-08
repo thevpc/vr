@@ -138,7 +138,7 @@ class CorePluginBodySecurityAuthenticator extends CorePluginBody {
 
     private AppUser authenticateByLoginPassword(String login, String password, UserToken token, String clientAppId, String clientApp) {
         login = toUniformLogin(login);
-        String flogin=login;
+        String flogin = login;
         AppUser user = UPA.getPersistenceUnit().invokePrivileged(new Action<AppUser>() {
             @Override
             public AppUser run() {
@@ -790,44 +790,78 @@ class CorePluginBodySecurityAuthenticator extends CorePluginBody {
 //        return us != null && us.isAdmin();
 //    }
     public boolean isCurrentSessionAdminOrProfile(String profileName) {
-        if (StringUtils.isBlank(profileName)) {
-            return isCurrentSessionAdmin();
-        }
+        return isCurrentSessionAdminOrProfiles(true, profileName);
+    }
+
+    public boolean isCurrentSessionAdminOrAllOfProfiles(String... profileNames) {
+        return isCurrentSessionAdminOrProfiles(true, profileNames);
+    }
+
+    public boolean isCurrentSessionAdminOrAnyOfProfiles(String... profileNames) {
+        return isCurrentSessionAdminOrProfiles(false, profileNames);
+    }
+
+    public boolean isCurrentSessionAdminOrProfiles(boolean all, String... profileNames) {
         UserToken us = getContext().getCorePlugin().getCurrentToken();
         UserPrincipal up = UPA.getPersistenceUnit().getUserPrincipal();
-        if (up != null) {
-            if (up.getName().equals(VRSecurityManager.INTERNAL_LOGIN)) {
-                return true;
-            }
-            if (up.getObject() instanceof AppUser) {
-                AppUser u = (AppUser) up.getObject();
-                if (us.getUserLogin() != null) {
-                    String login2 = u.getLogin();
-                    if (login2.equals(us.getUserLogin())) {
-                        return us.isAdmin();
-                    }
-                }
-                if (us.getProfileCodes().contains(profileName)) {
+        if ((us != null && us.isAdmin()) || isCurrentSessionAdmin()) {
+            return true;
+        }
+        if (up == null) {
+            return false;
+        }
+        List<AppProfile> profiles = null;
+        if (profileNames == null || profileNames.length == 0) {
+            return false;
+        }
+        for (String profileName : new HashSet<String>(Arrays.asList(profileNames))) {
+            boolean cur = false;
+            if (!StringUtils.isBlank(profileName)) {
+                if (up.getName().equals(VRSecurityManager.INTERNAL_LOGIN)) {
                     return true;
                 }
-                List<AppProfile> profiles = getContext().getCorePlugin().findProfilesByUser(u.getId());
-                for (AppProfile p : profiles) {
-                    if (CorePlugin.PROFILE_ADMIN.equals(p.getCode())) {
-                        return true;
+                if (up.getObject() instanceof AppUser) {
+                    AppUser u = (AppUser) up.getObject();
+                    if (us.getUserLogin() != null) {
+                        String login2 = u.getLogin();
+                        if (login2.equals(us.getUserLogin())) {
+                            cur = us.isAdmin();
+                        }
                     }
-                    if (profileName.equals(p.getCode())) {
-                        return true;
+                    if (!cur) {
+                        if (us.getProfileCodes().contains(profileName)) {
+                            cur = true;
+                        }
+                        if (!cur) {
+                            if (profiles == null) {
+                                profiles = getContext().getCorePlugin().findProfilesByUser(u.getId());
+                            }
+                            for (AppProfile p : profiles) {
+                                if (CorePlugin.PROFILE_ADMIN.equals(p.getCode())) {
+                                    cur = true;
+                                    break;
+                                }
+                                if (profileName.equals(p.getCode())) {
+                                    cur = true;
+                                    break;
+                                }
+                            }
+                        }
                     }
                 }
-                return false;
+
+            }
+            if (all) {
+                if (!cur) {
+                    return false;
+                }
+            } else {
+                if (cur) {
+                    return true;
+                }
             }
         }
-        if (us != null) {
-            if (us.isAdmin()) {
-                return true;
-            }
-        }
-        return us != null && us.isAdmin();
+        return false;
     }
 
     private static class InitData {

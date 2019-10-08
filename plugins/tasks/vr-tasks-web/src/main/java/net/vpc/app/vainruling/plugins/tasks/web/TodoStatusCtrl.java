@@ -5,6 +5,7 @@
  */
 package net.vpc.app.vainruling.plugins.tasks.web;
 
+import java.util.Collections;
 import net.vpc.app.vainruling.core.web.jsf.ctrl.AbstractNameCtrl;
 import net.vpc.app.vainruling.plugins.tasks.service.TaskPlugin;
 import net.vpc.app.vainruling.plugins.tasks.service.model.TodoList;
@@ -20,9 +21,8 @@ import net.vpc.app.vainruling.core.service.pages.VrPathItem;
  */
 @VrPage(
         breadcrumb = {
-                @VrPathItem(title = "Parametrage", css = "fa-dashboard", ctrl = ""),
-        }
-        , url = "modules/todo/config-todo-status"
+            @VrPathItem(title = "Parametrage", css = "fa-dashboard", ctrl = ""),},
+         url = "modules/todo/config-todo-status"
 )
 public class TodoStatusCtrl extends AbstractNameCtrl<TodoStatus> {
 
@@ -58,16 +58,20 @@ public class TodoStatusCtrl extends AbstractNameCtrl<TodoStatus> {
     @Override
     public void delegated_saveCurrent() {
         TodoStatus c = getModel().getCurrent();
-        if (c.getList() == null) {
+        if (c.getStatusGroup() == null) {
             TodoList list = todoService.findTodoList(getModel().getListId());
-            c.setList(list);
+            c.setStatusGroup(list.getStatusGroup());
         }
         todoService.saveTodoStatus(c);
     }
 
     @Override
     public List<TodoStatus> delegated_findAll() {
-        return todoService.findTodoStatuses(getModel().getListId());
+        TodoList li = todoService.findTodoList(getModel().getListId());
+        if(li==null){
+            return Collections.emptyList();
+        }
+        return todoService.findTodoStatuses(li.getId());
     }
 
     public static class PModel extends Model<TodoStatus> {

@@ -12,7 +12,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.model.SelectItem;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.model.AppUser;
+import net.vpc.app.vainruling.core.service.model.strict.AppUserStrict;
 import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.app.vainruling.core.web.jsf.Vr;
 import net.vpc.app.vainruling.plugins.equipments.borrow.service.EquipmentBorrowService;
@@ -23,12 +23,11 @@ import net.vpc.common.jsf.FacesUtils;
 import org.primefaces.event.SelectEvent;
 import net.vpc.app.vainruling.core.service.pages.VrPage;
 import net.vpc.app.vainruling.core.service.pages.VrPathItem;
+import net.vpc.app.vainruling.plugins.equipments.borrow.model.EquipmentBorrowWorkflow;
 import net.vpc.app.vainruling.plugins.equipments.borrow.model.info.EquipmentBorrowOperatorType;
-import net.vpc.app.vainruling.plugins.equipments.core.service.EquipmentPlugin;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.MutableDate;
-import net.vpc.upa.PersistenceUnit;
-import net.vpc.upa.UPA;
+import net.vpc.common.util.Tuple2;
 
 //import javax.annotation.PostConstruct;
 /**
@@ -93,10 +92,31 @@ public class MyBorrowableEquipmentsCtrl {
         return sb.toString();
     }
 
+    public List<SelectItem> _AppUserStrict_toSelectItems(List<AppUserStrict> a) {
+        return Vr.get().toSelectItems(a, x -> new Tuple2<>(String.valueOf(x.getId()), x.getFullTitle()));
+    }
+
     public void onRefresh() {
         CorePlugin core = CorePlugin.get();
-        EquipmentPlugin eq = EquipmentPlugin.get();
-        PersistenceUnit pu = UPA.getPersistenceUnit();
+        onRefreshEquipements();
+        EquipmentBorrowService ebs = VrApp.getBean(EquipmentBorrowService.class);
+        getModel().setVisaUsers(_AppUserStrict_toSelectItems(ebs.findBorrowVisaUsers()));
+        Integer currentUserId = core.getCurrentUserId();
+        getModel().setSuperUserOperator(ebs.isBorrowSuperOperatorUser(currentUserId));
+
+        if (getModel().isSuperUserOperator()
+                || ebs.isBorrowOperatorUser(currentUserId)) {
+            getModel().setBorrowUsers(_AppUserStrict_toSelectItems(ebs.findBorrowUsers()));
+            getModel().setDelegatedBorrow(true);
+        } else {
+            getModel().setBorrowUsers(new ArrayList<>());
+            getModel().setDelegatedBorrow(false);
+        }
+        onClearForm();
+    }
+
+    public void onRefreshEquipements() {
+        CorePlugin core = CorePlugin.get();
         EquipmentBorrowService ebs = VrApp.getBean(EquipmentBorrowService.class);
         List<EquipmentForResponsibleInfo> bb = new ArrayList<>();
         if (getModel().getFilterEquipmentType() != null) {
@@ -106,20 +126,6 @@ public class MyBorrowableEquipmentsCtrl {
             );
         }
         getModel().setEquipments(bb);
-        getModel().setVisaUsers(Vr.get().toEntitySelectItemsNullable(ebs.findBorrowVisaUsers(), "AppUser"));
-        Integer currentUserId = core.getCurrentUserId();
-        
-        getModel().setSuperUserOperator(ebs.isBorrowSuperOperatorUser(currentUserId));
-        
-        if (getModel().isSuperUserOperator()
-                || ebs.isBorrowSuperOperatorUser(currentUserId)) {
-            getModel().setBorrowUsers(Vr.get().toEntitySelectItemsNullable(core.findUsers(), "AppUser"));
-            getModel().setDelegatedBorrow(true);
-        } else {
-            getModel().setBorrowUsers(new ArrayList<>());
-            getModel().setDelegatedBorrow(false);
-        }
-        onClearForm();
     }
 
     public void onClearForm() {
@@ -129,32 +135,32 @@ public class MyBorrowableEquipmentsCtrl {
         getModel().setBorrowUser(null);
         getModel().setQuantity(1.0);
         getModel().setSelectedEquipment(null);
+        EquipmentForResponsibleInfo se = getModel().getSelectedEquipment();
+        if (se == null) {
+            getModel().setRequireVisaUser(false);
+        } else {
+            EquipmentBorrowService ebs = VrApp.getBean(EquipmentBorrowService.class);
+            EquipmentBorrowWorkflow e = ebs.resolveBorrowWorkflow(se.getEquipment());
+            getModel().setRequireVisaUser(e.isRequireUser());
+        }
     }
 
     public void onAddRequest(boolean deliver) {
-        CorePlugin core = CorePlugin.get();
-        EquipmentBorrowRequest req = new EquipmentBorrowRequest();
-        AppUser bu = core.findUser(getModel().getBorrowUser());
-        if (bu == null) {
-            bu = core.getCurrentUser();
-        }
-        req.setBorrowerUser(bu);
-        req.setEquipment(getModel().getSelectedEquipment() == null ? null : getModel().getSelectedEquipment().getEquipment());
-        req.setFromDate(getModel().getFromDate());
-        req.setToDate(getModel().getToDate());
-        req.setVisaUser(core.findUser(getModel().getVisaUser()));
-        req.setQuantity(getModel().getQuantity());
         try {
             EquipmentBorrowService ebs = VrApp.getBean(EquipmentBorrowService.class);
-            ebs.addEquipmentBorrowRequest(req);
+            Integer ii = getModel().getSelectedEquipment() == null ? -1 : getModel().getSelectedEquipment().getEquipment().getId();
+            EquipmentBorrowRequest req = ebs.addEquipmentBorrowRequest(getModel().getBorrowUser(), ii,
+                    getModel().getFromDate(), getModel().getToDate(), getModel().getVisaUser(), getModel().getQuantity()
+            );
             if (getModel().getBorrowUser() != null && getModel().isDelegatedBorrow()) {
                 if (getModel().isSuperUserOperator()) {
-                    ebs.applyEquipmentRequestByVisaUser(req.getId(), EquipmentBorrowOperatorType.SUPER_OPERATOR, null, true, deliver);
+                    ebs.applyVisa(req.getId(), EquipmentBorrowOperatorType.SUPER_OPERATOR, null, true, deliver);
                 } else {
-                    ebs.applyEquipmentRequestByVisaUser(req.getId(), EquipmentBorrowOperatorType.OPERATOR, null, true, deliver);
+                    ebs.applyVisa(req.getId(), EquipmentBorrowOperatorType.OPERATOR, null, true, deliver);
                 }
             }
             EquipmentForResponsibleInfo selectedEquipment = getModel().getSelectedEquipment();
+            onRefreshEquipements();
             onClearForm();
             if (getModel().getBorrowUser() != null) {
                 FacesUtils.addInfoMessage("Emprunt " + (selectedEquipment.getName()) + " réussi");
@@ -172,7 +178,20 @@ public class MyBorrowableEquipmentsCtrl {
     }
 
     public void onRowSelect(SelectEvent event) {
-//        getModel().setSelectedEquipment(((EquipmenForResponsibleInfo) event.getObject()));
+        Object se2 = event.getObject();
+        EquipmentForResponsibleInfo se = null;
+        if (se2 instanceof EquipmentForResponsibleInfo) {
+            se = (EquipmentForResponsibleInfo) se2;
+        } else {
+            se = getModel().getSelectedEquipment();
+        }
+        if (se == null) {
+            getModel().setRequireVisaUser(false);
+        } else {
+            EquipmentBorrowService ebs = VrApp.getBean(EquipmentBorrowService.class);
+            EquipmentBorrowWorkflow e = ebs.resolveBorrowWorkflow(se.getEquipment());
+            getModel().setRequireVisaUser(e.isRequireUser());
+        }
     }
 
     public static class Model {
@@ -190,8 +209,17 @@ public class MyBorrowableEquipmentsCtrl {
         private Integer borrowUser;
         private List<SelectItem> visaUsers;
         private List<SelectItem> borrowUsers;
+        private boolean requireVisaUser;
         private boolean delegatedBorrow;
         private boolean superUserOperator;
+
+        public boolean isRequireVisaUser() {
+            return requireVisaUser;
+        }
+
+        public void setRequireVisaUser(boolean requireVisaUser) {
+            this.requireVisaUser = requireVisaUser;
+        }
 
         public boolean isDelegatedBorrow() {
             return delegatedBorrow;

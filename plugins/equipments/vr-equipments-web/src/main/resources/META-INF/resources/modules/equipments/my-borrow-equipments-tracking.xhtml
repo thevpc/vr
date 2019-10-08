@@ -31,11 +31,11 @@ and open the template in the editor.
                     <p:panelGrid id="details" columns="2" styleClass="vr-no-border-grid">
                         <p:outputLabel value="équipement à rendre"/>
                         <p:outputLabel 
-                             style="margin-left: 5px;margin-top: 5px"
+                            style="margin-left: 5px;margin-top: 5px"
                             value="#{myBorrowEquipmentsTrackingCtrl.selectedEquipmentString}"/>
                         <p:outputLabel value="quantité"/>
                         <p:inputText 
-                             style="margin-left: 5px;margin-top: 5px"
+                            style="margin-left: 5px;margin-top: 5px"
                             value="#{myBorrowEquipmentsTrackingCtrl.model.quantity}"/>
                     </p:panelGrid>
 
@@ -89,25 +89,18 @@ and open the template in the editor.
                                          $('#' + PF('photodlg').id).find('.ui-dialog-title')[0].textContent = '#{i.name}';
                                          PF('photodlg').show();"/>
                         </p:column>
-                        <p:column headerText="# Série" style="width: 200px;">
-                            <p:outputLabel value="#{i.serial}"/>
+                        <p:column headerText="Date">
+                            <p:outputLabel value="#{i.operationDate}"/>
                         </p:column>
-                        <p:column headerText="Type" style="width: 200px;">
+                        <p:column headerText="Type">
                             <p:outputLabel value="#{i.equipment.type.name}"/>
                         </p:column>
-                        <p:column headerText="Marque">
-                            <p:outputLabel value="#{i.equipment.brandLine.name}"  style="width: 200px;"/>
-                        </p:column>
                         <p:column headerText="Libellé">
-                            <p:outputLabel value="#{i.name}" />
+                            <p:outputLabel value="#{i.equipment.department.name} - #{i.name}" />
                         </p:column>
                         <p:column headerText="Quantité" style="width: 80px;">
                             <p:outputLabel value="#{i.borrowQuantity}" />
                         </p:column>
-                        <p:column headerText="Département">
-                            <p:outputLabel value="#{i.equipment.department.name}"  style="width: 200px;"/>
-                        </p:column>
-
                         <p:column headerText="Etat">
                             <p:outputLabel value="#{i.status}"/>
                         </p:column>
@@ -123,7 +116,10 @@ and open the template in the editor.
                         <p:column headerText="A">
                             <p:outputLabel value="#{i.toDate}" />
                         </p:column>
-
+                        <p:column headerText="Action">
+                            <p:outputLabel value="#{vr.str(i.request.finalStatus)}" />
+                            <p:commandButton value="rendre" action="#{myBorrowEquipmentsTrackingCtrl.onReturnSelectedEquipment(i)}" update=":listForm"/>
+                        </p:column>
                         <f:facet name="footer">
                             <p:outputLabel value="Total #{myBorrowEquipmentsTrackingCtrl.model.equipments.size()}"/>
 

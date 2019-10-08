@@ -2,7 +2,6 @@ package net.vpc.app.vainruling.core.service.util;
 
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
-import net.vpc.common.util.IntArrayList;
 
 public class UserProfileMap {
 

@@ -21,13 +21,14 @@ import net.vpc.upa.config.Sequence;
 import net.vpc.upa.config.Summary;
 
 /**
- * This entity describes the request for booking an equipment.
- * It will end up with a valid instance of EquipmentBorrowLog (fields borrow)
- * when the book is confirmed.
+ * This entity describes the request for booking an equipment. It will end up
+ * with a valid instance of EquipmentBorrowLog (fields borrow) when the book is
+ * confirmed.
+ *
  * @author vpc
  */
 @Entity(listOrder = "this.fromDate")
-@Path("Equipment")
+@Path("Equipment/Details/Borrow")
 public class EquipmentBorrowRequest {
 
     @Id
@@ -70,7 +71,11 @@ public class EquipmentBorrowRequest {
     private EquipmentBorrowRequestStatus finalStatus;
     @Summary
     private Date finalStatusDate;
+    @Summary
     private boolean archive;
+
+    @Summary
+    private boolean cancelled;
 
     private EquipmentBorrowLog borrow;
 
@@ -277,6 +282,14 @@ public class EquipmentBorrowRequest {
 
     public void setCreationDate(Timestamp creationDate) {
         this.creationDate = creationDate;
+    }
+
+    public boolean isCancelled() {
+        return cancelled;
+    }
+
+    public void setCancelled(boolean cancelled) {
+        this.cancelled = cancelled;
     }
 
 }

@@ -35,6 +35,7 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 import net.vpc.app.vainruling.core.service.editor.ForEntity;
 
 import net.vpc.app.vainruling.core.service.model.content.AppArticleDisposition;
@@ -237,7 +238,7 @@ public class CorePlugin {
         return bodySecurityManager.findProfile(profileId);
     }
 
-    public AppRightName createRight(String rightName, String desc) {
+    public AppRightName addProfileRightName(String rightName, String desc) {
         return bodySecurityManager.createRight(rightName, desc);
     }
 
@@ -1071,6 +1072,14 @@ public class CorePlugin {
         return bodySecurityAuth.isCurrentSessionAdminOrProfile(profileName);
     }
 
+    public boolean isCurrentSessionAdminOrAllOfProfiles(String... profileNames) {
+        return bodySecurityAuth.isCurrentSessionAdminOrAllOfProfiles(profileNames);
+    }
+
+    public boolean isCurrentSessionAdminOrAnyOfProfiles(String... profileNames) {
+        return bodySecurityAuth.isCurrentSessionAdminOrAnyOfProfiles(profileNames);
+    }
+
     public boolean isCurrentSessionAdminOrUser(int userId) {
         return bodySecurityAuth.isCurrentSessionAdminOrUser(userId);
     }
@@ -1525,4 +1534,24 @@ public class CorePlugin {
         bodySecurityManager.invalidateUserProfileMap();
     }
 
+    public List<AppRightName> findProfileRightNames() {
+        return bodySecurityManager.findProfileRightNames();
+    }
+
+    public Map<String, AppRightName> findProfileRightNamesMap() {
+        return new HashMap<>(CorePlugin.get().findProfileRightNames().stream().collect(Collectors.toMap(AppRightName::getName, java.util.function.Function.identity())));
+    }
+
+    public Set<String> findProfileRightNameStrings() {
+        return bodySecurityManager.findProfileRightNames().stream().map(x -> StringUtils.trim(x.getName())).filter(x -> x.length() > 0)
+                .collect(Collectors.toSet());
+    }
+
+    public void addProfileParents(String childern, String... parents) {
+        bodySecurityManager.addProfileParent(childern, parents);
+    }
+
+    public void removeProfileParents(String childern, String... parents) {
+        bodySecurityManager.removeProfileParent(childern, parents);
+    }
 }

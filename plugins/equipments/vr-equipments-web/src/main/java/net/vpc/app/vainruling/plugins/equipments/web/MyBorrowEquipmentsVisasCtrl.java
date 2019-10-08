@@ -18,6 +18,7 @@ import net.vpc.app.vainruling.plugins.equipments.core.service.EquipmentPluginSec
 import org.primefaces.event.SelectEvent;
 import net.vpc.app.vainruling.core.service.pages.VrPage;
 import net.vpc.app.vainruling.core.service.pages.VrPathItem;
+import net.vpc.app.vainruling.plugins.equipments.borrow.model.EquipmentBorrowRequestStatus;
 import net.vpc.app.vainruling.plugins.equipments.borrow.model.EquipmentBorrowVisaStatus;
 
 //import javax.annotation.PostConstruct;
@@ -63,7 +64,7 @@ public class MyBorrowEquipmentsVisasCtrl {
     }
 
     public boolean isVisaVisible(EquipmentForResponsibleInfo info) {
-        if (info == null || info.getRequest().getVisaUser()== null) {
+        if (info == null || info.getRequest().getVisaUser() == null) {
             return false;
         }
         return true;
@@ -74,6 +75,13 @@ public class MyBorrowEquipmentsVisasCtrl {
             return false;
         }
         if (info.getVisaUser() == null || info.getVisaUser().getId() != CorePlugin.get().getCurrentUserId()) {
+            return false;
+        }
+        if (info.getRequest().isArchive()) {
+            return false;
+        }
+        if (info.getRequest().getFinalStatus() == EquipmentBorrowRequestStatus.BORROWED
+                || info.getRequest().getFinalStatus() == EquipmentBorrowRequestStatus.RETURNED) {
             return false;
         }
         switch (info.getRequest().getVisaUserStatus()) {
@@ -93,6 +101,13 @@ public class MyBorrowEquipmentsVisasCtrl {
         if (info == null || info.getRequest().getOperatorUserStatus() == null || !getModel().isOperator()) {
             return false;
         }
+        if (info.getRequest().isArchive()) {
+            return false;
+        }
+        if (info.getRequest().getFinalStatus() == EquipmentBorrowRequestStatus.BORROWED
+                || info.getRequest().getFinalStatus() == EquipmentBorrowRequestStatus.RETURNED) {
+            return false;
+        }
         switch (info.getRequest().getOperatorUserStatus()) {
             case ACCEPTED:
                 return !accept;
@@ -110,6 +125,13 @@ public class MyBorrowEquipmentsVisasCtrl {
         if (info == null || info.getRequest().getSuperOperatorUserStatus() == null || !getModel().isSuperOperator()) {
             return false;
         }
+        if (info.getRequest().isArchive()) {
+            return false;
+        }
+        if (info.getRequest().getFinalStatus() == EquipmentBorrowRequestStatus.BORROWED
+                || info.getRequest().getFinalStatus() == EquipmentBorrowRequestStatus.RETURNED) {
+            return false;
+        }
         switch (info.getRequest().getSuperOperatorUserStatus()) {
             case ACCEPTED:
                 return !accept;
@@ -124,13 +146,49 @@ public class MyBorrowEquipmentsVisasCtrl {
     }
 
     public boolean isDeliver(EquipmentForResponsibleInfo info) {
-        if (info == null || info.getRequest().getSuperOperatorUserStatus() != EquipmentBorrowVisaStatus.ACCEPTED || !getModel().isSuperOperator()) {
+        if (info == null || info.getRequest() == null) {
             return false;
         }
-        if(info.getRequest().getBorrow()!=null){
+        if (info.getRequest().getBorrow() != null) {
             return false;
         }
-        return true;
+        if (info.getRequest().getSuperOperatorUserStatus() == EquipmentBorrowVisaStatus.ACCEPTED) {
+            if (info.getRequest().getBorrow() == null) {
+                return true;
+            }
+        }
+        if (info.getRequest().getSuperOperatorUserStatus() != EquipmentBorrowVisaStatus.REJECTED
+                && info.getRequest().getOperatorUserStatus() == EquipmentBorrowVisaStatus.ACCEPTED) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isArchive(EquipmentForResponsibleInfo info) {
+        if (info == null
+                || (!getModel().isSuperOperator() && !getModel().isOperator())) {
+            return false;
+        }
+        if (info.getRequest().getFinalStatus() == null) {
+            return false;
+        }
+        if (info.getRequest().isArchive()) {
+            return false;
+        }
+        switch (info.getRequest().getFinalStatus()) {
+            case PENDING:
+            case ACCEPTED:
+            case BORROWED: {
+                return false;
+            }
+            case REJECTED:
+            case RETURNED: {
+                return true;
+            }
+            default: {
+                return false;
+            }
+        }
     }
 
     public void onChangeFilter() {
@@ -145,25 +203,32 @@ public class MyBorrowEquipmentsVisasCtrl {
     public void onAcceptVisa(EquipmentForResponsibleInfo info, boolean accept) {
 //        EquipmentPlugin eqm = EquipmentPlugin.get();
         EquipmentBorrowService ebs = VrApp.getBean(EquipmentBorrowService.class);
-        ebs.applyEquipmentRequestByVisaUser(info.getRequest().getId(), EquipmentBorrowOperatorType.VISA, null, accept, false);
+        ebs.applyVisa(info.getRequest().getId(), EquipmentBorrowOperatorType.USER, null, accept, false);
+        onRefreshEquipments();
+    }
+
+    public void onArchive(EquipmentForResponsibleInfo info) {
+//        EquipmentPlugin eqm = EquipmentPlugin.get();
+        EquipmentBorrowService ebs = VrApp.getBean(EquipmentBorrowService.class);
+        ebs.archiveRequest(info.getRequest().getId(), null);
         onRefreshEquipments();
     }
 
     public void onAcceptOperator(EquipmentForResponsibleInfo info, boolean accept) {
 //        EquipmentPlugin eqm = EquipmentPlugin.get();
         EquipmentBorrowService ebs = VrApp.getBean(EquipmentBorrowService.class);
-        ebs.applyEquipmentRequestByVisaUser(info.getRequest().getId(), EquipmentBorrowOperatorType.OPERATOR, null, accept, false);
+        ebs.applyVisa(info.getRequest().getId(), EquipmentBorrowOperatorType.OPERATOR, null, accept, false);
         onRefreshEquipments();
     }
 
     public void onAcceptSuperOperator(EquipmentForResponsibleInfo info, boolean accept) {
 //        EquipmentPlugin eqm = EquipmentPlugin.get();
         EquipmentBorrowService ebs = VrApp.getBean(EquipmentBorrowService.class);
-        ebs.applyEquipmentRequestByVisaUser(info.getRequest().getId(), EquipmentBorrowOperatorType.SUPER_OPERATOR, null, accept, false);
+        ebs.applyVisa(info.getRequest().getId(), EquipmentBorrowOperatorType.SUPER_OPERATOR, null, accept, false);
         onRefreshEquipments();
     }
 
-    public void onDeliverEquipment(EquipmentForResponsibleInfo info) {
+    public void onDeliver(EquipmentForResponsibleInfo info) {
 //        EquipmentPlugin eqm = EquipmentPlugin.get();
         EquipmentBorrowService ebs = VrApp.getBean(EquipmentBorrowService.class);
         ebs.deliverOrDeliverBackEquipment(info.getRequest().getId(), null);

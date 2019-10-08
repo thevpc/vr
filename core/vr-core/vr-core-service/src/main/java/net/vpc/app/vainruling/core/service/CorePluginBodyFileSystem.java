@@ -31,12 +31,13 @@ class CorePluginBodyFileSystem extends CorePluginBody {
 
     @Override
     public void onStart() {
-        CorePlugin core = getContext().getCorePlugin();
-        core.createRight(CorePluginSecurity.RIGHT_CUSTOM_FILESYSTEM_ROOT_FILE_SYSTEM, "Root FileSystem Access");
-        core.createRight(CorePluginSecurity.RIGHT_CUSTOM_FILE_SYSTEM_MY_FILE_SYSTEM, "My FileSystem Access");
-        core.createRight(CorePluginSecurity.RIGHT_FILESYSTEM_ASSIGN_RIGHTS, "Assign Access Rights for File System");
-        core.createRight(CorePluginSecurity.RIGHT_FILESYSTEM_SHARE_FOLDERS, "Share Folders in File System");
-        core.createRight(CorePluginSecurity.RIGHT_FILESYSTEM_WRITE, "Enable Write Access for File System");
+        ProfileRightBuilder b = new ProfileRightBuilder();
+        b.addName(CorePluginSecurity.RIGHT_CUSTOM_FILESYSTEM_ROOT_FILE_SYSTEM, "Root FileSystem Access");
+        b.addName(CorePluginSecurity.RIGHT_CUSTOM_FILE_SYSTEM_MY_FILE_SYSTEM, "My FileSystem Access");
+        b.addName(CorePluginSecurity.RIGHT_FILESYSTEM_ASSIGN_RIGHTS, "Assign Access Rights for File System");
+        b.addName(CorePluginSecurity.RIGHT_FILESYSTEM_SHARE_FOLDERS, "Share Folders in File System");
+        b.addName(CorePluginSecurity.RIGHT_FILESYSTEM_WRITE, "Enable Write Access for File System");
+        b.execute();
     }
 
     public String getNativeFileSystemPath() {
@@ -170,7 +171,7 @@ class CorePluginBodyFileSystem extends CorePluginBody {
     public FileInfo getMyHomeFile(String path) {
         return createFileInfo(getMyHomeFileSystem().get(path));
     }
-    
+
     public FileInfo getMyFile(String path) {
         return createFileInfo(getMyFileSystem().get(path));
     }
@@ -178,6 +179,7 @@ class CorePluginBodyFileSystem extends CorePluginBody {
     public FileInfo getUserFile(String login, String path) {
         return createFileInfo(getUserFileSystem(login).get(path));
     }
+
     public FileInfo getUserHomeFile(String login, String path) {
         return createFileInfo(getUserHomeFileSystem(login).get(path));
     }
@@ -253,9 +255,9 @@ class CorePluginBodyFileSystem extends CorePluginBody {
 
                         for (VrFSTable t : all) {
                             for (VrFSEntry e : t.getEntries()) {
-                                if(login.equalsIgnoreCase(StringUtils.trim(e.getAllowedUsers()))){
+                                if (login.equalsIgnoreCase(StringUtils.trim(e.getAllowedUsers()))) {
                                     mfs.mount("/" + e.getMountPoint(), getRootFileSystem0().subfs(e.getLinkPath()));
-                                }else {
+                                } else {
                                     if (getContext().getCorePlugin().isUserMatchesProfileFilter(u.getId(), e.getAllowedUsers())) {
                                         try {
                                             mountSubFS(mfs, e);
@@ -389,7 +391,7 @@ class CorePluginBodyFileSystem extends CorePluginBody {
             VrFSTable table = getUserVrFSTable(userId);
             String lp = entry.getLinkPath();
             for (VrFSEntry e : table.getEntries()) {
-                if (Objects.equals(e.getLinkPath(),lp)) {
+                if (Objects.equals(e.getLinkPath(), lp)) {
                     e.setAllowedUsers(entry.getAllowedUsers());
                     e.setLinkPath(entry.getLinkPath());
                     e.setMountPoint(entry.getMountPoint());

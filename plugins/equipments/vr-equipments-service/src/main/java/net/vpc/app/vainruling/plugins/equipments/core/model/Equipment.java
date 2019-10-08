@@ -14,6 +14,7 @@ import net.vpc.upa.UserFieldModifier;
 import net.vpc.upa.config.*;
 
 import java.sql.Timestamp;
+import net.vpc.app.vainruling.plugins.equipments.borrow.model.EquipmentBorrowWorkflow;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -107,6 +108,8 @@ public class Equipment {
 
     @Field(defaultValue = "true")
     private boolean borrowable = true;
+    
+    private EquipmentBorrowWorkflow borrowWorkflow;
 
     @Field(defaultValue = "false")
     private boolean inStore = false;
@@ -407,4 +410,12 @@ public class Equipment {
         this.fragile = fragile;
     }
 
+    public EquipmentBorrowWorkflow getBorrowWorkflow() {
+        return borrowWorkflow;
+    }
+
+    public void setBorrowWorkflow(EquipmentBorrowWorkflow borrowWorkflow) {
+        this.borrowWorkflow = borrowWorkflow;
+    }
+    
 }
