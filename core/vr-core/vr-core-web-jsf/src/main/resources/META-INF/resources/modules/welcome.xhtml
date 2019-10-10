@@ -232,6 +232,16 @@ and open the template in the editor.
                                                                         <h:outputText
                                                                             value="#{vr.replaceCustomURLs(a.content)}"
                                                                             escape="false"/>
+
+                                                                        <p:galleria value="#{a.imageAttachments}" var="image" panelWidth="500" panelHeight="313" showCaption="true"
+                                                                                    rendered="#{a.imageAttachments.size() ne 0}" 
+                                                                                    >
+                                                                            <p:graphicImage url="#{vr.url(image.path)}" alt="#{vr.urlName(image.path,image.name,'Image')}" 
+                                                                                            title="#{vr.nvl(image.name,'Image')}"
+                                                                                            style="width:500px;height:313px"
+                                                                                            />
+                                                                        </p:galleria>
+                                                                        
                                                                         <p:outputPanel
                                                                             rendered="#{a.attachments.size() ne 0}">
                                                                             <ui:repeat value="#{a.attachments}" var="att">
@@ -242,7 +252,7 @@ and open the template in the editor.
                                                                                     styleClass="#{(att.style eq null or att.style eq '')?'btn  btn-default':att.style}"
                                                                                     style="margin-left: 3px;margin-right: 3px;margin-top: 5px;"
                                                                                     >
-                                                                                    <h:outputText value="#{att.name}"/>
+                                                                                    <h:outputText value="#{vr.urlName(att.path,att.name,'Document')}"/>
                                                                                 </h:outputLink>
 
                                                                                 <p:commandLink

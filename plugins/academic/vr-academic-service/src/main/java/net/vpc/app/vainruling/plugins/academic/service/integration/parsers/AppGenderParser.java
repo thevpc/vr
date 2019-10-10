@@ -29,6 +29,7 @@ public class AppGenderParser {
             gendersById = new HashMap<>();
             for (AppGender g : CorePlugin.get().findGenders()) {
                 gendersByCode.put(g.getCode(), g);
+                gendersById.put(g.getId(), g);
                 gendersByName.put(VrUtils.normalizeName(g.getName()), g);
                     for (String v : VrUtils.parseNormalizedOtherNames(g.getOtherNames())) {
                         gendersByName.put(v, g);

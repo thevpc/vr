@@ -12,12 +12,12 @@ import java.util.Map;
 /**
  * Created by vpc on 6/25/17.
  */
-public abstract class AbstractEntityObjSearchFactory implements EntityEditorSearchFactory {
+public abstract class ProfileBasedEntityObjSearchFactory implements EntityEditorSearchFactory {
 
     @Override
     public String createHelperString(String name, Entity entity) {
         StringBuilder sb = new StringBuilder("Tapez ici les mots clés de recherche.");
-        sb.append(" Vous pouvez utiliser profile:__EXPR__ pour filtrer selon le groupe utilisateur");
+        sb.append(" Vous pouvez utiliser in:__EXPR__ pour filtrer selon le groupe utilisateur");
         return sb.toString();
     }
 
@@ -26,13 +26,13 @@ public abstract class AbstractEntityObjSearchFactory implements EntityEditorSear
         if (expression == null) {
             return null;
         }
-        if (expression.startsWith("profile:")) {
+        if (expression.startsWith("in:")) {
             return new ObjSearchImpl(name, entity, expression);
         }
         return null;
     }
 
-    abstract protected List filterContactsByProfileFilter0(List objects, String profileSearchText);
+    abstract protected List filterDocumentByProfileFilter(List objects, String profileSearchText);
 
     private class ObjSearchImpl extends EntityEditorSearch {
 
@@ -63,7 +63,7 @@ public abstract class AbstractEntityObjSearchFactory implements EntityEditorSear
                 map.put(id, o0);
                 toFilterObjectList.add(o);
             }
-            List filteredObjectList = filterContactsByProfileFilter0(toFilterObjectList, expression.substring("profile:".length()));
+            List filteredObjectList = filterDocumentByProfileFilter(toFilterObjectList, expression.substring("in:".length()));
             List documentsObjectList = new ArrayList(filteredObjectList.size());
             for (Object o : filteredObjectList) {
                 Object o0 = o;

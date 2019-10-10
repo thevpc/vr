@@ -28,6 +28,7 @@ public class AppCivilityParser {
             for (AppCivility g : CorePlugin.get().findCivilities()) {
                 civilityByName.put(g.getName().toUpperCase(), g);
                 civilityById.put(g.getId(), g);
+                civilityById.put(g.getId(), g);
             }
         }
     }

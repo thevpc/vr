@@ -12,7 +12,6 @@ import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.content.ContentText;
 import net.vpc.app.vainruling.core.service.content.TaskTextService;
 import net.vpc.app.vainruling.core.service.model.AppUser;
-import net.vpc.app.vainruling.core.web.*;
 import net.vpc.app.vainruling.core.web.jsf.ctrl.AbstractObjectCtrl;
 
 import net.vpc.app.vainruling.core.service.pages.VrBreadcrumbItem;
@@ -20,7 +19,6 @@ import net.vpc.app.vainruling.core.service.menu.VRMenuInfo;
 import net.vpc.app.vainruling.core.service.menu.VRMenuLabel;
 import net.vpc.app.vainruling.core.web.jsf.VrJsf;
 import net.vpc.app.vainruling.plugins.tasks.service.TaskPlugin;
-import net.vpc.app.vainruling.plugins.tasks.service.TaskPluginSecurity;
 import net.vpc.app.vainruling.plugins.tasks.service.model.*;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.AccessMode;
@@ -28,11 +26,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import net.vpc.app.vainruling.core.service.menu.VRMenuProvider;
+import net.vpc.app.vainruling.core.service.model.AppProfile;
 import net.vpc.app.vainruling.core.service.pages.VrPageInfoResolver;
 import net.vpc.app.vainruling.core.service.pages.VrPage;
 import net.vpc.app.vainruling.core.service.pages.VrPathItem;
+import net.vpc.app.vainruling.core.service.util.VrUtils;
+import net.vpc.upa.UPA;
+import org.primefaces.event.SlideEndEvent;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -65,7 +70,7 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuProvider
     @Override
     public VrBreadcrumbItem getTitle() {
         VrBreadcrumbItem b = super.getTitle();
-        TodoList list = todoService.findTodoList(getModel().getListName());
+        TodoList list = getCurrentTodoList();
         if (TodoList.LABO_ACTION.equals(list.getName())) {
             b.setTitle("Mes Actions Labo");
         } else if (TodoList.LABO_TICKET.equals(list.getName())) {
@@ -76,8 +81,16 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuProvider
         return b;
     }
 
-    public void onProgressSlideEnd() {
+    public void onEstimationSlideEnd(SlideEndEvent event) {
+        getModel().getCurrent().setEstimation(event.getValue());
+    }
 
+    public void onPrioritySlideEnd(SlideEndEvent event) {
+        getModel().setCurrentPriority(event.getValue());
+    }
+
+    public void onProgressSlideEnd(SlideEndEvent event) {
+        getModel().getCurrent().setProgress(event.getValue());
     }
 
     @Override
@@ -92,11 +105,39 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuProvider
         todo.setInitiator(coreService.getCurrentUser());
         todo.setResponsible(coreService.getCurrentUser());
         todo.setPriority(TodoPriority.DEFAULT);
-        TodoList list = todoService.findTodoList(getModel().getListName());
+        TodoList list = getCurrentTodoList();
         todo.setList(list);
         TodoStatus s = todoService.findStartStatus(list.getStatusGroup().getId());
         todo.setStatus(s);
         return todo;
+    }
+
+    public TodoList getCurrentTodoList() {
+        return todoService.findTodoList(getModel().getListName());
+    }
+
+    public List<String> onCompleteCategory(String n) {
+        n = VrUtils.normalizeName(n);
+        TodoList list = getCurrentTodoList();
+        Set<String> ok = new HashSet<>();
+        if (list != null) {
+            List<TodoCategory> p = todoService.findTodoCategories(list.getId());
+            for (TodoCategory t : p) {
+                ok.add(t.getName());
+            }
+        }
+        if (ok.isEmpty()) {
+            ok.add("Divers");
+            ok.add("Perso");
+            ok.add("Travail");
+        }
+        for (Iterator<String> it = ok.iterator(); it.hasNext();) {
+            String s = it.next();
+            if (!n.isEmpty() && !VrUtils.normalizeName(s).contains(n)) {
+                it.remove();
+            }
+        }
+        return new ArrayList<>(ok);
     }
 
     public boolean isCurrentOwned() {
@@ -142,7 +183,18 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuProvider
         return super.isEnabledButton(buttonId);
     }
 
+    public void updateCurrentCategory() {
+        Todo todo = getModel().getCurrent();
+        String n = getModel().getCurrentCategoryName();
+        if (StringUtils.isBlank(n)) {
+            todo.setCategory(null);
+        } else {
+            todo.setCategory(todoService.addTodoCategory(todo.getList().getId(), n));
+        }
+    }
+
     public void onAssignCurrent() {
+        updateCurrentCategory();
         Todo c = getModel().getCurrent();
         TodoStatus s = todoService.findNextStatus(c.getStatus(), TodoStatusType.ASSIGNED);
         if (s != null) {
@@ -154,6 +206,7 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuProvider
     }
 
     public void onUnassignCurrent() {
+        updateCurrentCategory();
         Todo c = getModel().getCurrent();
         TodoStatus s = todoService.findNextStatus(c.getStatus(), TodoStatusType.UNASSIGNED);
         if (s != null) {
@@ -165,6 +218,7 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuProvider
     }
 
     public void onDoneCurrent() {
+        updateCurrentCategory();
         Todo c = getModel().getCurrent();
         TodoStatus s = todoService.findNextStatus(c.getStatus(), TodoStatusType.DONE);
         if (s != null) {
@@ -176,6 +230,7 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuProvider
     }
 
     public void onVerifyCurrent() {
+        updateCurrentCategory();
         Todo c = getModel().getCurrent();
         TodoStatus s = todoService.findNextStatus(c.getStatus(), TodoStatusType.TO_VERIFY);
         if (s != null) {
@@ -187,6 +242,7 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuProvider
     }
 
     public void onReopenCurrent() {
+        updateCurrentCategory();
         Todo c = getModel().getCurrent();
         TodoStatus s = todoService.findNextStatus(c.getStatus(), TodoStatusType.ASSIGNED);
         if (s != null) {
@@ -198,6 +254,7 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuProvider
     }
 
     public void onSaveCurrent() {
+        updateCurrentCategory();
         switch (getModel().getMode()) {
             case PERSIST: {
                 Todo c = getModel().getCurrent();
@@ -217,6 +274,7 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuProvider
     }
 
     public void onDeleteCurrent() {
+        updateCurrentCategory();
         Todo c = getModel().getCurrent();
         todoService.removeTodo(c.getId());
         reloadPage(true);
@@ -224,6 +282,7 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuProvider
     }
 
     public void onArchiveCurrent() {
+        updateCurrentCategory();
         Todo c = getModel().getCurrent();
         todoService.archiveTodo(c.getId());
         getModel().setCurrent(new Todo());
@@ -238,7 +297,11 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuProvider
 
     public void onAddConsumption(double value) {
         Todo v = getModel().getCurrent();
-        v.setConsumption(v.getConsumption() + value);
+        double n = v.getConsumption() + value;
+        if (n < 0) {
+            n = 0;
+        }
+        v.setConsumption(n);
     }
 
     @Override
@@ -247,7 +310,11 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuProvider
             getModel().setListName(cmd);
             getModel().setCmd(cmd);
         }
-        TodoList list = todoService.findTodoList(getModel().getListName());
+        refreshList();
+    }
+
+    public void refreshList() {
+        TodoList list = getCurrentTodoList();
         int currentListId = list.getId();
         getModel().setTodo(todoService.findTodosByResponsible(currentListId, null, new TodoStatusType[]{TodoStatusType.UNASSIGNED}));
         getModel().setInProgress(todoService.findTodosByResponsible(currentListId, null, new TodoStatusType[]{TodoStatusType.ASSIGNED}));
@@ -258,48 +325,128 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuProvider
         getModel().setStatusItems(VrJsf.toSelectItemList(getModel().getStatuses()));
         getModel().setCategories(todoService.findTodoCategories(currentListId));
         getModel().setCategoryItems(VrJsf.toSelectItemList(getModel().getCategories()));
+        getModel().setResponsibleItems(VrJsf.toSelectItemList(todoService.findCollaborators(list)));
+
+    }
+
+    public boolean isSharableList() {
+        TodoList l = getCurrentTodoList();
+        if (l == null) {
+            return false;
+        }
+        CorePlugin a = CorePlugin.get();
+        int u = a.getCurrentUserIdFF();
+        if (u < 0) {
+            return false;
+        }
+        if (a.isCurrentSessionAdmin()) {
+            return true;
+        }
+        //default is true...
+        return true;
+    }
+
+    public boolean isListManager() {
+        TodoList l = getCurrentTodoList();
+        CorePlugin a = CorePlugin.get();
+        int u = a.getCurrentUserIdFF();
+        return l != null
+                && (a.isCurrentSessionAdmin()
+                || (l.getRespUser() != null && l.getRespUser().getId() == u));
+    }
+
+    public void onUpdateCollaborators() {
+        TodoList li = getCurrentTodoList();
+        if (isListManager()) {
+            UPA.getPersistenceUnit().invokePrivileged(() -> UPA.getPersistenceUnit().merge(li));
+            refreshList();
+        }
+    }
+
+    @Override
+    public void onSelectCurrent() {
+        super.onSelectCurrent();
     }
 
     @Override
     public List<VRMenuInfo> createCustomMenus() {
         List<VRMenuInfo> ok = new ArrayList<>();
-        for (TodoList findTodoListsByResp : todoService.findTodoListsByResp(null)) {
-            AppUser user = coreService.getCurrentUser();
-            int count = user == null ? 0 : todoService.findTodosByResponsible(findTodoListsByResp.getId(),
-                    user.getId(),
-                    new TodoStatusType[]{
-                        TodoStatusType.ASSIGNED,
-                        TodoStatusType.TO_VERIFY,}
-            ).size();
-            final VRMenuInfo vrMenuDef = new VRMenuInfo(findTodoListsByResp.getName(), "/Todo", "todo", findTodoListsByResp.getName(),
-                    TaskPluginSecurity.PREFIX_RIGHT_CUSTOM_TODO + findTodoListsByResp.getName(), null, "", 100,
-                    new VRMenuLabel[]{
-                        new VRMenuLabel(String.valueOf(count), "severe")
-                    }
-            );
+        for (TodoList list : todoService.findTodoListsByResp(null)) {
+            if (isAllowedList(list, false)) {
+                AppUser user = coreService.getCurrentUser();
+                int count = user == null ? 0 : todoService.findTodosByResponsible(list.getId(),
+                        user.getId(),
+                        new TodoStatusType[]{
+                            TodoStatusType.UNASSIGNED,
+                            TodoStatusType.ASSIGNED,
+                            TodoStatusType.TO_VERIFY
+                        }
+                ).size();
+                final VRMenuInfo vrMenuDef = new VRMenuInfo(list.getLabel() == null ? list.getName() : list.getLabel(), "/Todo", "todo", list.getName(),
+                        null, null, "", 100,
+                        new VRMenuLabel[]{
+                            new VRMenuLabel(String.valueOf(count), "severe")
+                        }
+                );
 //            vrMenuDef.
-            ok.add(vrMenuDef);
+                ok.add(vrMenuDef);
+            }
         }
         return ok;
     }
 
+    protected boolean isAllowedList(TodoList list, boolean promoteAdmin) {
+        if (list == null) {
+            return false;
+        }
+        CorePlugin core = CorePlugin.get();
+        if (core.getCurrentUserId() == null) {
+            return false;
+        }
+        if (!StringUtils.isBlank(list.getCollaborators())) {
+            if (!core.isUserMatchesProfileFilter(core.getCurrentUserId(), list.getCollaborators())) {
+                return false;
+            }
+        }
+        if (list.getRespUser() != null) {
+            if (promoteAdmin) {
+                if (!core.isCurrentSessionAdminOrUser(core.getCurrentUserId())) {
+                    return false;
+                }
+            } else {
+                if (core.getCurrentUserId() != list.getRespUser().getId()) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     @Override
     public VrPageInfo resolvePageInfo(String cmd) {
-        String listName = cmd;
-        String title = "?";
-        if (TodoList.LABO_ACTION.equals(listName)) {
-            title = ("Mes Actions Labo");
-        } else if (TodoList.LABO_TICKET.equals(listName)) {
-            title = ("Mes Ticktes Labo");
-        } else {
-            title = (listName);
+//        String listName = cmd;
+        TodoList list = todoService.findTodoList(cmd);
+        if (!isAllowedList(list, true)) {
+            return null;
         }
-
+        String title = list.getLabel();
+//       String title = "?";
+//        if (TodoList.LABO_ACTION.equals(listName)) {
+//        } else if (TodoList.LABO_TICKET.equals(listName)) {
+//            title = ("Mes Ticktes Labo");
+//        } else {
+//            title = (listName);
+//        }
+        if (StringUtils.isBlank(title)) {
+            title = list.getName();
+        }
+        if (StringUtils.isBlank(title)) {
+            title = "Todo#" + list.getId();
+        }
         VrPageInfo d = new VrPageInfo();
         d.setUrl("modules/todo/todos");
         d.setCss("fa-table");
         d.setTitle(title);
-        d.setSecurityKey(TaskPluginSecurity.PREFIX_RIGHT_CUSTOM_TODO + listName);
         List<VrBreadcrumbItem> items = new ArrayList<>();
         items.add(new VrBreadcrumbItem("Todo", "Mes taches à faire", "fa-dashboard", "", ""));
         d.setBreadcrumb(items.toArray(new VrBreadcrumbItem[items.size()]));

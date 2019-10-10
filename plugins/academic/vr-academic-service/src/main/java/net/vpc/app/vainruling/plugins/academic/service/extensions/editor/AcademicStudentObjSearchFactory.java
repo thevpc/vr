@@ -1,6 +1,6 @@
 package net.vpc.app.vainruling.plugins.academic.service.extensions.editor;
 
-import net.vpc.app.vainruling.core.service.editor.AbstractEntityObjSearchFactory;
+import net.vpc.app.vainruling.core.service.editor.ProfileBasedEntityObjSearchFactory;
 import net.vpc.app.vainruling.plugins.academic.model.config.AcademicStudent;
 
 import java.util.List;
@@ -14,10 +14,10 @@ import org.springframework.stereotype.Component;
  */
 @ForEntity("AcademicStudent")
 @Component
-public class AcademicStudentObjSearchFactory extends AbstractEntityObjSearchFactory {
+public class AcademicStudentObjSearchFactory extends ProfileBasedEntityObjSearchFactory {
 
     @Override
-    protected List filterContactsByProfileFilter0(List objects, String profileSearchText) {
+    protected List filterDocumentByProfileFilter(List objects, String profileSearchText) {
         AcademicStudentProfileFilter filter=new AcademicStudentProfileFilter(profileSearchText);
         return (List) objects.stream().filter(x -> filter.accept((AcademicStudent) x)).collect(Collectors.toList());
     }

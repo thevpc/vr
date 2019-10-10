@@ -16,6 +16,10 @@ import org.springframework.stereotype.Component;
 import javax.faces.model.SelectItem;
 import java.util.ArrayList;
 import java.util.List;
+import net.vpc.app.vainruling.core.service.CorePlugin;
+import net.vpc.app.vainruling.core.service.model.AppUser;
+import net.vpc.app.vainruling.plugins.tasks.service.model.TodoPriority;
+import net.vpc.upa.UPA;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -36,11 +40,22 @@ public class TodoModel extends AbstractObjectCtrl.Model<Todo> {
     private List<TodoCategory> categories = new ArrayList<>();
     private List<SelectItem> statusItems = new ArrayList<>();
     private List<SelectItem> categoryItems = new ArrayList<>();
+    private List<SelectItem> responsibleItems = new ArrayList<>();
     private Integer currentCategoryId;
+    private String currentCategoryName;
+    private Integer currentResponsibleId;
     private Integer currentStatusId;
 
     public TodoModel() {
         setCurrent(new Todo());
+    }
+
+    public String getCurrentCategoryName() {
+        return currentCategoryName;
+    }
+
+    public void setCurrentCategoryName(String currentCategoryName) {
+        this.currentCategoryName = currentCategoryName;
     }
 
     public List<TodoStatus> getStatuses() {
@@ -133,7 +148,33 @@ public class TodoModel extends AbstractObjectCtrl.Model<Todo> {
 
     @Override
     public Todo getCurrent() {
-        return super.getCurrent();
+        Todo c = super.getCurrent();
+        if(c==null) {
+            return null;
+        }
+        if(currentResponsibleId!=null){
+            AppUser u = UPA.getPersistenceUnit().invokePrivileged(()->CorePlugin.get().findUser(currentResponsibleId));
+            c.setResponsible(u);
+        }
+        return c;
+    }
+
+    public int getCurrentPriority() {
+        Todo c = getCurrent();
+        if (c == null || c.getPriority() == null) {
+            return 0;
+        }
+        return c.getPriority().ordinal();
+    }
+
+    public void setCurrentPriority(int priority) {
+        if (priority < 0) {
+            priority = 0;
+        }
+        if (priority >= TodoPriority.values().length) {
+            priority = TodoPriority.values().length - 1;
+        }
+        getCurrent().setPriority(TodoPriority.values()[priority]);
     }
 
     @Override
@@ -141,8 +182,10 @@ public class TodoModel extends AbstractObjectCtrl.Model<Todo> {
         super.setCurrent(current);
         TodoCategory c = current.getCategory();
         this.currentCategoryId = c == null ? null : c.getId();
+        this.currentCategoryName = c == null ? null : c.getName();
         TodoStatus s = current.getStatus();
         this.currentStatusId = s == null ? null : s.getId();
+        this.currentResponsibleId = current.getResponsible() == null ? null : current.getResponsible().getId();
     }
 
     public List<Todo> getTodo() {
@@ -151,8 +194,8 @@ public class TodoModel extends AbstractObjectCtrl.Model<Todo> {
 
     public void setTodo(List<Todo> todo) {
         this.todo = todo;
-        todoText=new ArrayList<>();
-        if(todo!=null){
+        todoText = new ArrayList<>();
+        if (todo != null) {
             for (Todo todo1 : todo) {
                 todoText.add(new TodoText(todo1));
             }
@@ -185,6 +228,22 @@ public class TodoModel extends AbstractObjectCtrl.Model<Todo> {
 
     public void setDone(List<Todo> done) {
         this.done = done;
+    }
+
+    public List<SelectItem> getResponsibleItems() {
+        return responsibleItems;
+    }
+
+    public void setResponsibleItems(List<SelectItem> responsibleItems) {
+        this.responsibleItems = responsibleItems;
+    }
+
+    public Integer getCurrentResponsibleId() {
+        return currentResponsibleId;
+    }
+
+    public void setCurrentResponsibleId(Integer currentResponsibleId) {
+        this.currentResponsibleId = currentResponsibleId;
     }
 
 }

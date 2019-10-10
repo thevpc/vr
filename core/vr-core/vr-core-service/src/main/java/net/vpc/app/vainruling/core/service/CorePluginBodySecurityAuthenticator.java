@@ -10,6 +10,9 @@ import net.vpc.upa.types.DateTime;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.vpc.app.vainruling.core.service.extensions.VrImpersonateListener;
+import net.vpc.app.vainruling.core.service.extensions.VrLoginListener;
+import net.vpc.app.vainruling.core.service.extensions.VrLogoutListener;
 import net.vpc.app.vainruling.core.service.util.Arg;
 import net.vpc.app.vainruling.core.service.util.I18n;
 
@@ -109,7 +112,17 @@ class CorePluginBodySecurityAuthenticator extends CorePluginBody {
                     }
                 }
             }
-            return populateSessionInfo(token, new UserSessionInfo(), true, new Date());
+            UserSessionInfo s = populateSessionInfo(token, new UserSessionInfo(), true, new Date());
+            if (s != null) {
+                for (VrLoginListener a : VrApp.getBeansForType(VrLoginListener.class)) {
+                    try {
+                        a.onAuthenticate(s);
+                    } catch (Exception any) {
+                        log.severe("Login failed (" + login + "): " + any.getMessage());
+                    }
+                }
+            }
+            return s;
         } catch (Exception any) {
             log.severe("Login failed (" + login + "): " + any.getMessage());
             return null;
@@ -318,6 +331,16 @@ class CorePluginBodySecurityAuthenticator extends CorePluginBody {
                 );
                 invalidateToken(s.getSessionId());
             }
+            if (s != null) {
+                for (VrLogoutListener a : VrApp.getBeansForType(VrLogoutListener.class)) {
+                    try {
+                        a.onLogout(s);
+                    } catch (Exception any) {
+                        log.severe("Logout failed (" + login + "): " + any.getMessage());
+                    }
+                }
+            }
+
         }
     }
 
@@ -356,6 +379,17 @@ class CorePluginBodySecurityAuthenticator extends CorePluginBody {
                 }
                 invalidateToken(sessionId);
             }
+            if (s != null) {
+                if (t != null) {
+                    for (VrLogoutListener a : VrApp.getBeansForType(VrLogoutListener.class)) {
+                        try {
+                            a.onLogout(t);
+                        } catch (Exception any) {
+                            log.severe("Logout failed (" + login + "): " + any.getMessage());
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -387,6 +421,15 @@ class CorePluginBodySecurityAuthenticator extends CorePluginBody {
                 s.setRootLogin(s.getUserLogin());
                 s.setUserId(user.getId());
                 buildToken(s);
+            }
+            if (s != null) {
+                for (VrImpersonateListener a : VrApp.getBeansForType(VrImpersonateListener.class)) {
+                    try {
+                        a.onImpersonate(s);
+                    } catch (Exception any) {
+                        log.severe("Impersonate failed (" + login + "): " + any.getMessage());
+                    }
+                }
             }
             getContext().getCorePlugin().onPoll();
             return user;

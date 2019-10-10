@@ -65,6 +65,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import javax.faces.bean.ManagedBean;
 import net.vpc.app.vainruling.core.service.pages.VrPageHistoryItem;
 import net.vpc.app.vainruling.core.service.util.I18n;
@@ -1309,7 +1310,7 @@ public class Vr {
     }
 
     public void updateProfileExpressionUsersCount(Object any) {
-        System.out.println("Hi");
+//        System.out.println("Hi");
     }
 
     public String dblFormat(double d) {
@@ -1750,5 +1751,32 @@ public class Vr {
 
     public void setMenuSearchText(String value) {
         getMenuManager().getModel().setSearchText(value);
+    }
+
+    public List<String> contentPathToString(List<ContentPath> c) {
+        return c.stream().map(x -> x.getPath()).collect(Collectors.toList());
+    }
+
+    public static String urlName(String url, String name,String defaultName) {
+        if (!StringUtils.isBlank(name)) {
+            return name;
+        }
+        if (!StringUtils.isBlank(url)) {
+            int p = url.indexOf('?');
+            if (p > 0) {
+                url = url.substring(0, p);
+            }
+            while (url.endsWith("/")) {
+                url = url.substring(0, url.length() - 1);
+            }
+            p = url.lastIndexOf('/');
+            if (p >= 0) {
+                url = url.substring(p + 1);
+            }
+            if (url.length() > 0) {
+                return url;
+            }
+        }
+        return defaultName;
     }
 }

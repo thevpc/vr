@@ -30,6 +30,7 @@ class CorePluginBodySecurityManager extends CorePluginBody {
     protected void validateRightsDefinitions() {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         CorePlugin core = getContext().getCorePlugin();
+        ProfileRightBuilder prb = new ProfileRightBuilder();
         for (Entity entity : pu.getEntities()) {
             if (!entity.isSystem()) {
                 for (String rname : CorePluginSecurity.getEntityRights(
@@ -40,11 +41,12 @@ class CorePluginBodySecurityManager extends CorePluginBody {
                         true,
                         true
                 )) {
-                    core.findOrCreate(new AppRightName(rname, rname));
+                    prb.addName(rname);
                 }
             }
         }
-        createRight(CorePluginSecurity.RIGHT_CUSTOM_ADMIN_PASSWD, CorePluginSecurity.RIGHT_CUSTOM_ADMIN_PASSWD);
+        prb.addName(CorePluginSecurity.RIGHT_CUSTOM_ADMIN_PASSWD);
+        prb.execute();
     }
 
     public AppUser findUser(String login) {

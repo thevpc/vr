@@ -34,76 +34,76 @@ and open the template in the editor.
                     <div >
                         <p:outputLabel id="buttons">
                             <p:commandButton value="Rafr." rendered="#{todoCtrl.isEnabledButton('Refresh')}"
-                                             icon="a-refresh" styleClass="ui-ribbon-bigbutton btn btn-default" ajax="true"
+                                             icon="a-refresh" styleClass="ui-ribbon-bigbutton btn btn-default vr-toolbox-button" ajax="true"
                                              actionListener="#{todoCtrl.onRefresh}" update="buttons :listForm :itemForm"/>
                             <p:commandButton value="Nouv." rendered="#{todoCtrl.isEnabledButton('New')}" icon="fa fa-plus"
                                              styleClass="ui-ribbon-bigbutton  btn btn-primary" ajax="true"
                                              actionListener="#{todoCtrl.onNew}" update="buttons :listForm :itemForm"/>
                             <p:commandButton value="Enregister" rendered="#{todoCtrl.isEnabledButton('Save')}"
-                                             icon="ui-ribbonicon-save" styleClass="ui-ribbon-bigbutton  btn btn-default"
+                                             icon="ui-ribbonicon-save" styleClass="ui-ribbon-bigbutton  btn btn-default vr-toolbox-button"
                                              ajax="true" onclick="processOnSaveCurrent()"
                                              update="buttons :listForm :itemForm"/>
                             <p:commandButton value="Supp." rendered="#{todoCtrl.isEnabledButton('Remove')}"
-                                             icon="ui-ribbonicon-del" styleClass="ui-ribbon-bigbutton  btn btn-danger"
+                                             icon="ui-ribbonicon-del" styleClass="ui-ribbon-bigbutton  btn btn-danger vr-toolbox-button"
                                              ajax="true" onclick="PF('confirmationDelete').show();"
                                              update="buttons :listForm :itemForm"/>
                             <p:commandButton value="Arch." rendered="#{todoCtrl.isEnabledButton('Archive')}"
-                                             icon="ui-ribbonicon-arch" styleClass="ui-ribbon-bigbutto  btn btn-default"
+                                             icon="ui-ribbonicon-arch" styleClass="ui-ribbon-bigbutto  btn btn-default vr-toolbox-button"
                                              ajax="true" onclick="processOnArchiveCurrent()"
                                              update="buttons :listForm :itemForm"/>
                             <p:commandButton value="Ann." rendered="#{todoCtrl.isEnabledButton('Cancel')}"
-                                             icon="fa fa-arrow-left" styleClass="ui-ribbon-bigbutton  btn btn-default" ajax="true"
+                                             icon="fa fa-arrow-left" styleClass="ui-ribbon-bigbutton  btn btn-default vr-toolbox-button" ajax="true"
                                              actionListener="#{todoCtrl.onCancelCurrent}"
                                              update="buttons :listForm :itemForm"/>
 
                             <p:commandButton value="Assigner." rendered="#{todoCtrl.isEnabledButton('Assign')}"
-                                             icon="ui-ribbonicon-canc" styleClass="ui-ribbon-bigbutton  btn btn-default"
+                                             icon="ui-ribbonicon-canc" styleClass="ui-ribbon-bigbutton  btn btn-default vr-toolbox-button"
                                              ajax="true" actionListener="#{todoCtrl.onAssignCurrent}"
                                              update="buttons :listForm :itemForm"/>
                             <p:commandButton value="De-Assigner." rendered="#{todoCtrl.isEnabledButton('Unassign')}"
-                                             icon="ui-ribbonicon-canc" styleClass="ui-ribbon-bigbutton  btn btn-default"
+                                             icon="ui-ribbonicon-canc" styleClass="ui-ribbon-bigbutton  btn btn-default vr-toolbox-button"
                                              ajax="true" actionListener="#{todoCtrl.onUnassignCurrent}"
                                              update="buttons :listForm :itemForm"/>
                             <p:commandButton value="Fait" rendered="#{todoCtrl.isEnabledButton('Done')}"
-                                             icon="ui-ribbonicon-canc" styleClass="ui-ribbon-bigbutton  btn btn-default"
+                                             icon="ui-ribbonicon-canc" styleClass="ui-ribbon-bigbutton  btn btn-default vr-toolbox-button"
                                              ajax="true" actionListener="#{todoCtrl.onDoneCurrent}"
                                              update="buttons :listForm :itemForm"/>
                             <p:commandButton value="Vérifier" rendered="#{todoCtrl.isEnabledButton('Verify')}"
-                                             icon="ui-ribbonicon-canc" styleClass="ui-ribbon-bigbutton  btn btn-default"
+                                             icon="ui-ribbonicon-canc" styleClass="ui-ribbon-bigbutton  btn btn-default vr-toolbox-button"
                                              ajax="true" actionListener="#{todoCtrl.onVerifyCurrent}"
                                              update="buttons :listForm :itemForm"/>
 
                             <p:commandButton value="Copier" rendered="#{todoCtrl.isEnabledButton('Copy')}"
-                                             icon="ui-ribbonicon-copy" styleClass="ui-ribbon-bigbutton  btn btn-default"
+                                             icon="ui-ribbonicon-copy" styleClass="ui-ribbon-bigbutton  btn btn-default vr-toolbox-button"
                                              update="buttons :listForm :itemForm"/>
                             <p:commandButton value="Coller" rendered="#{todoCtrl.isEnabledButton('Paste')}"
-                                             icon="ui-ribbonicon-paste" styleClass="ui-ribbon-bigbutton  btn btn-default"
+                                             icon="ui-ribbonicon-paste" styleClass="ui-ribbon-bigbutton  btn btn-default vr-toolbox-button"
                                              update="buttons :listForm :itemForm"/>
                             <p:commandButton value="Couper" rendered="#{todoCtrl.isEnabledButton('Cut')}"
-                                             icon="ui-ribbonicon-cut" styleClass="ui-ribbon-bigbutton  btn btn-default"
+                                             icon="ui-ribbonicon-cut" styleClass="ui-ribbon-bigbutton  btn btn-default vr-toolbox-button"
                                              update="buttons :listForm :itemForm"/>
 
                             <p:commandButton value="Imprimer" rendered="#{todoCtrl.isEnabledButton('Print')}"
-                                             icon="ui-ribbonicon-print" styleClass="ui-ribbon-bigbutton  btn btn-default"
+                                             icon="ui-ribbonicon-print" styleClass="ui-ribbon-bigbutton  btn btn-default vr-toolbox-button"
                                              update="buttons :listForm :itemForm"/>
 
                             <p:commandButton value="Importer" rendered="#{todoCtrl.isEnabledButton('Import')}"
-                                             icon="ui-ribbonicon-import" styleClass="ui-ribbon-bigbutton  btn btn-default"
+                                             icon="ui-ribbonicon-import" styleClass="ui-ribbon-bigbutton  btn btn-default vr-toolbox-button"
                                              update="buttons :listForm :itemForm"/>
                             <p:commandButton value="csv" rendered="#{todoCtrl.isEnabledButton('Export-csv')}"
-                                             icon="ui-ribbonicon-csv" styleClass="ui-ribbon-bigbutton "
+                                             icon="ui-ribbonicon-csv" styleClass="ui-ribbon-bigbutton   btn btn-default vr-toolbox-button"
                                              update="buttons :listForm :itemForm"/>
                             <p:commandButton value="xls" rendered="#{todoCtrl.isEnabledButton('Export-xls')}"
-                                             icon="ui-ribbonicon-xls" styleClass="ui-ribbon-bigbutton "
+                                             icon="ui-ribbonicon-xls" styleClass="ui-ribbon-bigbutton   btn btn-default vr-toolbox-button"
                                              update="buttons :listForm :itemForm"/>
                             <p:commandButton value="pdf" rendered="#{todoCtrl.isEnabledButton('Export-pdf')}"
-                                             icon="ui-ribbonicon-pdf" styleClass="ui-ribbon-bigbutton "
+                                             icon="ui-ribbonicon-pdf" styleClass="ui-ribbon-bigbutton   btn btn-default vr-toolbox-button"
                                              update="buttons :listForm :itemForm"/>
                             <p:commandButton value="Auth." rendered="#{todoCtrl.isEnabledButton('Authorization')}"
-                                             icon="ui-ribbonicon-acl" styleClass="ui-ribbon-bigbutton "
+                                             icon="ui-ribbonicon-acl" styleClass="ui-ribbon-bigbutton   btn btn-default vr-toolbox-button"
                                              type="button" update="buttons :listForm :itemForm"/>
                             <p:commandButton value="Trace" rendered="#{todoCtrl.isEnabledButton('Log')}"
-                                             icon="ui-ribbonicon-log" styleClass="ui-ribbon-bigbutton "
+                                             icon="ui-ribbonicon-log" styleClass="ui-ribbon-bigbutton   btn btn-default vr-toolbox-button"
                                              type="button" update="buttons :listForm :itemForm"/>
                         </p:outputLabel>
                     </div>
@@ -115,7 +115,7 @@ and open the template in the editor.
                     <p:outputLabel id="editItemList" rendered="#{todoCtrl.isListMode()}">
 
 
-                        <div >
+                        <div class="row">
                             <div class="col-lg-6">
                                 <h4>à faire
                                 </h4>
@@ -147,13 +147,17 @@ and open the template in the editor.
                                             <h:outputText value="#{i.initiator.login}"/>
                                         </p:column>
 
+                                        <p:column headerText="Assign" style="width: 70px" >
+                                            <h:outputText value="#{i.responsible.login}"/>
+                                        </p:column>
+
                                         <p:column headerText="Echeance" style="width: 100px">
                                             <h:outputText value="#{i.deadline}">
                                                 <f:convertDateTime type="date" pattern="dd-MM-yy"/>
                                             </h:outputText>
                                         </p:column>
 
-                                        <p:column headerText="" style="width: 35px">
+                                        <p:column headerText="Avanc." style="width: 100px">
                                             <!--<p:progressBar value="# {i.progress}" labelTemplate="{value}%" styleClass="animated" global="false"/>-->
                                             <div class="progress progress-striped active">
                                                 <div class="progress-bar #{i.priority.ordinal()==0?'progress-bar-default':i.priority.ordinal()==1?'progress-bar-primary':i.priority.ordinal()==2?'progress-bar-success':i.priority.ordinal()==3?'progress-bar-info':i.priority.ordinal()==4?'progress-bar-warning':i.priority.ordinal()==5?'progress-bar-danger':'progress-bar-link'}"
@@ -199,8 +203,7 @@ and open the template in the editor.
                                             <h:outputText value="#{i.initiator.login}"/>
                                         </p:column>
 
-                                        <p:column headerText="Assign" style="width: 70px"
-                                                  rendered="#{corePlugin.isCurrentAllowed('TASK_VIEW_ALL')}">
+                                        <p:column headerText="Assign" style="width: 70px" >
                                             <h:outputText value="#{i.responsible.login}"/>
                                         </p:column>
 
@@ -230,7 +233,7 @@ and open the template in the editor.
                         </div>
                         <!-- /.row -->
 
-                        <div >
+                        <div class="row">
                             <div class="col-lg-6">
                                 <h4>à vérifier</h4>
 
@@ -262,7 +265,7 @@ and open the template in the editor.
                                         </p:column>
 
                                         <p:column headerText="Assign" style="width: 70px"
-                                                  rendered="#{corePlugin.isCurrentAllowed('TASK_VIEW_ALL')}">
+                                                  >
                                             <h:outputText value="#{i.responsible.login}"/>
                                         </p:column>
 
@@ -273,7 +276,7 @@ and open the template in the editor.
                                         </p:column>
 
 
-                                        <p:column headerText="" style="width: 35px">
+                                        <p:column headerText="Avanc." style="width: 100px">
                                             <!--<p:progressBar value="# {i.progress}" labelTemplate="{value}%" styleClass="animated" global="false"/>-->
                                             <div class="progress progress-striped active">
                                                 <div class="progress-bar #{i.priority.ordinal()==0?'progress-bar-default':i.priority.ordinal()==1?'progress-bar-primary':i.priority.ordinal()==2?'progress-bar-success':i.priority.ordinal()==3?'progress-bar-info':i.priority.ordinal()==4?'progress-bar-warning':i.priority.ordinal()==5?'progress-bar-danger':'progress-bar-link'}"
@@ -318,8 +321,7 @@ and open the template in the editor.
                                             <h:outputText value="#{i.initiator.login}"/>
                                         </p:column>
 
-                                        <p:column headerText="Assign" style="width: 70px"
-                                                  rendered="#{corePlugin.isCurrentAllowed('TASK_VIEW_ALL')}">
+                                        <p:column headerText="Assign" style="width: 70px">
                                             <h:outputText value="#{i.responsible.login}"/>
                                         </p:column>
 
@@ -329,7 +331,7 @@ and open the template in the editor.
                                             </h:outputText>
                                         </p:column>
 
-                                        <p:column headerText="" style="width: 35px">
+                                        <p:column headerText="Avanc." style="width: 100px">
                                             <!--<p:progressBar value="# {i.progress}" labelTemplate="{value}%" styleClass="animated" global="false"/>-->
                                             <div class="progress progress-striped active">
                                                 <div class="progress-bar #{i.priority.ordinal()==0?'progress-bar-default':i.priority.ordinal()==1?'progress-bar-primary':i.priority.ordinal()==2?'progress-bar-success':i.priority.ordinal()==3?'progress-bar-info':i.priority.ordinal()==4?'progress-bar-warning':i.priority.ordinal()==5?'progress-bar-danger':'progress-bar-link'}"
@@ -346,8 +348,39 @@ and open the template in the editor.
                                 </div>
                             </div>
                         </div>
-
-
+                        <p:outputPanel rendered="#{todoCtrl.sharableList}">
+                            <div class="row">
+                                <p:outputPanel rendered="#{todoCtrl.listManager}">
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <label>Collaborators</label>
+                                            <p:inputText value="#{todoCtrl.model.current.collaborators}" styleClass="form-control"
+                                                         />
+                                            <p:autoComplete id="tprofileexpr"
+                                                            styleClass="vr-form-control vr-form-control"
+                                                            placeholder="" value="#{todoCtrl.model.current.collaborators}"
+                                                            completeMethod="#{vr.autoCompleteProfileExpression}"
+                                                            queryDelay="1000"
+                                                            >
+                                            </p:autoComplete>
+                                            <p:commandButton styleClass="form-control" value="Mettre à jour" update="listForm" 
+                                                             actionListener="#{todoCtrl.onUpdateCollaborators()}" 
+                                                             />
+                                            <!--<p class="help-block">Le titre de l'action à afficher.</p>-->
+                                        </div>
+                                    </div>
+                                </p:outputPanel>
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label>Collaborators List</label>
+                                        <p:selectOneMenu style="width: 100%">
+                                            <f:selectItems value="#{todoCtrl.model.responsibleItems}"/>
+                                        </p:selectOneMenu>
+                                        <!--<p class="help-block">Le titre de l'action à afficher.</p>-->
+                                    </div>
+                                </div>
+                            </div>
+                        </p:outputPanel>
                     </p:outputLabel>
                 </h:form>
 
@@ -366,7 +399,7 @@ and open the template in the editor.
                                     </div>
                                     <div class="form-group">
                                         <label>Description</label>
-                                        <p:inputTextarea styleClass="form-control" rows="8"/>
+                                        <p:inputTextarea styleClass="form-control" rows="8" value="#{todoCtrl.model.current.description}" />
                                     </div>
 
                                     <div class="form-group">
@@ -391,16 +424,40 @@ and open the template in the editor.
                                 </div>
                                 <div class="col-lg-6">
                                     <div class="form-group">
+                                        <label>Créée par</label><p:spacer width="30" height="10"/>
+                                        <p:outputLabel value="#{todoCtrl.model.current.initiator.fullName}" style="display: block"/>
+                                    </div>
+                                    <div class="form-group">
                                         <label>Echéance</label><p:spacer width="30" height="10"/>
                                         <p:calendar value="#{todoCtrl.model.current.deadline}"
-                                                    pattern="MM/dd/yyyy HH:mm:ss">
+                                                    pattern="MM/dd/yyyy HH:mm:ss"   style="display: block">
                                             <f:converter converterId="TimestampConverter"/>
                                         </p:calendar>
                                     </div>
                                     <div class="form-group">
-                                        <label>Categorie</label>
-                                        <p:selectOneMenu value="#{todoCtrl.model.currentCategoryId}" style="width: 100%">
-                                            <f:selectItems value="#{todoCtrl.model.categoryItems}"/>
+                                        <label>Catégorie</label>
+                                        <p:autoComplete id="themeCustom" minQueryLength="1" value="#{todoCtrl.model.currentCategoryName}" dropdown="true" completeMethod="#{todoCtrl.onCompleteCategory}" style="display: block">
+                                        </p:autoComplete>
+
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Complexité : <p:outputLabel id="estimationField" value="#{todoCtrl.model.current.estimation}"/></label>
+                                        <p:slider minValue="1" maxValue="24" for="estimationField">
+                                            <p:ajax event="slideEnd" listener="#{todoCtrl.onEstimationSlideEnd}" update="estimationField" />                                            
+                                        </p:slider>
+                                        <!--<p class="help-block">Le titre de l'action à afficher.</p>-->
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Priorité : <p:outputLabel id="priorityField" value="#{vr.str(vr.str(todoCtrl.model.current.priority))}"/></label>
+                                        <h:inputHidden id="priorityFieldHidden" value="#{todoCtrl.model.currentPriority}"/>
+                                        <p:slider minValue="0" maxValue="5" for="priorityFieldHidden" >
+                                            <p:ajax event="slideEnd" listener="#{todoCtrl.onPrioritySlideEnd}" update="priorityFieldHidden priorityField progressPanel" />
+                                        </p:slider>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Assignée à</label>
+                                        <p:selectOneMenu value="#{todoCtrl.model.currentResponsibleId}" style="width: 100%">
+                                            <f:selectItems value="#{todoCtrl.model.responsibleItems}"/>
                                         </p:selectOneMenu>
                                     </div>
                                     <p:outputPanel rendered="#{!todoCtrl.isNewMode()}">
@@ -411,34 +468,18 @@ and open the template in the editor.
                                             </p:selectOneMenu>
                                         </div>
                                         <div class="form-group">
-                                            <label>Complexité</label>
-                                            <p:inputText id="complexityField" value="#{todoCtrl.model.current.estimation}"
-                                                         styleClass="form-control"/>
-                                            <p:slider minValue="1" maxValue="24" for="complexityField"/>
-                                            <!--<p class="help-block">Le titre de l'action à afficher.</p>-->
-                                        </div>
-                                        <div class="form-group">
-                                            <label>Priorité</label>
-                                            <p:selectOneMenu value="#{todoCtrl.model.current.priority}" style="width: 100%">
-                                                <f:selectItems value="#{dropDownCtrl.todoPriorities}"/>
-                                            </p:selectOneMenu>
-                                        </div>
-                                        <div class="form-group">
-                                            <label>Progression</label>
-
+                                            <label>Progression: <p:outputLabel id="progressField" value="#{todoCtrl.model.current.progress}%"/></label>
                                             <h:panelGroup layout="block" styleClass="progress progress-striped active" id="progressPanel">
-                                                    #{i.progress}%
-                                                    <div class="progress-bar #{todoCtrl.model.current.priority.ordinal()==0?'progress-bar-default':todoCtrl.model.current.priority.ordinal()==1?'progress-bar-primary':todoCtrl.model.current.priority.ordinal()==2?'progress-bar-success':todoCtrl.model.current.priority.ordinal()==3?'progress-bar-info':todoCtrl.model.current.priority.ordinal()==4?'progress-bar-warning':todoCtrl.model.current.priority.ordinal()==5?'progress-bar-danger':'progress-bar-link'}"
-                                                         role="progressbar" aria-valuenow="40" aria-valuemin="0"
-                                                         aria-valuemax="100"
-                                                         style="width: #{todoCtrl.model.current.progress le 10?10:todoCtrl.model.current.progress}%">
-                                                        <span class="sr-only">#{todoCtrl.model.current.progress}%</span>
-                                                    </div>
+                                                <div class="progress-bar #{todoCtrl.model.current.priority.ordinal()==0?'progress-bar-default':todoCtrl.model.current.priority.ordinal()==1?'progress-bar-primary':todoCtrl.model.current.priority.ordinal()==2?'progress-bar-success':todoCtrl.model.current.priority.ordinal()==3?'progress-bar-info':todoCtrl.model.current.priority.ordinal()==4?'progress-bar-warning':todoCtrl.model.current.priority.ordinal()==5?'progress-bar-danger':'progress-bar-link'}"
+                                                     role="progressbar" aria-valuenow="40" aria-valuemin="0"
+                                                     aria-valuemax="100"
+                                                     style="width: #{todoCtrl.model.current.progress le 10?10:todoCtrl.model.current.progress}%">
+                                                    <span class="sr-only">#{todoCtrl.model.current.progress}%</span>
+                                                </div>
                                             </h:panelGroup>
-                                            <p:inputText id="progressField" value="#{todoCtrl.model.current.progress}"
-                                                         styleClass="form-control"/>
-                                            <p:slider minValue="0" maxValue="100" for="progressField" >
-                                                <p:ajax event="slideEnd" listener="#{todoCtrl.onProgressSlideEnd}" update="progressPanel" />
+                                            <h:inputHidden id="progressFieldHidden" value="#{todoCtrl.model.current.progress}"/>
+                                            <p:slider minValue="0" maxValue="100" for="progressFieldHidden" >
+                                                <p:ajax event="slideEnd" listener="#{todoCtrl.onProgressSlideEnd}" update="progressPanel progressField progressFieldHidden" />
                                             </p:slider>
                                         </div>
                                         <div class="form-group">
@@ -446,7 +487,7 @@ and open the template in the editor.
                                             <p:inputText value="#{todoCtrl.model.current.consumption}" id="consumptionField"
                                                          styleClass="form-control"/>
                                             <!--<p class="help-block">Le titre de l'action à afficher.</p>-->
-                                            <h:panelGrid columns="4">
+                                            <h:panelGrid columns="6">
                                                 <p:commandButton styleClass="form-control" value="+0.25" update="consumptionField" 
                                                                  actionListener="#{todoCtrl.onAddConsumption(0.25)}" 
                                                                  />

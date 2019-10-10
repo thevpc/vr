@@ -10,10 +10,10 @@ import org.springframework.stereotype.Component;
  */
 @ForEntity("AppUser")
 @Component
-public class AppUserObjSearchFactory extends AbstractEntityObjSearchFactory {
+public class AppUserObjSearchFactory extends ProfileBasedEntityObjSearchFactory {
 
     @Override
-    protected List filterContactsByProfileFilter0(List objects, String profileSearchText) {
+    protected List filterDocumentByProfileFilter(List objects, String profileSearchText) {
         return VrApp.getBean(CorePlugin.class).filterUsersByProfileFilter(objects, profileSearchText, null, null);
     }
 }
