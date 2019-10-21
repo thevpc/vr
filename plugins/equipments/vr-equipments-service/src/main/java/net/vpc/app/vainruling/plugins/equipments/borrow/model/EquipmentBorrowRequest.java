@@ -77,7 +77,7 @@ public class EquipmentBorrowRequest {
     @Summary
     private boolean cancelled;
 
-    private EquipmentBorrowLog borrow;
+private EquipmentBorrowLog borrow;
 
     @Path("Observations")
     @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)

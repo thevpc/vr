@@ -569,7 +569,7 @@ public class EquipmentBorrowService {
             List<Integer> userIds = null;
             if (includeBorrowUser) {
                 userIds = UPA.getPersistenceUnit().createQuery("Select distinct(a.borrowerUserId) from EquipmentBorrowRequest a where a.archive=false"
-                        + ((equipmentDepartmentId != null && equipmentDepartmentId >= 0) ? " and a.statusLog.equipment.departmentId=:departmentId" : "")
+                        + ((equipmentDepartmentId != null && equipmentDepartmentId >= 0) ? " and a.equipment.departmentId=:departmentId" : "")
                 )
                         .setParameter("departmentId", equipmentDepartmentId, equipmentDepartmentId != null && equipmentDepartmentId >= 0)
                         .<Integer>getResultList();
@@ -578,28 +578,28 @@ public class EquipmentBorrowService {
 
             if (includeVisaUser) {
                 userIds = UPA.getPersistenceUnit().createQuery("Select distinct(a.visaUserId) from EquipmentBorrowRequest a where a.archive=false"
-                        + ((equipmentDepartmentId != null && equipmentDepartmentId >= 0) ? " and a.statusLog.equipment.departmentId=:departmentId" : "")
+                        + ((equipmentDepartmentId != null && equipmentDepartmentId >= 0) ? " and a.equipment.departmentId=:departmentId" : "")
                 )
                         .setParameter("departmentId", equipmentDepartmentId, equipmentDepartmentId != null && equipmentDepartmentId >= 0)
                         .<Integer>getResultList();
                 allUsers.addAll(userIds);
 
                 userIds = UPA.getPersistenceUnit().createQuery("Select distinct(a.operatorUserId) from EquipmentBorrowRequest a where a.archive=false"
-                        + ((equipmentDepartmentId != null && equipmentDepartmentId >= 0) ? " and a.statusLog.equipment.departmentId=:departmentId" : "")
+                        + ((equipmentDepartmentId != null && equipmentDepartmentId >= 0) ? " and a.equipment.departmentId=:departmentId" : "")
                 )
                         .setParameter("departmentId", equipmentDepartmentId, equipmentDepartmentId != null && equipmentDepartmentId >= 0)
                         .<Integer>getResultList();
                 allUsers.addAll(userIds);
 
                 userIds = UPA.getPersistenceUnit().createQuery("Select distinct(a.superOperatorUserId) from EquipmentBorrowRequest a where a.archive=false"
-                        + ((equipmentDepartmentId != null && equipmentDepartmentId >= 0) ? " and a.statusLog.equipment.departmentId=:departmentId" : "")
+                        + ((equipmentDepartmentId != null && equipmentDepartmentId >= 0) ? " and a.equipment.departmentId=:departmentId" : "")
                 )
                         .setParameter("departmentId", equipmentDepartmentId, equipmentDepartmentId != null && equipmentDepartmentId >= 0)
                         .<Integer>getResultList();
                 allUsers.addAll(userIds);
 
                 List<Integer> deptIds = UPA.getPersistenceUnit().createQuery("Select distinct(a.statusLog.equipment.departmentId) from EquipmentBorrowRequest a where a.archive=false"
-                        + ((equipmentDepartmentId != null && equipmentDepartmentId >= 0) ? " and a.statusLog.equipment.departmentId=:departmentId" : "")
+                        + ((equipmentDepartmentId != null && equipmentDepartmentId >= 0) ? " and a.equipment.departmentId=:departmentId" : "")
                 )
                         .setParameter("departmentId", equipmentDepartmentId, equipmentDepartmentId != null && equipmentDepartmentId >= 0)
                         .<Integer>getResultList();
@@ -612,7 +612,7 @@ public class EquipmentBorrowService {
                     AppUserType tech = core.findUserType("Technician");
                     if (tech != null) {
                         for (AppUser appUser : core.findUsersByProfileFilter(null, tech.getId(), deptId)) {
-                            allUsers.add(deptId);
+                            allUsers.add(appUser.getId());
                         }
                     }
                 }

@@ -68,6 +68,9 @@ public class AcademicCoursePlan {
             @Property(name = UIConstants.Form.SPAN, value = "MAX_VALUE")
     )
     private String name2;
+    
+    @Summary
+    private AcademicCoursePlan delegate;
 
 //    @Summary
 //    @Properties(
@@ -753,4 +756,12 @@ public class AcademicCoursePlan {
         this.validationErrors = validationErrors;
     }
 
+    public AcademicCoursePlan getDelegate() {
+        return delegate;
+    }
+
+    public void setDelegate(AcademicCoursePlan delegate) {
+        this.delegate = delegate;
+    }
+    
 }

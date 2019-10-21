@@ -31,7 +31,7 @@ import net.vpc.app.vainruling.VrOnPageLoad;
 //        css = "fa-table",
 //        title = "Inscription Enseignant",
         url = "modules/academic/subscribe-teacher",
-        menu = "/Education/Config",
+        menu = "/Contact",
         securityKey = "Custom.Education.SubscribeTeacher"
 )
 public class SubscribeTeacherCtrl {

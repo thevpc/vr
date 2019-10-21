@@ -70,7 +70,7 @@ public class CalendarsPlugin {
     }
 
     public WeekCalendar findMergedUserPublicWeekCalendar(int userId, String newName) {
-        return UPA.getPersistenceUnit().invoke(() -> {
+        return UPA.getPersistenceUnit().invokePrivileged(() -> {
             String newName1 = newName;
             if (StringUtils.isBlank(newName1)) {
                 newName1 = findUserName(userId);
@@ -80,7 +80,7 @@ public class CalendarsPlugin {
     }
 
     public List<WeekCalendar> findUserPublicWeekCalendars(int userId, boolean merge) {
-        return UPA.getPersistenceUnit().invoke(() -> {
+        return UPA.getPersistenceUnit().invokePrivileged(() -> {
             List<WeekCalendar> all = findPlainUserPublicWeekCalendars(userId);
             if (merge) {
                 String name = findUserName(userId);
@@ -93,158 +93,166 @@ public class CalendarsPlugin {
     }
 
     public WeekCalendar mergeWeekCalendars(List<WeekCalendar> plannings, String newName) {
-        Map<String, WeekCalendar> planningsMap = new HashMap<>();
+        return UPA.getPersistenceUnit().invokePrivileged(() -> {
+            Map<String, WeekCalendar> planningsMap = new HashMap<>();
 
-        for (WeekCalendar calendarWeek : plannings) {
-            String nn = calendarWeek.getId();
-            String nnn = nn;
-            if (planningsMap.containsKey(nnn)) {
-                int index = 2;
-                while (true) {
-                    nnn = nn + " " + index;
-                    if (!planningsMap.containsKey(nnn)) {
-                        break;
-                    }
-                    index++;
-                }
-            }
-            planningsMap.put(nnn, calendarWeek);
-        }
-
-        if (planningsMap.size() > 1) {
-            WeekCalendar fusion = new WeekCalendar();
-            fusion.setSourceName("");
-            fusion.setPlanningName(newName);
-            HashSet<String> visited = new HashSet<>();
-            for (WeekCalendar pp : planningsMap.values()) {
-                if (fusion.getDays() == null) {
-                    fusion.setDays(new ArrayList<CalendarDay>());
-                }
-                for (CalendarDay day : pp.getDays()) {
-                    CalendarDay day0 = null;
-                    for (CalendarDay dd : fusion.getDays()) {
-                        if (dd.getDayName().equals(day.getDayName())) {
-                            day0 = dd;
+            for (WeekCalendar calendarWeek : plannings) {
+                String nn = calendarWeek.getId();
+                String nnn = nn;
+                if (planningsMap.containsKey(nnn)) {
+                    int index = 2;
+                    while (true) {
+                        nnn = nn + " " + index;
+                        if (!planningsMap.containsKey(nnn)) {
                             break;
                         }
+                        index++;
                     }
-                    if (day0 == null) {
-                        day0 = new CalendarDay();
-                        day0.setDayName(day.getDayName());
-                        day0.setHours(new ArrayList<CalendarHour>());
-                        fusion.getDays().add(day0);
-                    }
-                    for (CalendarHour hour : day.getHours()) {
-                        String ha = "A:" + day.getDayName() + ":" + hour.getHour() + ":" + StringUtils.nonNull(hour.getActivity());
-                        String hr = "R:" + day.getDayName() + ":" + hour.getHour() + ":" + StringUtils.nonNull(hour.getRoom());
-                        String hs = "S:" + day.getDayName() + ":" + hour.getHour() + ":" + StringUtils.nonNull(hour.getStudents());
-                        String hj = "J:" + day.getDayName() + ":" + hour.getHour() + ":" + StringUtils.nonNull(hour.getSubject());
-                        String hc = "C:" + day.getDayName() + ":" + hour.getHour() + ":" + StringUtils.nonNull(hour.getActor());
+                }
+                planningsMap.put(nnn, calendarWeek);
+            }
 
-                        CalendarHour h0 = null;
-                        for (CalendarHour dd : day0.getHours()) {
-                            if (dd.getHour().equals(hour.getHour())) {
-                                h0 = dd;
+            if (planningsMap.size() > 1) {
+                WeekCalendar fusion = new WeekCalendar();
+                fusion.setSourceName("");
+                fusion.setPlanningName(newName);
+                HashSet<String> visited = new HashSet<>();
+                for (WeekCalendar pp : planningsMap.values()) {
+                    if (fusion.getDays() == null) {
+                        fusion.setDays(new ArrayList<CalendarDay>());
+                    }
+                    for (CalendarDay day : pp.getDays()) {
+                        CalendarDay day0 = null;
+                        for (CalendarDay dd : fusion.getDays()) {
+                            if (dd.getDayName().equals(day.getDayName())) {
+                                day0 = dd;
                                 break;
                             }
                         }
+                        if (day0 == null) {
+                            day0 = new CalendarDay();
+                            day0.setDayName(day.getDayName());
+                            day0.setHours(new ArrayList<CalendarHour>());
+                            fusion.getDays().add(day0);
+                        }
+                        for (CalendarHour hour : day.getHours()) {
+                            String ha = "A:" + day.getDayName() + ":" + hour.getHour() + ":" + StringUtils.nonNull(hour.getActivity());
+                            String hr = "R:" + day.getDayName() + ":" + hour.getHour() + ":" + StringUtils.nonNull(hour.getRoom());
+                            String hs = "S:" + day.getDayName() + ":" + hour.getHour() + ":" + StringUtils.nonNull(hour.getStudents());
+                            String hj = "J:" + day.getDayName() + ":" + hour.getHour() + ":" + StringUtils.nonNull(hour.getSubject());
+                            String hc = "C:" + day.getDayName() + ":" + hour.getHour() + ":" + StringUtils.nonNull(hour.getActor());
 
-                        if (h0 == null) {
-                            h0 = new CalendarHour();
-                            h0.setHour(hour.getHour());
-                            h0.setActivity(hour.getActivity());
-                            h0.setRoom(hour.getRoom());
-                            h0.setStudents(hour.getStudents());
-                            h0.setSubject(hour.getSubject());
-                            h0.setActor(hour.getActor());
+                            CalendarHour h0 = null;
+                            for (CalendarHour dd : day0.getHours()) {
+                                if (dd.getHour().equals(hour.getHour())) {
+                                    h0 = dd;
+                                    break;
+                                }
+                            }
 
-                            day0.getHours().add(h0);
-                            visited.add(ha);
-                            visited.add(hr);
-                            visited.add(hs);
-                            visited.add(hj);
-                            visited.add(hc);
-                        } else {
-                            if (!visited.contains(ha) && !StringUtils.isBlank(hour.getActivity())) {
-                                h0.setActivity((StringUtils.isBlank(h0.getActivity())) ? hour.getActivity() : (h0.getActivity() + " / " + hour.getActivity()));
+                            if (h0 == null) {
+                                h0 = new CalendarHour();
+                                h0.setHour(hour.getHour());
+                                h0.setActivity(hour.getActivity());
+                                h0.setRoom(hour.getRoom());
+                                h0.setStudents(hour.getStudents());
+                                h0.setSubject(hour.getSubject());
+                                h0.setActor(hour.getActor());
+
+                                day0.getHours().add(h0);
                                 visited.add(ha);
-                            }
-                            if (!visited.contains(hr) && !StringUtils.isBlank(hour.getRoom())) {
-                                h0.setRoom((StringUtils.isBlank(h0.getRoom())) ? hour.getRoom() : (h0.getRoom() + " / " + hour.getRoom()));
                                 visited.add(hr);
-                            }
-                            if (!visited.contains(hs) && !StringUtils.isBlank(hour.getStudents())) {
-                                h0.setStudents((StringUtils.isBlank(h0.getStudents())) ? hour.getStudents() : (h0.getStudents() + " / " + hour.getStudents()));
                                 visited.add(hs);
-                            }
-                            if (!visited.contains(hj) && !StringUtils.isBlank(hour.getSubject())) {
-                                h0.setSubject((StringUtils.isBlank(h0.getSubject())) ? hour.getSubject() : (h0.getSubject() + " / " + hour.getSubject()));
                                 visited.add(hj);
-                            }
-                            if (!visited.contains(hc) && !StringUtils.isBlank(hour.getActor())) {
-                                h0.setActor((StringUtils.isBlank(h0.getActor())) ? hour.getActor() : (h0.getActor() + " / " + hour.getActor()));
-                                visited.add(hj);
+                                visited.add(hc);
+                            } else {
+                                if (!visited.contains(ha) && !StringUtils.isBlank(hour.getActivity())) {
+                                    h0.setActivity((StringUtils.isBlank(h0.getActivity())) ? hour.getActivity() : (h0.getActivity() + " / " + hour.getActivity()));
+                                    visited.add(ha);
+                                }
+                                if (!visited.contains(hr) && !StringUtils.isBlank(hour.getRoom())) {
+                                    h0.setRoom((StringUtils.isBlank(h0.getRoom())) ? hour.getRoom() : (h0.getRoom() + " / " + hour.getRoom()));
+                                    visited.add(hr);
+                                }
+                                if (!visited.contains(hs) && !StringUtils.isBlank(hour.getStudents())) {
+                                    h0.setStudents((StringUtils.isBlank(h0.getStudents())) ? hour.getStudents() : (h0.getStudents() + " / " + hour.getStudents()));
+                                    visited.add(hs);
+                                }
+                                if (!visited.contains(hj) && !StringUtils.isBlank(hour.getSubject())) {
+                                    h0.setSubject((StringUtils.isBlank(h0.getSubject())) ? hour.getSubject() : (h0.getSubject() + " / " + hour.getSubject()));
+                                    visited.add(hj);
+                                }
+                                if (!visited.contains(hc) && !StringUtils.isBlank(hour.getActor())) {
+                                    h0.setActor((StringUtils.isBlank(h0.getActor())) ? hour.getActor() : (h0.getActor() + " / " + hour.getActor()));
+                                    visited.add(hj);
+                                }
                             }
                         }
                     }
                 }
+                return fusion;
+            } else if (planningsMap.size() == 1) {
+                for (WeekCalendar calendarWeek : planningsMap.values()) {
+                    return calendarWeek;
+                }
             }
-            return fusion;
-        } else if (planningsMap.size() == 1) {
-            for (WeekCalendar calendarWeek : planningsMap.values()) {
-                return calendarWeek;
-            }
-        }
-        return null;
+            return null;
+        });
     }
 
     public Set<Integer> findUsersWithPublicWeekCalendars() {
-        Set<Integer> all = new HashSet<>();
-        Set<Integer> good = new HashSet<>();
-        List<AppUser> users = UPA.getPersistenceUnit().invokePrivileged(new Action<List<AppUser>>() {
-            @Override
-            public List<AppUser> run() {
-                return core.findUsers();
+        return UPA.getPersistenceUnit().invokePrivileged(() -> {
+            Set<Integer> all = new HashSet<>();
+            Set<Integer> good = new HashSet<>();
+            List<AppUser> users = UPA.getPersistenceUnit().invokePrivileged(new Action<List<AppUser>>() {
+                @Override
+                public List<AppUser> run() {
+                    return core.findUsers();
+                }
+            });
+            for (AppUser appUser : users) {
+                all.add(appUser.getId());
             }
+            for (Map.Entry<String, AppWeekCalendarProvider> o : weekCalendarProviders.entrySet()) {
+                Set<Integer> ok = o.getValue().retainUsersWithPublicWeekCalendars(all);
+                good.addAll(ok);
+                all.removeAll(ok);
+            }
+            return good;
         });
-        for (AppUser appUser : users) {
-            all.add(appUser.getId());
-        }
-        for (Map.Entry<String, AppWeekCalendarProvider> o : weekCalendarProviders.entrySet()) {
-            Set<Integer> ok = o.getValue().retainUsersWithPublicWeekCalendars(all);
-            good.addAll(ok);
-            all.removeAll(ok);
-        }
-        return good;
     }
 
     public Set<Integer> findUsersWithPublicWeekCalendars(Set<Integer> userIds) {
-        Set<Integer> all = new HashSet<>();
-        if (userIds != null) {
-            all.addAll(userIds);
-        }
-        Set<Integer> good = new HashSet<>();
-        for (Map.Entry<String, AppWeekCalendarProvider> o : weekCalendarProviders.entrySet()) {
-            Set<Integer> ok = o.getValue().retainUsersWithPublicWeekCalendars(all);
-            good.addAll(ok);
-            all.removeAll(ok);
-        }
-        return good;
+        return UPA.getPersistenceUnit().invokePrivileged(() -> {
+            Set<Integer> all = new HashSet<>();
+            if (userIds != null) {
+                all.addAll(userIds);
+            }
+            Set<Integer> good = new HashSet<>();
+            for (Map.Entry<String, AppWeekCalendarProvider> o : weekCalendarProviders.entrySet()) {
+                Set<Integer> ok = o.getValue().retainUsersWithPublicWeekCalendars(all);
+                good.addAll(ok);
+                all.removeAll(ok);
+            }
+            return good;
+        });
     }
 
     private List<WeekCalendar> findPlainUserPublicWeekCalendars(int userId) {
-        List<WeekCalendar> all = new ArrayList<>();
-        for (Map.Entry<String, AppWeekCalendarProvider> o : weekCalendarProviders.entrySet()) {
-            List<WeekCalendar> found = o.getValue().findUserPublicWeekCalendars(userId);
-            if (found != null) {
-                for (WeekCalendar calendarWeek : found) {
-                    if (calendarWeek != null) {
-                        all.add(calendarWeek);
+        return UPA.getPersistenceUnit().invokePrivileged(() -> {
+            List<WeekCalendar> all = new ArrayList<>();
+            for (Map.Entry<String, AppWeekCalendarProvider> o : weekCalendarProviders.entrySet()) {
+                List<WeekCalendar> found = o.getValue().findUserPublicWeekCalendars(userId);
+                if (found != null) {
+                    for (WeekCalendar calendarWeek : found) {
+                        if (calendarWeek != null) {
+                            all.add(calendarWeek);
+                        }
                     }
                 }
             }
-        }
-        return all;
+            return all;
+        });
     }
 
 //    private Set<String> splitOtherNames(String value) {
