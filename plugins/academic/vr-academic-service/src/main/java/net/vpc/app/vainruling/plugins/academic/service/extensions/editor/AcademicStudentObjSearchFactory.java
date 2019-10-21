@@ -5,14 +5,14 @@ import net.vpc.app.vainruling.plugins.academic.model.config.AcademicStudent;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import net.vpc.app.vainruling.core.service.editor.ForEntity;
 import net.vpc.app.vainruling.plugins.academic.service.util.AcademicStudentProfileFilter;
 import org.springframework.stereotype.Component;
+import net.vpc.app.vainruling.VrEntityName;
 
 /**
  * Created by vpc on 6/25/17.
  */
-@ForEntity("AcademicStudent")
+@VrEntityName("AcademicStudent")
 @Component
 public class AcademicStudentObjSearchFactory extends ProfileBasedEntityObjSearchFactory {
 

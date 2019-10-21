@@ -17,9 +17,6 @@ import net.vpc.app.vainruling.core.service.model.content.AppArticle;
 import net.vpc.app.vainruling.core.service.notification.VrNotificationEvent;
 import net.vpc.app.vainruling.core.service.notification.VrNotificationManager;
 import net.vpc.app.vainruling.core.service.notification.VrNotificationSession;
-import net.vpc.app.vainruling.core.service.editor.AppEntityExtendedPropertiesProvider;
-import net.vpc.app.vainruling.core.service.plugins.Install;
-import net.vpc.app.vainruling.core.service.plugins.Start;
 import net.vpc.app.vainruling.core.service.util.VrPasswordStrategyRandom;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.plugins.inbox.model.MailboxFolder;
@@ -48,7 +45,10 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.vpc.app.vainruling.core.service.ProfileRightBuilder;
-import net.vpc.app.vainruling.core.service.plugins.VrPlugin;
+import net.vpc.app.vainruling.VrPlugin;
+import net.vpc.app.vainruling.VrEditorPropertiesProvider;
+import net.vpc.app.vainruling.VrInstall;
+import net.vpc.app.vainruling.VrStart;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -92,13 +92,13 @@ public class MailboxPlugin {
     public MailboxPlugin() {
     }
 
-    @Start
+    @VrStart
     private void start() {
         VrApp.getBean(VrNotificationManager.class).register(SEND_WELCOME_MAIL_QUEUE, SEND_WELCOME_MAIL_QUEUE, 200);
         VrApp.getBean(VrNotificationManager.class).register(SEND_EXTERNAL_MAIL_QUEUE, SEND_EXTERNAL_MAIL_QUEUE, 200);
     }
 
-    @Install
+    @VrInstall
     private void installService() {
         CorePlugin core = VrApp.getBean(CorePlugin.class);
         ProfileRightBuilder b = new ProfileRightBuilder();
@@ -827,8 +827,8 @@ public class MailboxPlugin {
     public GoMailDataSource createUsersEmailDatasource(String recipientProfiles) {
         HashSet<String> allColumns = new HashSet<>(Arrays.asList("index", "id", "email", "login", "firstName", "lastName", "fullName", "civility", "department", "gender", "type", "profiles"));
 
-        Map<String, AppEntityExtendedPropertiesProvider> beansOfTypeAppEntityExtendedPropertiesProvider = VrApp.getContext().getBeansOfType(AppEntityExtendedPropertiesProvider.class);
-        for (Map.Entry<String, AppEntityExtendedPropertiesProvider> entrySet : beansOfTypeAppEntityExtendedPropertiesProvider.entrySet()) {
+        Map<String, VrEditorPropertiesProvider> beansOfTypeAppEntityExtendedPropertiesProvider = VrApp.getContext().getBeansOfType(VrEditorPropertiesProvider.class);
+        for (Map.Entry<String, VrEditorPropertiesProvider> entrySet : beansOfTypeAppEntityExtendedPropertiesProvider.entrySet()) {
             Set<String> xtra = entrySet.getValue().getExtendedPropertyNames(AppUser.class);
             if (xtra != null) {
                 for (String s : xtra) {
@@ -863,7 +863,7 @@ public class MailboxPlugin {
                 allValues.put("type", p.getType() == null ? "" : p.getType().getName());
                 allValues.put("properties", profilesString.toString());
 
-                for (Map.Entry<String, AppEntityExtendedPropertiesProvider> entrySet : beansOfTypeAppEntityExtendedPropertiesProvider.entrySet()) {
+                for (Map.Entry<String, VrEditorPropertiesProvider> entrySet : beansOfTypeAppEntityExtendedPropertiesProvider.entrySet()) {
                     Map<String, Object> xtra = entrySet.getValue().getExtendedPropertyValues(p);
                     if (xtra != null) {
                         for (Map.Entry<String, Object> entrySet1 : xtra.entrySet()) {

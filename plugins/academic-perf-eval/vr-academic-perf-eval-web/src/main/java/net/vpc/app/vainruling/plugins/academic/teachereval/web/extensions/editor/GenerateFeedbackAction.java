@@ -6,8 +6,6 @@
 package net.vpc.app.vainruling.plugins.academic.teachereval.web.extensions.editor;
 
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.editor.EntityAction;
-import net.vpc.app.vainruling.core.service.editor.EntityViewActionDialog;
 import net.vpc.app.vainruling.plugins.academic.perfeval.model.AcademicFeedbackSession;
 import net.vpc.common.util.Convert;
 import net.vpc.common.util.IntegerParserConfig;
@@ -15,14 +13,16 @@ import net.vpc.upa.AccessMode;
 
 import java.util.List;
 import net.vpc.app.vainruling.plugins.academic.teachereval.web.GenerateFeedbackActionCtrl;
+import net.vpc.app.vainruling.VrEditorActionDialog;
+import net.vpc.app.vainruling.VrEditorAction;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@EntityAction(entityType = AcademicFeedbackSession.class,
+@VrEditorAction(entityType = AcademicFeedbackSession.class,
         actionStyle = "fa-envelope-o"
 )
-public class GenerateFeedbackAction implements EntityViewActionDialog {
+public class GenerateFeedbackAction implements VrEditorActionDialog {
 
     @Override
     public void openDialog(String actionId, List<String> itemIds) {

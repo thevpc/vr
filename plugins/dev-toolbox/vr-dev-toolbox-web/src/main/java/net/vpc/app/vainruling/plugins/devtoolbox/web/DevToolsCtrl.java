@@ -14,7 +14,7 @@ import net.vpc.upa.persistence.QueryResult;
 import org.springframework.context.annotation.Scope;
 
 import java.util.*;
-import net.vpc.app.vainruling.core.service.pages.VrPage;
+import net.vpc.app.vainruling.VrPage;
 
 /**
  * @author taha.bensalah@gmail.com

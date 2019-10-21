@@ -12,7 +12,6 @@ import net.vpc.app.vainruling.plugins.academic.pbl.model.ApblCoaching;
 import net.vpc.app.vainruling.plugins.academic.pbl.model.ApblTeamMember;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.model.AppUser;
-import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.app.vainruling.core.web.jsf.DialogBuilder;
 import net.vpc.app.vainruling.plugins.academic.pbl.service.ApblPlugin;
 import net.vpc.app.vainruling.plugins.academic.pbl.service.ApblUtils;
@@ -27,8 +26,9 @@ import javax.faces.model.SelectItem;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.vpc.app.vainruling.core.service.pages.VrPage;
-import net.vpc.app.vainruling.core.service.pages.VrPathItem;
+import net.vpc.app.vainruling.VrPage;
+import net.vpc.app.vainruling.VrPathItem;
+import net.vpc.app.vainruling.VrOnPageLoad;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -67,7 +67,7 @@ public class AcademicAppMyTeamsCtrl {
         return model;
     }
 
-    @OnPageLoad
+    @VrOnPageLoad
     private void onPageLoad() {
         currentTeacher = academic.getCurrentTeacher();
         currentStudent = academic.getCurrentStudent();

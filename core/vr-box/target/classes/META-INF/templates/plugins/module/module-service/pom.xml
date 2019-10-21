@@ -19,7 +19,7 @@
         <vr-plugin.component-type>service</vr-plugin.component-type>
         <vr-plugin.name>${{ProjectName}} ${{ModuleName}} Plugin</vr-plugin.name>
         <vr-plugin.description>${{ProjectName}} ${{ModuleName}} Plugin</vr-plugin.description>
-        <version.vr>${{vrFwkCoreVersion}}</version.vr>
+        <version.vr>${{FwkCoreVersion}}</version.vr>
     </properties>
 
     <dependencies>
@@ -34,18 +34,18 @@
             <version>${{ProjectVersion}}</version>
         </dependency>
 
-        ${{vrMavenServiceDependency('vr-mailbox')}}
-        ${{vrMavenServiceDependency('vr-tasks')}}
-        ${{vrMavenServiceDependency('vr-forum')}}
-        ${{vrMavenServiceDependency('vr-dev-toolbox')}}
-        ${{vrMavenServiceDependency('vr-academic')}}
-        ${{vrMavenServiceDependency('vr-academic-report')}}
-        ${{vrMavenServiceDependency('vr-academic-planning')}}
-        ${{vrMavenServiceDependency('vr-academic-perf-eval')}}
-        ${{vrMavenServiceDependency('vr-academic-profile')}}
-        ${{vrMavenServiceDependency('vr-academic-project-based-learning')}}
-        ${{vrMavenServiceDependency('vr-equipments')}}
-        ${{vrMavenServiceDependency('vr-equipment-tracker')}}
+        ${{MavenServiceDependency('vr-mailbox')}}
+        ${{MavenServiceDependency('vr-tasks')}}
+        ${{MavenServiceDependency('vr-forum')}}
+        ${{MavenServiceDependency('vr-dev-toolbox')}}
+        ${{MavenServiceDependency('vr-academic')}}
+        ${{MavenServiceDependency('vr-academic-report')}}
+        ${{MavenServiceDependency('vr-academic-planning')}}
+        ${{MavenServiceDependency('vr-academic-perf-eval')}}
+        ${{MavenServiceDependency('vr-academic-profile')}}
+        ${{MavenServiceDependency('vr-academic-project-based-learning')}}
+        ${{MavenServiceDependency('vr-equipments')}}
+        ${{MavenServiceDependency('vr-equipment-tracker')}}
 
     </dependencies>
 
@@ -150,10 +150,10 @@
         <repository>
             <id>vpc-public-maven</id>
             <url>https://raw.github.com/thevpc/vpc-public-maven/master</url>
-            <snapshots>
+<!--            <snapshots>
                 <enabled>true</enabled>
                 <updatePolicy>always</updatePolicy>
-            </snapshots>
+            </snapshots>-->
         </repository>
     </repositories>
 </project>

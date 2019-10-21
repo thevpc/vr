@@ -6,7 +6,6 @@
 package net.vpc.app.vainruling.plugins.academic.web.load;
 
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPluginSecurity;
 import net.vpc.app.vainruling.plugins.academic.service.util.TeacherPeriodFilter;
@@ -18,8 +17,9 @@ import javax.faces.model.SelectItem;
 import java.util.ArrayList;
 import java.util.List;
 import javax.faces.bean.ManagedBean;
-import net.vpc.app.vainruling.core.service.pages.VrPage;
-import net.vpc.app.vainruling.core.service.pages.VrPathItem;
+import net.vpc.app.vainruling.VrPage;
+import net.vpc.app.vainruling.VrPathItem;
+import net.vpc.app.vainruling.VrOnPageLoad;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -75,7 +75,7 @@ public class TeacherCourseLoadCtrl extends AbstractCourseLoadCtrl {
         getModel().getCurrentTeacherFiltersSelectItems().add(FacesUtils.createSelectItem("no-current-intents", "Mes Modules Affectés", "vr-checkbox"));
     }
 
-    @OnPageLoad
+    @VrOnPageLoad
     @Override
     public void onRefresh(String cmd) {
         super.onRefresh(cmd);

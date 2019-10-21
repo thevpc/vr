@@ -1,14 +1,14 @@
 package net.vpc.app.vainruling.core.web.util;
 
-import net.vpc.app.vainruling.core.service.security.UserSessionConfigurator;
 import net.vpc.app.vainruling.core.service.security.UserToken;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import net.vpc.app.vainruling.VrUserTokenConfigurator;
 
 @Component
-public class WebUserSessionConfigurator implements UserSessionConfigurator {
+public class WebUserSessionConfigurator implements VrUserTokenConfigurator {
 
     @Override
     public void preConfigure(UserToken token) {

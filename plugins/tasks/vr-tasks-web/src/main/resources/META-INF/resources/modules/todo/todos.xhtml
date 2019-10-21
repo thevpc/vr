@@ -126,7 +126,9 @@ and open the template in the editor.
                                                  paginatorAlwaysVisible="false"
                                                  paginator="true"
                                                  paginatorPosition="bottom"
-                                                 rows="5">
+                                                 rows="5"
+                                                 emptyMessage="Aucune tâche"
+                                                 >
                                         <p:column headerText="Libellé">
                                             <p:commandLink ajax="true" actionListener="#{todoCtrl.onSelectCurrent}"
                                                            update=":buttonsForm :listForm :itemForm">
@@ -182,7 +184,9 @@ and open the template in the editor.
                                                  paginatorAlwaysVisible="false"
                                                  paginator="true"
                                                  paginatorPosition="bottom"
-                                                 rows="5">
+                                                 rows="5"
+                                                 emptyMessage="Aucune tâche"
+                                                 >
                                         <p:column headerText="Libellé">
                                             <p:commandLink ajax="true" actionListener="#{todoCtrl.onSelectCurrent}"
                                                            update=":buttonsForm :listForm :itemForm">
@@ -243,7 +247,9 @@ and open the template in the editor.
                                                  paginatorAlwaysVisible="false"
                                                  paginator="true"
                                                  paginatorPosition="bottom"
-                                                 rows="5">
+                                                 rows="5"
+                                                 emptyMessage="Aucune tâche"
+                                                 >
                                         <p:column headerText="Libellé">
                                             <p:commandLink ajax="true" actionListener="#{todoCtrl.onSelectCurrent}"
                                                            update=":buttonsForm :listForm :itemForm">
@@ -300,7 +306,9 @@ and open the template in the editor.
                                                  paginatorAlwaysVisible="false"
                                                  paginator="true"
                                                  paginatorPosition="bottom"
-                                                 rows="5">
+                                                 rows="5"
+                                                 emptyMessage="Aucune tâche"
+                                                 >
                                         <p:column headerText="Libellé">
                                             <p:commandLink ajax="true" actionListener="#{todoCtrl.onSelectCurrent}"
                                                            update=":buttonsForm :listForm :itemForm">
@@ -353,12 +361,10 @@ and open the template in the editor.
                                 <p:outputPanel rendered="#{todoCtrl.listManager}">
                                     <div class="col-lg-6">
                                         <div class="form-group">
-                                            <label>Collaborators</label>
-                                            <p:inputText value="#{todoCtrl.model.current.collaborators}" styleClass="form-control"
-                                                         />
+                                            <label>Collaborateurs</label>
                                             <p:autoComplete id="tprofileexpr"
                                                             styleClass="vr-form-control vr-form-control"
-                                                            placeholder="" value="#{todoCtrl.model.current.collaborators}"
+                                                            placeholder="" value="#{todoCtrl.model.todoList.collaborators}"
                                                             completeMethod="#{vr.autoCompleteProfileExpression}"
                                                             queryDelay="1000"
                                                             >
@@ -372,7 +378,7 @@ and open the template in the editor.
                                 </p:outputPanel>
                                 <div class="col-lg-6">
                                     <div class="form-group">
-                                        <label>Collaborators List</label>
+                                        <label>Liste Collaborateurs</label>
                                         <p:selectOneMenu style="width: 100%">
                                             <f:selectItems value="#{todoCtrl.model.responsibleItems}"/>
                                         </p:selectOneMenu>

@@ -11,7 +11,6 @@ import net.vpc.app.vainruling.core.service.model.AppCompany;
 import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.app.vainruling.core.service.model.OpinionType;
 import net.vpc.app.vainruling.core.service.fs.MirroredPath;
-import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.app.vainruling.core.web.jsf.ctrl.DocumentUploadListener;
 import net.vpc.app.vainruling.core.web.jsf.ctrl.dialog.DocumentsUploadDialogCtrl;
 import net.vpc.app.vainruling.core.service.editor.DialogResult;
@@ -43,8 +42,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.vpc.app.vainruling.core.service.pages.VrPage;
-import net.vpc.app.vainruling.core.service.pages.VrPathItem;
+import net.vpc.app.vainruling.VrPage;
+import net.vpc.app.vainruling.VrPathItem;
+import net.vpc.app.vainruling.VrOnPageLoad;
 
 /**
  * internships for students
@@ -272,14 +272,14 @@ public class MyInternshipsCtrl implements DocumentUploadListener{
         }
     }
 
-    @OnPageLoad
+    @VrOnPageLoad
     public void onPageLoad() {
         getModel().setInternshipId(null);
         getModel().setInternship(null);
         onRefresh();
     }
 
-    @OnPageLoad
+    @VrOnPageLoad
     public void onRefresh() {
         getModel().setUploading(false);
         getModel().setInternship(getSelectedInternship());

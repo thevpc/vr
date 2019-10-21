@@ -7,7 +7,6 @@ package net.vpc.app.vainruling.core.web.jsf.ctrl;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.content.CmsTextDisposition;
-import net.vpc.app.vainruling.core.service.content.CmsTextService;
 import net.vpc.app.vainruling.core.service.content.ContentText;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.model.content.FullArticle;
@@ -16,11 +15,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Collections;
 import java.util.List;
+import net.vpc.app.vainruling.VrCmsTextService;
 
 /**
  * @author vpc
  */
-public abstract class AbstractCmsTextService implements CmsTextService {
+public abstract class AbstractCmsTextService implements VrCmsTextService {
 
     @Autowired
     protected CorePlugin core;

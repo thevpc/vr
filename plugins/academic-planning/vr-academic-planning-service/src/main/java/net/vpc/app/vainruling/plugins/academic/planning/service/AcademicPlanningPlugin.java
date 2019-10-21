@@ -7,8 +7,6 @@ package net.vpc.app.vainruling.plugins.academic.planning.service;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.model.AppUser;
-import net.vpc.app.vainruling.core.service.plugins.Start;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.model.config.AcademicStudent;
 import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
@@ -32,8 +30,9 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.util.*;
 import net.vpc.app.vainruling.core.service.ProfileRightBuilder;
-import net.vpc.app.vainruling.core.service.plugins.VrPlugin;
-import net.vpc.app.vainruling.plugins.calendars.service.AppWeekCalendarProvider;
+import net.vpc.app.vainruling.VrPlugin;
+import net.vpc.app.vainruling.VrStart;
+import net.vpc.app.vainruling.core.service.util.VrUtils;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -50,7 +49,7 @@ public class AcademicPlanningPlugin {
         return VrApp.getBean(AcademicPlanningPlugin.class);
     }
 
-    @Start
+    @VrStart
     private void onStart(){
         if (core == null) {
             core = CorePlugin.get();
@@ -72,20 +71,14 @@ public class AcademicPlanningPlugin {
             AcademicTeacher teacher = academicPlugin.findTeacher(teacherId);
 
             String teacherName = teacher == null ? "" : teacher.resolveFullName();
-            teacherNames.put(teacherName.toLowerCase(), teacherId);
+            teacherNames.put(VrUtils.normalizeName(teacherName), teacherId);
             if (teacher != null) {
                 for (String s : splitOtherNames(teacher.getOtherNames())) {
-                    teacherNames.put(s, teacherId);
+                    teacherNames.put(VrUtils.normalizeName(s), teacherId);
                 }
             }
         }
-        VFile[] emploisFiles = getEmploiFolder().listFiles(new VFileFilter() {
-
-            @Override
-            public boolean accept(VFile pathname) {
-                return pathname.getName().toLowerCase().endsWith("_teachers.xml");
-            }
-        });
+        VFile[] emploisFiles = getEmploiFolder().listFiles((VFile pathname) -> pathname.getName().toLowerCase().endsWith("_teachers.xml"));
         VFile p = emploisFiles.length > 0 ? emploisFiles[0] : null;
         if (p != null && p.exists()) {
             try {
@@ -107,7 +100,7 @@ public class AcademicPlanningPlugin {
 
                         Element eElement = (Element) nNode;
                         String tn = eElement.getAttribute("name");
-                        String uniformName = tn.trim().toLowerCase().trim();
+                        String uniformName = VrUtils.normalizeName(tn);
                         if (teacherNames.containsKey(uniformName)) {
                             validTeachers.addAll(teacherNames.get(uniformName));
                         }
@@ -125,19 +118,13 @@ public class AcademicPlanningPlugin {
 
         String teacherName = teacher == null ? "" : teacher.resolveFullName();
         HashSet<String> teacherNames = new HashSet<>();
-        teacherNames.add(teacherName.toLowerCase());
+        teacherNames.add(VrUtils.normalizeName(teacherName));
         if (teacher != null) {
             for (String s : splitOtherNames(teacher.getOtherNames())) {
                 teacherNames.add(s);
             }
         }
-        VFile[] emploisFiles = getEmploiFolder().listFiles(new VFileFilter() {
-
-            @Override
-            public boolean accept(VFile pathname) {
-                return pathname.getName().toLowerCase().endsWith("_teachers.xml");
-            }
-        });
+        VFile[] emploisFiles = getEmploiFolder().listFiles((VFile pathname) -> pathname.getName().toLowerCase().endsWith("_teachers.xml"));
         VFile p = emploisFiles.length > 0 ? emploisFiles[0] : null;
         if (p != null && p.exists()) {
             try {
@@ -146,7 +133,7 @@ public class AcademicPlanningPlugin {
                 try {
                     int counter = 0;
                     while ((week = parser.next()) != null) {
-                        if (teacherNames.contains(week.getName().trim().toLowerCase().trim())) {
+                        if (teacherNames.contains(VrUtils.normalizeName(week.getName()))) {
                             counter++;
                             return week.parse("Teacher-" + counter);
                         }
@@ -188,7 +175,7 @@ public class AcademicPlanningPlugin {
             AcademicPlugin ap = VrApp.getBean(AcademicPlugin.class);
             List<AcademicClass> allCls = ap.findClassDownHierarchyList(new AcademicClass[]{student.getLastClass1(), student.getLastClass2(), student.getLastClass3()}, null);
             for (AcademicClass ac : allCls) {
-                String n2 = ac.getName().trim().toLowerCase();
+                String n2 = VrUtils.normalizeName(ac.getName());
                 nameMapping.put(n2, studentId);
                 for (String s : splitOtherNames(ac.getOtherNames())) {
                     nameMapping.put(s, studentId);
@@ -196,13 +183,7 @@ public class AcademicPlanningPlugin {
             }
         }
 
-        VFile[] emploisFiles = getEmploiFolder().listFiles(new VFileFilter() {
-
-            @Override
-            public boolean accept(VFile pathname) {
-                return pathname.getName().toLowerCase().endsWith("_subgroups.xml");
-            }
-        });
+        VFile[] emploisFiles = getEmploiFolder().listFiles((VFile pathname) -> pathname.getName().toLowerCase().endsWith("_subgroups.xml"));
         VFile p = emploisFiles.length > 0 ? emploisFiles[0] : null;
         if (p != null && p.exists()) {
             try {
@@ -224,7 +205,7 @@ public class AcademicPlanningPlugin {
 
                         Element eElement = (Element) nNode;
                         String tn = eElement.getAttribute("name");
-                        String uniformName = tn.trim().toLowerCase();
+                        String uniformName = VrUtils.normalizeName(tn);
                         if (nameMapping.containsKey(uniformName)) {
                             all.addAll(nameMapping.get(uniformName));
                         }
@@ -244,7 +225,7 @@ public class AcademicPlanningPlugin {
         AcademicPlugin ap = VrApp.getBean(AcademicPlugin.class);
         List<AcademicClass> allCls = ap.findClassDownHierarchyList(new AcademicClass[]{student.getLastClass1(), student.getLastClass2(), student.getLastClass3()}, null);
         for (AcademicClass ac : allCls) {
-            String n2 = ac.getName().trim().toLowerCase();
+            String n2 = VrUtils.normalizeName(ac.getName().trim());
             nameMapping.put(n2, n2);
             for (String s : splitOtherNames(ac.getOtherNames())) {
                 if (!nameMapping.containsKey(s)) {
@@ -269,7 +250,7 @@ public class AcademicPlanningPlugin {
                     try {
                         int counter = 0;
                         while ((week = parser.next()) != null) {
-                            if (nameMapping.containsKey(week.getName().trim().toLowerCase().trim())) {
+                            if (nameMapping.containsKey(VrUtils.normalizeName(week.getName()))) {
                                 counter++;
                                 list.add(week.parse("Class-" + counter));
                             }
@@ -288,17 +269,11 @@ public class AcademicPlanningPlugin {
     }
 
     public WeekCalendar loadClassPlanning(String className) {
-        String uniformClassName = className == null ? "" : className.toLowerCase().trim();
+        String uniformClassName = className == null ? "" : VrUtils.normalizeName(className);
         if (StringUtils.isBlank(uniformClassName)) {
             return null;
         }
-        VFile[] emploisFiles = getEmploiFolder().listFiles(new VFileFilter() {
-
-            @Override
-            public boolean accept(VFile pathname) {
-                return pathname.getName().toLowerCase().endsWith("_subgroups.xml");
-            }
-        });
+        VFile[] emploisFiles = getEmploiFolder().listFiles((VFile pathname) -> pathname.getName().toLowerCase().endsWith("_subgroups.xml"));
         VFile p = emploisFiles.length > 0 ? emploisFiles[0] : null;
         if (p != null && p.exists()) {
             try {
@@ -307,7 +282,7 @@ public class AcademicPlanningPlugin {
                 try {
                     int counter = 0;
                     while ((week = parser.next()) != null) {
-                        if (uniformClassName.equals(week.getName().trim().toLowerCase().trim())) {
+                        if (uniformClassName.equals(VrUtils.normalizeName(week.getName()))) {
                             counter++;
                             return week.parse("Class-" + counter);
                         }
@@ -327,7 +302,7 @@ public class AcademicPlanningPlugin {
         if (value != null) {
             for (String s : value.split(",|;")) {
                 if (s.trim().length() > 0) {
-                    all.add(s.trim().toLowerCase());
+                    all.add(VrUtils.normalizeName(s));
                 }
             }
         }
@@ -348,13 +323,7 @@ public class AcademicPlanningPlugin {
             }
         });
 
-        VFile[] emploisFiles = getEmploiFolder().listFiles(new VFileFilter() {
-
-            @Override
-            public boolean accept(VFile pathname) {
-                return pathname.getName().toLowerCase().endsWith("_subgroups.xml");
-            }
-        });
+        VFile[] emploisFiles = getEmploiFolder().listFiles((VFile pathname) -> pathname.getName().toLowerCase().endsWith("_subgroups.xml"));
         VFile p = emploisFiles.length > 0 ? emploisFiles[0] : null;
         if (p != null && p.exists()) {
             try {
@@ -363,7 +332,7 @@ public class AcademicPlanningPlugin {
                 try {
                     int counter = 0;
                     while ((week = parser.next()) != null) {
-                        String tn = week.getName().trim().toLowerCase();
+                        String tn = VrUtils.normalizeName(week.getName());
                         all.add(new NamedId(tn, week.getName()));
                     }
                 } finally {

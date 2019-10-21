@@ -5,7 +5,7 @@
  */
 package net.vpc.app.vainruling.core.web.jsf.ctrl;
 
-import net.vpc.app.vainruling.core.service.pages.VrBreadcrumbItem;
+import net.vpc.app.vainruling.VrBreadcrumbItem;
 import net.vpc.app.vainruling.core.web.util.VrWebHelper;
 
 /**

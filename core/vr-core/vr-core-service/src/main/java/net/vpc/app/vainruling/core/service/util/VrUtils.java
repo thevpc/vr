@@ -45,6 +45,8 @@ import java.util.List;
 import net.vpc.common.strings.StringConverter;
 import net.vpc.common.util.IntegerParserConfig;
 import net.vpc.upa.Action;
+import net.vpc.upa.Entity;
+import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.UPA;
 import org.springframework.context.expression.BeanFactoryResolver;
 import org.springframework.expression.AccessException;
@@ -60,6 +62,7 @@ import org.springframework.expression.spel.support.StandardEvaluationContext;
  * @author taha.bensalah@gmail.com
  */
 public class VrUtils {
+
     public static SimpleDateFormat UNIVERSAL_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     public static NullAsEmptyStringComparator NULL_AS_EMPTY_STRING_COMPARATOR = new NullAsEmptyStringComparator();
     public static Comparator<Date> DATE_COMPARATOR = new NullComparator<Date>() {
@@ -1419,5 +1422,57 @@ public class VrUtils {
         ExpressionParser parser = new SpelExpressionParser();
         Expression expression = parser.parseExpression(expr);
         return expression.getValue(context);
+    }
+
+    public static String normalize(Object s) {
+        if (s == null) {
+            return "";
+        }
+        String ss = String.valueOf(s);
+        return VrUtils.normalizeName(ss);
+    }
+
+    public static Map<String, String> normalizeMap(Map<String, Object> map) {
+        Map<String, String> map2 = new HashMap<>();
+        for (Map.Entry<String, Object> e : map.entrySet()) {
+            String v = normalize(e.getValue());
+            if (!StringUtils.isBlank(v)) {
+                map2.put(e.getKey(), v);
+            }
+        }
+        return map2;
+    }
+
+    public static Map<String, String> toNormalizedStringRecord(Object o, String entityName) {
+        return normalizeMap(toStringRecord(o, entityName));
+    }
+
+    public static Map<String, Object> toStringRecord(Object o, String entityName) {
+        Map<String, Object> words = new HashMap<>();
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        net.vpc.upa.Document r = (o instanceof net.vpc.upa.Document) ? ((net.vpc.upa.Document) o) : pu.getEntity(entityName).getBuilder().objectToDocument(o, true);
+        if (r != null) {
+            for (Map.Entry<String, Object> entry : r.entrySet()) {
+                String k = entry.getKey();
+                Object v = entry.getValue();
+                if (v != null) {
+                    Entity ve = pu.findEntity(v.getClass());
+                    if (ve != null) {
+                        Object mv = ve.getBuilder().getMainValue(v);
+                        String v2 = String.valueOf(mv);
+                        if (!StringUtils.isBlank(v2)) {
+                            words.put(k, (v2));
+                        }
+                    } else if (v instanceof String) {
+                        if (!StringUtils.isBlank(v.toString())) {
+                            words.put(k, (v));
+                        }
+                    } else {
+                        words.put(k, (v));
+                    }
+                }
+            }
+        }
+        return words;
     }
 }

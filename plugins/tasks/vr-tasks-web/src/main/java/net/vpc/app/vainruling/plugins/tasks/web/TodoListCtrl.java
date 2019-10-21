@@ -6,7 +6,6 @@
 package net.vpc.app.vainruling.plugins.tasks.web;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
-import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.app.vainruling.core.web.jsf.ctrl.AbstractObjectCtrl;
 
 import net.vpc.app.vainruling.plugins.tasks.service.TaskPlugin;
@@ -16,16 +15,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 
 import java.util.List;
-import net.vpc.app.vainruling.core.service.pages.VrPage;
-import net.vpc.app.vainruling.core.service.pages.VrPathItem;
+import net.vpc.app.vainruling.VrPage;
+import net.vpc.app.vainruling.VrPathItem;
+import net.vpc.app.vainruling.VrOnPageLoad;
 
 /**
  * @author taha.bensalah@gmail.com
  */
 @VrPage(
         breadcrumb = {
-                @VrPathItem(ctrl = "dashboard")},
-        url = "modules/todo/config-todo-list"
+            @VrPathItem(title = "Listes Todo", css = "fa-dashboard", ctrl = "")
+        },url = "modules/todo/config-todo-list"
 )
 @Scope(value = "session")
 public class TodoListCtrl extends AbstractObjectCtrl<TodoList> {
@@ -94,7 +94,7 @@ public class TodoListCtrl extends AbstractObjectCtrl<TodoList> {
         getTodoStatusCtrl().reloadPage();
     }
 
-    @OnPageLoad
+    @VrOnPageLoad
     @Override
     public void reloadPage(String cmd, boolean enableCustomization) {
         getModel().setCmd(cmd);

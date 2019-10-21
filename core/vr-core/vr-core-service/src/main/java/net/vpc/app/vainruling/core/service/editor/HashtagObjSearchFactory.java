@@ -6,16 +6,16 @@
 package net.vpc.app.vainruling.core.service.editor;
 
 import java.util.List;
-import net.vpc.app.vainruling.core.service.editor.EntityEditorSearch;
+import net.vpc.app.vainruling.VrEditorSearch;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.Entity;
-import net.vpc.app.vainruling.core.service.editor.EntityEditorSearchFactory;
+import net.vpc.app.vainruling.VrEditorSearchFactory;
 
 /**
  *
  * @author vpc
  */
-public abstract class HashtagObjSearchFactory implements EntityEditorSearchFactory {
+public abstract class HashtagObjSearchFactory implements VrEditorSearchFactory {
 
     private String description;
     private String tag;
@@ -40,7 +40,7 @@ public abstract class HashtagObjSearchFactory implements EntityEditorSearchFacto
     }
 
     @Override
-    public EntityEditorSearch create(String name, Entity entity, String expression) {
+    public VrEditorSearch create(String name, Entity entity, String expression) {
         if (StringUtils.isBlank(expression)) {
             return null;
         }
@@ -53,7 +53,7 @@ public abstract class HashtagObjSearchFactory implements EntityEditorSearchFacto
 
     public abstract List filterDocumentListByTag(List list, String name, Entity entity, String expression);
 
-    private class ObjSearchImpl extends EntityEditorSearch {
+    private class ObjSearchImpl extends VrEditorSearch {
 
         private HashtagObjSearchFactory factory;
         private String expression;

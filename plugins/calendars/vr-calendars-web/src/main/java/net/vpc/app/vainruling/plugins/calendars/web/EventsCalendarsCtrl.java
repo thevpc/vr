@@ -3,7 +3,6 @@ package net.vpc.app.vainruling.plugins.calendars.web;
 import java.util.ArrayList;
 import java.util.Arrays;
 import net.vpc.app.vainruling.core.service.CorePlugin;
-import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import org.primefaces.event.ScheduleEntryMoveEvent;
 import org.primefaces.event.ScheduleEntryResizeEvent;
 import org.primefaces.event.SelectEvent;
@@ -24,7 +23,8 @@ import net.vpc.app.vainruling.plugins.calendars.model.RuntimeAppCalendarProperty
 import net.vpc.app.vainruling.plugins.calendars.service.CalendarsPlugin;
 import net.vpc.common.util.MutableDate;
 import org.apache.commons.lang3.StringUtils;
-import net.vpc.app.vainruling.core.service.pages.VrPage;
+import net.vpc.app.vainruling.VrPage;
+import net.vpc.app.vainruling.VrOnPageLoad;
 
 @VrPage(
         menu = "/Calendars",
@@ -46,7 +46,7 @@ public class EventsCalendarsCtrl {
     }
 
 //    @PostConstruct
-    @OnPageLoad
+    @VrOnPageLoad
     public void init() {
         onRefreshAll();
     }

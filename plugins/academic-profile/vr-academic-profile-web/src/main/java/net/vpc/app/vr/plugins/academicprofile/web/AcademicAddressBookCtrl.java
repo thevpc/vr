@@ -9,7 +9,6 @@ import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
-import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.model.config.AcademicFormerStudent;
 import net.vpc.app.vainruling.plugins.academic.model.config.AcademicStudent;
@@ -26,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import net.vpc.app.vainruling.VrOnPageLoad;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -62,7 +62,7 @@ public class AcademicAddressBookCtrl {
         return "en";
     }
 
-    @OnPageLoad
+    @VrOnPageLoad
     public String onPageLoad() {
         onUpdatePermanentList();
         return "ignore-me";

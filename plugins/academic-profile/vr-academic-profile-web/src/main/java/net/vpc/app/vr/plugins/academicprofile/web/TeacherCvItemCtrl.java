@@ -16,7 +16,7 @@ import net.vpc.upa.VoidAction;
 import org.springframework.beans.factory.annotation.Autowired;
 import net.vpc.app.vainruling.core.service.model.AppCompany;
 import net.vpc.app.vr.plugins.academicprofile.model.AcademicTeacherCVItem;
-import net.vpc.app.vainruling.core.service.pages.VrPage;
+import net.vpc.app.vainruling.VrPage;
 
 /**
  *

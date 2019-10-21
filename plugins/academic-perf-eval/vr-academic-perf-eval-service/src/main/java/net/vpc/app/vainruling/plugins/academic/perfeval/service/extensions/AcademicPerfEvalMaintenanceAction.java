@@ -20,7 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.*;
 import java.util.logging.Logger;
 import net.vpc.app.vainruling.core.service.ProfileRightBuilder;
-import net.vpc.app.vainruling.core.service.extensions.VrMaintenanceAction;
+import net.vpc.app.vainruling.VrMaintenanceAction;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.AcademicPerfEvalPlugin;
 import org.springframework.stereotype.Service;
 

@@ -3,8 +3,9 @@ package net.vpc.app.vainruling.core.service.util;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
+import net.vpc.app.vainruling.VrCompletionInfo;
 
-public class DefaultCompletionInfo implements CompletionInfo {
+public class DefaultCompletionInfo implements VrCompletionInfo {
 
     private String category;
     private Object objectId;

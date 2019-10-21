@@ -5,7 +5,7 @@
  */
 package net.vpc.app.vainruling.plugins.academic.report.service;
 
-import net.vpc.app.vainruling.core.service.plugins.VrPlugin;
+import net.vpc.app.vainruling.VrPlugin;
 
 /**
  * @author taha.bensalah@gmail.com

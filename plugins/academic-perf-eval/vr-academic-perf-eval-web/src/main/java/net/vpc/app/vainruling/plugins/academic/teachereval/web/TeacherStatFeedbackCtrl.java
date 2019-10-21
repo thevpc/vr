@@ -10,7 +10,6 @@ import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.util.ValueCountSet;
-import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.AcademicPerfEvalPlugin;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.dto.GroupView;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.dto.QuestionView;
@@ -36,8 +35,9 @@ import java.util.logging.Logger;
 import net.vpc.common.util.Convert;
 import net.vpc.common.util.IntegerParserConfig;
 import org.springframework.stereotype.Controller;
-import net.vpc.app.vainruling.core.service.pages.VrPage;
-import net.vpc.app.vainruling.core.service.pages.VrPathItem;
+import net.vpc.app.vainruling.VrPage;
+import net.vpc.app.vainruling.VrPathItem;
+import net.vpc.app.vainruling.VrOnPageLoad;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -83,7 +83,7 @@ public class TeacherStatFeedbackCtrl {
         return Integer.parseInt(idString);
     }
 
-    @OnPageLoad
+    @VrOnPageLoad
     public void onLoad() {
         getModel().setValidate(false);
         getModel().setTeacherListEnabled(AcademicPluginSecurity.isUserSessionManager());

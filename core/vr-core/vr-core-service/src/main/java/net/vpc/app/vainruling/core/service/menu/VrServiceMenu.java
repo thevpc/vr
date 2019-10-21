@@ -5,14 +5,17 @@
  */
 package net.vpc.app.vainruling.core.service.menu;
 
-import net.vpc.app.vainruling.core.service.pages.VrPageInfoResolver;
-import net.vpc.app.vainruling.core.service.pages.VrPageInfo;
-import net.vpc.app.vainruling.core.service.pages.VrActionEnabler;
-import net.vpc.app.vainruling.core.service.pages.VrActionInfo;
-import net.vpc.app.vainruling.core.service.pages.VrPageHistoryItem;
-import net.vpc.app.vainruling.core.service.pages.VrBreadcrumbItem;
-import net.vpc.app.vainruling.core.service.pages.VrPage;
-import net.vpc.app.vainruling.core.service.pages.VrPathItem;
+import net.vpc.app.vainruling.VrMenuInfo;
+import net.vpc.app.vainruling.VrMenuLabel;
+import net.vpc.app.vainruling.VrMenuProvider;
+import net.vpc.app.vainruling.VrPageInfoResolver;
+import net.vpc.app.vainruling.VrPageInfo;
+import net.vpc.app.vainruling.VrActionEnabler;
+import net.vpc.app.vainruling.VrActionInfo;
+import net.vpc.app.vainruling.VrPageHistoryItem;
+import net.vpc.app.vainruling.VrBreadcrumbItem;
+import net.vpc.app.vainruling.VrPage;
+import net.vpc.app.vainruling.VrPathItem;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -31,7 +34,6 @@ import net.vpc.app.vainruling.core.service.TraceService;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.editor.ActionDialogAdapter;
 import net.vpc.app.vainruling.core.service.editor.ActionDialogManager;
-import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.app.vainruling.core.service.util.I18n;
 import net.vpc.app.vainruling.core.service.util.JsonUtils;
 import net.vpc.app.vainruling.core.service.util.PlatformReflector;
@@ -51,6 +53,7 @@ import net.vpc.upa.exceptions.UPAException;
 import net.vpc.upa.filters.DefaultEntityFilter;
 import net.vpc.upa.filters.EntityFilter;
 import net.vpc.upa.filters.ObjectFilter;
+import net.vpc.app.vainruling.VrOnPageLoad;
 
 /**
  *
@@ -63,8 +66,8 @@ public class VrServiceMenu {
     private Model model = new Model();
     private static final java.util.logging.Logger LOG = java.util.logging.Logger.getLogger(VrServiceMenu.class.getName());
 
-    public List<VRMenuInfo> resolveAutowiredCustomMenusByCtrl() {
-        List<VRMenuInfo> menuCtrl = new ArrayList<>();
+    public List<VrMenuInfo> resolveAutowiredCustomMenusByCtrl() {
+        List<VrMenuInfo> menuCtrl = new ArrayList<>();
 
         for (String k : pages.keySet()) {
             List<VrPageMenuItem> values = pages.get(k);
@@ -76,7 +79,7 @@ public class VrServiceMenu {
                 VrPageMenuItem d = values.get(0);
                 menuCtrl.addAll(resolveMenuInfos(k, d.value));
             } else {
-                List<List<VRMenuInfo>> bestList = null;
+                List<List<VrMenuInfo>> bestList = null;
                 int bestPrio = -1;
                 for (VrPageMenuItem value : values) {
                     if (bestList == null || value.priority > bestPrio) {
@@ -89,7 +92,7 @@ public class VrServiceMenu {
                         //ignore
                     }
                 }
-                for (List<VRMenuInfo> vrMenuInfos : bestList) {
+                for (List<VrMenuInfo> vrMenuInfos : bestList) {
                     menuCtrl.addAll(vrMenuInfos);
                 }
             }
@@ -105,8 +108,8 @@ public class VrServiceMenu {
         }
     }
 
-    private List<VRMenuInfo> resolveMenuInfos(String beanName, Object b) {
-        List<VRMenuInfo> menuCtrl = new ArrayList<>();
+    private List<VrMenuInfo> resolveMenuInfos(String beanName, Object b) {
+        List<VrMenuInfo> menuCtrl = new ArrayList<>();
         VrPage c = (VrPage) PlatformReflector.getTargetClass(b).getAnnotation(VrPage.class);
         if (c != null && c.menu().length() > 0) {
             String menu = c.menu();
@@ -121,7 +124,7 @@ public class VrServiceMenu {
             if (b instanceof VrActionEnabler) {
                 actionEnabler = (VrActionEnabler) b;
             }
-            VRMenuInfo md = new VRMenuInfo(title, menu, beanName, "", c.securityKey(), actionEnabler, "", c.order(), new VRMenuLabel[0]);
+            VrMenuInfo md = new VrMenuInfo(title, menu, beanName, "", c.securityKey(), actionEnabler, "", c.order(), new VrMenuLabel[0]);
             VrPageInfoAndObject uc = resolvePageInfoAndObjectByInstance(md.getType(), md.getCommand());
             if (uc != null) {
                 md.setName(uc.getInfo().getTitle());
@@ -129,13 +132,13 @@ public class VrServiceMenu {
             if (md.getSecurityKey() == null
                     || md.getSecurityKey().length() == 0
                     || UPA.getPersistenceGroup().getSecurityManager().isAllowedKey(md.getSecurityKey())) {
-                if (md.getEnabler() == null || md.getEnabler().isEnabled(md)) {
+                if (isEnabled(md.getEnabler(), md, beanName)) {
                     menuCtrl.add(md);
                 }
             }
         }
-        if (b instanceof VRMenuProvider) {
-            for (VRMenuInfo md : ((VRMenuProvider) b).createCustomMenus()) {
+        if (b instanceof VrMenuProvider) {
+            for (VrMenuInfo md : ((VrMenuProvider) b).createCustomMenus()) {
                 if (md != null) {
                     applyVRMenuInfoSource(md, beanName);
                     if (md.getSecurityKey() == null
@@ -156,16 +159,16 @@ public class VrServiceMenu {
         return menuCtrl;
     }
 
-    private void applyVRMenuInfoSource(VRMenuInfo m, String source) {
+    private void applyVRMenuInfoSource(VrMenuInfo m, String source) {
         if (m == null) {
             return;
         }
         if (m.getSource() == null) {
             m.setSource(source);
         }
-        List<VRMenuInfo> children = m.getChildren();
+        List<VrMenuInfo> children = m.getChildren();
         if (children != null) {
-            for (VRMenuInfo c : children) {
+            for (VrMenuInfo c : children) {
                 applyVRMenuInfoSource(c, source);
             }
         }
@@ -198,7 +201,7 @@ public class VrServiceMenu {
             if (obj instanceof VrActionEnabler) {
                 VrActionEnabler r = (VrActionEnabler) obj;
                 String name2 = name;
-                if (!r.isEnabled(new VrActionInfo() {
+                VrActionInfo vv = new VrActionInfo() {
                     @Override
                     public String getMenuPath() {
                         VrPage c2Ann = (VrPage) targetClass.getAnnotation(VrPage.class);
@@ -212,7 +215,8 @@ public class VrServiceMenu {
                     public String getSource() {
                         return name2;
                     }
-                })) {
+                };
+                if (!isEnabled(r, vv, cmd)) {
                     continue;
                 }
             }
@@ -287,16 +291,18 @@ public class VrServiceMenu {
                 String cmd2 = breadcrumb.cmd();
                 if (!StringUtils.isBlank(ctrl)) {
                     VrPageInfoAndObject vrControllerInfoAndObject = resolvePageInfoAndObjectByInstance(ctrl, cmd2);
-                    VrPageInfo d2 = vrControllerInfoAndObject.getInfo();
-                    if (d2 != null) {
-                        if (StringUtils.isBlank(css)) {
-                            css = d2.getCss();
-                        }
-                        if (StringUtils.isBlank(title)) {
-                            title = d2.getTitle();
-                        }
-                        if (StringUtils.isBlank(subTitle)) {
-                            subTitle = d2.getSubTitle();
+                    if (vrControllerInfoAndObject != null) {
+                        VrPageInfo d2 = vrControllerInfoAndObject.getInfo();
+                        if (d2 != null) {
+                            if (StringUtils.isBlank(css)) {
+                                css = d2.getCss();
+                            }
+                            if (StringUtils.isBlank(title)) {
+                                title = d2.getTitle();
+                            }
+                            if (StringUtils.isBlank(subTitle)) {
+                                subTitle = d2.getSubTitle();
+                            }
                         }
                     }
                 }
@@ -311,12 +317,12 @@ public class VrServiceMenu {
         return null;
     }
 
-    private boolean isSelectedVRMenuInfo(VRMenuInfo t) {
+    private boolean isSelectedVRMenuInfo(VrMenuInfo t) {
         if (t.isLeaf()) {
             VrPageInfo ci = getModel().getControllerInfo();
             if (ci != null) {
                 String ctrlName = getPageUniformName(t.getType());
-                if (ci.getControllerName()!=null && ci.getControllerName().endsWith(ctrlName)) {
+                if (ci.getControllerName() != null && ci.getControllerName().endsWith(ctrlName)) {
                     String cmd = StringUtils.trim(ci.getCmd());
                     String cmd2 = StringUtils.trim(t.getCommand());
                     if (cmd.equals(cmd2)) {
@@ -367,8 +373,8 @@ public class VrServiceMenu {
 
                     }
 
-                    if (b instanceof VRMenuProvider) {
-                        for (VRMenuInfo md : ((VRMenuProvider) b).createCustomMenus()) {
+                    if (b instanceof VrMenuProvider) {
+                        for (VrMenuInfo md : ((VrMenuProvider) b).createCustomMenus()) {
 
                             if (md != null) {
                                 String securityKey = md.getSecurityKey();
@@ -410,10 +416,10 @@ public class VrServiceMenu {
 
         private List<VrBreadcrumbItem> breadcrumb = new ArrayList<VrBreadcrumbItem>();
         private VrBreadcrumbItem titleCrumb = new VrBreadcrumbItem("", "", "", "", "");
-        private List<VRMenuInfo> menuCtrl = null;
+        private List<VrMenuInfo> menuCtrl = null;
         private VrPageInfo controllerInfo = null;
         private String currentPageId;
-        private VRMenuInfo root;
+        private VrMenuInfo root;
         private String searchText;
 
         public VrPageInfo getControllerInfo() {
@@ -432,11 +438,11 @@ public class VrServiceMenu {
             this.searchText = searchText;
         }
 
-        public VRMenuInfo getRoot() {
+        public VrMenuInfo getRoot() {
             return root;
         }
 
-        public Model setRoot(VRMenuInfo root) {
+        public Model setRoot(VrMenuInfo root) {
             this.root = root;
             return this;
         }
@@ -478,7 +484,7 @@ public class VrServiceMenu {
             return titleCrumb;
         }
 
-        public List<VRMenuInfo> getMenuCtrl() {
+        public List<VrMenuInfo> getMenuCtrl() {
             return menuCtrl;
         }
     }
@@ -518,7 +524,7 @@ public class VrServiceMenu {
     }
 
     public void prepareGoto(String command, String arguments, VrPageInfoAndObject d, List<VrBreadcrumbItem> bc, boolean addToHistory) {
-        PlatformReflector.InstanceInvoker[] mm = PlatformReflector.findInstanceMethodsByAnnotation(d.getInstance(), OnPageLoad.class);
+        PlatformReflector.InstanceInvoker[] mm = PlatformReflector.findInstanceMethodsByAnnotation(d.getInstance(), VrOnPageLoad.class);
         for (PlatformReflector.InstanceInvoker m : mm) {
             if (m.getParameterTypes().length == 0) {
                 m.invoke();
@@ -561,7 +567,7 @@ public class VrServiceMenu {
         }
     }
 
-    private List<String> findCustomPaths(String parent, List<VRMenuInfo> autowiredCustomMenusByCtrl) {
+    private List<String> findCustomPaths(String parent, List<VrMenuInfo> autowiredCustomMenusByCtrl) {
         LinkedHashSet<String> ok = new LinkedHashSet<>();
         if (parent == null) {
             parent = "/";
@@ -570,7 +576,7 @@ public class VrServiceMenu {
         if (!parent2.endsWith("/")) {
             parent2 = parent2 + "/";
         }
-        for (VRMenuInfo m : autowiredCustomMenusByCtrl) {
+        for (VrMenuInfo m : autowiredCustomMenusByCtrl) {
             String p = m.getPath();
             if (p == null) {
                 p = "";
@@ -598,7 +604,7 @@ public class VrServiceMenu {
         return new ArrayList<>(ok);
     }
 
-    public VRMenuInfo createMenu(String searchText) {
+    public VrMenuInfo createMenu(String searchText) {
         String finalSearchText = (searchText == null ? "" : searchText.toLowerCase());
         ObjectFilter<String> menuFilter = StringUtils.isBlank(searchText) ? new ObjectFilter<String>() {
             @Override
@@ -617,12 +623,12 @@ public class VrServiceMenu {
         return (new VrMenuTree(menuFilter, this, I18n.get(), CorePlugin.get()).root);
     }
 
-    private List<VRMenuInfo> findCustomMenus(String parent, List<VRMenuInfo> autowiredCustomMenusByCtrl) {
-        List<VRMenuInfo> ok = new ArrayList<>();
+    private List<VrMenuInfo> findCustomMenus(String parent, List<VrMenuInfo> autowiredCustomMenusByCtrl) {
+        List<VrMenuInfo> ok = new ArrayList<>();
         if (parent == null) {
             parent = "/";
         }
-        for (VRMenuInfo m : autowiredCustomMenusByCtrl) {
+        for (VrMenuInfo m : autowiredCustomMenusByCtrl) {
             String p = m.getPath();
             if (p == null) {
                 p = "";
@@ -684,7 +690,7 @@ public class VrServiceMenu {
                     if ("publicIndex".equals(command)) {
                         throw new SecurityException("Page is Inaccessible");
                     } else {
-                        LOG.warning("Illegal Access to " + command + " by " + core.getCurrentUser());
+                        LOG.warning("Illegal Access to " + command + " by " + core.getCurrentUser() + ". Required Authorization : " + d.getInfo().getSecurityKey());
                         //FacesUtils.addErrorMessage("Illegal Access to " + command + " by " + core.getCurrentUser());
                         if (core.getCurrentUser() != null) {
                             return gotoPage("welcome", "", true);
@@ -694,11 +700,8 @@ public class VrServiceMenu {
                     }
                 }
             }
-            if (d.getInfo().getEnabler() != null) {
-                if (!d.getInfo().getEnabler().isEnabled(d.getInfo())) {
-                    LOG.warning("Illegal Access to " + command + " by " + core.getCurrentUser());
-                    return gotoPage("publicIndex", "", true);
-                }
+            if (!isEnabled(d.getInfo().getEnabler(), d.getInfo(), command)) {
+                return gotoPage("publicIndex", "", true);
             }
         }
         if (d == null) {
@@ -711,7 +714,24 @@ public class VrServiceMenu {
         return url;
     }
 
-    private static class MenuTreeVisitor implements TreeVisitor<VRMenuInfo> {
+    private boolean isEnabled(VrActionEnabler e, VrActionInfo data, String command) {
+        if (e == null) {
+            return true;
+        }
+        CorePlugin core = CorePlugin.get();
+        boolean d = false;
+        try {
+            e.checkEnabled(data);
+            d = true;
+        } catch (SecurityException ex) {
+            LOG.log(Level.WARNING, "Illegal Access to {0} by {1}. Disabled because of : {2}", new Object[]{command, core.getCurrentUser(), ex.getMessage()});
+        } catch (Exception ex) {
+            LOG.log(Level.WARNING, "Illegal Access to {0} by {1}. Disabled by Error in Enabler : {2}", new Object[]{command, core.getCurrentUser(), e});
+        }
+        return d;
+    }
+
+    private static class MenuTreeVisitor implements TreeVisitor<VrMenuInfo> {
 
         private ObjectFilter<String> filter;
         private VrServiceMenu m;
@@ -722,19 +742,19 @@ public class VrServiceMenu {
         }
 
         @Override
-        public void visit(VRMenuInfo t, TreeDefinition<VRMenuInfo> tree) {
+        public void visit(VrMenuInfo t, TreeDefinition<VrMenuInfo> tree) {
             if (m.isSelectedVRMenuInfo(t)) {
                 t.setSelected(true);
             }
-            List<VRMenuInfo> children = tree.getChildren(t);
+            List<VrMenuInfo> children = tree.getChildren(t);
             for (int i = children.size() - 1; i >= 0; i--) {
-                VRMenuInfo el = children.get(i);
+                VrMenuInfo el = children.get(i);
                 boolean removed = false;
                 if (el.getType().equals("package") && el.getChildren().isEmpty()) {
                     children.remove(i);
                     removed = true;
                 } else {
-                    if (el.getChildren().size() == 0) {
+                    if (el.getChildren().isEmpty()) {
                         if (!filter.accept(el.getName())) {
                             children.remove(i);
                             removed = true;
@@ -750,12 +770,12 @@ public class VrServiceMenu {
         }
     }
 
-    public static class VrMenuTree implements TreeDefinition<VRMenuInfo> {
+    public static class VrMenuTree implements TreeDefinition<VrMenuInfo> {
 
-        final VRMenuInfo root = new VRMenuInfo("/", "/", "package", "", "", null, "", 0, new VRMenuLabel[0]);
-        List<VRMenuInfo> autowiredCustomMenusByCtrl;
-        final HashSet<VRMenuInfo> nonVisitedCustomMenus;
-        final HashSet<VRMenuInfo> visitedCustomMenus = new HashSet<>();
+        final VrMenuInfo root = new VrMenuInfo("/", "/", "package", "", "", null, "", 0, new VrMenuLabel[0]);
+        List<VrMenuInfo> autowiredCustomMenusByCtrl;
+        final HashSet<VrMenuInfo> nonVisitedCustomMenus;
+        final HashSet<VrMenuInfo> visitedCustomMenus = new HashSet<>();
         CorePlugin core;
         I18n i18n;
         VrServiceMenu builder;
@@ -770,14 +790,14 @@ public class VrServiceMenu {
         }
 
         @Override
-        public VRMenuInfo getRoot() {
+        public VrMenuInfo getRoot() {
             return root;
         }
 
         @Override
-        public List<VRMenuInfo> getChildren(VRMenuInfo t) {
+        public List<VrMenuInfo> getChildren(VrMenuInfo t) {
             if (t.getChildren() == null) {
-                ArrayList<VRMenuInfo> children = new ArrayList<VRMenuInfo>();
+                ArrayList<VrMenuInfo> children = new ArrayList<VrMenuInfo>();
                 if (t.getType().equals("package")) {
                     net.vpc.upa.Package pp = UPA.getPersistenceUnit().getPackage(t.getPath(), MissingStrategy.NULL);
                     List<net.vpc.upa.Package> pk = null;
@@ -807,7 +827,7 @@ public class VrServiceMenu {
                         } catch (Exception e) {
                             //ignore
                         }
-                        children.add(new VRMenuInfo(p.getTitle(), p0, "package", "", "", null, i18n.getOrNull("Package." + p1 + ".css-icon-class"), order, new VRMenuLabel[0]));
+                        children.add(new VrMenuInfo(p.getTitle(), p0, "package", "", "", null, i18n.getOrNull("Package." + p1 + ".css-icon-class"), order, new VrMenuLabel[0]));
                     }
                     for (String p : builder.findCustomPaths(t.getPath(), autowiredCustomMenusByCtrl)) {
                         if (!subFolders.contains(p)) {
@@ -831,10 +851,10 @@ public class VrServiceMenu {
                                 //ignore
                             }
 
-                            children.add(new VRMenuInfo(i18n.get("Package." + p1), p0, "package", "", "", null, i18n.getOrNull("Package." + p1 + ".css-icon-class"), order, new VRMenuLabel[0]));
+                            children.add(new VrMenuInfo(i18n.get("Package." + p1), p0, "package", "", "", null, i18n.getOrNull("Package." + p1 + ".css-icon-class"), order, new VrMenuLabel[0]));
                         }
                     }
-                    for (VRMenuInfo p : builder.findCustomMenus(t.getPath(), autowiredCustomMenusByCtrl)) {
+                    for (VrMenuInfo p : builder.findCustomMenus(t.getPath(), autowiredCustomMenusByCtrl)) {
                         nonVisitedCustomMenus.remove(p);
                         if (visitedCustomMenus.contains(p)) {
                             System.err.println("Menu added twice " + p);
@@ -853,7 +873,7 @@ public class VrServiceMenu {
                                 try {
                                     int order = 100;
                                     //UCtrlData d = ;
-                                    VRMenuInfo md = new VRMenuInfo(ee.getTitle(), t.getPath(), "editor", "{entity:'" + ee.getName() + "'}", "", null, "", 100, new VRMenuLabel[0]);
+                                    VrMenuInfo md = new VrMenuInfo(ee.getTitle(), t.getPath(), "editor", "{entity:'" + ee.getName() + "'}", "", null, "", 100, new VrMenuLabel[0]);
                                     VrPageInfoAndObject uc = builder.resolvePageInfoAndObjectByInstance(md.getType(), md.getCommand());
                                     if (uc != null) {
                                         md.setName(uc.getInfo().getTitle());
@@ -873,7 +893,7 @@ public class VrServiceMenu {
                                 if (acceptEntityMenu(ee)) {
                                     try {
                                         int order = 100;
-                                        VRMenuInfo md = new VRMenuInfo(ee.getTitle(), t.getPath(), "editor", "{entity:'" + ee.getName() + "'}", "", null, "", 100, new VRMenuLabel[0]);
+                                        VrMenuInfo md = new VrMenuInfo(ee.getTitle(), t.getPath(), "editor", "{entity:'" + ee.getName() + "'}", "", null, "", 100, new VrMenuLabel[0]);
                                         VrPageInfoAndObject uc = builder.resolvePageInfoAndObjectByInstance(md.getType(), md.getCommand());
                                         if (uc != null) {
                                             md.setName(uc.getInfo().getTitle());

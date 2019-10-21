@@ -6,7 +6,7 @@
 package net.vpc.app.vainruling.core.web.jsf.ctrl;
 
 import org.springframework.context.annotation.Scope;
-import net.vpc.app.vainruling.core.service.pages.VrPage;
+import net.vpc.app.vainruling.VrPage;
 
 /**
  * @author taha.bensalah@gmail.com

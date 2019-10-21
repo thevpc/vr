@@ -1,7 +1,7 @@
 package net.vpc.app.vainruling.plugins.themes.infusion;
 
+import net.vpc.app.vainruling.VrPlugin;
 import net.vpc.app.vainruling.core.service.CorePlugin;
-import net.vpc.app.vainruling.core.service.plugins.VrPlugin;
 
 @VrPlugin
 public class CrewPublicInfusionPlugin {

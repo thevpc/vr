@@ -8,7 +8,6 @@ package net.vpc.app.vainruling.plugins.academic.web.load;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
-import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPluginSecurity;
 import net.vpc.app.vainruling.plugins.academic.service.util.CourseAssignmentFilter;
@@ -31,8 +30,9 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.springframework.stereotype.Controller;
-import net.vpc.app.vainruling.core.service.pages.VrPage;
-import net.vpc.app.vainruling.core.service.pages.VrPathItem;
+import net.vpc.app.vainruling.VrPage;
+import net.vpc.app.vainruling.VrPathItem;
+import net.vpc.app.vainruling.VrOnPageLoad;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -324,7 +324,7 @@ public class GlobalStatCtrl {
         }
     }
 
-    @OnPageLoad
+    @VrOnPageLoad
     public void onRefresh(String cmd) {
         getTeacherFilter().onInit();
         getCourseFilter().onInit();

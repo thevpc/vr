@@ -10,15 +10,16 @@ import net.vpc.upa.types.DateTime;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.vpc.app.vainruling.core.service.extensions.VrImpersonateListener;
-import net.vpc.app.vainruling.core.service.extensions.VrLoginListener;
-import net.vpc.app.vainruling.core.service.extensions.VrLogoutListener;
+import net.vpc.app.vainruling.VrImpersonateListener;
+import net.vpc.app.vainruling.VrLoginListener;
+import net.vpc.app.vainruling.VrLogoutListener;
 import net.vpc.app.vainruling.core.service.util.Arg;
 import net.vpc.app.vainruling.core.service.util.I18n;
+import net.vpc.app.vainruling.VrUserTokenConfigurator;
 
 class CorePluginBodySecurityAuthenticator extends CorePluginBody {
 
-    private List<UserSessionConfigurator> userSessionConfigurators;
+    private List<VrUserTokenConfigurator> userSessionConfigurators;
     private static Logger log = Logger.getLogger(CorePluginBodySecurityAuthenticator.class.getName());
 
     @Override
@@ -73,10 +74,10 @@ class CorePluginBodySecurityAuthenticator extends CorePluginBody {
         }
     }
 
-    private List<UserSessionConfigurator> getUserSessionConfigurators() {
+    private List<VrUserTokenConfigurator> getUserSessionConfigurators() {
         if (userSessionConfigurators == null) {
             ArrayList all = new ArrayList<>();
-            for (UserSessionConfigurator bn : VrApp.getBeansForType(UserSessionConfigurator.class)) {
+            for (VrUserTokenConfigurator bn : VrApp.getBeansForType(VrUserTokenConfigurator.class)) {
                 all.add(bn);
             }
             userSessionConfigurators = all;
@@ -90,7 +91,7 @@ class CorePluginBodySecurityAuthenticator extends CorePluginBody {
             UserToken token = null;
             try {
                 token = getCurrentToken();
-                for (UserSessionConfigurator userSessionConfigurator : getUserSessionConfigurators()) {
+                for (VrUserTokenConfigurator userSessionConfigurator : getUserSessionConfigurators()) {
                     userSessionConfigurator.preConfigure(token);
                 }
                 AppUser u = authenticateByLoginPassword(login, password, token, clientAppId, clientApp);
@@ -99,7 +100,7 @@ class CorePluginBodySecurityAuthenticator extends CorePluginBody {
                 }
                 AppUser appUser0 = onUserLoggedIn(u, token, clientAppId, clientApp);
                 if (appUser0 != null) {
-                    for (UserSessionConfigurator userSessionConfigurator : getUserSessionConfigurators()) {
+                    for (VrUserTokenConfigurator userSessionConfigurator : getUserSessionConfigurators()) {
                         userSessionConfigurator.postConfigure(token);
                     }
                 }

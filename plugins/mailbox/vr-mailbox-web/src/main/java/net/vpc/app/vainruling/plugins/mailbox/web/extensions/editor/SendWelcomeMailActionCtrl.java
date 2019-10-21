@@ -24,7 +24,7 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.vpc.app.vainruling.core.web.jsf.Vr;
-import net.vpc.app.vainruling.core.service.pages.VrPage;
+import net.vpc.app.vainruling.VrPage;
 
 /**
  * @author taha.bensalah@gmail.com

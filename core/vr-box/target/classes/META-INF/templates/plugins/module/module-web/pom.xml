@@ -17,7 +17,7 @@
 
     <properties>
         <vr-plugin.component-type>web</vr-plugin.component-type>
-        <version.vr>${{vrFwkCoreVersion}}</version.vr>
+        <version.vr>${{FwkCoreVersion}}</version.vr>
     </properties>
 
     <dependencies>
@@ -33,20 +33,20 @@
             <version>${{ProjectVersion}}</version>
         </dependency>
 
-        ${{vrMavenWebDependency('vr-public-theme-crew')}}
-        ${{vrMavenWebDependency('vr-private-theme-adminlte')}}
-        ${{vrMavenWebDependency('vr-mailbox')}}
-        ${{vrMavenWebDependency('vr-tasks')}}
-        ${{vrMavenWebDependency('vr-forum')}}
-        ${{vrMavenWebDependency('vr-dev-toolbox')}}
-        ${{vrMavenWebDependency('vr-academic')}}
-        ${{vrMavenWebDependency('vr-academic-report')}}
-        ${{vrMavenWebDependency('vr-academic-planning')}}
-        ${{vrMavenWebDependency('vr-academic-perf-eval')}}
-        ${{vrMavenWebDependency('vr-academic-profile')}}
-        ${{vrMavenWebDependency('vr-academic-project-based-learning')}}
-        ${{vrMavenWebDependency('vr-equipments')}}
-        ${{vrMavenWebDependency('vr-equipment-tracker')}}
+        ${{MavenWebDependency('vr-public-theme-crew')}}
+        ${{MavenWebDependency('vr-private-theme-adminlte')}}
+        ${{MavenWebDependency('vr-mailbox')}}
+        ${{MavenWebDependency('vr-tasks')}}
+        ${{MavenWebDependency('vr-forum')}}
+        ${{MavenWebDependency('vr-dev-toolbox')}}
+        ${{MavenWebDependency('vr-academic')}}
+        ${{MavenWebDependency('vr-academic-report')}}
+        ${{MavenWebDependency('vr-academic-planning')}}
+        ${{MavenWebDependency('vr-academic-perf-eval')}}
+        ${{MavenWebDependency('vr-academic-profile')}}
+        ${{MavenWebDependency('vr-academic-project-based-learning')}}
+        ${{MavenWebDependency('vr-equipments')}}
+        ${{MavenWebDependency('vr-equipment-tracker')}}
 
         <dependency>
             <groupId>org.primefaces.themes</groupId>

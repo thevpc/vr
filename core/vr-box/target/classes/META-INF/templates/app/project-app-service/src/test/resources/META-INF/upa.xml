@@ -10,7 +10,7 @@
                 <connection>
                     <!-- use this if you want to consider embedded derby
                     <connectionString>
-                        derby:embedded://${user.home}/workspace/${{vrProjectName}}/db/${{packageName(vrProjectName)}};structure=create;userName=appuser;password=appsecret
+                        derby:embedded://${user.home}/workspace/${{ProjectName}}/db/${{packageName(ProjectName)}};structure=create;userName=appuser;password=appsecret
                     </connectionString>
                     -->
                     <connectionString>

@@ -11,11 +11,9 @@ import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.app.vainruling.core.service.model.AppTrace;
 import net.vpc.app.vainruling.core.service.model.AppUser;
-import net.vpc.app.vainruling.core.service.notification.PollAware;
 import net.vpc.app.vainruling.core.service.security.UserSessionInfo;
 import net.vpc.app.vainruling.core.service.security.UserToken;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
-import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.Chronometer;
 import net.vpc.common.util.DatePart;
@@ -25,7 +23,9 @@ import org.primefaces.model.chart.DonutChartModel;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
-import net.vpc.app.vainruling.core.service.pages.VrPage;
+import net.vpc.app.vainruling.VrPage;
+import net.vpc.app.vainruling.VrPollService;
+import net.vpc.app.vainruling.VrOnPageLoad;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -37,7 +37,7 @@ import net.vpc.app.vainruling.core.service.pages.VrPage;
         securityKey = CorePluginSecurity.RIGHT_CUSTOM_ADMIN_ACTIVE_SESSIONS
 )
 //@Scope(value = "singleton")
-public class ActiveSessionsCtrl implements PollAware {
+public class ActiveSessionsCtrl implements VrPollService {
     public static final Date MIN_DATE = new Date(Long.MIN_VALUE);
     private static final Comparator<UserSessionInfo> SESSION_COMPARATOR = new Comparator<UserSessionInfo>() {
         @Override
@@ -118,7 +118,7 @@ public class ActiveSessionsCtrl implements PollAware {
         return validOnly;
     }
 
-    @OnPageLoad
+    @VrOnPageLoad
     public void onRefresh() {
         if (model.updating) {
             return;

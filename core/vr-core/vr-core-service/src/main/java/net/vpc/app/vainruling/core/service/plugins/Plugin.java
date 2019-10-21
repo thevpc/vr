@@ -11,6 +11,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.vpc.app.vainruling.VrInstall;
+import net.vpc.app.vainruling.VrInstallDemo;
+import net.vpc.app.vainruling.VrStart;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -79,7 +82,7 @@ public class Plugin implements Comparable<Plugin> {
     public void start() {
         for (Object obj : beanInstances) {
             log.log(Level.INFO, "Start Plugin {0}", obj);
-            for (PlatformReflector.InstanceInvoker p : findMethodsByAnnotation(obj, Start.class)) {
+            for (PlatformReflector.InstanceInvoker p : findMethodsByAnnotation(obj, VrStart.class)) {
                 p.invoke();
             }
         }
@@ -88,7 +91,7 @@ public class Plugin implements Comparable<Plugin> {
     public void install() {
         for (Object obj : beanInstances) {
             log.log(Level.INFO, "Install Plugin {0}", obj);
-            for (PlatformReflector.InstanceInvoker p : findMethodsByAnnotation(obj, Install.class)) {
+            for (PlatformReflector.InstanceInvoker p : findMethodsByAnnotation(obj, VrInstall.class)) {
                 p.invoke();
             }
         }
@@ -97,7 +100,7 @@ public class Plugin implements Comparable<Plugin> {
     public void installDemo() {
         for (Object obj : beanInstances) {
             log.log(Level.INFO, "Install Plugin Demo {0}", obj);
-            for (PlatformReflector.InstanceInvoker p : findMethodsByAnnotation(obj, InstallDemo.class)) {
+            for (PlatformReflector.InstanceInvoker p : findMethodsByAnnotation(obj, VrInstallDemo.class)) {
                 p.invoke();
             }
         }

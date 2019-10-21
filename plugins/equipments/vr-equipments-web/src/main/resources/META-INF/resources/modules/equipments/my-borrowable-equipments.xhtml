@@ -30,7 +30,7 @@ and open the template in the editor.
                     </p:messages>
                     <p:panelGrid id="details" columns="2" styleClass="vr-no-border-grid">
                         <p:outputLabel value="réserver"/>
-                        <p:outputLabel 
+                        <p:outputLabel id="selectedEquipmentString"
                             style="margin-left: 5px;margin-top: 5px"
                             value="#{myBorrowableEquipmentsCtrl.selectedEquipmentString}"/>
                         <p:outputLabel value="quantité"/>
@@ -96,6 +96,18 @@ and open the template in the editor.
                                         update="listForm"/>
                             </p:selectOneMenu>
                         </p:panelGrid>
+                        <div style="margin-bottom: 10px;">
+                            <p:inputText title="#{myBorrowableEquipmentsCtrl.model.searchTextHelper}"
+                                value="#{myBorrowableEquipmentsCtrl.model.searchText}" placeholder="Chercher ..." styleClass="form-control"
+                                style="width: 100%"
+                                onkeypress="if (event.keyCode == 13) {
+                                        onSearchByText();
+                                        return false;
+                                    }"
+                                />
+                            <p:remoteCommand name="onSearchByText" actionListener="#{myBorrowableEquipmentsCtrl.onRefreshEquipements}"
+                                             update=":listForm"/>
+                        </div>
                     </p:fieldset>
                     <p:dataTable id="equipementsTable" var="i" value="#{myBorrowableEquipmentsCtrl.model.equipments}"
                                  class="table table-bordered table-hover"
@@ -110,14 +122,14 @@ and open the template in the editor.
                                  selectionMode="single" selection="#{myBorrowableEquipmentsCtrl.model.selectedEquipment}" rowKey="#{i.id}"
                                  >
                         <f:facet name="header">Equipements disponibles</f:facet>
-                        <p:ajax event="rowSelect" listener="#{myBorrowableEquipmentsCtrl.onRowSelect}" update=":listForm" />
+                        <p:ajax event="rowSelect" listener="#{myBorrowableEquipmentsCtrl.onRowSelect}" update=":listForm:selectedEquipmentString" />
                         <p:column exportable="false" headerText="" style="width: 65px;">
                             <img src="#{vr.getIconUrl(i.photo,null)}"
                                  style="width: 40px ; height: 40px; margin-right: 10px;"
                                  alt="Image"
                                  onclick="document.getElementById('mainPhotoImg').src = '#{vr.getImageUrl(i.photo,null)}';
-                                 $('#' + PF('photodlg').id).find('.ui-dialog-title')[0].textContent = '#{i.name}';
-                                 PF('photodlg').show();"/>
+                                         $('#' + PF('photodlg').id).find('.ui-dialog-title')[0].textContent = '#{i.name}';
+                                         PF('photodlg').show();"/>
                         </p:column>
                         <!--styleClass="ui-widget-header"--> 
                         <p:column headerText="Type" style="width: 200px;">

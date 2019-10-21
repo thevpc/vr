@@ -5,22 +5,20 @@
  */
 package net.vpc.app.vainruling.plugins.mailbox.web;
 
-import net.vpc.app.vainruling.core.service.menu.VRMenuInfo;
-import net.vpc.app.vainruling.core.service.menu.VRMenuLabel;
-import net.vpc.app.vainruling.core.service.pages.VrBreadcrumbItem;
+import net.vpc.app.vainruling.VrMenuInfo;
+import net.vpc.app.vainruling.VrMenuLabel;
+import net.vpc.app.vainruling.VrBreadcrumbItem;
 import net.vpc.app.vainruling.plugins.inbox.model.MailboxSentAttachment;
 import net.vpc.app.vainruling.plugins.inbox.model.MailboxMessageFormat;
 import net.vpc.app.vainruling.plugins.inbox.model.MailboxSent;
 import net.vpc.app.vainruling.plugins.inbox.model.MailboxReceived;
 import net.vpc.app.vainruling.plugins.inbox.model.MailboxFolder;
-import net.vpc.app.vainruling.core.service.menu.VRMenuProvider;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.obj.AppFile;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
-import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
-import net.vpc.app.vainruling.core.service.pages.VrPageInfo;
+import net.vpc.app.vainruling.VrPageInfo;
 
 import net.vpc.app.vainruling.core.web.jsf.ctrl.dialog.ProfileExprDialogCtrl;
 import net.vpc.app.vainruling.core.service.editor.DialogResult;
@@ -48,14 +46,16 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.vpc.app.vainruling.core.web.jsf.Vr;
-import net.vpc.app.vainruling.core.service.pages.VrPageInfoResolver;
-import net.vpc.app.vainruling.core.service.pages.VrPage;
+import net.vpc.app.vainruling.VrPageInfoResolver;
+import net.vpc.app.vainruling.VrPage;
+import net.vpc.app.vainruling.VrOnPageLoad;
+import net.vpc.app.vainruling.VrMenuProvider;
 
 /**
  * @author taha.bensalah@gmail.com
  */
 @VrPage
-public class MailboxCtrl implements VrPageInfoResolver, VRMenuProvider {
+public class MailboxCtrl implements VrPageInfoResolver, VrMenuProvider {
 
     private static final Logger log = Logger.getLogger(MailboxCtrl.class.getName());
     private Model model = new Model();
@@ -170,15 +170,14 @@ public class MailboxCtrl implements VrPageInfoResolver, VRMenuProvider {
     }
 
     @Override
-    public List<VRMenuInfo> createCustomMenus() {
+    public List<VrMenuInfo> createCustomMenus() {
         List<Row> list = new ArrayList<>();
         AppUser currentUser = core.getCurrentUser();
         int userId = currentUser == null ? -1 : currentUser.getId();
         int count = userId < 0 ? 0 : mailboxPlugin.findLocalReceivedMessages(userId, -1, true, MailboxFolder.CURRENT).size();
-        return Arrays.asList(
-                new VRMenuInfo("Mes Messages", "/Social", "mailbox", "{folder:'CURRENT',sent:false}", MailboxPluginSecurity.RIGHT_CUSTOM_SITE_MAILBOX, null,"", 100,
-                        new VRMenuLabel[]{
-                                count <= 0 ? null : new VRMenuLabel(String.valueOf(count), "success")
+        return Arrays.asList(new VrMenuInfo("Mes Messages", "/Social", "mailbox", "{folder:'CURRENT',sent:false}", MailboxPluginSecurity.RIGHT_CUSTOM_SITE_MAILBOX, null,"", 100,
+                        new VrMenuLabel[]{
+                                count <= 0 ? null : new VrMenuLabel(String.valueOf(count), "success")
                         }
                 )//,
                 //                new VRMenuInfo("Messages Envoyés", "/Social", "mailbox", "{folder:'CURRENT',sent:true}", "Custom.Site.Outbox","")
@@ -186,7 +185,7 @@ public class MailboxCtrl implements VrPageInfoResolver, VRMenuProvider {
         );
     }
 
-    @OnPageLoad
+    @VrOnPageLoad
     public void onPageLoad(Config config) {
         if (config == null) {
             config = new Config();

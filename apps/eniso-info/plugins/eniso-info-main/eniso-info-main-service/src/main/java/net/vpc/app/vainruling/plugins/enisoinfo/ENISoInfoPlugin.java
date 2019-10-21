@@ -12,9 +12,7 @@ import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.app.vainruling.core.service.model.AppProfile;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.model.content.AppArticleDisposition;
-import net.vpc.app.vainruling.core.service.plugins.Install;
-import net.vpc.app.vainruling.core.service.plugins.Start;
-import net.vpc.app.vainruling.core.service.plugins.VrPlugin;
+import net.vpc.app.vainruling.VrPlugin;
 import net.vpc.app.vainruling.core.service.util.Arg;
 import net.vpc.app.vainruling.core.service.util.I18n;
 import net.vpc.app.vainruling.plugins.academic.model.config.AcademicStudent;
@@ -27,6 +25,8 @@ import net.vpc.upa.RemoveOptions;
 import net.vpc.upa.UPA;
 import net.vpc.upa.persistence.UConnection;
 import net.vpc.upa.types.I18NString;
+import net.vpc.app.vainruling.VrInstall;
+import net.vpc.app.vainruling.VrStart;
 
 @VrPlugin
 public class ENISoInfoPlugin {
@@ -35,7 +35,7 @@ public class ENISoInfoPlugin {
 
     private CorePlugin core;
 
-    @Install
+    @VrInstall
     private void onInstall() {
         if (core == null) {
             core = CorePlugin.get();
@@ -63,7 +63,7 @@ public class ENISoInfoPlugin {
 
     }
 
-    @Start
+    @VrStart
     private void onStart() {
         if (core == null) {
             core = CorePlugin.get();

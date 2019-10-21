@@ -16,7 +16,6 @@ import java.text.SimpleDateFormat;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppUser;
-import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.app.vainruling.core.web.jsf.DialogBuilder;
 import net.vpc.app.vainruling.core.web.jsf.Vr;
 import net.vpc.app.vainruling.core.web.jsf.VrJsf;
@@ -52,8 +51,9 @@ import net.vpc.app.vainruling.core.service.fs.MirroredPath;
 import net.vpc.upa.bulk.DataWriter;
 import net.vpc.upa.bulk.SheetColumn;
 import net.vpc.upa.bulk.SheetFormatter;
-import net.vpc.app.vainruling.core.service.pages.VrPage;
-import net.vpc.app.vainruling.core.service.pages.VrPathItem;
+import net.vpc.app.vainruling.VrPage;
+import net.vpc.app.vainruling.VrPathItem;
+import net.vpc.app.vainruling.VrOnPageLoad;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -106,7 +106,7 @@ public class AcademicAppProjectsCtrl {
         return false;
     }
 
-    @OnPageLoad
+    @VrOnPageLoad
     private void onPageLoad() {
         currentTeacher = academic.getCurrentTeacher();
         currentStudent = academic.getCurrentStudent();

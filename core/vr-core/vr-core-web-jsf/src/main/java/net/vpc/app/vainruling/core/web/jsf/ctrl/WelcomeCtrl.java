@@ -5,10 +5,10 @@
  */
 package net.vpc.app.vainruling.core.web.jsf.ctrl;
 
-import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.app.vainruling.core.web.jsf.Vr;
 import org.springframework.stereotype.Controller;
-import net.vpc.app.vainruling.core.service.pages.VrPage;
+import net.vpc.app.vainruling.VrPage;
+import net.vpc.app.vainruling.VrOnPageLoad;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -27,7 +27,7 @@ public class WelcomeCtrl {
         return model;
     }
 
-    @OnPageLoad
+    @VrOnPageLoad
     public void onLoad() {
         //site filter is no more bound to department
         //Vr vr = Vr.get();

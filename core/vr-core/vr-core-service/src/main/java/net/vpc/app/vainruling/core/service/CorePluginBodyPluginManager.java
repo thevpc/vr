@@ -1,5 +1,6 @@
 package net.vpc.app.vainruling.core.service;
 
+import net.vpc.app.vainruling.VrPlugin;
 import net.vpc.app.vainruling.core.service.plugins.*;
 import net.vpc.app.vainruling.core.service.util.AppVersion;
 import net.vpc.app.vainruling.core.service.util.PlatformReflector;

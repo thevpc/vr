@@ -7,7 +7,6 @@ package net.vpc.app.vainruling.plugins.academic.web;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.app.vainruling.core.web.jsf.VrJsf;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.model.imp.AcademicStudentImport;
@@ -19,8 +18,9 @@ import javax.faces.model.SelectItem;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import net.vpc.app.vainruling.core.service.pages.VrPage;
-import net.vpc.app.vainruling.core.service.pages.VrPathItem;
+import net.vpc.app.vainruling.VrPage;
+import net.vpc.app.vainruling.VrPathItem;
+import net.vpc.app.vainruling.VrOnPageLoad;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -63,7 +63,7 @@ public class SubscribeStudentCtrl {
         }
     }
 
-    @OnPageLoad
+    @VrOnPageLoad
     public void onRefresh(String cmd) {
         onRefresh();
 

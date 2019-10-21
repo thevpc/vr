@@ -21,8 +21,8 @@ import net.vpc.app.vainruling.core.web.DummyTaskTextService;
 import net.vpc.app.vainruling.core.web.jsf.converters.EntityConverter;
 import net.vpc.app.vainruling.core.web.jsf.ctrl.*;
 import net.vpc.app.vainruling.core.web.jsf.ctrl.dialog.DocumentsUploadDialogCtrl;
-import net.vpc.app.vainruling.core.service.pages.VrBreadcrumbItem;
-import net.vpc.app.vainruling.core.service.menu.VRMenuInfo;
+import net.vpc.app.vainruling.VrBreadcrumbItem;
+import net.vpc.app.vainruling.VrMenuInfo;
 import net.vpc.app.vainruling.core.web.menu.VrMenuManager;
 import net.vpc.app.vainruling.core.web.themes.VrTheme;
 import net.vpc.app.vainruling.core.web.util.StrLabel;
@@ -67,8 +67,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.faces.bean.ManagedBean;
-import net.vpc.app.vainruling.core.service.pages.VrPageHistoryItem;
+import net.vpc.app.vainruling.VrPageHistoryItem;
 import net.vpc.app.vainruling.core.service.util.I18n;
+import net.vpc.app.vainruling.VrCmsTextService;
+import net.vpc.app.vainruling.VrNotificationTextService;
+import net.vpc.app.vainruling.VrTaskTextService;
+import net.vpc.app.vainruling.VrMessageTextService;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -83,10 +87,10 @@ public class Vr {
     public static final DecimalFormat PERCENT_FORMAT = new DecimalFormat("0.00");
     public static final String NULL_VALUE_STR = "-*Aucune Valeur*-";
 
-    private MessageTextService messageTextService;
-    private TaskTextService taskTextService;
-    private NotificationTextService notificationTextService;
-    private Map<String, CmsTextService> cmsTextServices = new HashMap<>();
+    private VrMessageTextService messageTextService;
+    private VrTaskTextService taskTextService;
+    private VrNotificationTextService notificationTextService;
+    private Map<String, VrCmsTextService> cmsTextServices = new HashMap<>();
     @Autowired
     private CorePlugin core;
     private WeakHashMap<String, DecimalFormat> decimalFormats = new WeakHashMap<>();
@@ -900,7 +904,7 @@ public class Vr {
         return getMenuManager().buildMenu();
     }
 
-    public VRMenuInfo getMenu() {
+    public VrMenuInfo getMenu() {
         return getMenuManager().getModel().getRoot();
     }
 
@@ -1028,16 +1032,16 @@ public class Vr {
         return VrApp.getBean(DocumentsCtrl.class).downloadPath(path);
     }
 
-    public CmsTextService getCmsTextService() {
+    public VrCmsTextService getCmsTextService() {
         return getCmsTextService("default");
     }
 
-    public CmsTextService getCmsTextService(String name) {
-        CmsTextService a = cmsTextServices.get(name);
+    public VrCmsTextService getCmsTextService(String name) {
+        VrCmsTextService a = cmsTextServices.get(name);
         if (a == null) {
             int bestSupport = -1;
-            CmsTextService best = null;
-            for (CmsTextService s : VrApp.getBeansForType(CmsTextService.class)) {
+            VrCmsTextService best = null;
+            for (VrCmsTextService s : VrApp.getBeansForType(VrCmsTextService.class)) {
                 int support = s.getSupport(name);
                 if (support >= 0 && support > bestSupport) {
                     best = s;
@@ -1056,9 +1060,9 @@ public class Vr {
         return a;
     }
 
-    public NotificationTextService getNotificationTextService() {
+    public VrNotificationTextService getNotificationTextService() {
         if (notificationTextService == null) {
-            for (NotificationTextService s : VrApp.getBeansForType(NotificationTextService.class)) {
+            for (VrNotificationTextService s : VrApp.getBeansForType(VrNotificationTextService.class)) {
                 return notificationTextService = s;
             }
             throw new IllegalArgumentException();
@@ -1066,9 +1070,9 @@ public class Vr {
         return notificationTextService;
     }
 
-    public TaskTextService getTaskTextService() {
+    public VrTaskTextService getTaskTextService() {
         if (taskTextService == null) {
-            for (TaskTextService s : VrApp.getBeansForType(TaskTextService.class)) {
+            for (VrTaskTextService s : VrApp.getBeansForType(VrTaskTextService.class)) {
                 return taskTextService = s;
             }
             return taskTextService = new DummyTaskTextService();
@@ -1076,9 +1080,9 @@ public class Vr {
         return taskTextService;
     }
 
-    public MessageTextService getMessageTextService() {
+    public VrMessageTextService getMessageTextService() {
         if (messageTextService == null) {
-            for (MessageTextService s : VrApp.getBeansForType(MessageTextService.class)) {
+            for (VrMessageTextService s : VrApp.getBeansForType(VrMessageTextService.class)) {
                 return messageTextService = s;
             }
             return messageTextService = new DummyMessageTextService();
@@ -1709,7 +1713,7 @@ public class Vr {
         return url(getIconPath(iconPath, defaultPath));
     }
 
-    public String getPrettyURL(VRMenuInfo info) {
+    public String getPrettyURL(VrMenuInfo info) {
         return VrWebHelper.getPrettyURL(info);
     }
 

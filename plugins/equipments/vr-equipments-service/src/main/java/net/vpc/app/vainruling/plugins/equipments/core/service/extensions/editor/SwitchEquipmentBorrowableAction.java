@@ -6,24 +6,24 @@
 package net.vpc.app.vainruling.plugins.equipments.core.service.extensions.editor;
 
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.editor.EntityAction;
 import net.vpc.app.vainruling.core.service.editor.ActionDialogResult;
 import net.vpc.app.vainruling.core.service.editor.ActionDialogResultPostProcess;
-import net.vpc.app.vainruling.core.service.editor.EntityViewActionInvoke;
 import net.vpc.app.vainruling.plugins.equipments.core.service.EquipmentPlugin;
 import net.vpc.app.vainruling.plugins.equipments.core.model.Equipment;
 import net.vpc.upa.*;
 
 import java.util.List;
 import net.vpc.common.util.Convert;
+import net.vpc.app.vainruling.VrEditorActionInvoke;
+import net.vpc.app.vainruling.VrEditorAction;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@EntityAction(entityType = Equipment.class,
+@VrEditorAction(entityType = Equipment.class,
         actionStyle = "fa-calculator"
 )
-public class SwitchEquipmentBorrowableAction implements EntityViewActionInvoke {
+public class SwitchEquipmentBorrowableAction implements VrEditorActionInvoke {
 
     @Override
     public boolean isEnabled(String actionId, Class entityType, AccessMode mode, Object value) {

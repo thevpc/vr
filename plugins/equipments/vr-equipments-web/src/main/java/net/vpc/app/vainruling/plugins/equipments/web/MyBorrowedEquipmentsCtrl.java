@@ -9,12 +9,12 @@ import java.util.List;
 import javax.faces.bean.ManagedBean;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.app.vainruling.plugins.equipments.borrow.service.EquipmentBorrowService;
 import net.vpc.app.vainruling.plugins.equipments.borrow.model.info.EquipmentForResponsibleInfo;
 import net.vpc.app.vainruling.plugins.equipments.core.service.EquipmentPluginSecurity;
-import net.vpc.app.vainruling.core.service.pages.VrPage;
-import net.vpc.app.vainruling.core.service.pages.VrPathItem;
+import net.vpc.app.vainruling.VrPage;
+import net.vpc.app.vainruling.VrPathItem;
+import net.vpc.app.vainruling.VrOnPageLoad;
 
 //import javax.annotation.PostConstruct;
 /**
@@ -60,7 +60,7 @@ public class MyBorrowedEquipmentsCtrl {
         }
     }
 
-    @OnPageLoad
+    @VrOnPageLoad
     public void onRefresh() {
         EquipmentBorrowService ebs = VrApp.getBean(EquipmentBorrowService.class);
         getModel().setEquipments(ebs.findBorrowedEquipmentsForResponsibleInfo(CorePlugin.get().getCurrentUserIdFF(), null, null));

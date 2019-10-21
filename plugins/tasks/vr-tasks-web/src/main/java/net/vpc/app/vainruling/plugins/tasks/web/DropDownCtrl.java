@@ -11,7 +11,7 @@ import net.vpc.common.jsf.FacesUtils;
 import org.springframework.context.annotation.Scope;
 
 import javax.faces.model.SelectItem;
-import net.vpc.app.vainruling.core.service.pages.VrPage;
+import net.vpc.app.vainruling.VrPage;
 
 /**
  * @author taha.bensalah@gmail.com

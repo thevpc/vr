@@ -5,7 +5,6 @@
  */
 package net.vpc.app.vr.plugins.academicprofile.web;
 
-import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.app.vainruling.core.web.jsf.Vr;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
@@ -14,8 +13,9 @@ import net.vpc.app.vr.plugins.academicprofile.service.AcademicProfilePlugin;
 import net.vpc.app.vr.plugins.academicprofile.model.AcademicTeacherCV;
 import net.vpc.common.strings.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import net.vpc.app.vainruling.core.service.pages.VrPage;
-import net.vpc.app.vainruling.core.service.pages.VrPathItem;
+import net.vpc.app.vainruling.VrPage;
+import net.vpc.app.vainruling.VrPathItem;
+import net.vpc.app.vainruling.VrOnPageLoad;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -34,7 +34,7 @@ public class TeacherCurriculumCtrl {
     private AcademicPlugin ap;
     private AcademicProfilePlugin apr;
 
-    @OnPageLoad
+    @VrOnPageLoad
     public void onLoad(Config config) {
         getModel().setConfig(config);
         onRefresh();

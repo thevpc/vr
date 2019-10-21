@@ -5,6 +5,7 @@
  */
 package net.vpc.app.vainruling.plugins.equipments.borrow.service;
 
+import com.google.gson.JsonElement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,6 +24,8 @@ import net.vpc.app.vainruling.core.service.model.AppProfile;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.model.AppUserType;
 import net.vpc.app.vainruling.core.service.model.strict.AppUserStrict;
+import net.vpc.app.vainruling.core.service.util.ObjectToMapConverter;
+import net.vpc.app.vainruling.core.service.util.TextSearchFilter;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.plugins.equipments.borrow.model.EquipmentBorrowLog;
 import net.vpc.app.vainruling.plugins.equipments.borrow.model.EquipmentBorrowRequest;
@@ -41,6 +44,7 @@ import net.vpc.app.vainruling.plugins.equipments.core.model.EquipmentStatusType;
 import net.vpc.app.vainruling.plugins.equipments.core.model.EquipmentType;
 import net.vpc.app.vainruling.plugins.equipments.core.service.EquipmentPluginSecurity;
 import net.vpc.common.strings.StringUtils;
+import net.vpc.common.util.MutableDate;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.UPA;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -316,7 +320,7 @@ public class EquipmentBorrowService {
         if (actorId == null || actorId <= 0) {
             actorId = CorePlugin.get().getCurrentUserIdFF();
         }
-        if(request.getBorrow()!=null){
+        if (request.getBorrow() != null) {
             return request.getBorrow();
         }
         Integer actorId0 = actorId;
@@ -682,7 +686,7 @@ public class EquipmentBorrowService {
         return list;
     }
 
-    public List<EquipmentForResponsibleInfo> findBorrowableEquipmentsForResponsibleInfo(Integer userId, Integer equipmentTypeId, Integer departmentId) {
+    public List<EquipmentForResponsibleInfo> findBorrowableEquipmentsForResponsibleInfo(Integer userId, Integer equipmentTypeId, Integer departmentId, String searchText) {
         if (userId == null || userId < 0) {
             return Collections.emptyList();
         }
@@ -691,13 +695,17 @@ public class EquipmentBorrowService {
             for (Equipment e : findBorrowableEquipments(userId, equipmentTypeId, departmentId)) {
                 map.put(e.getId(), new EquipmentForResponsibleInfo(EquipmentBorrowOperatorType.BORROWER, e));
             }
-            for (EquipmentBorrowLog item : findOpenBorrowLogs(null, userId)) {
-                map.remove(item.getStatusLog().getEquipment().getId());
+//            for (EquipmentBorrowLog item : findOpenBorrowLogs(null, userId)) {
+//                map.remove(item.getStatusLog().getEquipment().getId());
+//            }
+//            for (EquipmentBorrowRequest item : findOpenBorrowRequests(null, userId)) {
+//                map.remove(item.getEquipment().getId());
+//            }
+            List<EquipmentForResponsibleInfo> list = new ArrayList<>(map.values());
+            if (!StringUtils.isBlank(searchText)) {
+                list = (List) TextSearchFilter.forJson(searchText).filterList(list);
+
             }
-            for (EquipmentBorrowRequest item : findOpenBorrowRequests(null, userId)) {
-                map.remove(item.getEquipment().getId());
-            }
-            ArrayList<EquipmentForResponsibleInfo> list = new ArrayList<>(map.values());
             list.sort(null);
             return list;
         });
@@ -1186,9 +1194,10 @@ public class EquipmentBorrowService {
         if (qte <= 0) {
             throw new IllegalArgumentException("Invalid quantity");
         }
-        if (!(fromDte != null
-                && toDte != null
-                && fromDte.compareTo(toDte) <= 0)) {
+        if (fromDte == null || toDte == null || fromDte.compareTo(toDte) > 0) {
+            throw new IllegalArgumentException("Invalid date range");
+        }
+        if (fromDte.compareTo(new MutableDate().clearTime().getDateTime()) < 0) {
             throw new IllegalArgumentException("Invalid date range");
         }
         if (eq.getDepartment() == null) {

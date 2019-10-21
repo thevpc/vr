@@ -7,7 +7,6 @@ package net.vpc.app.vainruling.plugins.tasks.web;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.model.AppUser;
-import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.app.vainruling.core.web.jsf.ctrl.AbstractObjectCtrl;
 
 import net.vpc.app.vainruling.core.web.jsf.VrJsf;
@@ -20,8 +19,9 @@ import org.springframework.context.annotation.Scope;
 import javax.faces.model.SelectItem;
 import java.util.ArrayList;
 import java.util.List;
-import net.vpc.app.vainruling.core.service.pages.VrPage;
-import net.vpc.app.vainruling.core.service.pages.VrPathItem;
+import net.vpc.app.vainruling.VrPage;
+import net.vpc.app.vainruling.VrPathItem;
+import net.vpc.app.vainruling.VrOnPageLoad;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -176,7 +176,7 @@ public class TodoRequestsCtrl extends AbstractObjectCtrl<Todo> {
         getModel().setMode(AccessMode.READ);
     }
 
-    @OnPageLoad
+    @VrOnPageLoad
     @Override
     public void reloadPage(String cmd, boolean ustomization) {
         getModel().setTodoLists(todoService.findTodoListsByInitiator(null));

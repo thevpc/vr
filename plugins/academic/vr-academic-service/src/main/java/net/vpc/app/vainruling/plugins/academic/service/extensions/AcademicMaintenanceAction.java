@@ -7,7 +7,7 @@ package net.vpc.app.vainruling.plugins.academic.service.extensions;
 
 import java.util.List;
 import net.vpc.app.vainruling.core.service.CorePlugin;
-import net.vpc.app.vainruling.core.service.extensions.VrMaintenanceAction;
+import net.vpc.app.vainruling.VrMaintenanceAction;
 import net.vpc.app.vainruling.core.service.model.AppConfig;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;

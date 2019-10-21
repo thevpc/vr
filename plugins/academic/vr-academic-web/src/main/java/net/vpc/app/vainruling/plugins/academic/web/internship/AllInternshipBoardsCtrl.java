@@ -7,7 +7,6 @@ package net.vpc.app.vainruling.plugins.academic.web.internship;
 
 import net.vpc.app.vainruling.plugins.academic.model.internship.AcademicInternshipInfo;
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPluginSecurity;
 import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
@@ -16,8 +15,9 @@ import net.vpc.app.vainruling.plugins.academic.model.internship.ext.AcademicInte
 
 import java.util.ArrayList;
 import java.util.List;
-import net.vpc.app.vainruling.core.service.pages.VrPage;
-import net.vpc.app.vainruling.core.service.pages.VrPathItem;
+import net.vpc.app.vainruling.VrPage;
+import net.vpc.app.vainruling.VrPathItem;
+import net.vpc.app.vainruling.VrOnPageLoad;
 
 /**
  * internships for teachers
@@ -35,7 +35,7 @@ import net.vpc.app.vainruling.core.service.pages.VrPathItem;
 )
 public class AllInternshipBoardsCtrl extends MyInternshipBoardsCtrl {
 
-    @OnPageLoad
+    @VrOnPageLoad
     public void onPageLoad() {
         super.onPageLoad();
     }

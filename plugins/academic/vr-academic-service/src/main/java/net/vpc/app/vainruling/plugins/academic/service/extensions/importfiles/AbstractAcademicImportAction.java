@@ -10,8 +10,8 @@ import java.util.Arrays;
 import java.util.TreeSet;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.extensions.VrImportFileAction;
-import net.vpc.app.vainruling.core.service.extensions.VrImportFileActionContext;
+import net.vpc.app.vainruling.VrImportFileAction;
+import net.vpc.app.vainruling.VrImportFileActionContext;
 import net.vpc.app.vainruling.core.service.model.AppConfig;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 

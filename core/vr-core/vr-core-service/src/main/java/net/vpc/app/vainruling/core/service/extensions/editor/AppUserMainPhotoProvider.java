@@ -1,18 +1,18 @@
 package net.vpc.app.vainruling.core.service.extensions.editor;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
-import net.vpc.app.vainruling.core.service.editor.ForEntity;
 import net.vpc.common.util.Convert;
 import net.vpc.common.util.IntegerParserConfig;
-import net.vpc.app.vainruling.core.service.editor.EntityEditorMainPhotoProvider;
 import org.springframework.stereotype.Component;
+import net.vpc.app.vainruling.VrEditorMainPhotoProvider;
+import net.vpc.app.vainruling.VrEntityName;
 
 /**
  * Created by vpc on 4/15/17.
  */
-@ForEntity("AppUser")
+@VrEntityName("AppUser")
 @Component
-public class AppUserMainPhotoProvider implements EntityEditorMainPhotoProvider {
+public class AppUserMainPhotoProvider implements VrEditorMainPhotoProvider {
     @Override
     public String getMainPhotoPath(Object id, Object valueOrNull) {
         if(id==null){

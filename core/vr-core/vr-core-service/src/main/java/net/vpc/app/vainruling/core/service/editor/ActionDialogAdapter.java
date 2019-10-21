@@ -5,12 +5,7 @@
  */
 package net.vpc.app.vainruling.core.service.editor;
 
-import net.vpc.app.vainruling.core.service.editor.EntityViewActionDialog;
-import net.vpc.app.vainruling.core.service.editor.EntityViewActionGoto;
-import net.vpc.app.vainruling.core.service.editor.EntityViewAction;
-import net.vpc.app.vainruling.core.service.editor.EntityViewActionInvoke;
 import net.vpc.app.vainruling.core.service.editor.ActionParam;
-import net.vpc.app.vainruling.core.service.editor.EntityAction;
 import net.vpc.app.vainruling.core.service.util.PlatformReflector;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.AccessMode;
@@ -20,13 +15,18 @@ import net.vpc.upa.UPA;
 import java.util.List;
 
 import net.vpc.app.vainruling.core.service.util.I18n;
+import net.vpc.app.vainruling.VrEditorActionDialog;
+import net.vpc.app.vainruling.VrEditorActionGoto;
+import net.vpc.app.vainruling.VrEditorActionInvoke;
+import net.vpc.app.vainruling.VrEditorActionProcessor;
+import net.vpc.app.vainruling.VrEditorAction;
 
 /**
  * @author taha.bensalah@gmail.com
  */
 public class ActionDialogAdapter {
 
-    private final EntityViewAction instance;
+    private final VrEditorActionProcessor instance;
     private Class entityType;
     private boolean confirm;
     private String actionName;
@@ -36,13 +36,13 @@ public class ActionDialogAdapter {
     private String description;
     private String style;
 
-    public ActionDialogAdapter(EntityViewAction instance) {
+    public ActionDialogAdapter(VrEditorActionProcessor instance) {
         this.instance = instance;
-        EntityAction a = (EntityAction) PlatformReflector.getTargetClass(instance).getAnnotation(EntityAction.class);
+        VrEditorAction a = (VrEditorAction) PlatformReflector.getTargetClass(instance).getAnnotation(VrEditorAction.class);
         entityType = a.entityType();
-        if (!(instance instanceof EntityViewActionDialog) 
-                && !(instance instanceof EntityViewActionInvoke)
-                && !(instance instanceof EntityViewActionGoto)
+        if (!(instance instanceof VrEditorActionDialog) 
+                && !(instance instanceof VrEditorActionInvoke)
+                && !(instance instanceof VrEditorActionGoto)
                 ) {
             throw new IllegalArgumentException("Unexpected");
         }
@@ -70,15 +70,15 @@ public class ActionDialogAdapter {
     
 
     public boolean isDialog() {
-        return instance instanceof EntityViewActionDialog;
+        return instance instanceof VrEditorActionDialog;
     }
 
     public boolean isInvoke() {
-        return instance instanceof EntityViewActionInvoke;
+        return instance instanceof VrEditorActionInvoke;
     }
     
     public boolean isGoto() {
-        return instance instanceof EntityViewActionGoto;
+        return instance instanceof VrEditorActionGoto;
     }
 
     public String getActionTitle() {
@@ -131,20 +131,20 @@ public class ActionDialogAdapter {
     }
 
     public void openDialog(List<String> itemIds) {
-        ((EntityViewActionDialog) instance).openDialog(getId(), itemIds);
+        ((VrEditorActionDialog) instance).openDialog(getId(), itemIds);
     }
 
     public ActionParam[] getParams() {
-        return ((EntityViewActionInvoke) instance).getParams();
+        return ((VrEditorActionInvoke) instance).getParams();
     }
 
     public ActionDialogResult invoke(Class entityType, Object obj, List<String> selectedIdStrings, Object[] args) {
-        return ((EntityViewActionInvoke) instance).invoke(getId(), entityType, obj, selectedIdStrings, args);
+        return ((VrEditorActionInvoke) instance).invoke(getId(), entityType, obj, selectedIdStrings, args);
     }
 
     public String[] getCommand(List<String> itemIds) {
-        if(instance instanceof EntityViewActionGoto){
-            return ((EntityViewActionGoto)instance).getCommand(getId(), itemIds);
+        if(instance instanceof VrEditorActionGoto){
+            return ((VrEditorActionGoto)instance).getCommand(getId(), itemIds);
         }
         return new String[0];
     }

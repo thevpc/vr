@@ -3,11 +3,12 @@ package net.vpc.app.vainruling.core.service.editor;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.Document;
+import net.vpc.app.vainruling.VrEditorMainPhotoProvider;
 
 /**
  * Created by vpc on 4/16/17.
  */
-public class PropertyMainPhotoProvider implements EntityEditorMainPhotoProvider {
+public class PropertyMainPhotoProvider implements VrEditorMainPhotoProvider {
 
     private final String propertyName;
     private final String defaultPath;

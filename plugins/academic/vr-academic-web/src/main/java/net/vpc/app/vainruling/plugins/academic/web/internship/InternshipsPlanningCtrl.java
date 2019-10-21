@@ -13,7 +13,6 @@ import net.vpc.app.vainruling.plugins.academic.model.internship.planning.Plannin
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.security.UserToken;
-import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.model.internship.current.AcademicInternship;
@@ -36,9 +35,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.*;
 import java.util.logging.Level;
-import net.vpc.app.vainruling.core.service.pages.VrPage;
-import net.vpc.app.vainruling.core.service.pages.VrPathItem;
+import net.vpc.app.vainruling.VrPage;
+import net.vpc.app.vainruling.VrPathItem;
 import net.vpc.app.vainruling.plugins.academic.service.tools.pfe.PFEPlanning;
+import net.vpc.app.vainruling.VrOnPageLoad;
 
 /**
  * internships for teachers
@@ -72,7 +72,7 @@ public class InternshipsPlanningCtrl {
         return String.valueOf(d);
     }
 
-    @OnPageLoad
+    @VrOnPageLoad
     public void onPageLoad() {
         UserToken token = core.getCurrentToken();
         getModel().setManager(token.isManager());

@@ -5,8 +5,8 @@
  */
 package net.vpc.app.vainruling.plugins.devtoolbox.service;
 
-import net.vpc.app.vainruling.core.service.plugins.Install;
-import net.vpc.app.vainruling.core.service.plugins.VrPlugin;
+import net.vpc.app.vainruling.VrPlugin;
+import net.vpc.app.vainruling.VrInstall;
 
 
 /**
@@ -15,7 +15,7 @@ import net.vpc.app.vainruling.core.service.plugins.VrPlugin;
 @VrPlugin()
 public class DevToolboxPlugin {
 
-    @Install
+    @VrInstall
     private void installService() {
     }
 

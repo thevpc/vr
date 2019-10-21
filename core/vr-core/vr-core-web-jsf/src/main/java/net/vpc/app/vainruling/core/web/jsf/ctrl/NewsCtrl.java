@@ -6,12 +6,12 @@
 package net.vpc.app.vainruling.core.web.jsf.ctrl;
 
 import net.vpc.app.vainruling.core.service.util.VrUtils;
-import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.app.vainruling.core.web.jsf.Vr;
 import net.vpc.common.strings.StringUtils;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
-import net.vpc.app.vainruling.core.service.pages.VrPage;
+import net.vpc.app.vainruling.VrPage;
+import net.vpc.app.vainruling.VrOnPageLoad;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -25,7 +25,7 @@ import net.vpc.app.vainruling.core.service.pages.VrPage;
 @Controller
 public class NewsCtrl {
 
-    @OnPageLoad
+    @VrOnPageLoad
     public void onLoad(String cmd) {
         Vr bean = Vr.get();
         bean.setCurrentPageId("news");

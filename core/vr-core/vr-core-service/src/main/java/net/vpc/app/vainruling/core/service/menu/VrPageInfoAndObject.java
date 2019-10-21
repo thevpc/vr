@@ -1,6 +1,6 @@
 package net.vpc.app.vainruling.core.service.menu;
 
-import net.vpc.app.vainruling.core.service.pages.VrPageInfo;
+import net.vpc.app.vainruling.VrPageInfo;
 
 public class VrPageInfoAndObject {
     private VrPageInfo info;

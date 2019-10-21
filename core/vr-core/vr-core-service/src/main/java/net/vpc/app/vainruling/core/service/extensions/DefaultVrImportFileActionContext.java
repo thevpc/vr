@@ -5,6 +5,7 @@
  */
 package net.vpc.app.vainruling.core.service.extensions;
 
+import net.vpc.app.vainruling.VrImportFileActionContext;
 import net.vpc.common.vfs.VFile;
 
 /**

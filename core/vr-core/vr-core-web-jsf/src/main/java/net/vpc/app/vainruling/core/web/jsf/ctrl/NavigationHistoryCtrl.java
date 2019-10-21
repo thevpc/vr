@@ -8,14 +8,14 @@ package net.vpc.app.vainruling.core.web.jsf.ctrl;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.CorePluginSecurity;
 import net.vpc.app.vainruling.core.service.security.UserSession;
-import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
-import net.vpc.app.vainruling.core.service.pages.VrPageHistoryItem;
+import net.vpc.app.vainruling.VrPageHistoryItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 
 import java.util.*;
 import net.vpc.app.vainruling.core.web.jsf.Vr;
-import net.vpc.app.vainruling.core.service.pages.VrPage;
+import net.vpc.app.vainruling.VrPage;
+import net.vpc.app.vainruling.VrOnPageLoad;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -43,7 +43,7 @@ public class NavigationHistoryCtrl  {
     private final Model model = new Model();
 
 
-    @OnPageLoad
+    @VrOnPageLoad
     public void onRefresh() {
         ArrayList<VrPageHistoryItem> historyElements = new ArrayList<>(Vr.get().getPageHistory());
         Collections.reverse(historyElements);

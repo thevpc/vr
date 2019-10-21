@@ -6,9 +6,9 @@
 package net.vpc.app.vainruling.plugins.equipments.core.service;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
-import net.vpc.app.vainruling.core.service.plugins.Install;
 import org.springframework.beans.factory.annotation.Autowired;
-import net.vpc.app.vainruling.core.service.plugins.VrPlugin;
+import net.vpc.app.vainruling.VrPlugin;
+import net.vpc.app.vainruling.VrInstall;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -20,7 +20,7 @@ public class InventoryPlugin {
     @Autowired
     CorePlugin core;
 
-    @Install
+    @VrInstall
     private void installService() {
 //        AppProfile technicianProfile;
 //        technicianProfile = new AppProfile();
@@ -46,7 +46,7 @@ public class InventoryPlugin {
 //        }
     }
 
-    @Install
+    @VrInstall
     private void installSemoService() {
 //        Inventory v = new Inventory();
 //        v.setName("INV-2015");

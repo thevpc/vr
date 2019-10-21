@@ -54,13 +54,13 @@ public class VFileInfo implements Comparable<VFileInfo> {
         this.downloads = downloads;
         this.desc = desc;
         this.longName = name;
-        switch(kind){
-            case BACK:{
-                selectable=false;
+        switch (kind) {
+            case BACK: {
+                selectable = false;
                 break;
             }
-            default:{
-                selectable=true;
+            default: {
+                selectable = true;
             }
         }
         readACL();
@@ -74,58 +74,80 @@ public class VFileInfo implements Comparable<VFileInfo> {
         this.longName = longName;
     }
 
+    public final void reset() {
+        aclOwner = null;
+        aclReadFile = null;
+        aclWriteFile = null;
+        aclRemove = null;
+        aclDirCreateDirectory = null;
+        aclDirCreateFile = null;
+        aclDirRemoveDirectory = null;
+        aclDirRemoveFile = null;
+        aclDirList = null;
+        aclDirPropagateACL = false;
+        aclDirPropagateOwner = false;
+    }
+
     public final void readACL() {
+        reset();
         VirtualFileACL acl = file.getACL();
-        if (!advanced) {
+        if (acl != null) {
+            aclOwner = acl.getOwner();
             if (file.isDirectory()) {
-                aclOwner = acl == null ? null : acl.getOwner();
-                aclSimpleRead = acl == null ? null : acl.getPermissionListDirectory();
-                aclSimpleWrite = acl == null ? null : acl.getPermissionCreateFile();
-                aclDirCreateDirectory = null;
-                aclDirCreateFile = null;
-                aclReadFile = null;
-                aclWriteFile = null;
-                aclDirRemoveDirectory = null;
-                aclDirRemoveFile = null;
-                aclRemove = null;
-                aclDirList = null;
-                aclDirPropagateACL = acl == null ? false : acl.isPropagateACL();
-                aclDirPropagateOwner = acl == null ? false : acl.isPropagateOwner();
-            } else {
-                aclOwner = acl == null ? null : acl.getOwner();
-                aclSimpleRead = acl == null ? null : acl.getPermissionReadFile();
-                aclSimpleWrite = acl == null ? null : acl.getPermissionWriteFile();
-                aclReadFile = null;
-                aclWriteFile = null;
-                aclRemove = null;
+                aclDirPropagateACL = acl.isPropagateACL();
+                aclDirPropagateOwner = acl.isPropagateOwner();
             }
-            return;
+            if (advanced) {
+                aclReadFile = acl.getPermissionReadFile();
+                aclWriteFile = acl.getPermissionWriteFile();
+                aclRemove = acl.getPermissionRemove();
+                if (file.isDirectory()) {
+                    aclDirCreateDirectory = acl.getPermissionCreateDirectory();
+                    aclDirCreateFile = acl.getPermissionCreateFile();
+                    aclDirRemoveDirectory = acl.getPermissionRemoveDirectory();
+                    aclDirRemoveFile = acl.getPermissionRemoveFile();
+                    aclDirList = acl.getPermissionListDirectory();
+                }
+            } else {
+                aclSimpleRead = acl.getPermissionListDirectory();
+                aclSimpleWrite = acl.getPermissionCreateFile();
+            }
         }
-//        FileACL facl = (acl instanceof FileACL)?(FileACL) acl:null;
-        if (file.isDirectory()) {
-            aclOwner = acl == null ? null : acl.getOwner();
-            aclDirCreateDirectory = acl == null ? null : acl.getPermissionCreateDirectory();
-            aclDirCreateFile = acl == null ? null : acl.getPermissionCreateFile();
-            aclReadFile = acl == null ? null : acl.getPermissionReadFile();
-            aclWriteFile = acl == null ? null : acl.getPermissionWriteFile();
-            aclDirRemoveDirectory = acl == null ? null : acl.getPermissionRemoveDirectory();
-            aclDirRemoveFile = acl == null ? null : acl.getPermissionRemoveFile();
-            aclRemove = acl == null ? null : acl.getPermissionRemove();
-            aclDirList = acl == null ? null : acl.getPermissionListDirectory();
-            aclDirPropagateACL = acl == null ? false : acl.isPropagateACL();
-            aclDirPropagateOwner = acl == null ? false : acl.isPropagateOwner();
-        } else {
-            aclOwner = acl == null ? null : acl.getOwner();
-//            aclDirCreateDirectory=acl==null?null:acl.getPermissionCreateDirectory();
-//            aclDirCreateFile=acl==null?null:acl.getPermissionCreateFile();
-            aclReadFile = acl == null ? null : acl.getPermissionReadFile();
-            aclWriteFile = acl == null ? null : acl.getPermissionWriteFile();
-//            aclDirRemoveDirectory=acl==null?null:acl.getPermissionRemoveDirectory();
-//            aclDirRemoveFile=acl==null?null:acl.getPermissionRemoveFile();
-            aclRemove = acl == null ? null : acl.getPermissionRemove();
-//            aclDirList=acl==null?null:acl.getPermissionListDirectory();
-//            aclDirPropagateACL=acl==null?false:acl.isPropagateACL();
-//            aclDirPropagateOwner=acl==null?false:acl.isPropagateOwner();
+    }
+
+    public void writeACL() {
+        VirtualFileACL acl = file.getACL();
+        if (acl != null && !acl.isReadOnly()) {
+            acl.setAutoSave(false);
+            acl.setOwner(aclOwner);
+            if (advanced) {
+                acl.setPermissionReadFile(aclReadFile);
+                acl.setPermissionListDirectory(aclDirList);
+
+                acl.setPermissionCreateDirectory(aclDirCreateDirectory);
+                acl.setPermissionCreateFile(aclDirCreateFile);
+                acl.setPermissionWriteFile(aclWriteFile);
+                acl.setPermissionRemoveDirectory(aclDirRemoveDirectory);
+                acl.setPermissionRemoveFile(aclDirRemoveFile);
+                acl.setPermissionRemove(aclRemove);
+
+                acl.setPropagateACL(aclDirPropagateACL);
+                acl.setPropagateOwner(aclDirPropagateOwner);
+            } else {
+                acl.setPermissionReadFile(aclSimpleRead);
+                acl.setPermissionListDirectory(aclSimpleRead);
+
+                acl.setPermissionCreateDirectory(aclSimpleWrite);
+                acl.setPermissionCreateFile(aclSimpleWrite);
+                acl.setPermissionWriteFile(aclSimpleWrite);
+                acl.setPermissionRemoveDirectory(aclSimpleWrite);
+                acl.setPermissionRemoveFile(aclSimpleWrite);
+                acl.setPermissionRemove(aclSimpleWrite);
+
+                acl.setPropagateACL(aclDirPropagateACL);
+                acl.setPropagateOwner(aclDirPropagateOwner);
+            }
+            acl.save();
         }
     }
 
@@ -169,37 +191,6 @@ public class VFileInfo implements Comparable<VFileInfo> {
             }
         }
         return false;
-    }
-
-    public void writeACL() {
-        VirtualFileACL acl = file.getACL();
-        if (acl != null && !acl.isReadOnly()) {
-            if (advanced) {
-                acl.setOwner(aclOwner);
-                acl.setPermissionCreateDirectory(aclDirCreateDirectory);
-                acl.setPermissionCreateFile(aclDirCreateFile);
-                acl.setPermissionReadFile(aclReadFile);
-                acl.setPermissionWriteFile(aclWriteFile);
-                acl.setPermissionRemoveDirectory(aclDirRemoveDirectory);
-                acl.setPermissionRemoveFile(aclDirRemoveFile);
-                acl.setPermissionRemove(aclRemove);
-                acl.setPermissionListDirectory(aclDirList);
-                acl.setPropagateACL(aclDirPropagateACL);
-                acl.setPropagateOwner(aclDirPropagateOwner);
-            } else {
-                acl.setOwner(aclOwner);
-                acl.setPermissionCreateDirectory(aclSimpleWrite);
-                acl.setPermissionCreateFile(aclSimpleWrite);
-                acl.setPermissionReadFile(aclSimpleRead);
-                acl.setPermissionWriteFile(aclSimpleWrite);
-                acl.setPermissionRemoveDirectory(aclSimpleWrite);
-                acl.setPermissionRemoveFile(aclSimpleWrite);
-                acl.setPermissionRemove(aclSimpleWrite);
-                acl.setPermissionListDirectory(aclSimpleRead);
-                acl.setPropagateACL(aclDirPropagateACL);
-                acl.setPropagateOwner(aclDirPropagateOwner);
-            }
-        }
     }
 
     public String getAclRemove() {
@@ -287,6 +278,14 @@ public class VFileInfo implements Comparable<VFileInfo> {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getPath() {
+        return file.getPath();
+    }
+
+    public boolean isDirectory() {
+        return file.isDirectory();
     }
 
     public VFile getFile() {

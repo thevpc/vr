@@ -6,7 +6,6 @@
 package net.vpc.app.vainruling.plugins.academic.teachereval.web;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
-import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.AcademicPerfEvalPlugin;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.AcademicPerfEvalPluginSecurity;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.dto.StatData;
@@ -23,8 +22,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.faces.model.SelectItem;
 import java.util.*;
 import java.util.logging.Logger;
-import net.vpc.app.vainruling.core.service.pages.VrPage;
-import net.vpc.app.vainruling.core.service.pages.VrPathItem;
+import net.vpc.app.vainruling.VrPage;
+import net.vpc.app.vainruling.VrPathItem;
+import net.vpc.app.vainruling.VrOnPageLoad;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -49,7 +49,7 @@ public class StudentFeedbackListCtrl {
     private AcademicPerfEvalPlugin feedback;
     private Model model = new Model();
 
-    @OnPageLoad
+    @VrOnPageLoad
     public void onLoad() {
         onReloadStudents();
     }

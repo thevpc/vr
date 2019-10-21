@@ -7,8 +7,8 @@ package net.vpc.app.vainruling.core.service;
 
 import java.io.IOException;
 import net.vpc.app.vainruling.core.service.extensions.DefaultVrImportFileActionContext;
-import net.vpc.app.vainruling.core.service.extensions.VrImportFileAction;
-import net.vpc.app.vainruling.core.service.extensions.VrImportFileOptions;
+import net.vpc.app.vainruling.VrImportFileAction;
+import net.vpc.app.vainruling.VrImportFileOptions;
 import net.vpc.common.vfs.VFile;
 import org.springframework.stereotype.Service;
 

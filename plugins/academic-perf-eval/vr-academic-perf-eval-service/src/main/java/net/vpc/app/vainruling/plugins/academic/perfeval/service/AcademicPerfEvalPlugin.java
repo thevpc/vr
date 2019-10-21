@@ -17,7 +17,6 @@ import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.TraceService;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
-import net.vpc.app.vainruling.core.service.plugins.Start;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.dto.*;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.servicemodel.FeedbacksStats;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
@@ -38,8 +37,9 @@ import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import net.vpc.app.vainruling.core.service.ProfileRightBuilder;
-import net.vpc.app.vainruling.core.service.plugins.VrPlugin;
+import net.vpc.app.vainruling.VrPlugin;
 import net.vpc.common.util.MapUtils;
+import net.vpc.app.vainruling.VrStart;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -70,7 +70,7 @@ public class AcademicPerfEvalPlugin {
         pu.merge(r);
     }
 
-    @Start
+    @VrStart
     private void onStart() {
         ProfileRightBuilder b = new ProfileRightBuilder();
         b.addName(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_STUDENT_FEEDBACK);

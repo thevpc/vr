@@ -1,20 +1,20 @@
 package net.vpc.app.vainruling.plugins.academic.service.extensions.editor;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
-import net.vpc.app.vainruling.core.service.editor.ForEntity;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.model.config.AcademicStudent;
 import net.vpc.common.util.Convert;
-import net.vpc.app.vainruling.core.service.editor.EntityEditorMainPhotoProvider;
 import org.springframework.stereotype.Component;
+import net.vpc.app.vainruling.VrEditorMainPhotoProvider;
+import net.vpc.app.vainruling.VrEntityName;
 
 /**
  * Created by vpc on 4/15/17.
  */
 
-@ForEntity("AcademicStudent")
+@VrEntityName("AcademicStudent")
 @Component
-public class AcademicStudentMainPhotoProvider implements EntityEditorMainPhotoProvider {
+public class AcademicStudentMainPhotoProvider implements VrEditorMainPhotoProvider {
     @Override
     public String getMainPhotoPath(Object id, Object valueOrNull) {
         if(id==null){

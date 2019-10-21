@@ -1,7 +1,6 @@
 package net.vpc.app.vr.plugins.academicprofile.web;
 
-import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
-import net.vpc.app.vainruling.core.service.pages.VrActionEnabler;
+import net.vpc.app.vainruling.VrActionEnabler;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.web.*;
@@ -34,18 +33,19 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.bean.ManagedBean;
 import net.vpc.app.vainruling.core.service.model.AppUser;
-import net.vpc.app.vainruling.core.service.pages.VrPage;
-import net.vpc.app.vainruling.core.service.pages.VrPathItem;
+import net.vpc.app.vainruling.VrPage;
+import net.vpc.app.vainruling.VrPathItem;
+import net.vpc.app.vainruling.VrOnPageLoad;
 
 @VrPage(
         breadcrumb = {
-                @VrPathItem(title = "Paramètres", css = "fa-dashboard", ctrl = "")},
+            @VrPathItem(title = "Paramètres", css = "fa-dashboard", ctrl = "")},
         title = "Mon profil étudiant",
         menu = "/Config",
         url = "modules/academic/profile/student-profile-settings",
         replacementFor = "myProfileCtrl",
         priority = 2
-        //securityKey = "Custom.StudentProfileSettings"
+//securityKey = "Custom.StudentProfileSettings"
 )
 @ManagedBean
 public class StudentProfileSettingsCtrl implements DocumentUploadListener, VrActionEnabler {
@@ -61,7 +61,7 @@ public class StudentProfileSettingsCtrl implements DocumentUploadListener, VrAct
         return model;
     }
 
-    @OnPageLoad
+    @VrOnPageLoad
     private void onPageReload() {
         Vr vr = Vr.get();
         getModel().setUser(core.getCurrentUser());
@@ -87,8 +87,10 @@ public class StudentProfileSettingsCtrl implements DocumentUploadListener, VrAct
     }
 
     @Override
-    public boolean isEnabled(net.vpc.app.vainruling.core.service.pages.VrActionInfo data) {
-        return AcademicPlugin.get().getCurrentStudent() != null;
+    public void checkEnabled(net.vpc.app.vainruling.VrActionInfo data) {
+        if (AcademicPlugin.get().getCurrentStudent() == null) {
+            throw new SecurityException("Expected student");
+        }
     }
 
     public void updateIdentityInformation() {
@@ -139,19 +141,18 @@ public class StudentProfileSettingsCtrl implements DocumentUploadListener, VrAct
         getModel().setUploadingPhoto(true);
         getModel().setUploadingCV(false);
         Vr.get().openUploadDialog(new DocumentsUploadDialogCtrl.Config()
-                        .setExtensions("jpg,png,jpeg")
-                        .setSizeLimit(1024 * 1024)
-                , this);
+                .setExtensions("jpg,png,jpeg")
+                .setSizeLimit(1024 * 1024),
+                 this);
     }
-
 
     public void onRequestUploadCV() {
         getModel().setUploadingPhoto(false);
         getModel().setUploadingCV(true);
         Vr.get().openUploadDialog(new DocumentsUploadDialogCtrl.Config()
-                        .setExtensions("pdf")
-                        .setSizeLimit(10 * 1024 * 1024)
-                , this);
+                .setExtensions("pdf")
+                .setSizeLimit(10 * 1024 * 1024),
+                 this);
     }
 
     public void updateAboutSection() {
@@ -220,11 +221,9 @@ public class StudentProfileSettingsCtrl implements DocumentUploadListener, VrAct
                         VFile[] old = filePath.getParentFile().listFiles(new VFileFilter() {
                             @Override
                             public boolean accept(VFile pathname) {
-                                if (
-                                        pathname.getName().equalsIgnoreCase("photo.png")
-                                                || pathname.getName().equalsIgnoreCase("photo.jpg")
-                                                || pathname.getName().equalsIgnoreCase("photo.jpeg")
-                                        ) {
+                                if (pathname.getName().equalsIgnoreCase("photo.png")
+                                        || pathname.getName().equalsIgnoreCase("photo.jpg")
+                                        || pathname.getName().equalsIgnoreCase("photo.jpeg")) {
                                     return true;
                                 }
                                 return false;
@@ -260,7 +259,6 @@ public class StudentProfileSettingsCtrl implements DocumentUploadListener, VrAct
     }
 
     public void updateStudySection() {
-
 
         UPA.getContext().invokePrivileged(new VoidAction() {
             @Override

@@ -6,7 +6,6 @@
 package net.vpc.app.vr.plugins.academicprofile.web;
 
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
 import net.vpc.app.vr.plugins.academicprofile.service.AcademicProfilePlugin;
@@ -16,8 +15,9 @@ import net.vpc.upa.UPA;
 import java.util.Arrays;
 import java.util.List;
 import net.vpc.app.vainruling.core.web.jsf.Vr;
-import net.vpc.app.vainruling.core.service.pages.VrPage;
-import net.vpc.app.vainruling.core.service.pages.VrPathItem;
+import net.vpc.app.vainruling.VrPage;
+import net.vpc.app.vainruling.VrPathItem;
+import net.vpc.app.vainruling.VrOnPageLoad;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -57,7 +57,7 @@ public class TeacherCurriculumContentCtrl extends TeacherCurriculumCtrl {
         return Vr.get().gotoPage("teacherCurriculumContent", "{teacherId:" + cfg.teacherId + ",contentType:'" + articles.get(i) + "'}");
     }
 
-    @OnPageLoad
+    @VrOnPageLoad
     public void onLoad(Config config) {
         final int teacherId = config.teacherId;
         final AcademicPlugin ap = VrApp.getBean(AcademicPlugin.class);

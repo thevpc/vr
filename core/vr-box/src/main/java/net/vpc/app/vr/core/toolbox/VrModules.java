@@ -54,20 +54,20 @@ public class VrModules {
     public static void _main(String[] args) {
         for (VrModule value : all.values()) {
             if (value.isModel()) {
-                System.out.println("${{vrMavenModelDependency('" + value.getBaseArtifactId() + "')}}");
+                System.out.println("${{MavenModelDependency('" + value.getBaseArtifactId() + "')}}");
             }
         }
         System.out.println("");
         for (VrModule value : all.values()) {
             if (value.isService()) {
-                System.out.println("${{vrMavenServiceDependency('" + value.getBaseArtifactId() + "')}}");
+                System.out.println("${{MavenServiceDependency('" + value.getBaseArtifactId() + "')}}");
             }
         }
         System.out.println("");
 
         for (VrModule value : all.values()) {
             if (value.isWeb()) {
-                System.out.println("${{vrMavenWebDependency('" + value.getBaseArtifactId() + "')}}");
+                System.out.println("${{MavenWebDependency('" + value.getBaseArtifactId() + "')}}");
             }
         }
     }

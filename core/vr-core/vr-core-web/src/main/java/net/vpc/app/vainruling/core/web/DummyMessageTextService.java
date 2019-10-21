@@ -1,12 +1,12 @@
 package net.vpc.app.vainruling.core.web;
 
 import net.vpc.app.vainruling.core.service.content.ContentText;
-import net.vpc.app.vainruling.core.service.content.MessageTextService;
 
 import java.util.Collections;
 import java.util.List;
+import net.vpc.app.vainruling.VrMessageTextService;
 
-public class DummyMessageTextService implements MessageTextService {
+public class DummyMessageTextService implements VrMessageTextService {
 
     @Override
     public int getSupport(String name) {

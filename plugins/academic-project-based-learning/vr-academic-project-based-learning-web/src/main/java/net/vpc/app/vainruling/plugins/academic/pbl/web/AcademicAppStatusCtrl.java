@@ -9,7 +9,6 @@ import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
-import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.app.vainruling.plugins.academic.pbl.service.ApblPlugin;
 import net.vpc.app.vainruling.plugins.academic.pbl.service.ApblPluginSecurity;
 import net.vpc.app.vainruling.plugins.academic.pbl.service.dto.ApblSessionListInfo;
@@ -35,8 +34,9 @@ import java.util.logging.Logger;
 import javax.faces.bean.ManagedBean;
 import net.vpc.app.vainruling.plugins.academic.pbl.service.dto.ApblTeamInfo;
 import net.vpc.common.util.IntegerParserConfig;
-import net.vpc.app.vainruling.core.service.pages.VrPage;
-import net.vpc.app.vainruling.core.service.pages.VrPathItem;
+import net.vpc.app.vainruling.VrPage;
+import net.vpc.app.vainruling.VrPathItem;
+import net.vpc.app.vainruling.VrOnPageLoad;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -179,7 +179,7 @@ public class AcademicAppStatusCtrl {
         return model;
     }
 
-    @OnPageLoad
+    @VrOnPageLoad
     private void onPageLoad() {
         reloadPeriods();
     }

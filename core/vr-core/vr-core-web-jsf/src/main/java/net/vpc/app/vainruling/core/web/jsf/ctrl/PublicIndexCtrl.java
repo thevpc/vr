@@ -7,12 +7,12 @@ package net.vpc.app.vainruling.core.web.jsf.ctrl;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
-import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.app.vainruling.core.web.jsf.Vr;
 import net.vpc.common.strings.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
-import net.vpc.app.vainruling.core.service.pages.VrPage;
+import net.vpc.app.vainruling.VrPage;
+import net.vpc.app.vainruling.VrOnPageLoad;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -24,7 +24,7 @@ import net.vpc.app.vainruling.core.service.pages.VrPage;
 public class PublicIndexCtrl {
     @Autowired
     private CorePlugin core;
-    @OnPageLoad
+    @VrOnPageLoad
     public void onLoad(String cmd) {
         Config config = VrUtils.parseJSONObject(cmd, Config.class);
         if(config!=null && StringUtils.isBlank(config.filter)) {

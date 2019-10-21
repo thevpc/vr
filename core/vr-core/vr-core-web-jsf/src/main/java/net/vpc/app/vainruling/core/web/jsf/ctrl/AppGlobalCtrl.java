@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Scope;
 
 import java.util.Calendar;
 import java.util.Date;
-import net.vpc.app.vainruling.core.service.pages.VrPage;
+import net.vpc.app.vainruling.VrPage;
 
 /**
  * @author taha.bensalah@gmail.com

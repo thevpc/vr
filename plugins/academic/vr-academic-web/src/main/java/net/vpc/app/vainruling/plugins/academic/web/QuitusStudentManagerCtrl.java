@@ -13,13 +13,13 @@ import javax.faces.bean.ManagedBean;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.content.ContentText;
 import net.vpc.app.vainruling.core.service.model.AppUser;
-import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import org.springframework.context.annotation.Scope;
-import net.vpc.app.vainruling.core.service.pages.VrPage;
+import net.vpc.app.vainruling.VrPage;
 import net.vpc.app.vainruling.core.web.jsf.ctrl.BasePageCtrl;
 import net.vpc.upa.Action;
 import net.vpc.upa.UPA;
 import net.vpc.upa.VoidAction;
+import net.vpc.app.vainruling.VrOnPageLoad;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -47,7 +47,7 @@ public class QuitusStudentManagerCtrl extends BasePageCtrl {
         reloadPage(null);
     }
 
-    @OnPageLoad
+    @VrOnPageLoad
     public void reloadPage(String cmd) {
         updateUsers();
     }

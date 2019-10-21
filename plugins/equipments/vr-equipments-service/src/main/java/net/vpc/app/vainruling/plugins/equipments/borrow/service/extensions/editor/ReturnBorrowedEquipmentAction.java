@@ -7,25 +7,25 @@ package net.vpc.app.vainruling.plugins.equipments.borrow.service.extensions.edit
 
 import net.vpc.app.vainruling.core.service.editor.ActionDialogResultPostProcess;
 import net.vpc.app.vainruling.core.service.editor.ActionDialogResult;
-import net.vpc.app.vainruling.core.service.editor.EntityViewActionInvoke;
 import net.vpc.app.vainruling.core.service.editor.ActionParam;
 import net.vpc.app.vainruling.core.service.editor.ParamType;
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.editor.EntityAction;
 import net.vpc.app.vainruling.plugins.equipments.core.model.Equipment;
 import net.vpc.upa.*;
 
 import java.util.List;
 import net.vpc.app.vainruling.plugins.equipments.borrow.service.EquipmentBorrowService;
+import net.vpc.app.vainruling.VrEditorActionInvoke;
+import net.vpc.app.vainruling.VrEditorAction;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@EntityAction(entityType = Equipment.class,
+@VrEditorAction(entityType = Equipment.class,
         actionStyle = "fa-calculator",
         confirm = true
 )
-public class ReturnBorrowedEquipmentAction implements EntityViewActionInvoke {
+public class ReturnBorrowedEquipmentAction implements VrEditorActionInvoke {
 
     @Override
     public ActionParam[] getParams() {

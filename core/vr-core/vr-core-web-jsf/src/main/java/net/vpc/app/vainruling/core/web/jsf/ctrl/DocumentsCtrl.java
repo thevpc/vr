@@ -5,9 +5,7 @@
  */
 package net.vpc.app.vainruling.core.web.jsf.ctrl;
 
-import net.vpc.app.vainruling.core.service.menu.VRMenuProvider;
-import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
-import net.vpc.app.vainruling.core.service.pages.VrPageInfo;
+import net.vpc.app.vainruling.VrPageInfo;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.CorePluginSecurity;
 import net.vpc.app.vainruling.core.service.TraceService;
@@ -22,9 +20,9 @@ import net.vpc.app.vainruling.core.web.*;
 import net.vpc.app.vainruling.core.web.jsf.DialogBuilder;
 import net.vpc.app.vainruling.core.web.jsf.VrJsf;
 import net.vpc.app.vainruling.core.web.jsf.ctrl.dialog.DocumentsUploadDialogCtrl;
-import net.vpc.app.vainruling.core.service.pages.VrBreadcrumbItem;
-import net.vpc.app.vainruling.core.service.menu.VRMenuInfo;
-import net.vpc.app.vainruling.core.service.menu.VRMenuLabel;
+import net.vpc.app.vainruling.VrBreadcrumbItem;
+import net.vpc.app.vainruling.VrMenuInfo;
+import net.vpc.app.vainruling.VrMenuLabel;
 import net.vpc.app.vainruling.core.service.editor.DialogResult;
 import net.vpc.app.vainruling.core.web.util.DocumentsUtils;
 import net.vpc.common.jsf.FacesUtils;
@@ -50,8 +48,11 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.vpc.common.util.MapUtils;
-import net.vpc.app.vainruling.core.service.pages.VrPageInfoResolver;
-import net.vpc.app.vainruling.core.service.pages.VrPage;
+import net.vpc.app.vainruling.VrPageInfoResolver;
+import net.vpc.app.vainruling.VrPage;
+import net.vpc.app.vainruling.VrOnPageLoad;
+import net.vpc.app.vainruling.VrMenuProvider;
+import net.vpc.app.vainruling.core.service.model.AppFsSharing;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -62,7 +63,7 @@ import net.vpc.app.vainruling.core.service.pages.VrPage;
 //        ,menu = "/FileSystem", securityKey = "Custom.FileSystem.Documents"
 )
 @Controller
-public class DocumentsCtrl implements VRMenuProvider, VrPageInfoResolver, DocumentUploadListener {
+public class DocumentsCtrl implements VrMenuProvider, VrPageInfoResolver, DocumentUploadListener {
 
     private static final Logger log = Logger.getLogger(DocumentsCtrl.class.getName());
     @Autowired
@@ -71,11 +72,11 @@ public class DocumentsCtrl implements VRMenuProvider, VrPageInfoResolver, Docume
     private Model model = new Model();
 
     @Override
-    public List<VRMenuInfo> createCustomMenus() {
-        List<VRMenuInfo> m = new ArrayList<>();
-        m.add(new VRMenuInfo("Documents Privés", "/FileSystem", "documents", "{type:'home'}", CorePluginSecurity.RIGHT_CUSTOM_FILE_SYSTEM_MY_FILE_SYSTEM, null, "", 100, new VRMenuLabel[0]));
-        m.add(new VRMenuInfo("Mes Documents", "/FileSystem", "documents", "{type:'all'}", CorePluginSecurity.RIGHT_CUSTOM_FILE_SYSTEM_MY_FILE_SYSTEM, null, "", 100, new VRMenuLabel[0]));
-        m.add(new VRMenuInfo("Tous les Documents", "/FileSystem", "documents", "{type:'root'}", CorePluginSecurity.RIGHT_CUSTOM_FILESYSTEM_ROOT_FILE_SYSTEM, null, "", 500, new VRMenuLabel[0]));
+    public List<VrMenuInfo> createCustomMenus() {
+        List<VrMenuInfo> m = new ArrayList<>();
+        m.add(new VrMenuInfo("Documents Privés", "/FileSystem", "documents", "{type:'home'}", CorePluginSecurity.RIGHT_CUSTOM_FILE_SYSTEM_MY_FILE_SYSTEM, null, "", 100, new VrMenuLabel[0]));
+        m.add(new VrMenuInfo("Mes Documents", "/FileSystem", "documents", "{type:'all'}", CorePluginSecurity.RIGHT_CUSTOM_FILE_SYSTEM_MY_FILE_SYSTEM, null, "", 100, new VrMenuLabel[0]));
+        m.add(new VrMenuInfo("Tous les Documents", "/FileSystem", "documents", "{type:'root'}", CorePluginSecurity.RIGHT_CUSTOM_FILESYSTEM_ROOT_FILE_SYSTEM, null, "", 500, new VrMenuLabel[0]));
         return m;
     }
 
@@ -128,7 +129,7 @@ public class DocumentsCtrl implements VRMenuProvider, VrPageInfoResolver, Docume
         return null;
     }
 
-    @OnPageLoad
+    @VrOnPageLoad
     public void init(Config cmd) {
         getModel().setConfig(cmd);
         CorePlugin core = VrApp.getBean(CorePlugin.class);
@@ -182,7 +183,7 @@ public class DocumentsCtrl implements VRMenuProvider, VrPageInfoResolver, Docume
         } else {
             getModel().setCurrent(DocumentsUtils.createFileInfo("/", VFileKind.ROOT, getModel().getFileSystem().get("/")));
         }
-        TraceService.get().trace("System.actions.visit-document", null,MapUtils.map("path",getModel().getCurrent().getFile().getPath()), "/System/Access", Level.FINE);
+        TraceService.get().trace("System.actions.visit-document", null, MapUtils.map("path", getModel().getCurrent().getFile().getPath()), "/System/Access", Level.FINE);
         onRefresh();
     }
 
@@ -194,7 +195,7 @@ public class DocumentsCtrl implements VRMenuProvider, VrPageInfoResolver, Docume
 //    }
     public void updateCurrent(VFile file) {
         getModel().setCurrent(DocumentsUtils.createFileInfo(file));
-        TraceService.get().trace("System.actions.visit-document", null,MapUtils.map("path",getModel().getCurrent().getFile().getPath()), "/System/Access", Level.FINE);
+        TraceService.get().trace("System.actions.visit-document", null, MapUtils.map("path", getModel().getCurrent().getFile().getPath()), "/System/Access", Level.FINE);
         onRefresh();
     }
 
@@ -286,13 +287,38 @@ public class DocumentsCtrl implements VRMenuProvider, VrPageInfoResolver, Docume
         if (current.isSharable()) {
             if (core.isCurrentSessionAdmin() || core.getCurrentUserLogin().equals(file.getACL().getOwner())) {
                 String baseFile = file.getBaseFile("vrfs").getPath();
-
-                try {
-                    core.setUserLinkPathEntry(core.getCurrentUserId(), new VrFSEntry(current.getShareName(), baseFile, current.getShareProfiles()));
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                    Logger.getLogger(DocumentsCtrl.class.getName()).log(Level.SEVERE, null, ex);
-                    FacesUtils.addErrorMessage("Could not be saved.");
+                List<AppFsSharing> s = getModel().getCurrentSharings();
+                AppFsSharing y = null;
+                if (s != null && s.size() > 0) {
+                    y = s.get(0);
+                    if (StringUtils.isBlank(current.getShareName())) {
+                        core.removeFsSharing(y.getId());
+                    } else {
+                        y.setMountPath(current.getShareName());
+                        y.setAllowedUsers(current.getShareProfiles());
+                        y.setDisabled(false);
+                        try {
+                            core.saveFsSharing(y);
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                            Logger.getLogger(DocumentsCtrl.class.getName()).log(Level.SEVERE, null, ex);
+                            FacesUtils.addErrorMessage("Could not be saved.");
+                        }
+                    }
+                } else {
+                    y = new AppFsSharing();
+                    y.setUser(core.getCurrentUser());
+                    y.setSharedPath(baseFile);
+                    y.setMountPath(current.getShareName());
+                    y.setAllowedUsers(current.getShareProfiles());
+                    y.setDisabled(false);
+                    try {
+                        core.saveFsSharing(y);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                        Logger.getLogger(DocumentsCtrl.class.getName()).log(Level.SEVERE, null, ex);
+                        FacesUtils.addErrorMessage("Could not be saved.");
+                    }
                 }
             }
         }
@@ -329,9 +355,9 @@ public class DocumentsCtrl implements VRMenuProvider, VrPageInfoResolver, Docume
     }
 
     public void onRefresh() {
-        if(getModel().getCurrent()==null){
+        if (getModel().getCurrent() == null) {
             getModel().setFiles(new ArrayList<>());
-        }else {
+        } else {
             getModel().setFiles(DocumentsUtils.searchFiles(getModel().getCurrent().getFile(), getModel().getSearchString()));
         }
 //        if(FacesContext.getCurrentInstance()!=null) {
@@ -355,7 +381,7 @@ public class DocumentsCtrl implements VRMenuProvider, VrPageInfoResolver, Docume
 //                    && getModel().getCurrent().getFile().isAllowedCreateChild(VFileType.FILE, null);
         }
         VFileInfo current = getModel().getCurrent();
-        if(current==null){
+        if (current == null) {
             return false;
         }
         if ("NewFolder".equals(buttonId)) {
@@ -437,11 +463,16 @@ public class DocumentsCtrl implements VRMenuProvider, VrPageInfoResolver, Docume
         if (getModel().getCurrent().isSharable()) {
             Integer currentUserId = core.getCurrentUserId();
             if (currentUserId != null) {
-                VrFSTable userVrFSTable = core.getUserVrFSTable(currentUserId);
-                VrFSEntry[] u = userVrFSTable.getEntriesByLinkPath(file.getBaseFile("vrfs").getPath());
-                if (u.length > 0) {
-                    getModel().getCurrent().setShareName(u[0].getMountPoint());
-                    getModel().getCurrent().setShareProfiles(u[0].getAllowedUsers());
+                List<AppFsSharing> u = core.findFsSharings(currentUserId, null, file.getBaseFile("vrfs").getPath());
+                if (u.size() > 0) {
+                    AppFsSharing item = u.get(0);
+                    getModel().getCurrent().setShareName(item.getMountPath());
+                    getModel().getCurrent().setShareProfiles(item.getAllowedUsers());
+                    getModel().setCurrentSharings(u);
+                } else {
+                    getModel().getCurrent().setShareName("");
+                    getModel().getCurrent().setShareProfiles("");
+                    getModel().setCurrentSharings(new ArrayList<>());
                 }
             } else {
                 return;
@@ -526,6 +557,15 @@ public class DocumentsCtrl implements VRMenuProvider, VrPageInfoResolver, Docume
         private String searchString;
         private boolean newFolder;
         private boolean newFile;
+        private List<AppFsSharing> currentSharings;
+
+        public List<AppFsSharing> getCurrentSharings() {
+            return currentSharings;
+        }
+
+        public void setCurrentSharings(List<AppFsSharing> currentSharings) {
+            this.currentSharings = currentSharings;
+        }
 
         public String getSearchString() {
             return searchString;

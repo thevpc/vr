@@ -8,12 +8,6 @@ package net.vpc.app.vainruling.plugins.tasks.service;
 import net.vpc.app.vainruling.core.service.*;
 import net.vpc.app.vainruling.core.service.model.AppProfile;
 import net.vpc.app.vainruling.core.service.model.AppUser;
-import net.vpc.app.vainruling.core.service.plugins.Install;
-import net.vpc.app.vainruling.core.service.plugins.Start;
-import net.vpc.app.vainruling.plugins.tasks.service.model.*;
-import net.vpc.common.util.Convert;
-import net.vpc.common.util.IntegerParserConfig;
-import net.vpc.common.util.Utils;
 import net.vpc.upa.Entity;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.RemoveOptions;
@@ -27,9 +21,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.logging.Level;
-import net.vpc.app.vainruling.core.service.plugins.VrPlugin;
+import net.vpc.app.vainruling.VrPlugin;
+import net.vpc.app.vainruling.VrStart;
 import net.vpc.app.vainruling.core.service.util.I18n;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
+import net.vpc.app.vainruling.plugins.tasks.service.model.Todo;
+import net.vpc.app.vainruling.plugins.tasks.service.model.TodoCategory;
+import net.vpc.app.vainruling.plugins.tasks.service.model.TodoList;
+import net.vpc.app.vainruling.plugins.tasks.service.model.TodoProgress;
+import net.vpc.app.vainruling.plugins.tasks.service.model.TodoStatus;
+import net.vpc.app.vainruling.plugins.tasks.service.model.TodoStatusGroup;
+import net.vpc.app.vainruling.plugins.tasks.service.model.TodoStatusType;
 import net.vpc.common.strings.StringUtils;
 
 /**
@@ -43,7 +45,7 @@ public class TaskPlugin {
     @Autowired
     TraceService trace;
 
-    @Start
+    @VrStart
     private void startService() {
         ProfileRightBuilder b = new ProfileRightBuilder();
         for (TodoList findTodoListsByResp : findTodoLists()) {
@@ -69,168 +71,6 @@ public class TaskPlugin {
         prb.execute();
     }
 
-    @Install
-    private void installService() {
-        InitData d = new InitData();
-        d.laboActions = new TodoList();
-        d.laboActions.setName(TodoList.LABO_ACTION);
-        d.laboActions.setLabel("Mes Actions Labo");
-        d.laboActions.setSystemList(true);
-        d.laboActions.setCollaborators("Technician");
-        d.laboActions = core.findOrCreate(d.laboActions);
-        PersistenceUnit pu = UPA.getPersistenceUnit();
-        {
-            if (d.laboActions.getStatusGroup() == null) {
-                d.laboActions.setStatusGroup(findDefaultStatusGroup());
-            }
-            TodoCategory s = new TodoCategory();
-            s.setName("Divers");
-            s.setShortName("DIV");
-            s.setList(d.laboActions);
-            if (pu.createQueryBuilder(TodoCategory.class)
-                    .byField("name", s.getName())
-                    .byField("list", s.getList())
-                    .getFirstResultOrNull() == null) {
-                pu.persist(s);
-            }
-        }
-//        for (TodoStatusType value : TodoStatusType.values()) {
-//            TodoStatus s = new TodoStatus();
-//            s.setList(d.laboActions);
-//            s.setName(value.name());
-//            s.setType(value);
-//            if (pu.createQueryBuilder(TodoStatus.class)
-//                    .byField("name", s.getName())
-//                    .byField("list", s.getList())
-//                    .getFirstResultOrNull() == null) {
-//                pu.persist(s);
-//            }
-//        }
-
-        d.laboTickets = new TodoList();
-        d.laboTickets.setName(TodoList.LABO_TICKET);
-        d.laboActions.setLabel("Mes Tickets Labo");
-        d.laboTickets.setSystemList(true);
-        d.laboTickets.setCollaborators("Technician");
-        d.laboTickets = core.findOrCreate(d.laboTickets);
-        {
-            if (d.laboTickets.getStatusGroup() == null) {
-                d.laboTickets.setStatusGroup(findDefaultStatusGroup());
-            }
-            TodoCategory s = new TodoCategory();
-            s.setName("Divers");
-            s.setList(d.laboTickets);
-            if (pu.createQueryBuilder(TodoCategory.class)
-                    .byField("name", s.getName())
-                    .byField("list", s.getList())
-                    .getFirstResultOrNull() == null) {
-                pu.persist(s);
-            }
-        }
-//        for (TodoStatusType value : TodoStatusType.values()) {
-//            TodoStatus s = new TodoStatus();
-//            s.setList(d.laboTickets);
-//            s.setName(value.name());
-//            s.setType(value);
-//            if (pu.createQueryBuilder(TodoStatus.class)
-//                    .byField("name", s.getName())
-//                    .byField("list", s.getList())
-//                    .getFirstResultOrNull() == null) {
-//                pu.persist(s);
-//            }
-//        }
-    }
-
-//    @InstallDemo
-    private void installDemoService() {
-        PersistenceUnit pu = UPA.getPersistenceUnit();
-        final AppUser admin = core.findUser(CorePlugin.USER_ADMIN);
-        TodoList laboActionsList = pu.findByMainField(TodoList.class, TodoList.LABO_ACTION);
-        TodoList laboTicketsList = pu.findByMainField(TodoList.class, TodoList.LABO_TICKET);
-
-        List<TodoCategory> laboActionsCategories = pu.createQueryBuilder(TodoCategory.class).byField("list", laboActionsList).getResultList();
-        List<TodoStatus> laboActionsStatuses = pu.createQueryBuilder(TodoStatus.class).byField("list", laboActionsList).getResultList();
-        List<TodoCategory> laboTicketsCategories = pu.createQueryBuilder(TodoCategory.class).byField("list", laboTicketsList).getResultList();
-        List<TodoStatus> laboTicketsStatuses = pu.createQueryBuilder(TodoStatus.class).byField("list", laboTicketsList).getResultList();
-        final Timestamp now = new Timestamp(System.currentTimeMillis());
-        for (int i = 0; i < 20; i++) {
-            Todo d = new Todo();
-            d.setCategory(laboActionsCategories.get(Utils.rand(0, laboActionsCategories.size())));
-            d.setList(laboActionsList);
-            d.setDeadline(now);
-            d.setName("Action " + (i + 1));
-            d.setPriority(TodoPriority.values()[Utils.rand(0, TodoPriority.values().length)]);
-            d.setStartTime(now);
-            d.setStatus(laboActionsStatuses.get(Utils.rand(0, laboActionsStatuses.size())));
-            d.setEstimation(Utils.fibonacci(Utils.rand(1, 4)));
-            d.setReEstimation(d.getEstimation());
-            switch (d.getStatus().getType()) {
-                case DONE: {
-                    d.setProgress(100);
-                    break;
-                }
-                case ASSIGNED: {
-                    d.setProgress(Utils.rand(20, 80));
-                    break;
-                }
-                case TO_VERIFY: {
-                    d.setProgress(100);
-                    break;
-                }
-                case UNASSIGNED: {
-                    d.setProgress(0);
-                    break;
-                }
-            }
-            d.setResponsible(admin);
-            d.setCreationTime(now);
-            d.setInitiator(admin);
-            if (pu.createQueryBuilder(Todo.class)
-                    .byField("name", d.getName())
-                    .byField("list", d.getList())
-                    .getFirstResultOrNull() == null) {
-                pu.persist(d);
-            }
-        }
-        for (int i = 0; i < 20; i++) {
-            Todo d = new Todo();
-            d.setCategory(laboTicketsCategories.get(Utils.rand(0, laboTicketsCategories.size())));
-            d.setList(laboTicketsList);
-            d.setDeadline(now);
-            d.setName("Ticket " + (i + 1));
-            d.setPriority(TodoPriority.values()[Utils.rand(0, TodoPriority.values().length)]);
-            d.setStartTime(now);
-            d.setStatus(laboTicketsStatuses.get(Utils.rand(0, laboTicketsStatuses.size())));
-            d.setEstimation(Utils.fibonacci(Utils.rand(1, 4)));
-            d.setReEstimation(d.getEstimation());
-            switch (d.getStatus().getType()) {
-                case DONE: {
-                    d.setProgress(100);
-                    break;
-                }
-                case ASSIGNED: {
-                    d.setProgress(Utils.rand(20, 80));
-                    break;
-                }
-                case TO_VERIFY: {
-                    d.setProgress(100);
-                    break;
-                }
-                case UNASSIGNED: {
-                    d.setProgress(0);
-                    break;
-                }
-            }
-            d.setResponsible(admin);
-            if (pu.createQueryBuilder(Todo.class)
-                    .byField("name", d.getName())
-                    .byField("list", d.getList())
-                    .getFirstResultOrNull() == null) {
-                pu.persist(d);
-            }
-        }
-    }
-
     public List<AppProfile> findTodoListsProfiles(int todoListId) {
         return UPA.getPersistenceUnit().createQuery("select a.profile from TodoListProfile a where a.listId=:li")
                 .setParameter("li", todoListId)
@@ -246,13 +86,8 @@ public class TaskPlugin {
 
     public List<TodoList> findTodoListsByResp(Integer user) {
         List<AppProfile> up = null;
-        if (!core.isCurrentAllowed("TASK_VIEW_ALL")) {
-            if (user == null) {
-                user = core.getCurrentUserId();
-            } else {
-                //error
-                //user = session.getUser().getId();
-            }
+        if (user == null) {
+            user = core.getCurrentUserId();
         }
 
         if (user == null) {
@@ -281,13 +116,11 @@ public class TaskPlugin {
 
     public List<TodoList> findTodoListsByInitiator(Integer user) {
         HashSet<Integer> fnd = null;
-        if (!core.isCurrentAllowed("TASK_VIEW_ALL")) {
-            if (user == null) {
-                user = core.getCurrentUserId();
-            } else {
-                //error
-                user = core.getCurrentUserId();
-            }
+        if (user == null) {
+            user = core.getCurrentUserId();
+        } else {
+            //error
+            user = core.getCurrentUserId();
         }
 
         if (user == null) {
@@ -543,7 +376,7 @@ public class TaskPlugin {
         }
         return findCollaborators(l);
     }
-    
+
     public List<AppUser> findCollaborators(TodoList list) {
         String p = list.getCollaborators();
         if (!StringUtils.isBlank(p)) {
@@ -635,11 +468,6 @@ public class TaskPlugin {
             q.append(" and a.listId=:li");
             params.put("li", listId);
         }
-//        if (!core.isCurrentAllowed("TASK_VIEW_ALL")) {
-//            q.append(" and a.responsibleId=:i");
-//            params.put("i", Convert.toInt(core.getCurrentUserId(), IntegerParserConfig.LENIENT_F));
-//        } else {
-//        }
         if (responsible != null) {
             q.append(" and a.responsibleId=:i");
             params.put("i", responsible);
@@ -662,14 +490,9 @@ public class TaskPlugin {
             q.append(" and a.listId=:li");
             params.put("li", listId);
         }
-        if (!core.isCurrentAllowed("TASK_VIEW_ALL")) {
+        if (initiator != null) {
             q.append(" and a.initiatorId=:i");
-            params.put("i", Convert.toInt(core.getCurrentUserId(), IntegerParserConfig.LENIENT_F));
-        } else {
-            if (initiator != null) {
-                q.append(" and a.initiatorId=:i");
-                params.put("i", initiator);
-            }
+            params.put("i", initiator);
         }
         return pu.createQuery(q.toString()).setParameters(params).getResultList();
     }
@@ -699,6 +522,33 @@ public class TaskPlugin {
             }
         }
         return null;
+    }
+
+    public boolean isTodoCollaborator(TodoList list, Integer user) {
+        if (list == null) {
+            return false;
+        }
+        CorePlugin c = CorePlugin.get();
+        if (user == null) {
+            user = c.getCurrentUserId();
+        }
+        if (user == null) {
+            return false;
+        }
+        boolean visible = c.isCurrentSessionAdmin();
+        if (!visible) {
+            AppUser r = list.getRespUser();
+            if (r != null && r.getId() == c.getCurrentUserIdFF()) {
+                visible = true;
+            }
+        }
+        if (!visible) {
+            String r = list.getCollaborators();
+            if (!StringUtils.isBlank(r)) {
+                visible = c.isUserMatchesProfileFilter(c.getCurrentUserIdFF(), r);
+            }
+        }
+        return visible;
     }
 
     public boolean hasTransition(TodoStatus from, TodoStatus to) {
@@ -753,30 +603,4 @@ public class TaskPlugin {
         return false;
     }
 
-    private static class InitData {
-
-        TodoList laboActions;
-        TodoList laboTickets;
-//        List<TodoCategory> laboActionsCategories;
-//        List<TodoStatus> laboActionsStatuses;
-//        List<TodoCategory> laboTicketsCategories;
-//        List<TodoStatus> laboTicketsStatuses;
-//        long now;
-//        AppUserProfile adminProfile;
-//        AppUserProfile techProfile;
-//        AppUserProfile inventoryProfile;
-//        AppUserProfile teacherProfile;
-//        AppUserProfile studentProfile;
-//        AppUser admin;
-//        AppUser tech1;
-//        AppUser tech2;
-//        List<AppCivility> civilities;
-//        List<AppGender> genders;
-//        List<AppDepartment> departments;
-//        AppAreaType areaType_etablissement = new AppAreaType("etablissement");
-//        AppAreaType areaType_bloc = new AppAreaType("bloc");
-//        AppAreaType areaType_salle = new AppAreaType("salle");
-//        AppAreaType areaType_armoire = new AppAreaType("armoire");
-//        AppAreaType areaType_rangement = new AppAreaType("rangement");
-    }
 }

@@ -1,6 +1,6 @@
 package net.vpc.app.vainruling.plugins.themes.sbadmin;
 
-import net.vpc.app.vainruling.core.service.plugins.VrPlugin;
+import net.vpc.app.vainruling.VrPlugin;
 
 @VrPlugin
 public class SbAdminPrivateThemePlugin {

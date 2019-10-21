@@ -9,17 +9,17 @@ import java.util.List;
 import javax.faces.bean.ManagedBean;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.app.vainruling.plugins.equipments.borrow.service.EquipmentBorrowService;
 import net.vpc.app.vainruling.plugins.equipments.core.service.EquipmentPlugin;
 import net.vpc.app.vainruling.plugins.equipments.borrow.model.info.EquipmentForResponsibleInfo;
 import net.vpc.app.vainruling.plugins.equipments.borrow.model.info.EquipmentBorrowOperatorType;
 import net.vpc.app.vainruling.plugins.equipments.core.service.EquipmentPluginSecurity;
 import org.primefaces.event.SelectEvent;
-import net.vpc.app.vainruling.core.service.pages.VrPage;
-import net.vpc.app.vainruling.core.service.pages.VrPathItem;
+import net.vpc.app.vainruling.VrPage;
+import net.vpc.app.vainruling.VrPathItem;
 import net.vpc.app.vainruling.plugins.equipments.borrow.model.EquipmentBorrowRequestStatus;
 import net.vpc.app.vainruling.plugins.equipments.borrow.model.EquipmentBorrowVisaStatus;
+import net.vpc.app.vainruling.VrOnPageLoad;
 
 //import javax.annotation.PostConstruct;
 /**
@@ -41,7 +41,7 @@ public class MyBorrowEquipmentsVisasCtrl {
         return model;
     }
 
-    @OnPageLoad
+    @VrOnPageLoad
 //    @PostConstruct
     public void onpageLoad() {
         onRefresh();

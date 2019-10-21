@@ -16,9 +16,11 @@ import net.vpc.app.vainruling.plugins.academic.pbl.model.ApblSession;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.upa.Action;
 import net.vpc.upa.UPA;
+import net.vpc.app.vainruling.VrCompletionService;
+import net.vpc.app.vainruling.VrCompletionInfo;
 
 @Service
-public class ApblPluginCompletionProvider implements CompletionProvider {
+public class ApblPluginCompletionProvider implements VrCompletionService {
 
     @Override
     public List<String> getCompletionLists(int monitorUserId) {
@@ -26,11 +28,11 @@ public class ApblPluginCompletionProvider implements CompletionProvider {
     }
 
     @Override
-    public List<CompletionInfo> findCompletions(int monitorUserId, String category, String objectType, Object objectId, Level minLevel) {
+    public List<VrCompletionInfo> findCompletions(int monitorUserId, String category, String objectType, Object objectId, Level minLevel) {
         if (minLevel == null) {
             minLevel = Level.ALL;
         }
-        List<CompletionInfo> all = new ArrayList<>();
+        List<VrCompletionInfo> all = new ArrayList<>();
         if (category == null) {
             for (String cat : getCompletionLists(monitorUserId)) {
                 all.addAll(findCompletions(monitorUserId, cat, objectType, objectId, minLevel));
@@ -49,7 +51,7 @@ public class ApblPluginCompletionProvider implements CompletionProvider {
         return all;
     }
 
-    public void findCompletionsFillContacts(int monitorUserId, String objectType, Object objectId, Level minLevel, List<CompletionInfo> all) {
+    public void findCompletionsFillContacts(int monitorUserId, String objectType, Object objectId, Level minLevel, List<VrCompletionInfo> all) {
         if (objectType != null) {
             switch (objectType) {
                 case "AcademicStudent": {
@@ -60,11 +62,11 @@ public class ApblPluginCompletionProvider implements CompletionProvider {
         }
     }
 
-    public void findCompletionsFillContactTeacher(int monitorUserId, Object objectId, Level minLevel, List<CompletionInfo> all) {
+    public void findCompletionsFillContactTeacher(int monitorUserId, Object objectId, Level minLevel, List<VrCompletionInfo> all) {
 
     }
 
-    public void findCompletionsFillContactStudent(int monitorUserId, Object objectId, Level minLevel, List<CompletionInfo> all) {
+    public void findCompletionsFillContactStudent(int monitorUserId, Object objectId, Level minLevel, List<VrCompletionInfo> all) {
 
         String category = "Contact";
         String categoryName = "Infos Contact";

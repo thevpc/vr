@@ -6,20 +6,20 @@
 package net.vpc.app.vainruling.plugins.academic.web.internship.actions;
 
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.editor.EntityAction;
-import net.vpc.app.vainruling.core.service.editor.EntityViewActionDialog;
 import net.vpc.app.vainruling.plugins.academic.model.internship.current.AcademicInternship;
 import net.vpc.upa.AccessMode;
 
 import java.util.List;
+import net.vpc.app.vainruling.VrEditorActionDialog;
+import net.vpc.app.vainruling.VrEditorAction;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@EntityAction(entityType = AcademicInternship.class,
+@VrEditorAction(entityType = AcademicInternship.class,
         actionStyle = "fa-envelope-o"
 )
-public class CreateInternshipsAction implements EntityViewActionDialog {
+public class CreateInternshipsAction implements VrEditorActionDialog {
 
     @Override
     public void openDialog(String actionId, List<String> itemIds) {

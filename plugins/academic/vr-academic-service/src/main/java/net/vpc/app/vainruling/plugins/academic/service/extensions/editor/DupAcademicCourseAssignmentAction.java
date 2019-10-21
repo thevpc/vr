@@ -5,25 +5,25 @@
  */
 package net.vpc.app.vainruling.plugins.academic.service.extensions.editor;
 
-import net.vpc.app.vainruling.core.service.editor.EntityAction;
 
 import net.vpc.app.vainruling.core.service.editor.ActionDialogResult;
-import net.vpc.app.vainruling.core.service.editor.EntityViewActionInvoke;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCourseAssignment;
 import net.vpc.upa.AccessMode;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+import net.vpc.app.vainruling.VrEditorActionInvoke;
+import net.vpc.app.vainruling.VrEditorAction;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@EntityAction(entityType = AcademicCourseAssignment.class,
+@VrEditorAction(entityType = AcademicCourseAssignment.class,
         actionStyle = "fa-envelope-o",
         confirm = true
 )
-public class DupAcademicCourseAssignmentAction implements EntityViewActionInvoke {
+public class DupAcademicCourseAssignmentAction implements VrEditorActionInvoke {
 
     @Autowired
     AcademicPlugin academic;

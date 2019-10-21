@@ -3,15 +3,15 @@ package net.vpc.app.vainruling.plugins.academic.web.addressbook;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
-import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPluginSecurity;
 import net.vpc.app.vainruling.plugins.academic.model.config.AcademicSemester;
 import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
 
 import java.util.List;
-import net.vpc.app.vainruling.core.service.pages.VrPage;
-import net.vpc.app.vainruling.core.service.pages.VrPathItem;
+import net.vpc.app.vainruling.VrPage;
+import net.vpc.app.vainruling.VrPathItem;
+import net.vpc.app.vainruling.VrOnPageLoad;
 
 @VrPage(
         breadcrumb = {
@@ -26,7 +26,7 @@ public class AcademicTeachersWithAssignmentsCtrl {
     private Model model = new Model();
 
 
-    @OnPageLoad
+    @VrOnPageLoad
     public void onPageLoad() {
         getModel().setPeriod(CorePlugin.get().getCurrentPeriod());
         AcademicPlugin academicPlugin = AcademicPlugin.get();

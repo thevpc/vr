@@ -14,7 +14,6 @@ import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.app.vainruling.core.service.model.AppUser;
-import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.app.vainruling.core.web.jsf.Vr;
 import net.vpc.app.vainruling.core.web.util.VrWebHelper;
 import net.vpc.app.vainruling.plugins.equipments.borrow.service.EquipmentBorrowService;
@@ -23,9 +22,10 @@ import net.vpc.app.vainruling.plugins.equipments.borrow.model.info.EquipmentForR
 import net.vpc.app.vainruling.plugins.equipments.core.service.EquipmentPluginSecurity;
 import net.vpc.common.jsf.FacesUtils;
 import org.primefaces.event.SelectEvent;
-import net.vpc.app.vainruling.core.service.pages.VrPage;
-import net.vpc.app.vainruling.core.service.pages.VrPathItem;
+import net.vpc.app.vainruling.VrPage;
+import net.vpc.app.vainruling.VrPathItem;
 import net.vpc.common.strings.StringUtils;
+import net.vpc.app.vainruling.VrOnPageLoad;
 
 //import javax.annotation.PostConstruct;
 /**
@@ -47,7 +47,7 @@ public class MyBorrowEquipmentsTrackingCtrl {
         return model;
     }
 
-    @OnPageLoad
+    @VrOnPageLoad
 //    @PostConstruct
     public void onpageLoad() {
         onRefresh();

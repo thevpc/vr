@@ -13,7 +13,6 @@ import net.vpc.app.vainruling.core.service.model.AppConfig;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.service.util.NamedValueCount;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
-import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPluginSecurity;
 import net.vpc.app.vainruling.plugins.academic.model.config.AcademicStudent;
@@ -33,8 +32,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.faces.model.SelectItem;
 import java.util.*;
 import org.springframework.stereotype.Controller;
-import net.vpc.app.vainruling.core.service.pages.VrPage;
-import net.vpc.app.vainruling.core.service.pages.VrPathItem;
+import net.vpc.app.vainruling.VrPage;
+import net.vpc.app.vainruling.VrPathItem;
+import net.vpc.app.vainruling.VrOnPageLoad;
 
 /**
  * internships for teachers
@@ -62,7 +62,7 @@ public class InternshipBoardsStatsCtrl /*extends MyInternshipBoardsCtrl*/ {
         return model;
     }
 
-    @OnPageLoad
+    @VrOnPageLoad
     public void onPageLoad() {
         onUpdatePeriod();
     }

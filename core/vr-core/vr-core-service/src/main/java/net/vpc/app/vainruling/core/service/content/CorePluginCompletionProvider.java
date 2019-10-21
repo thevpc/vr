@@ -12,9 +12,11 @@ import java.util.Map;
 import java.util.logging.Level;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.model.AppUser;
+import net.vpc.app.vainruling.VrCompletionService;
+import net.vpc.app.vainruling.VrCompletionInfo;
 
 @Service
-public class CorePluginCompletionProvider implements CompletionProvider {
+public class CorePluginCompletionProvider implements VrCompletionService {
 
     @Override
     public List<String> getCompletionLists(int monitorUserId) {
@@ -22,11 +24,11 @@ public class CorePluginCompletionProvider implements CompletionProvider {
     }
 
     @Override
-    public List<CompletionInfo> findCompletions(int monitorUserId, String category, String objectType, Object objectId, Level minLevel) {
+    public List<VrCompletionInfo> findCompletions(int monitorUserId, String category, String objectType, Object objectId, Level minLevel) {
         if (minLevel == null) {
             minLevel = Level.ALL;
         }
-        List<CompletionInfo> all = new ArrayList<>();
+        List<VrCompletionInfo> all = new ArrayList<>();
         if (category != null) {
             switch (category) {
                 case "Access": {
@@ -38,7 +40,7 @@ public class CorePluginCompletionProvider implements CompletionProvider {
         return all;
     }
 
-    public void findCompletionsFillAccess(int monitorUserId, String objectType, Object objectId, Level minLevel, List<CompletionInfo> all) {
+    public void findCompletionsFillAccess(int monitorUserId, String objectType, Object objectId, Level minLevel, List<VrCompletionInfo> all) {
         CorePlugin core = CorePlugin.get();
         if (objectType == null) {
             objectType = "AppUser";

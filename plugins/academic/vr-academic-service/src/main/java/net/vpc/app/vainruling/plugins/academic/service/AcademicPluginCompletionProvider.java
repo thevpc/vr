@@ -15,9 +15,11 @@ import net.vpc.app.vainruling.plugins.academic.model.internship.AcademicInternsh
 import net.vpc.app.vainruling.plugins.academic.model.internship.current.AcademicInternship;
 import net.vpc.upa.Entity;
 import net.vpc.upa.UPA;
+import net.vpc.app.vainruling.VrCompletionService;
+import net.vpc.app.vainruling.VrCompletionInfo;
 
 @Service
-public class AcademicPluginCompletionProvider implements CompletionProvider {
+public class AcademicPluginCompletionProvider implements VrCompletionService {
 
     @Override
     public List<String> getCompletionLists(int monitorUserId) {
@@ -25,11 +27,11 @@ public class AcademicPluginCompletionProvider implements CompletionProvider {
     }
 
     @Override
-    public List<CompletionInfo> findCompletions(int monitorUserId, String category, String objectType, Object objectId, Level minLevel) {
+    public List<VrCompletionInfo> findCompletions(int monitorUserId, String category, String objectType, Object objectId, Level minLevel) {
         if (minLevel == null) {
             minLevel = Level.ALL;
         }
-        List<CompletionInfo> all = new ArrayList<>();
+        List<VrCompletionInfo> all = new ArrayList<>();
         if (category == null) {
             for (String cat : getCompletionLists(monitorUserId)) {
                 all.addAll(findCompletions(monitorUserId, cat, objectType, objectId, minLevel));
@@ -49,7 +51,7 @@ public class AcademicPluginCompletionProvider implements CompletionProvider {
         return all;
     }
 
-    public void findCompletionsFillPFE(int monitorUserId, String objectType, Object objectId, Level minLevel, List<CompletionInfo> all) {
+    public void findCompletionsFillPFE(int monitorUserId, String objectType, Object objectId, Level minLevel, List<VrCompletionInfo> all) {
         CorePlugin core = CorePlugin.get();
         AcademicPlugin aca = AcademicPlugin.get();
         if (objectType != null) {
@@ -87,18 +89,18 @@ public class AcademicPluginCompletionProvider implements CompletionProvider {
         }
     }
 
-    public void findCompletionsFillContacts(int monitorUserId, String objectType, Object objectId, Level minLevel, List<CompletionInfo> all) {
+    public void findCompletionsFillContacts(int monitorUserId, String objectType, Object objectId, Level minLevel, List<VrCompletionInfo> all) {
         findCompletionsFillContactStudent(monitorUserId, objectId, minLevel, all);
         if (objectType == null || objectType.equals("AcademicStudent")) {
             findCompletionsFillPFEStudent(monitorUserId, objectId, minLevel, all);
         }
     }
 
-    public void findCompletionsFillContactTeacher(int monitorUserId, Object objectId, Level minLevel, List<CompletionInfo> all) {
+    public void findCompletionsFillContactTeacher(int monitorUserId, Object objectId, Level minLevel, List<VrCompletionInfo> all) {
 
     }
 
-    public void findCompletionsFillPFEStudent(int monitorUserId, Object objectId, Level minLevel, List<CompletionInfo> all) {
+    public void findCompletionsFillPFEStudent(int monitorUserId, Object objectId, Level minLevel, List<VrCompletionInfo> all) {
         AcademicPlugin ac = AcademicPlugin.get();
         if (objectId == null) {
             objectId = monitorUserId;
@@ -154,7 +156,7 @@ public class AcademicPluginCompletionProvider implements CompletionProvider {
 
     }
 
-    public void findCompletionsFillContactStudent(int monitorUserId, Object objectId, Level minLevel, List<CompletionInfo> all) {
+    public void findCompletionsFillContactStudent(int monitorUserId, Object objectId, Level minLevel, List<VrCompletionInfo> all) {
 
         String category = "Contact";
         String categoryName = "Infos Contact";

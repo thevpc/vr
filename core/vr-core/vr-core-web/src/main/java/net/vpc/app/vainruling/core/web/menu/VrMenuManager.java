@@ -14,7 +14,7 @@ import net.vpc.common.strings.StringUtils;
 import javax.annotation.PostConstruct;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
-import net.vpc.app.vainruling.core.service.pages.VrPageHistoryItem;
+import net.vpc.app.vainruling.VrPageHistoryItem;
 import net.vpc.app.vainruling.core.service.menu.VrPageInfoAndObject;
 import net.vpc.app.vainruling.core.service.menu.VrServiceMenu;
 import net.vpc.app.vainruling.core.web.util.VrWebHelper;

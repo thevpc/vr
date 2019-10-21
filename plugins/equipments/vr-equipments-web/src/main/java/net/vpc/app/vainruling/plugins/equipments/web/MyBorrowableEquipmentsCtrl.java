@@ -13,7 +13,6 @@ import javax.faces.model.SelectItem;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.strict.AppUserStrict;
-import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.app.vainruling.core.web.jsf.Vr;
 import net.vpc.app.vainruling.plugins.equipments.borrow.service.EquipmentBorrowService;
 import net.vpc.app.vainruling.plugins.equipments.borrow.model.EquipmentBorrowRequest;
@@ -21,13 +20,14 @@ import net.vpc.app.vainruling.plugins.equipments.borrow.model.info.EquipmentForR
 import net.vpc.app.vainruling.plugins.equipments.core.service.EquipmentPluginSecurity;
 import net.vpc.common.jsf.FacesUtils;
 import org.primefaces.event.SelectEvent;
-import net.vpc.app.vainruling.core.service.pages.VrPage;
-import net.vpc.app.vainruling.core.service.pages.VrPathItem;
+import net.vpc.app.vainruling.VrPage;
+import net.vpc.app.vainruling.VrPathItem;
 import net.vpc.app.vainruling.plugins.equipments.borrow.model.EquipmentBorrowWorkflow;
 import net.vpc.app.vainruling.plugins.equipments.borrow.model.info.EquipmentBorrowOperatorType;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.MutableDate;
 import net.vpc.common.util.Tuple2;
+import net.vpc.app.vainruling.VrOnPageLoad;
 
 //import javax.annotation.PostConstruct;
 /**
@@ -49,7 +49,7 @@ public class MyBorrowableEquipmentsCtrl {
         return model;
     }
 
-    @OnPageLoad
+    @VrOnPageLoad
 //    @PostConstruct
     public void onPageLoad() {
         onPrepare();
@@ -119,10 +119,11 @@ public class MyBorrowableEquipmentsCtrl {
         CorePlugin core = CorePlugin.get();
         EquipmentBorrowService ebs = VrApp.getBean(EquipmentBorrowService.class);
         List<EquipmentForResponsibleInfo> bb = new ArrayList<>();
-        if (getModel().getFilterEquipmentType() != null) {
+        if (getModel().getFilterEquipmentType() != null || StringUtils.trim(getModel().getSearchText()).length()>=2) {
             bb = ebs.findBorrowableEquipmentsForResponsibleInfo(core.getCurrentUserIdFF(),
                     getModel().getFilterEquipmentType(),
-                    getModel().getFilterDepartment()
+                    getModel().getFilterDepartment(),
+                    getModel().getSearchText()
             );
         }
         getModel().setEquipments(bb);
@@ -199,6 +200,8 @@ public class MyBorrowableEquipmentsCtrl {
         private List<EquipmentForResponsibleInfo> equipments;
         private List<SelectItem> equipmentTypes;
         private List<SelectItem> departments;
+        private String searchTextHelper = "Tapez ici les mots clés de recherche.";
+        private String searchText;
         private Integer filterEquipmentType;
         private Integer filterDepartment;
         private EquipmentForResponsibleInfo selectedEquipment;
@@ -339,6 +342,22 @@ public class MyBorrowableEquipmentsCtrl {
 
         public void setSuperUserOperator(boolean superUserOperator) {
             this.superUserOperator = superUserOperator;
+        }
+
+        public String getSearchTextHelper() {
+            return searchTextHelper;
+        }
+
+        public void setSearchTextHelper(String searchTextHelper) {
+            this.searchTextHelper = searchTextHelper;
+        }
+
+        public String getSearchText() {
+            return searchText;
+        }
+
+        public void setSearchText(String searchText) {
+            this.searchText = searchText;
         }
 
     }

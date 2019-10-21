@@ -5,25 +5,25 @@
  */
 package net.vpc.app.vainruling.plugins.academic.web;
 
-import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCoursePlan;
-import net.vpc.app.vainruling.core.service.pages.VrActionEnabler;
-import net.vpc.app.vainruling.core.service.pages.VrPage;
-import net.vpc.app.vainruling.core.service.pages.VrPathItem;
+import net.vpc.app.vainruling.VrActionEnabler;
+import net.vpc.app.vainruling.VrPage;
+import net.vpc.app.vainruling.VrPathItem;
+import net.vpc.app.vainruling.VrOnPageLoad;
 
 /**
  * @author taha.bensalah@gmail.com
  */
 @VrPage(
         breadcrumb = {
-                @VrPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
-//        css = "fa-table",
-//        title = "Inscription Etudiant",
+            @VrPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
+        //        css = "fa-table",
+        //        title = "Inscription Etudiant",
         url = "modules/academic/syllabus",
         menu = "/Education/Config",
         securityKey = "Custom.Education.Syllabus"
 )
-public class SyllabusCtrl implements VrActionEnabler{
+public class SyllabusCtrl implements VrActionEnabler {
 
     private Model model = new Model();
 
@@ -32,11 +32,10 @@ public class SyllabusCtrl implements VrActionEnabler{
     }
 
     @Override
-    public boolean isEnabled(net.vpc.app.vainruling.core.service.pages.VrActionInfo data) {
-        return true;
+    public void checkEnabled(net.vpc.app.vainruling.VrActionInfo data) {
     }
 
-    @OnPageLoad
+    @VrOnPageLoad
     public void onRefresh(String cmd) {
         onRefresh();
 
@@ -49,8 +48,8 @@ public class SyllabusCtrl implements VrActionEnabler{
         //onRefresh();
     }
 
-
     public class Model {
+
         private AcademicCoursePlan academicCoursePlan;
 
         public AcademicCoursePlan getAcademicCoursePlan() {

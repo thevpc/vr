@@ -15,7 +15,6 @@ import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.util.*;
-import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.app.vainruling.core.service.editor.EditorConfig;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
@@ -33,6 +32,7 @@ import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacherPerio
 import net.vpc.app.vainruling.plugins.academic.service.util.DefaultCourseAssignmentFilter;
 import net.vpc.upa.Document;
 import net.vpc.upa.UPA;
+import net.vpc.app.vainruling.VrOnPageLoad;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -101,7 +101,7 @@ public abstract class AbstractCourseLoadCtrl {
         onRefresh();
     }
 
-    @OnPageLoad
+    @VrOnPageLoad
     public void onRefresh(String cmd) {
         try {
             CorePlugin core = VrApp.getBean(CorePlugin.class);

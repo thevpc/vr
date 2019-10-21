@@ -18,9 +18,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.vpc.app.vainruling.core.service.CorePluginSSE;
 import net.vpc.app.vainruling.core.service.CorePluginSecurity;
-import net.vpc.app.vainruling.core.service.extensions.VrImportFileOptions;
-import net.vpc.app.vainruling.core.service.pages.VrPage;
-import net.vpc.app.vainruling.core.service.pages.VrPathItem;
+import net.vpc.app.vainruling.VrImportFileOptions;
+import net.vpc.app.vainruling.VrPage;
+import net.vpc.app.vainruling.VrPathItem;
 
 /**
  * @author taha.bensalah@gmail.com

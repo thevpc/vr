@@ -6,11 +6,11 @@
 package net.vpc.app.vainruling.core.web.jsf.ctrl;
 
 import net.vpc.app.vainruling.core.service.CorePluginSecurity;
-import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.app.vainruling.core.web.jsf.Vr;
 
 import java.util.logging.Logger;
-import net.vpc.app.vainruling.core.service.pages.VrPage;
+import net.vpc.app.vainruling.VrPage;
+import net.vpc.app.vainruling.VrOnPageLoad;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -29,7 +29,7 @@ public class NotifyShutdownServerCtrl {
         return model;
     }
 
-    @OnPageLoad
+    @VrOnPageLoad
     public void onInvoke() {
         Vr.get().notifyShutdown();
     }

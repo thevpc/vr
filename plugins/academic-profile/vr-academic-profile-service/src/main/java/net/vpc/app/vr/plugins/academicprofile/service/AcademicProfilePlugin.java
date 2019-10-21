@@ -11,8 +11,6 @@ import net.vpc.app.vainruling.core.service.CorePluginSecurity;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppContact;
 import net.vpc.app.vainruling.core.service.model.AppUser;
-import net.vpc.app.vainruling.core.service.plugins.Install;
-import net.vpc.app.vainruling.core.service.plugins.Start;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.model.config.AcademicStudent;
 import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
@@ -20,10 +18,12 @@ import net.vpc.upa.Action;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.UPA;
 import net.vpc.upa.VoidAction;
-import net.vpc.app.vainruling.core.service.plugins.VrPlugin;
+import net.vpc.app.vainruling.VrPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPluginSecurity;
 import net.vpc.upa.Document;
 import net.vpc.upa.Entity;
+import net.vpc.app.vainruling.VrInstall;
+import net.vpc.app.vainruling.VrStart;
 
 /**
  * Created by vpc on 7/19/17.
@@ -31,12 +31,12 @@ import net.vpc.upa.Entity;
 @VrPlugin
 public class AcademicProfilePlugin {
 
-    @Install
+    @VrInstall
     public void installService() {
         //called if the plugin is installed : first install of new version
     }
 
-    @Start
+    @VrStart
     public void startService() {
         findOrCreateAcademicCVSection("Course");
         findOrCreateAcademicCVSection("Experience");

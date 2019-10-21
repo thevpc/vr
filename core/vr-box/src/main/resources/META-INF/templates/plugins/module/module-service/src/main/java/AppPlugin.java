@@ -1,9 +1,9 @@
 package ${{packageName(ProjectGroup)}}.${{packageName(ModuleName)}}.service;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
-import net.vpc.app.vainruling.core.service.plugins.VrPlugin;
-import net.vpc.app.vainruling.core.service.plugins.Install;
-import net.vpc.app.vainruling.core.service.plugins.Start;
+import net.vpc.app.vainruling.VrPlugin;
+import net.vpc.app.vainruling.VrInstall;
+import net.vpc.app.vainruling.VrStart;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.util.logging.Logger;
 
@@ -13,8 +13,7 @@ import java.util.logging.Logger;
  * @author ${{ConfigAuthor}}
  */
 @VrPlugin
-public class ${{className(ProjectName)}}
-${{className(ModuleName)}}Plugin {
+public class ${{className(ProjectName)}}${{className(ModuleName)}}Plugin {
     private static final Logger log = Logger.getLogger(${{className(ProjectName)}}${{className(ModuleName)}}Plugin.class.getName());
 
     @Autowired
@@ -25,8 +24,8 @@ ${{className(ModuleName)}}Plugin {
      * Called on application startup when the plugin is first bundled (as dependency) 
      * or when a new version is bundled
      */
-    @Install
-        private void onInstall() {
+    @VrInstall
+    private void onInstall() {
         //configure CMS properties
         core.setAppProperty("System.App.Description", null, "${{ProjectName}}");
         core.setAppProperty("System.App.Keywords", null, "${{ProjectName}}");
@@ -42,8 +41,8 @@ ${{className(ModuleName)}}Plugin {
      * module initialization process.
      * Called on each application startup (after @Install phase methods if any)
      */
-    @Start
-        private void onStart() {
+    @VrStart
+    private void onStart() {
     }
 
 }

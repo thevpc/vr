@@ -39,33 +39,33 @@ public class VrBoxProject extends DefaultProjectTemplate {
             public void onSetProperty(String propertyName, String value, ProjectTemplate project) {
                 switch (propertyName) {
                     case "ProjectName": {
-                        project.getConfigProperty("vrProjectShortTitle").setDefaultValue(StringUtils.isBlank(value) ? "my-project" : JavaUtils.toIdFormat(value));
-                        project.getConfigProperty("vrProjectLongTitle").setDefaultValue(StringUtils.isBlank(value) ? "My Project" : JavaUtils.toNameFormat(value));
+                        project.getConfigProperty("ProjectShortTitle").setDefaultValue(StringUtils.isBlank(value) ? "my-project" : JavaUtils.toIdFormat(value));
+                        project.getConfigProperty("ProjectLongTitle").setDefaultValue(StringUtils.isBlank(value) ? "My Project" : JavaUtils.toNameFormat(value));
                         break;
                     }
-                    case "vrConfigPublicTheme": {
-                        project.setConfigValue("vrEnableModule_vr-public-theme-crew", "true");
+                    case "ConfigPublicTheme": {
+                        project.setConfigValue("EnableModule_vr-public-theme-crew", "true");
                         break;
                     }
-                    case "vrConfigPrivateTheme": {
+                    case "ConfigPrivateTheme": {
                         if ("adminlte".equals(value)) {
-                            project.setConfigValue("vrEnableModule_vr-private-theme-adminlte", "true");
+                            project.setConfigValue("EnableModule_vr-private-theme-adminlte", "true");
                         }
                         break;
                     }
-                    case "vrEnableModule_vr-academic": {
+                    case "EnableModule_vr-academic": {
                         if ("false".equals(value)) {
-                            project.setConfigValue("vrEnableModule_vr-academic-report", value);
-                            project.setConfigValue("vrEnableModule_vr-academic-planning", value);
-                            project.setConfigValue("vrEnableModule_vr-academic-perf-eval", value);
-                            project.setConfigValue("vrEnableModule_vr-academic-profile", value);
-                            project.setConfigValue("vrEnableModule_vr-academic-project-based-learning", value);
+                            project.setConfigValue("EnableModule_vr-academic-report", value);
+                            project.setConfigValue("EnableModule_vr-academic-planning", value);
+                            project.setConfigValue("EnableModule_vr-academic-perf-eval", value);
+                            project.setConfigValue("EnableModule_vr-academic-profile", value);
+                            project.setConfigValue("EnableModule_vr-academic-project-based-learning", value);
                         }
                         break;
                     }
-                    case "vrEnableModule_vr-equipments": {
+                    case "EnableModule_vr-equipments": {
                         if ("false".equals(value)) {
-                            project.setConfigValue("vrEnableModule_vr-equipment-tracker", value);
+                            project.setConfigValue("EnableModule_vr-equipment-tracker", value);
                         }
                         break;
                     }
@@ -73,21 +73,21 @@ public class VrBoxProject extends DefaultProjectTemplate {
             }
         });
         registerDefaultsFunctions();
-        registerFunction("vrMavenModelDependency", new AbstractFunction() {
+        registerFunction("MavenModelDependency", new AbstractFunction() {
             @Override
             public Object evalArgs(Object[] args, MessageNameFormat format, StringToObject provider) {
                 String module = String.valueOf(args[0]);
                 return vrMavenModelDependency(module, VrBoxProject.this);
             }
         });
-        registerFunction("vrMavenServiceDependency", new AbstractFunction() {
+        registerFunction("MavenServiceDependency", new AbstractFunction() {
             @Override
             public Object evalArgs(Object[] args, MessageNameFormat format, StringToObject provider) {
                 String module = String.valueOf(args[0]);
                 return vrMavenServiceDependency(module, VrBoxProject.this);
             }
         });
-        registerFunction("vrMavenWebDependency", new AbstractFunction() {
+        registerFunction("MavenWebDependency", new AbstractFunction() {
             @Override
             public Object evalArgs(Object[] args, MessageNameFormat format, StringToObject provider) {
                 String module = String.valueOf(args[0]);
@@ -98,28 +98,28 @@ public class VrBoxProject extends DefaultProjectTemplate {
         setConfigProperty("ModuleName", "my-module", vf.DASHED_NAME, "Module Artifact Id", true);
         setConfigProperty("ModuleVersion", "1.0.0", vf.VERSION, "Module Version", false);
         setConfigProperty("ProjectName", "my-project", vf.DASHED_NAME, "Project Artifact Id", true);
-        setConfigProperty("vrProjectShortTitle", "my-project", vf.NAME, "Project Short Title", false);
-        setConfigProperty("vrProjectLongTitle", "my project name", vf.LABEL, "Project Title", false);
-        setConfigProperty("vrProjectVersion", "1.0.0", vf.VERSION, "Project Version", false);
+        setConfigProperty("ProjectShortTitle", "my-project", vf.NAME, "Project Short Title", false);
+        setConfigProperty("ProjectLongTitle", "my project name", vf.LABEL, "Project Title", false);
+        setConfigProperty("ProjectVersion", "1.0.0", vf.VERSION, "Project Version", false);
         setConfigProperty("ProjectGroup", "com.mycompany", vf.PACKAGE, "Project Maven Group Id", true);
         setConfigProperty("ProjectRootFolder", System.getProperty("user.dir"), vf.FOLDER, "Project Root Folder", true);
-        setConfigProperty("vrConfigCompany", "My Company", vf.LABEL, "Project Default Company", false);
-        setConfigProperty("vrConfigCountry", "Tunisia", vf.LABEL, "Project Default Country", false);
-        setConfigProperty("vrConfigIndustry", "Services", vf.LABEL, "Project Default Industry", false);
-        setConfigProperty("vrConfigAuthor", System.getProperty("user.name"), vf.STRING, "Author (you)", false);
-        setConfigProperty("vrConfigAuthorUrl", "http://" + System.getProperty("user.name") + "-company.com", vf.URL, "Author Url (your website)", false);
-        setConfigProperty("vrConfigAuthorCompany", System.getProperty("user.name") + " company", vf.LABEL, "Author Company (your company)", false);
-        setConfigProperty("vrFwkCoreVersion", "1.13.15", vf.VERSION, "VR Framework Version", false);
-        setConfigProperty("vrPageMenuPath", "/MyMenu", vf.MENU_PATH, "Page Menu Path", true);
-        setConfigProperty("vrPageName", "my-page", vf.DASHED_NAME, "Page Name", true);
-        setConfigProperty("vrConfigPublicTheme", "crew", vf.DASHED_NAME, "Public/External Theme", false);
-        setConfigProperty("vrConfigPrivateTheme", "adminlte", vf.DASHED_NAME, "Private/Admin Theme", false);
-        setConfigProperty("vrGeneratePageControllerExample", "true", vf.BOOLEAN, "Generate VR Page Controller Example", true);
+        setConfigProperty("ConfigCompany", "My Company", vf.LABEL, "Project Default Company", false);
+        setConfigProperty("ConfigCountry", "Tunisia", vf.LABEL, "Project Default Country", false);
+        setConfigProperty("ConfigIndustry", "Services", vf.LABEL, "Project Default Industry", false);
+        setConfigProperty("ConfigAuthor", System.getProperty("user.name"), vf.STRING, "Author (you)", false);
+        setConfigProperty("ConfigAuthorUrl", "http://" + System.getProperty("user.name") + "-company.com", vf.URL, "Author Url (your website)", false);
+        setConfigProperty("ConfigAuthorCompany", System.getProperty("user.name") + " company", vf.LABEL, "Author Company (your company)", false);
+        setConfigProperty("FwkCoreVersion", "1.13.16", vf.VERSION, "VR Framework Version", false);
+        setConfigProperty("PageMenuPath", "/MyMenu", vf.MENU_PATH, "Page Menu Path", true);
+        setConfigProperty("PageName", "my-page", vf.DASHED_NAME, "Page Name", true);
+        setConfigProperty("ConfigPublicTheme", "crew", vf.DASHED_NAME, "Public/External Theme", false);
+        setConfigProperty("ConfigPrivateTheme", "adminlte", vf.DASHED_NAME, "Private/Admin Theme", false);
+        setConfigProperty("GeneratePageControllerExample", "true", vf.BOOLEAN, "Generate VR Page Controller Example", true);
         getConfigProperty("ModuleName").setValue("main");
-        //"vrEnableModule_"
+        //"EnableModule_"
         for (VrModule vrModule : VrModules.getAll()) {
             if (isAskAll() || vrModule.isProminent()) {
-                setConfigProperty("vrEnableModule_" + vrModule.getBaseArtifactId(), "true", vf.BOOLEAN,
+                setConfigProperty("EnableModule_" + vrModule.getBaseArtifactId(), "true", vf.BOOLEAN,
                         "Activate " + vrModule.getBaseArtifactId() + " Module (" + vrModule.getTitle() + ")", true
                 );
             }
@@ -192,11 +192,11 @@ public class VrBoxProject extends DefaultProjectTemplate {
         }
         if (!archetypesSet.isEmpty()) {
             for (VrModule vrModule : VrModules.getAll()) {
-                setConfigValue("vrEnableModule_" + vrModule.getBaseArtifactId(), "false");
+                setConfigValue("EnableModule_" + vrModule.getBaseArtifactId(), "false");
                 if (!archetypesSet.contains("none")) {
                     for (String archetype : archetypes) {
                         if (vrModule.acceptArchetype(archetype)) {
-                            setConfigValue("vrEnableModule_" + vrModule.getBaseArtifactId(), "true");
+                            setConfigValue("EnableModule_" + vrModule.getBaseArtifactId(), "true");
                         }
                     }
                 }
@@ -210,14 +210,14 @@ public class VrBoxProject extends DefaultProjectTemplate {
                     .latest().getResultIds().required();
             if (v != null) {
                 println("Detected VR version ==%s==", v.getVersion());
-                getConfigProperty("vrFwkCoreVersion").setDefaultValue(v.getVersion().getValue());
+                getConfigProperty("FwkCoreVersion").setDefaultValue(v.getVersion().getValue());
                 newVersion = true;
             }
         } catch (Exception ex) {
             //ignore
         }
         if (!newVersion) {
-            println("Using base VR version " + getConfigProperty("vrFwkCoreVersion").getValue());
+            println("Using base VR version " + getConfigProperty("FwkCoreVersion").getValue());
         }
         println("Generating ==%s==...", "new VR project");
         copyXml("pom.xml", "/");
@@ -284,13 +284,13 @@ public class VrBoxProject extends DefaultProjectTemplate {
     }
 
     public void createModuleWebJsf_Page(String name) throws UncheckedIOException {
-        setConfigValue("vrPageName", name);
+        setConfigValue("PageName", name);
         copyXml("/plugins/module/module-web/src/main/resources/META-INF/resources/modules/module/page.xhtml", "src/main/resources/META-INF/resources/modules/${ModuleName}", "${vrPageName}.xhtml");
         copyJava("/plugins/module/module-web/src/main/java/AppPageCtrl.java", "src/main/java");
         targetAppendProperties("src/main/resources/i18n/presentation.properties",
                 new String[]{
-                    "Controller.${{varName(vrPageName)}}", "${{vrPageName}}",
-                    "Package.${{pathToPackage(vrPageMenuPath)}}", "Name for ${{pathToPackage(vrPageMenuPath)}}"
+                    "Controller.${{varName(vrPageName)}}", "${{PageName}}",
+                    "Package.${{pathToPackage(PageMenuPath)}}", "Name for ${{pathToPackage(PageMenuPath)}}"
                 }
         );
     }
@@ -304,7 +304,7 @@ public class VrBoxProject extends DefaultProjectTemplate {
 
         copyXml("/plugins/module/module-web/src/main/resources/i18n/presentation.properties", "src/main/resources/i18n");
         targetMkdirs("src/main/java/");
-        if (getConfigProperty("vrGeneratePageControllerExample").getBoolean(true)) {
+        if (getConfigProperty("GeneratePageControllerExample").getBoolean(true)) {
             createModuleWebJsf_Page(null);
         }
     }
@@ -324,7 +324,7 @@ public class VrBoxProject extends DefaultProjectTemplate {
     }
 
     public static String vrMavenModelDependency(String module, ProjectTemplate config) {
-        boolean ok = config.getConfigProperty("vrEnableModule_" + module).getBoolean(true);
+        boolean ok = config.getConfigProperty("EnableModule_" + module).getBoolean(true);
         if (ok) {
             VrModule mm = VrModules.get(module);
             if (mm != null && mm.isModel()) {
@@ -339,7 +339,7 @@ public class VrBoxProject extends DefaultProjectTemplate {
     }
 
     public static String vrMavenServiceDependency(String module, ProjectTemplate config) {
-        boolean ok = config.getConfigProperty("vrEnableModule_" + module).getBoolean(true);
+        boolean ok = config.getConfigProperty("EnableModule_" + module).getBoolean(true);
         if (ok) {
             VrModule mm = VrModules.get(module);
             if (mm != null && mm.isService()) {
@@ -354,7 +354,7 @@ public class VrBoxProject extends DefaultProjectTemplate {
     }
 
     public static String vrMavenWebDependency(String module, ProjectTemplate config) {
-        boolean ok = config.getConfigProperty("vrEnableModule_" + module).getBoolean(true);
+        boolean ok = config.getConfigProperty("EnableModule_" + module).getBoolean(true);
         if (ok) {
             VrModule mm = VrModules.get(module);
             if (mm != null && mm.isWeb()) {

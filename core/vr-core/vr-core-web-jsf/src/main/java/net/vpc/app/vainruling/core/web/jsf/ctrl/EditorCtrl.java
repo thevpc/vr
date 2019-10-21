@@ -5,14 +5,13 @@
  */
 package net.vpc.app.vainruling.core.web.jsf.ctrl;
 
-import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
-import net.vpc.app.vainruling.core.service.pages.VrPageHistoryItem;
-import net.vpc.app.vainruling.core.service.pages.VrPageInfo;
+import net.vpc.app.vainruling.VrPageHistoryItem;
+import net.vpc.app.vainruling.VrPageInfo;
 import net.vpc.app.vainruling.core.service.editor.DefaultEditorFieldSelection;
 import net.vpc.app.vainruling.core.service.editor.AutoFilterData;
 import net.vpc.app.vainruling.core.service.editor.AutoFilter;
 import net.vpc.app.vainruling.core.service.editor.EditorFieldSelection;
-import net.vpc.app.vainruling.core.service.editor.EntityEditorSearch;
+import net.vpc.app.vainruling.VrEditorSearch;
 import net.vpc.app.vainruling.core.service.editor.EntityEditorSimpleSearch;
 import net.vpc.app.vainruling.core.service.editor.EditorRow;
 import net.vpc.app.vainruling.core.service.editor.ActionDialogResult;
@@ -33,7 +32,7 @@ import net.vpc.app.vainruling.core.service.util.*;
 import net.vpc.app.vainruling.core.web.*;
 import net.vpc.app.vainruling.core.web.jsf.DialogBuilder;
 import net.vpc.app.vainruling.core.web.jsf.ctrl.obj.*;
-import net.vpc.app.vainruling.core.service.pages.VrBreadcrumbItem;
+import net.vpc.app.vainruling.VrBreadcrumbItem;
 import net.vpc.app.vainruling.core.web.menu.VrMenuManager;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
@@ -63,9 +62,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.bean.ManagedBean;
 import net.vpc.app.vainruling.core.web.jsf.Vr;
-import net.vpc.app.vainruling.core.service.pages.VrPageInfoResolver;
-import net.vpc.app.vainruling.core.service.pages.VrPage;
-import net.vpc.app.vainruling.core.service.pages.VrPathItem;
+import net.vpc.app.vainruling.VrPageInfoResolver;
+import net.vpc.app.vainruling.VrPage;
+import net.vpc.app.vainruling.VrPathItem;
+import net.vpc.app.vainruling.VrOnPageLoad;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -640,7 +640,7 @@ public class EditorCtrl extends AbstractObjectCtrl<EditorRow> implements VrPageI
         }
     }
 
-    @OnPageLoad
+    @VrOnPageLoad
     public void onPageLoad(String cmd) {
         getAutoFilters().clear();
         getModel().setSearch(null);
@@ -674,7 +674,7 @@ public class EditorCtrl extends AbstractObjectCtrl<EditorRow> implements VrPageI
     @Override
     public void reloadPage(String cmd, boolean enableCustomization) {
         enabledButtons.clear();
-        EntityEditorSearch oldSearch = getModel().getSearch();
+        VrEditorSearch oldSearch = getModel().getSearch();
         EditorFieldSelection oldFieldSelection = getModel().getFieldSelection();
         Set<String> oldDisabledFields = getModel().getDisabledFields();
         String oldEntityName = getModel().getEntityName();
@@ -1601,7 +1601,7 @@ public class EditorCtrl extends AbstractObjectCtrl<EditorRow> implements VrPageI
     }
 
     public void onSimpleSearch() {
-        EntityEditorSearch oldSearch = getModel().getSearch();
+        VrEditorSearch oldSearch = getModel().getSearch();
         EntityEditorSimpleSearch newSearch = null;
         if (oldSearch instanceof EntityEditorSimpleSearch) {
             newSearch = (EntityEditorSimpleSearch) oldSearch;

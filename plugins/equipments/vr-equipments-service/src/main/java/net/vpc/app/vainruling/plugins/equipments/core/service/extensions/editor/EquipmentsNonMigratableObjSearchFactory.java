@@ -7,18 +7,18 @@ package net.vpc.app.vainruling.plugins.equipments.core.service.extensions.editor
 
 import java.util.ArrayList;
 import java.util.List;
-import net.vpc.app.vainruling.core.service.editor.ForEntity;
 import net.vpc.app.vainruling.core.service.editor.HashtagObjSearchFactory;
 import net.vpc.app.vainruling.plugins.equipments.core.service.EquipmentPlugin;
 import net.vpc.upa.Document;
 import net.vpc.upa.Entity;
 import org.springframework.stereotype.Component;
+import net.vpc.app.vainruling.VrEntityName;
 
 /**
  *
  * @author vpc
  */
-@ForEntity("Equipment")
+@VrEntityName("Equipment")
 @Component
 public class EquipmentsNonMigratableObjSearchFactory extends HashtagObjSearchFactory {
 

@@ -8,7 +8,6 @@ package net.vpc.app.vainruling.plugins.academic.web;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.*;
-import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.app.vainruling.core.web.jsf.ctrl.DocumentUploadListener;
 import net.vpc.app.vainruling.core.web.jsf.ctrl.DocumentsCtrl;
 import net.vpc.app.vainruling.core.web.jsf.ctrl.dialog.DocumentsUploadDialogCtrl;
@@ -34,7 +33,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.vpc.app.vainruling.core.service.pages.VrActionEnabler;
+import net.vpc.app.vainruling.VrActionEnabler;
+import net.vpc.app.vainruling.VrOnPageLoad;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -47,7 +47,7 @@ import net.vpc.app.vainruling.core.service.pages.VrActionEnabler;
 //        url = "modules/academic/my-student-info",
 //        menu = "/Desktop"
 //)
-public class MyStudentInfoCtrl implements DocumentUploadListener ,VrActionEnabler{
+public class MyStudentInfoCtrl implements DocumentUploadListener, VrActionEnabler {
 
     private Model model = new Model();
 
@@ -63,7 +63,7 @@ public class MyStudentInfoCtrl implements DocumentUploadListener ,VrActionEnable
                     try {
                         PersistenceUnit pu = UPA.getPersistenceUnit();
                         if (getModel().isInsertMode()) {
-                            AcademicPlugin.get().importStudent(CorePlugin.get().getCurrentPeriod().getId(),new AcademicStudentImport(getModel().getStudent()));
+                            AcademicPlugin.get().importStudent(CorePlugin.get().getCurrentPeriod().getId(), new AcademicStudentImport(getModel().getStudent()));
                         } else {
                             pu.merge(getModel().getStudent());
                             pu.merge(getModel().getStudent().getUser());
@@ -82,7 +82,7 @@ public class MyStudentInfoCtrl implements DocumentUploadListener ,VrActionEnable
         }
     }
 
-    @OnPageLoad
+    @VrOnPageLoad
     public void onRefresh(String cmd) {
         onRefresh();
 
@@ -95,24 +95,24 @@ public class MyStudentInfoCtrl implements DocumentUploadListener ,VrActionEnable
             c.setUser(new AppUser());
         }
         getModel().setStudent(c);
-        ValidatorProgressHelper h=new ValidatorProgressHelper();
-        h.checkNotDefault(c.getUser().getFirstName(),"Missing FirstName");
-        h.checkNotDefault(c.getUser().getLastName(),"Missing LastName");
-        h.checkNotDefault(c.getUser().getEmail(),"Missing Email");
-        h.checkNotDefault(c.getUser().getPhone1(),"Missing Phone1");
-        h.checkNotDefault(c.getUser().getCivility(),"Missing Civility");
-        h.checkNotDefault(c.getUser().getGender(),"Missing Gender");
-        h.checkNotDefault(c.getUser().getDepartment(),"Missing Department");
-        h.checkNotDefault(c.getBaccalaureateClass(),"Missing BaccalaureateClass");
-        h.checkNotDefault(c.getBaccalaureateScore(),"Missing BaccalaureateScore");
-        h.checkNotDefault(c.getPreClassType(),"Missing PreClassType");
-        h.checkNotDefault(c.getPreClass(),"Missing PreClass");
-        h.checkNotDefault(c.getPreClassRankByProgram(),"Missing PreClassRankByProgram");
-        h.checkNotDefault(c.getPreClassScore(),"Missing PreClassScore");
-        h.check(c.getPreClassRank()>0 ||c.getPreClassRank2()>0,"Missing ");
-        h.check(c.getPreClassChoice1()!=null || !StringUtils.isBlank(c.getPreClassChoice1Other()));
-        h.check(c.getPreClassChoice2()!=null || !StringUtils.isBlank(c.getPreClassChoice2Other()));
-        h.check(c.getPreClassChoice3()!=null || !StringUtils.isBlank(c.getPreClassChoice3Other()));
+        ValidatorProgressHelper h = new ValidatorProgressHelper();
+        h.checkNotDefault(c.getUser().getFirstName(), "Missing FirstName");
+        h.checkNotDefault(c.getUser().getLastName(), "Missing LastName");
+        h.checkNotDefault(c.getUser().getEmail(), "Missing Email");
+        h.checkNotDefault(c.getUser().getPhone1(), "Missing Phone1");
+        h.checkNotDefault(c.getUser().getCivility(), "Missing Civility");
+        h.checkNotDefault(c.getUser().getGender(), "Missing Gender");
+        h.checkNotDefault(c.getUser().getDepartment(), "Missing Department");
+        h.checkNotDefault(c.getBaccalaureateClass(), "Missing BaccalaureateClass");
+        h.checkNotDefault(c.getBaccalaureateScore(), "Missing BaccalaureateScore");
+        h.checkNotDefault(c.getPreClassType(), "Missing PreClassType");
+        h.checkNotDefault(c.getPreClass(), "Missing PreClass");
+        h.checkNotDefault(c.getPreClassRankByProgram(), "Missing PreClassRankByProgram");
+        h.checkNotDefault(c.getPreClassScore(), "Missing PreClassScore");
+        h.check(c.getPreClassRank() > 0 || c.getPreClassRank2() > 0, "Missing ");
+        h.check(c.getPreClassChoice1() != null || !StringUtils.isBlank(c.getPreClassChoice1Other()));
+        h.check(c.getPreClassChoice2() != null || !StringUtils.isBlank(c.getPreClassChoice2Other()));
+        h.check(c.getPreClassChoice3() != null || !StringUtils.isBlank(c.getPreClassChoice3Other()));
         getModel().setCompletion(h.getCompletionPercent());
         updateLists();
     }
@@ -137,9 +137,9 @@ public class MyStudentInfoCtrl implements DocumentUploadListener ,VrActionEnable
     public void onRequestUploadPhoto() {
         DocumentsUploadDialogCtrl docs = VrApp.getBean(DocumentsUploadDialogCtrl.class);
         docs.openCustomDialog(new DocumentsUploadDialogCtrl.Config()
-                .setSizeLimit(1024*1024)
-                .setExtensions("png,jpg,jpeg")
-                , this);
+                .setSizeLimit(1024 * 1024)
+                .setExtensions("png,jpg,jpeg"),
+                this);
     }
 
     @Override
@@ -154,14 +154,12 @@ public class MyStudentInfoCtrl implements DocumentUploadListener ,VrActionEnable
                 VFile filePath = CorePlugin.get().getUserFolder(c.getUser().getLogin()).get("/Config/photo." + e);
                 if (filePath != null) {
                     filePath.getParentFile().mkdirs();
-                    VFile[] old=filePath.getParentFile().listFiles(new VFileFilter() {
+                    VFile[] old = filePath.getParentFile().listFiles(new VFileFilter() {
                         @Override
                         public boolean accept(VFile pathname) {
-                            if(
-                                    pathname.getName().equalsIgnoreCase("photo.png")
-                                    ||pathname.getName().equalsIgnoreCase("photo.jpg")
-                                    ||pathname.getName().equalsIgnoreCase("photo.jpeg")
-                                    ){
+                            if (pathname.getName().equalsIgnoreCase("photo.png")
+                                    || pathname.getName().equalsIgnoreCase("photo.jpg")
+                                    || pathname.getName().equalsIgnoreCase("photo.jpeg")) {
                                 return true;
                             }
                             return false;
@@ -183,7 +181,7 @@ public class MyStudentInfoCtrl implements DocumentUploadListener ,VrActionEnable
                         }
                     });
                 }
-            }else{
+            } else {
                 FacesUtils.addErrorMessage(event.getFile().getFileName() + " has invalid extension");
             }
         } catch (Exception ex) {
@@ -196,8 +194,10 @@ public class MyStudentInfoCtrl implements DocumentUploadListener ,VrActionEnable
     }
 
     @Override
-    public boolean isEnabled(net.vpc.app.vainruling.core.service.pages.VrActionInfo data) {
-        return AcademicPlugin.get().getCurrentStudent()!=null;
+    public void checkEnabled(net.vpc.app.vainruling.VrActionInfo data) {
+        if (AcademicPlugin.get().getCurrentStudent() == null) {
+            throw new SecurityException("Expected student");
+        }
     }
 
     public class Model {
@@ -211,7 +211,7 @@ public class MyStudentInfoCtrl implements DocumentUploadListener ,VrActionEnable
         List<SelectItem> prepItems = new ArrayList<>();
         List<SelectItem> classItems = new ArrayList<>();
         private boolean insertMode = false;
-        private double completion=40;
+        private double completion = 40;
 
         public double getCompletion() {
             return completion;

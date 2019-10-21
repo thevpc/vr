@@ -5,6 +5,7 @@
  */
 package net.vpc.app.vainruling.core.service.util;
 
+import com.google.gson.JsonElement;
 import net.vpc.common.strings.StringBuilder2;
 import net.vpc.common.strings.StringUtils;
 
@@ -14,20 +15,39 @@ import java.util.*;
  * @author taha.bensalah@gmail.com
  */
 public class TextSearchFilter {
-
+    
     private String expression;
     private List<String> tokens;
     private ObjectToMapConverter converter;
+    
+    public static TextSearchFilter forJson(String expression) {
+        return new TextSearchFilter(expression, new ObjectToMapConverter() {
+            @Override
+            public Map<String, Object> convert(Object o) {
+                JsonElement o2 = VrUtils.GSON.toJsonTree(o);
+                return VrUtils.GSON.fromJson(o2, Map.class);
+            }
+        });
+    }
+
+    public static TextSearchFilter forEntity(String expression,String entityName) {
+        return new TextSearchFilter(expression, new ObjectToMapConverter() {
+                    @Override
+                    public Map<String, Object> convert(Object o) {
+                        return VrUtils.toStringRecord(o,entityName);
+                    }
+                }
+        );
+    }
 
     public TextSearchFilter(String expression, ObjectToMapConverter converter) {
-        this.expression = expression;
         this.converter = converter;
         setExpression(expression);
     }
-
+    
     private static List<String> tokenize(String expr) {
         ArrayList<String> all = new ArrayList<>();
-        if(!StringUtils.isBlank(expr)) {
+        if (!StringUtils.isBlank(expr)) {
             int i = 0;
             StringBuilder2 ss = new StringBuilder2();
             while (i < expr.length()) {
@@ -58,7 +78,7 @@ public class TextSearchFilter {
                     }
                 } else if (Character.isWhitespace(c)) {
                     if (ss.length() > 0) {
-                        all.add(normalize(ss.toString()));
+                        all.add(VrUtils.normalize(ss.toString()));
                         ss.delete();
                     }
                 } else {
@@ -67,29 +87,21 @@ public class TextSearchFilter {
                 i++;
             }
             if (ss.length() > 0) {
-                all.add(normalize(ss.toString()));
+                all.add(VrUtils.normalize(ss.toString()));
             }
         }
         return all;
     }
-
-    private static String normalize(Object s) {
-        if (s == null) {
-            return "";
-        }
-        String ss = String.valueOf(s);
-        return VrUtils.normalizeName(ss);
-    }
-
+    
     public String getExpression() {
         return expression;
     }
-
+    
     public void setExpression(String expression) {
         this.expression = expression;
         tokens = tokenize(expression);
     }
-
+    
     public List filterList(List list) {
         List oldList = list;
         if (StringUtils.isBlank(expression)) {
@@ -97,14 +109,14 @@ public class TextSearchFilter {
         }
         List newList = new ArrayList();
         for (Object object : oldList) {
-            Map<String, String> m = normalizeMap(this.converter.convert(object));
+            Map<String, String> m = VrUtils.normalizeMap(this.converter.convert(object));
             if (acceptStringDocument(m)) {
                 newList.add(object);
             }
         }
         return newList;
     }
-
+    
     private boolean acceptStringDocument(Map<String, String> rec) {
         if (tokens == null || tokens.isEmpty()) {
             return true;
@@ -123,15 +135,5 @@ public class TextSearchFilter {
         }
         return true;
     }
-
-    private Map<String, String> normalizeMap(Map<String, Object> map) {
-        Map<String, String> map2=new HashMap<>();
-        for (Map.Entry<String, Object> e : map.entrySet()) {
-            String v = normalize(e.getValue());
-            if (!StringUtils.isBlank(v)) {
-                map2.put(e.getKey(), v);
-            }
-        }
-        return map2;
-    }
+    
 }

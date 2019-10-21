@@ -6,17 +6,17 @@
 package net.vpc.app.vainruling.plugins.academic.perfeval.service.extensions.editor;
 
 import java.util.List;
-import net.vpc.app.vainruling.core.service.editor.ForEntity;
 import net.vpc.app.vainruling.core.service.editor.HashtagObjSearchFactory;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.upa.Entity;
 import org.springframework.stereotype.Component;
+import net.vpc.app.vainruling.VrEntityName;
 
 /**
  *
  * @author vpc
  */
-@ForEntity("AcademicCourseAssignment")
+@VrEntityName("AcademicCourseAssignment")
 @Component
 public class AcademicCourseAssignmentObjSearchFactory extends HashtagObjSearchFactory {
 

@@ -8,7 +8,6 @@ package net.vpc.app.vainruling.plugins.calendars.service;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.plugins.Start;
 import net.vpc.app.vainruling.plugins.calendars.service.dto.WeekCalendar;
 import net.vpc.app.vainruling.plugins.calendars.service.dto.CalendarDay;
 import net.vpc.app.vainruling.plugins.calendars.service.dto.CalendarHour;
@@ -16,7 +15,7 @@ import net.vpc.common.strings.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
-import net.vpc.app.vainruling.core.service.plugins.VrPlugin;
+import net.vpc.app.vainruling.VrPlugin;
 import net.vpc.app.vainruling.plugins.calendars.model.AppCalendar;
 import net.vpc.app.vainruling.plugins.calendars.model.AppCalendarEvent;
 import net.vpc.app.vainruling.plugins.calendars.model.RuntimeAppCalendarEvent;
@@ -26,6 +25,7 @@ import net.vpc.upa.Action;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.UPA;
 import net.vpc.upa.VoidAction;
+import net.vpc.app.vainruling.VrStart;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -38,7 +38,7 @@ public class CalendarsPlugin {
     Map<String, AppWeekCalendarProvider> weekCalendarProviders;
     Map<String, AppCalendarService> calendarEventServices;
 
-    @Start
+    @VrStart
     public void onStart() {
         weekCalendarProviders = VrApp.getContext().getBeansOfType(AppWeekCalendarProvider.class);
         calendarEventServices = VrApp.getContext().getBeansOfType(AppCalendarService.class);
@@ -70,21 +70,26 @@ public class CalendarsPlugin {
     }
 
     public WeekCalendar findMergedUserPublicWeekCalendar(int userId, String newName) {
-        if (StringUtils.isBlank(newName)) {
-            newName = findUserName(userId);
-        }
-        return mergeWeekCalendars(findPlainUserPublicWeekCalendars(userId), newName);
+        return UPA.getPersistenceUnit().invoke(() -> {
+            String newName1 = newName;
+            if (StringUtils.isBlank(newName1)) {
+                newName1 = findUserName(userId);
+            }
+            return mergeWeekCalendars(findPlainUserPublicWeekCalendars(userId), newName1);
+        });
     }
 
     public List<WeekCalendar> findUserPublicWeekCalendars(int userId, boolean merge) {
-        List<WeekCalendar> all = findPlainUserPublicWeekCalendars(userId);
-        if (merge) {
-            String name = findUserName(userId);
-            if (all.size() > 1) {
-                all.add(0, mergeWeekCalendars(all, name + " (*)"));
+        return UPA.getPersistenceUnit().invoke(() -> {
+            List<WeekCalendar> all = findPlainUserPublicWeekCalendars(userId);
+            if (merge) {
+                String name = findUserName(userId);
+                if (all.size() > 1) {
+                    all.add(0, mergeWeekCalendars(all, name + " (*)"));
+                }
             }
-        }
-        return all;
+            return all;
+        });
     }
 
     public WeekCalendar mergeWeekCalendars(List<WeekCalendar> plannings, String newName) {

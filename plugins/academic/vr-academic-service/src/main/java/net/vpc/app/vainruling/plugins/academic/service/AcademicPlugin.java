@@ -59,8 +59,6 @@ import net.vpc.app.vainruling.core.service.TraceService;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.cache.CacheService;
 import net.vpc.app.vainruling.core.service.model.*;
-import net.vpc.app.vainruling.core.service.plugins.Install;
-import net.vpc.app.vainruling.core.service.plugins.Start;
 import net.vpc.app.vainruling.core.service.stats.KPI;
 import net.vpc.app.vainruling.core.service.stats.KPIGroupBy;
 import net.vpc.app.vainruling.core.service.stats.KPIProcessProcessor;
@@ -88,7 +86,7 @@ import java.util.function.Function;
 import java.util.logging.Logger;
 import net.vpc.app.vainruling.core.service.ProfileRightBuilder;
 
-import net.vpc.app.vainruling.core.service.plugins.VrPlugin;
+import net.vpc.app.vainruling.VrPlugin;
 import net.vpc.app.vainruling.core.service.util.DefaultObjectToMapConverter;
 import net.vpc.app.vainruling.core.service.util.ObjectToMapConverter;
 import net.vpc.app.vainruling.core.service.util.TextSearchFilter;
@@ -100,6 +98,8 @@ import net.vpc.common.mon.ProgressMonitor;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.UPA;
+import net.vpc.app.vainruling.VrInstall;
+import net.vpc.app.vainruling.VrStart;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -137,7 +137,7 @@ public class AcademicPlugin {
         return VrApp.getBean(AcademicPlugin.class);
     }
 
-    @Install
+    @VrInstall
     private void onInstall() {
         //this is workaround, because
         if (core == null) {
@@ -155,7 +155,7 @@ public class AcademicPlugin {
         }
     }
 
-    @Start
+    @VrStart
     private void onStart() {
         //this is workaround, because
         if (core == null) {

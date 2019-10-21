@@ -7,10 +7,8 @@ package net.vpc.app.vainruling.plugins.mailbox.web;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.content.MessageTextService;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
-import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.app.vainruling.plugins.inbox.service.MailboxPlugin;
 import net.vpc.app.vainruling.plugins.inbox.service.MailboxPluginSecurity;
 import net.vpc.app.vainruling.plugins.inbox.model.MailboxFolder;
@@ -23,9 +21,11 @@ import java.util.List;
 import net.vpc.app.vainruling.core.service.content.ContentPath;
 import net.vpc.app.vainruling.core.service.content.ContentText;
 import net.vpc.app.vainruling.core.service.model.strict.AppUserStrict;
-import net.vpc.app.vainruling.core.service.notification.PollAware;
-import net.vpc.app.vainruling.core.service.pages.VrPage;
-import net.vpc.app.vainruling.core.service.pages.VrPathItem;
+import net.vpc.app.vainruling.VrPage;
+import net.vpc.app.vainruling.VrPathItem;
+import net.vpc.app.vainruling.VrPollService;
+import net.vpc.app.vainruling.VrMessageTextService;
+import net.vpc.app.vainruling.VrOnPageLoad;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -37,7 +37,7 @@ import net.vpc.app.vainruling.core.service.pages.VrPathItem;
         //        title = "Apercu Messages",
         securityKey = MailboxPluginSecurity.RIGHT_CUSTOM_INBOX
 )
-public class MailboxPreviewCtrl implements PollAware, MessageTextService {
+public class MailboxPreviewCtrl implements VrPollService, VrMessageTextService {
 
     @Override
     public void onPoll() {
@@ -49,7 +49,7 @@ public class MailboxPreviewCtrl implements PollAware, MessageTextService {
         return "Mailbox".equals(name) ? 1 : -1;
     }
 
-    @OnPageLoad
+    @VrOnPageLoad
 //    @PostConstruct
     public void onRefresh() {
         if (true) {

@@ -5,11 +5,11 @@ import java.util.List;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
 import net.vpc.app.vr.plugins.academicprofile.model.AcademicTeacherCV;
 import org.springframework.beans.factory.annotation.Autowired;
+import net.vpc.app.vainruling.VrOnPageLoad;
 
 /*@VrController(
         breadcrumb = {
@@ -24,7 +24,7 @@ public class AcademicTeacherDirectoryCtrl {
     @Autowired
     AcademicPlugin ap;
     
-    @OnPageLoad
+    @VrOnPageLoad
     public void onPageLoad() {
         //getModel().setTeacherList(ap.findTeachers());
         getModel().setTeacherContactList(loadList());

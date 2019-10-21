@@ -2,15 +2,15 @@ package net.vpc.app.vainruling.core.web.jsf.ctrl;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.CorePluginSecurity;
-import net.vpc.app.vainruling.core.service.util.CompletionInfo;
-import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
-import net.vpc.app.vainruling.core.service.pages.VrPage;
-import net.vpc.app.vainruling.core.service.pages.VrPathItem;
+import net.vpc.app.vainruling.VrPage;
+import net.vpc.app.vainruling.VrPathItem;
+import net.vpc.app.vainruling.VrCompletionInfo;
+import net.vpc.app.vainruling.VrOnPageLoad;
 
 @VrPage(
         breadcrumb = {
@@ -27,7 +27,7 @@ import net.vpc.app.vainruling.core.service.pages.VrPathItem;
     @Autowired
     private CorePlugin core;
 
-    @OnPageLoad
+    @VrOnPageLoad
     public void init(){
         refresh();
     }
@@ -41,13 +41,13 @@ import net.vpc.app.vainruling.core.service.pages.VrPathItem;
     }
 
     public static class Model{
-        private List<CompletionInfo> list=new ArrayList<>();
+        private List<VrCompletionInfo> list=new ArrayList<>();
 
-        public List<CompletionInfo> getList() {
+        public List<VrCompletionInfo> getList() {
             return list;
         }
 
-        public void setList(List<CompletionInfo> list) {
+        public void setList(List<VrCompletionInfo> list) {
             this.list = list;
         }
     }

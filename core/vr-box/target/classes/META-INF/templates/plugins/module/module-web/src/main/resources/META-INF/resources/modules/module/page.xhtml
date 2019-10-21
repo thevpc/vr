@@ -15,11 +15,11 @@
             <ui:define name="content">
                 <h:form >
                     <!--put your content here-->
-                    <h:outputText value="#{${{varName(vrPageName)}}Ctrl.model.message}"/>
+                    <h:outputText value="#{${{varName(PageName)}}Ctrl.model.message}"/>
                     <br/>
-                    <h:outputText value="#{${{varName(vrPageName)}}Ctrl.model.counter}"/>
+                    <h:outputText value="#{${{varName(PageName)}}Ctrl.model.counter}"/>
                     <br/>
-                    <h:commandButton action="#{${{varName(vrPageName)}}Ctrl.onUpdateCounter}" value="increment counter"/>
+                    <h:commandButton action="#{${{varName(PageName)}}Ctrl.onUpdateCounter}" value="increment counter"/>
                 </h:form>
             </ui:define>
         </ui:composition>

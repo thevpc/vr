@@ -5,9 +5,7 @@
  */
 package net.vpc.app.vainruling.core.service.editor;
 
-import net.vpc.app.vainruling.core.service.editor.EntityViewAction;
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.editor.EntityAction;
 import net.vpc.app.vainruling.core.service.util.PlatformReflector;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +13,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import net.vpc.app.vainruling.VrEditorActionProcessor;
+import net.vpc.app.vainruling.VrEditorAction;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -48,16 +48,16 @@ public class ActionDialogManager {
     public synchronized Map<String, ActionDialogAdapter> getByActionName() {
         if (byActionName == null) {
             byActionName = new HashMap<>();
-            for (Object o : VrApp.getBeansMapForAnnotations(EntityAction.class).values()) {
-                if (o instanceof EntityViewAction) {
-                    EntityViewAction a = (EntityViewAction) o;
+            for (Object o : VrApp.getBeansMapForAnnotations(VrEditorAction.class).values()) {
+                if (o instanceof VrEditorActionProcessor) {
+                    VrEditorActionProcessor a = (VrEditorActionProcessor) o;
                     ActionDialogAdapter aa = new ActionDialogAdapter(a);
                     if (byActionName.containsKey(aa.getId())) {
                         throw new IllegalArgumentException("Ambiguous name " + aa.getId());
                     }
                     byActionName.put(aa.getId(), aa);
                 } else {
-                    throw new IllegalArgumentException(PlatformReflector.getTargetClass(o) + " must implement " + EntityViewAction.class);
+                    throw new IllegalArgumentException(PlatformReflector.getTargetClass(o) + " must implement " + VrEditorActionProcessor.class);
                 }
             }
         }

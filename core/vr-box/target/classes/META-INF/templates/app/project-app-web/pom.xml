@@ -47,7 +47,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <github.global.server>github</github.global.server>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
-        <version.vr>${{vrFwkCoreVersion}}</version.vr>
+        <version.vr>${{FwkCoreVersion}}</version.vr>
     </properties>
 
     <dependencies>
@@ -197,10 +197,10 @@
         <repository>
             <id>vpc-public-maven</id>
             <url>https://raw.github.com/thevpc/vpc-public-maven/master</url>
-            <snapshots>
+<!--            <snapshots>
                 <enabled>true</enabled>
                 <updatePolicy>always</updatePolicy>
-            </snapshots>
+            </snapshots>-->
         </repository>
     </repositories>
 </project>

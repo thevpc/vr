@@ -10,7 +10,6 @@ import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.vfs.VFile;
 import net.vpc.common.vfs.VirtualFileSystem;
-import net.vpc.upa.Action;
 import net.vpc.upa.UPA;
 import org.apache.commons.fileupload.MultipartStream;
 
@@ -60,7 +59,7 @@ public class FSServlet extends HttpServlet {
                 } catch (java.io.IOException ex) {
                     logAbortException(file, ex);
                 } catch (UncheckedIOException ex) {
-                    IOException ex2=(IOException) ex.getCause();
+                    IOException ex2 = (IOException) ex.getCause();
                     logAbortException(file, ex2);
                 }
             } finally {
@@ -157,63 +156,54 @@ public class FSServlet extends HttpServlet {
             return null;
         }
         String type = request.getParameter("t");
+        String cacheKey = "FS." + type + "." + pathInfo;
+        Object cached = request.getAttribute(cacheKey);
+        if (cached != null) {
+            if (cached instanceof VFile) {
+                return (VFile) cached;
+            }else{
+                return null;
+            }
+        }
         VirtualFileSystem fs = null;
         CorePlugin core = VrApp.getBean(CorePlugin.class);
         if (StringUtils.isBlank(type)) {
-            type = "root";
-            fs = UPA.getContext().invokePrivileged(new Action<VirtualFileSystem>() {
-                @Override
-                public VirtualFileSystem run() {
-                    return core.getRootFileSystem();
-                }
-            });
+//            type = "root";
+            fs = UPA.getContext().invokePrivileged(core::getRootFileSystem);
         } else if (type.equals("u") || type.equals("user") || request.getParameter("u") != null) {
             String user = request.getParameter("u");
-            type = "user";
-            fs = UPA.getContext().invokePrivileged(new Action<VirtualFileSystem>() {
-                @Override
-                public VirtualFileSystem run() {
-                    return core.getUserFileSystem(user);
-                }
-            });
+//            type = "user";
+            fs = UPA.getContext().invokePrivileged(() -> core.getUserFileSystem(user));
         } else if (type.equals("h") || type.equals("home")) {
-            type = "home";
-            fs = UPA.getContext().invokePrivileged(new Action<VirtualFileSystem>() {
-                @Override
-                public VirtualFileSystem run() {
-                    return core.getMyHomeFileSystem();
-                }
-            });
+//            type = "home";
+            fs = UPA.getContext().invokePrivileged(core::getMyHomeFileSystem);
         } else if (type.equals("a") || type.equals("all")) {
-            type = "all";
-            fs = UPA.getContext().invokePrivileged(new Action<VirtualFileSystem>() {
-                @Override
-                public VirtualFileSystem run() {
-                    return core.getMyFileSystem();
-                }
-            });
+//            type = "all";
+            fs = UPA.getContext().invokePrivileged(core::getMyFileSystem);
         } else {
-            type = "root";
-            fs = UPA.getContext().invokePrivileged(new Action<VirtualFileSystem>() {
-                @Override
-                public VirtualFileSystem run() {
-                    return core.getRootFileSystem();
-                }
-            });
+//            type = "root";
+            fs = UPA.getContext().invokePrivileged(core::getRootFileSystem);
         }
-        if (fs == null) {
-            return null;
+        VFile file = null;
+        if (fs != null) {
+            String filename = null;
+            try {
+                filename = URLDecoder.decode(pathInfo, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                return null;
+            }
+            file = fs.get(filename);
+            if (file != null && file.exists() && file.isFile()) {
+                //ok
+            } else {
+                file = null;
+            }
         }
-        String filename = null;
-        try {
-            filename = URLDecoder.decode(pathInfo, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            return null;
+        if (file != null) {
+            request.setAttribute(cacheKey, file);
+        } else {
+            request.setAttribute(cacheKey, Boolean.FALSE);
         }
-        VFile file = fs.get(filename);
-        if (file != null && file.exists() && file.isFile()) {
-            return file;
-        }
-        return null;
+        return file;
     }
 }

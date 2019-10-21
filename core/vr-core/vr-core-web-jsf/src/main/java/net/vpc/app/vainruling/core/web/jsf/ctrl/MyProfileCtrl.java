@@ -7,7 +7,7 @@ package net.vpc.app.vainruling.core.web.jsf.ctrl;
 
 
 import java.util.logging.Logger;
-import net.vpc.app.vainruling.core.service.pages.VrPage;
+import net.vpc.app.vainruling.VrPage;
 
 /**
  * @author taha.bensalah@gmail.com

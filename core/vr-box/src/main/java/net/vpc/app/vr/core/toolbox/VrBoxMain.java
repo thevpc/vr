@@ -65,6 +65,8 @@ public class VrBoxMain extends NutsApplication {
                 pageName = a.getStringValue();
             } else if ((a = commandLine.nextString("--load")) != null) {
                 loadPropertiesFrom = new File(a.getStringValue());
+            } else if ((a = commandLine.nextString("--root")) != null) {
+                project.getConfigProperty("ProjectRootFolder").setValue(a.getStringValue());
             } else {
                 commandLine.unexpectedArgument();
             }
@@ -89,6 +91,8 @@ public class VrBoxMain extends NutsApplication {
                 moduleName = a.getStringValue();
             } else if ((a = commandLine.nextBoolean("--load")) != null) {
                 loadPropertiesFrom = new File(a.getStringValue());
+            } else if ((a = commandLine.nextString("--root")) != null) {
+                project.getConfigProperty("ProjectRootFolder").setValue(a.getStringValue());
             } else if (commandLine.peek().isNonOption() && moduleName == null) {
                 moduleName = commandLine.next().getString();
             } else {
@@ -119,6 +123,8 @@ public class VrBoxMain extends NutsApplication {
                 storePropertiesTo = new File(a.getStringValue());
             } else if ((a = commandLine.nextString("--load")) != null) {
                 loadPropertiesFrom = new File(a.getStringValue());
+            } else if ((a = commandLine.nextString("--root")) != null) {
+                project.getConfigProperty("ProjectRootFolder").setValue(a.getStringValue());
             } else if ((a = commandLine.nextBoolean("--edu", "--equip", "--exp", "--all")) != null) {
                 if (a.getBooleanValue()) {
                     archetypes.remove("all");

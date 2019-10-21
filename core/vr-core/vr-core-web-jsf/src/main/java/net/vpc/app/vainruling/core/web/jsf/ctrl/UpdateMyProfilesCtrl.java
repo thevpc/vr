@@ -8,8 +8,7 @@ package net.vpc.app.vainruling.core.web.jsf.ctrl;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppProfile;
-import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
-import net.vpc.app.vainruling.core.service.pages.VrActionEnabler;
+import net.vpc.app.vainruling.VrActionEnabler;
 import net.vpc.app.vainruling.core.web.jsf.ctrl.actions.UpdateProfileUsersActionCtrl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,8 +16,9 @@ import org.springframework.stereotype.Controller;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
-import net.vpc.app.vainruling.core.service.pages.VrPage;
-import net.vpc.app.vainruling.core.service.pages.VrPathItem;
+import net.vpc.app.vainruling.VrPage;
+import net.vpc.app.vainruling.VrPathItem;
+import net.vpc.app.vainruling.VrOnPageLoad;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -39,18 +39,20 @@ public class UpdateMyProfilesCtrl implements VrActionEnabler {
     private CorePlugin core;
     private List<AppProfile> cachedAdministrableProfiles;
 
-    @OnPageLoad
+    @VrOnPageLoad
     public void onInit() {
         getModel().setProfile(null);
         refresh();
     }
 
     @Override
-    public boolean isEnabled(net.vpc.app.vainruling.core.service.pages.VrActionInfo data) {
+    public void checkEnabled(net.vpc.app.vainruling.VrActionInfo data) {
         if (cachedAdministrableProfiles == null) {
             cachedAdministrableProfiles = core.findAdministrableProfiles();
         }
-        return !cachedAdministrableProfiles.isEmpty();
+        if (cachedAdministrableProfiles.isEmpty()) {
+            throw new SecurityException("There is no Administrable profiles");
+        }
     }
 
     public void refresh() {

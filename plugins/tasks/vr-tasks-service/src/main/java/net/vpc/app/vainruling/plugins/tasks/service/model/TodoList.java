@@ -5,7 +5,6 @@
  */
 package net.vpc.app.vainruling.plugins.tasks.service.model;
 
-import net.vpc.app.vainruling.core.service.model.AppProfile;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.upa.config.*;
@@ -17,8 +16,6 @@ import net.vpc.upa.config.*;
 @Path("Todo")
 public class TodoList {
 
-    public static final String LABO_ACTION = "sys-labo-action";
-    public static final String LABO_TICKET = "sys-labo-ticket";
     @Path("Main")
     @Id
     @Sequence

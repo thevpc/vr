@@ -1,12 +1,12 @@
 package net.vpc.app.vainruling.core.web;
 
 import net.vpc.app.vainruling.core.service.content.ContentText;
-import net.vpc.app.vainruling.core.service.content.TaskTextService;
 
 import java.util.Collections;
 import java.util.List;
+import net.vpc.app.vainruling.VrTaskTextService;
 
-public class DummyTaskTextService implements TaskTextService {
+public class DummyTaskTextService implements VrTaskTextService {
 
     @Override
     public int getSupport(String name) {

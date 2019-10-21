@@ -3,16 +3,16 @@ package net.vpc.app.vainruling.plugins.academic.service.extensions.editor;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.model.AppConfig;
 import net.vpc.app.vainruling.core.service.model.AppUser;
-import net.vpc.app.vainruling.core.service.editor.AppEntityExtendedPropertiesProvider;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
 import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacherPeriod;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import net.vpc.app.vainruling.VrEditorPropertiesProvider;
 
 @Service
-public class AcademicPluginAppEntityExtendedPropertiesProvider implements AppEntityExtendedPropertiesProvider{
+public class AcademicPluginAppEntityExtendedPropertiesProvider implements VrEditorPropertiesProvider{
     @Override
     public Map<String, Object> getExtendedPropertyValues(Object o) {
         CorePlugin core = CorePlugin.get();

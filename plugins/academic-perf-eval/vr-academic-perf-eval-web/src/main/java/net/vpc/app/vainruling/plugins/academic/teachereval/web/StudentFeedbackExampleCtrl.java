@@ -6,7 +6,6 @@
 package net.vpc.app.vainruling.plugins.academic.teachereval.web;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
-import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.AcademicPerfEvalPlugin;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.AcademicPerfEvalPluginSecurity;
 import net.vpc.app.vainruling.plugins.academic.perfeval.model.AcademicFeedbackGroup;
@@ -25,8 +24,9 @@ import javax.faces.component.UIInput;
 import javax.faces.model.SelectItem;
 import java.util.*;
 import java.util.logging.Logger;
-import net.vpc.app.vainruling.core.service.pages.VrPage;
-import net.vpc.app.vainruling.core.service.pages.VrPathItem;
+import net.vpc.app.vainruling.VrPage;
+import net.vpc.app.vainruling.VrPathItem;
+import net.vpc.app.vainruling.VrOnPageLoad;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -51,7 +51,7 @@ public class StudentFeedbackExampleCtrl {
     private AcademicPerfEvalPlugin feedback;
     private Model model = new Model();
 
-    @OnPageLoad
+    @VrOnPageLoad
     public void onLoad() {
         onReloadFeedbacks();
     }

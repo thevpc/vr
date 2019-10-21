@@ -41,7 +41,6 @@ public class AppPersonContactBase extends AppContactBase {
     private Date birthDate;
 
     private String birthLocation;
-    
 
     private AppGovernorate birthGovernorate;
     @Path("Position")
@@ -55,30 +54,37 @@ public class AppPersonContactBase extends AppContactBase {
     private String positionTitle3;
 
     private String bankRib;
-    
+
     private String socialSecurityId;
 
+    @Override
     public void copyFrom(AppContactBase other) {
-        if (other != null && (other instanceof AppPersonContactBase)) {
-            AppPersonContactBase o = (AppPersonContactBase) other;
+        if (other != null) {
             super.copyFrom(other);
-            this.passportNumber = o.passportNumber;
-            this.civility = o.civility;
-            this.firstName = o.firstName;
-            this.lastName = o.lastName;
-            this.fullTitle = o.fullTitle;
-            this.positionSuffix = o.positionSuffix;
-            this.firstName2 = o.firstName2;
-            this.lastName2 = o.lastName2;
-            this.gender = o.gender;
-            this.positionTitle1 = o.positionTitle1;
-            this.positionTitle2 = o.positionTitle2;
-            this.positionTitle3 = o.positionTitle3;
-            this.birthDate = o.birthDate;
-            this.birthLocation = o.birthLocation;
-            this.birthGovernorate = o.birthGovernorate;
-            this.bankRib = o.bankRib;
-            this.socialSecurityId = o.socialSecurityId;
+            this.firstName = other.getFullName();
+            this.lastName = "";
+            this.fullTitle = other.getFullName();
+            if (other instanceof AppPersonContactBase) {
+                AppPersonContactBase o = (AppPersonContactBase) other;
+                super.copyFrom(other);
+                this.passportNumber = o.passportNumber;
+                this.civility = o.civility;
+                this.firstName = o.firstName;
+                this.lastName = o.lastName;
+                this.fullTitle = o.fullTitle;
+                this.positionSuffix = o.positionSuffix;
+                this.firstName2 = o.firstName2;
+                this.lastName2 = o.lastName2;
+                this.gender = o.gender;
+                this.positionTitle1 = o.positionTitle1;
+                this.positionTitle2 = o.positionTitle2;
+                this.positionTitle3 = o.positionTitle3;
+                this.birthDate = o.birthDate;
+                this.birthLocation = o.birthLocation;
+                this.birthGovernorate = o.birthGovernorate;
+                this.bankRib = o.bankRib;
+                this.socialSecurityId = o.socialSecurityId;
+            }
         }
     }
 
@@ -202,7 +208,6 @@ public class AppPersonContactBase extends AppContactBase {
         this.passportNumber = passportNumber;
     }
 
-
     public String resolveName() {
         String n = getFullName();
         if (n != null && n.trim().length() > 0) {
@@ -260,7 +265,5 @@ public class AppPersonContactBase extends AppContactBase {
     public void setSocialSecurityId(String socialSecurityId) {
         this.socialSecurityId = socialSecurityId;
     }
-    
-    
 
 }

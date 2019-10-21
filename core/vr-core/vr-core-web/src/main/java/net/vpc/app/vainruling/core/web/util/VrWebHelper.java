@@ -33,8 +33,8 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.model.SelectItem;
-import net.vpc.app.vainruling.core.service.pages.VrBreadcrumbItem;
-import net.vpc.app.vainruling.core.service.menu.VRMenuInfo;
+import net.vpc.app.vainruling.VrBreadcrumbItem;
+import net.vpc.app.vainruling.VrMenuInfo;
 import net.vpc.app.vainruling.core.service.menu.VrPageInfoAndObject;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.core.web.menu.VrMenuManager;
@@ -431,7 +431,7 @@ public class VrWebHelper {
         return null;
     }
 
-    public static String getPrettyURL(VRMenuInfo info) {
+    public static String getPrettyURL(VrMenuInfo info) {
         String context = VrWebHelper.getContext();
         if (context == null) {
             context = "";
@@ -444,7 +444,7 @@ public class VrWebHelper {
             try {
                 p += "?a=" + URLEncoder.encode(info.getCommand(), "UTF-8");
             } catch (UnsupportedEncodingException ex) {
-                Logger.getLogger(VRMenuInfo.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(VrMenuInfo.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         return p;

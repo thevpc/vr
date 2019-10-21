@@ -1,5 +1,6 @@
 package net.vpc.app.vainruling.core.service.editor;
 
+import net.vpc.app.vainruling.VrEditorSearch;
 import net.vpc.upa.Document;
 import net.vpc.upa.Entity;
 import net.vpc.upa.EntityBuilder;
@@ -8,11 +9,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import net.vpc.app.vainruling.VrEditorSearchFactory;
 
 /**
  * Created by vpc on 6/25/17.
  */
-public abstract class ProfileBasedEntityObjSearchFactory implements EntityEditorSearchFactory {
+public abstract class ProfileBasedEntityObjSearchFactory implements VrEditorSearchFactory {
 
     @Override
     public String createHelperString(String name, Entity entity) {
@@ -22,7 +24,7 @@ public abstract class ProfileBasedEntityObjSearchFactory implements EntityEditor
     }
 
     @Override
-    public EntityEditorSearch create(String name, Entity entity, String expression) {
+    public VrEditorSearch create(String name, Entity entity, String expression) {
         if (expression == null) {
             return null;
         }
@@ -34,7 +36,7 @@ public abstract class ProfileBasedEntityObjSearchFactory implements EntityEditor
 
     abstract protected List filterDocumentByProfileFilter(List objects, String profileSearchText);
 
-    private class ObjSearchImpl extends EntityEditorSearch {
+    private class ObjSearchImpl extends VrEditorSearch {
 
         private final Entity entity;
         private final String expression;

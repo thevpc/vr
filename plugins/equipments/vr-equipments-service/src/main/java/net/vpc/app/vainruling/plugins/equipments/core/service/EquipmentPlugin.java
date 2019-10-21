@@ -16,9 +16,6 @@ import net.vpc.app.vainruling.plugins.equipments.core.model.EquipmentBrand;
 import net.vpc.app.vainruling.plugins.equipments.core.model.EquipmentStatusLog;
 import net.vpc.app.vainruling.core.service.*;
 import net.vpc.app.vainruling.core.service.model.*;
-import net.vpc.app.vainruling.core.service.plugins.Install;
-import net.vpc.app.vainruling.core.service.plugins.InstallDemo;
-import net.vpc.app.vainruling.core.service.plugins.Start;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.PlatformUtils;
 import net.vpc.common.util.Utils;
@@ -31,12 +28,15 @@ import org.springframework.context.annotation.DependsOn;
 import java.sql.Timestamp;
 import java.util.*;
 
-import net.vpc.app.vainruling.core.service.plugins.VrPlugin;
+import net.vpc.app.vainruling.VrPlugin;
 import net.vpc.app.vainruling.plugins.equipments.aquisition.service.EquipmentAcquisitionService;
 import net.vpc.app.vainruling.plugins.equipments.aquisition.model.EquipmentAquisitionLog;
 import net.vpc.app.vainruling.plugins.equipments.borrow.service.EquipmentBorrowService;
 import net.vpc.app.vainruling.plugins.equipments.borrow.model.EquipmentBorrowLog;
 import net.vpc.app.vainruling.plugins.equipments.borrow.model.EquipmentReturnBorrowedLog;
+import net.vpc.app.vainruling.VrInstall;
+import net.vpc.app.vainruling.VrInstallDemo;
+import net.vpc.app.vainruling.VrStart;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -53,7 +53,7 @@ public class EquipmentPlugin {
         return VrApp.getBean(EquipmentPlugin.class);
     }
 
-    @Start
+    @VrStart
     private void start() {
         //EquipmentPluginHelper
         for (AppDepartment d : core.findDepartments()) {
@@ -427,7 +427,7 @@ public class EquipmentPlugin {
         return 0;
     }
 
-    @Install
+    @VrInstall
     private void installService() {
         CorePlugin core = VrApp.getBean(CorePlugin.class);
 
@@ -484,7 +484,7 @@ public class EquipmentPlugin {
 //        core.addUserProfile(tech2.getId(), "Technician");
     }
 
-    @InstallDemo
+    @VrInstallDemo
     private void installDemoService() {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         EquipmentPluginInitData initData = new EquipmentPluginInitData();

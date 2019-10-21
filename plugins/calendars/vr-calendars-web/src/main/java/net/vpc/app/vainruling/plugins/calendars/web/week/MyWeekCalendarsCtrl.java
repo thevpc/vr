@@ -7,7 +7,6 @@ package net.vpc.app.vainruling.plugins.calendars.web.week;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.model.AppUser;
-import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.app.vainruling.plugins.calendars.service.CalendarsPlugin;
 import net.vpc.app.vainruling.plugins.calendars.service.CalendarsPluginSecurity;
 import net.vpc.app.vainruling.plugins.calendars.service.dto.CalendarDay;
@@ -19,8 +18,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.faces.model.SelectItem;
 import java.util.ArrayList;
 import java.util.List;
-import net.vpc.app.vainruling.core.service.pages.VrPage;
-import net.vpc.app.vainruling.core.service.pages.VrPathItem;
+import net.vpc.app.vainruling.VrPage;
+import net.vpc.app.vainruling.VrPathItem;
+import net.vpc.app.vainruling.VrOnPageLoad;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -83,7 +83,7 @@ public class MyWeekCalendarsCtrl extends AbstractWeekCalendarCtrl {
         }
     }
 
-    @OnPageLoad
+    @VrOnPageLoad
     public void onRefresh(String cmd) {
         onRefresh();
     }

@@ -5,15 +5,13 @@
  */
 package net.vpc.app.vainruling.core.service;
 
+import net.vpc.app.vainruling.VrPlugin;
 import net.vpc.app.vainruling.core.service.fs.MirroredPath;
 import net.vpc.app.vainruling.core.service.cache.CacheService;
 import net.vpc.app.vainruling.core.service.fs.FileInfo;
-import net.vpc.app.vainruling.core.service.fs.VrFSEntry;
-import net.vpc.app.vainruling.core.service.fs.VrFSTable;
 import net.vpc.app.vainruling.core.service.model.*;
-import net.vpc.app.vainruling.core.service.notification.PollAware;
 import net.vpc.app.vainruling.core.service.editor.AutoFilterData;
-import net.vpc.app.vainruling.core.service.editor.EntityEditorSearch;
+import net.vpc.app.vainruling.VrEditorSearch;
 import net.vpc.app.vainruling.core.service.plugins.*;
 import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.service.security.UserSessionInfo;
@@ -36,7 +34,6 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
-import net.vpc.app.vainruling.core.service.editor.ForEntity;
 
 import net.vpc.app.vainruling.core.service.model.content.AppArticleDisposition;
 import net.vpc.app.vainruling.core.service.model.content.AppArticleDispositionGroup;
@@ -47,11 +44,17 @@ import net.vpc.app.vainruling.core.service.model.content.FullArticle;
 import net.vpc.common.util.MutableDate;
 import net.vpc.upa.types.DataType;
 import org.springframework.context.annotation.DependsOn;
-import net.vpc.app.vainruling.core.service.editor.EntityEditorSearchFactory;
-import net.vpc.app.vainruling.core.service.editor.EntityEditorMainPhotoProvider;
 import net.vpc.app.vainruling.core.service.model.content.AppArticleStrict;
 import net.vpc.app.vainruling.core.service.model.content.ArticlesDispositionStrict;
 import net.vpc.app.vainruling.core.service.model.strict.AppUserStrict;
+import net.vpc.app.vainruling.VrPollService;
+import net.vpc.app.vainruling.VrEditorMainPhotoProvider;
+import net.vpc.app.vainruling.VrEditorSearchFactory;
+import net.vpc.app.vainruling.VrEntityName;
+import net.vpc.app.vainruling.VrCompletionService;
+import net.vpc.app.vainruling.VrCompletionInfo;
+import net.vpc.app.vainruling.VrInstall;
+import net.vpc.app.vainruling.VrStart;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -140,9 +143,9 @@ public class CorePlugin {
                         bodyPluginManager.onStart();
                     }
                 });
-                for (EntityEditorMainPhotoProvider bean : VrApp.getBeansForType(EntityEditorMainPhotoProvider.class)) {
+                for (VrEditorMainPhotoProvider bean : VrApp.getBeansForType(VrEditorMainPhotoProvider.class)) {
                     Class bc = PlatformReflector.getTargetClass(bean);
-                    ForEntity fe = (ForEntity) bc.getAnnotation(ForEntity.class);
+                    VrEntityName fe = (VrEntityName) bc.getAnnotation(VrEntityName.class);
                     if (fe == null) {
                         LOG.log(Level.SEVERE, "MainPhotoProvider implementation " + bc.getName() + " must declare @ForEntity annotation. Ignored");
                     } else {
@@ -150,14 +153,14 @@ public class CorePlugin {
                         if (entity == null) {
                             LOG.log(Level.SEVERE, "MainPhotoProvider implementation " + bc.getName() + " ignored for unknown entity " + persistenceUnit.getName() + "/" + fe.value());
                         } else {
-                            entity.getProperties().setObject("cache.ui.main-photo-provider", (EntityEditorMainPhotoProvider) bean);
+                            entity.getProperties().setObject("cache.ui.main-photo-provider", (VrEditorMainPhotoProvider) bean);
                             entity.getProperties().setString("ui.main-photo-provider", bc.getName());
                         }
                     }
                 }
-                for (EntityEditorSearchFactory bean : VrApp.getBeansForType(EntityEditorSearchFactory.class)) {
+                for (VrEditorSearchFactory bean : VrApp.getBeansForType(VrEditorSearchFactory.class)) {
                     Class bc = PlatformReflector.getTargetClass(bean);
-                    ForEntity fe = (ForEntity) bc.getAnnotation(ForEntity.class);
+                    VrEntityName fe = (VrEntityName) bc.getAnnotation(VrEntityName.class);
                     if (fe == null) {
                         LOG.log(Level.SEVERE, "EntityObjSearchFactory implementation " + bc.getName() + " must declare @ForEntity annotation. Ignored");
                     } else {
@@ -165,7 +168,7 @@ public class CorePlugin {
                         if (entity == null) {
                             LOG.log(Level.SEVERE, "EntityObjSearchFactory implementation " + bc.getName() + " ignored for unknown entity " + persistenceUnit.getName() + "/" + fe.value());
                         } else {
-                            entity.getProperties().setObject("cache." + UIConstants.ENTITY_TEXT_SEARCH_FACTORY, (EntityEditorSearchFactory) bean);
+                            entity.getProperties().setObject("cache." + UIConstants.ENTITY_TEXT_SEARCH_FACTORY, (VrEditorSearchFactory) bean);
                             entity.getProperties().setString(UIConstants.ENTITY_TEXT_SEARCH_FACTORY, bc.getName());
                         }
                     }
@@ -181,14 +184,14 @@ public class CorePlugin {
         return started;
     }
 
-    @Install
+    @VrInstall
     private void onInstall() {
         for (CorePluginBody body : bodies) {
             body.install();
         }
     }
 
-    @Start
+    @VrStart
     private void onStart() {
         for (CorePluginBody body : bodies) {
             body.start();
@@ -200,7 +203,7 @@ public class CorePlugin {
             updatingPoll = true;
             try {
                 synchronized (this) {
-                    for (PollAware b : VrApp.getBeansForType(PollAware.class)) {
+                    for (VrPollService b : VrApp.getBeansForType(VrPollService.class)) {
                         b.onPoll();
                     }
                 }
@@ -425,6 +428,8 @@ public class CorePlugin {
     public <T> T findOrCreate(T o) {
         if (o instanceof AppUserType) {
             return bodyDaoManager.findOrCreate(o, "code");
+        } else if (o instanceof AppUser) {
+            return bodyDaoManager.findOrCreate(o, "login");
         } else {
             return bodyDaoManager.findOrCreate(o);
         }
@@ -709,20 +714,16 @@ public class CorePlugin {
         return bodyFileSystem.getProfileFileSystem(profileName);
     }
 
-    public void removeUserLinkPathEntry(int userId, String linkPath) throws IOException {
-        bodyFileSystem.removeUserLinkPathEntry(userId, linkPath);
+    public void saveFsSharing(AppFsSharing entry) {
+        bodyFileSystem.saveFsSharing(entry);
     }
 
-    public void setUserLinkPathEntry(int userId, VrFSEntry entry) throws IOException {
-        bodyFileSystem.setUserLinkPathEntry(userId, entry);
+    public void removeFsSharing(int id) {
+        bodyFileSystem.removeFsSharing(id);
     }
 
-    public void saveUserVrFSTable(int userId, VrFSTable table) throws IOException {
-        bodyFileSystem.saveUserVrFSTable(userId, table);
-    }
-
-    public VrFSTable getUserVrFSTable(int userId) {
-        return bodyFileSystem.getUserVrFSTable(userId);
+    public List<AppFsSharing> findFsSharings(Integer userId, String mountPath, String sharedPath) {
+        return bodyFileSystem.findFsSharings(userId, mountPath, sharedPath);
     }
 
     public long getDownloadsCount(final VFile file) {
@@ -933,14 +934,14 @@ public class CorePlugin {
         return bodyDaoManager.findAllNamedIds(entityName, criteria, currentInstance);
     }
 
-    public long findCountByFilter(String entityName, String criteria, EntityEditorSearch objSearch, Map<String, Object> parameters) {
+    public long findCountByFilter(String entityName, String criteria, VrEditorSearch objSearch, Map<String, Object> parameters) {
         return bodyDaoManager.findCountByFilter(entityName, criteria, objSearch, parameters);
     }
 
 //    public List<Object> findByFilter(String entityName, String criteria, ObjSearch objSearch, Map<String, Object> parameters) {
 //        return bodyDaoManager.findByFilter(entityName, criteria, objSearch, parameters);
 //    }
-    public List<Document> findDocumentsByFilter(String entityName, String criteria, EntityEditorSearch objSearch, String textSearch, Map<String, Object> parameters) {
+    public List<Document> findDocumentsByFilter(String entityName, String criteria, VrEditorSearch objSearch, String textSearch, Map<String, Object> parameters) {
         return bodyDaoManager.findDocumentsByFilter(entityName, criteria, objSearch, textSearch, parameters);
     }
 
@@ -984,7 +985,7 @@ public class CorePlugin {
 
     public List<String> getAllCompletionLists(int monitorUserId) {
         TreeSet<String> cats = new TreeSet<>();
-        for (CompletionProvider bean : VrApp.getBeansForType(CompletionProvider.class)) {
+        for (VrCompletionService bean : VrApp.getBeansForType(VrCompletionService.class)) {
             cats.addAll(bean.getCompletionLists(monitorUserId));
         }
         return new ArrayList<>(cats);
@@ -996,8 +997,8 @@ public class CorePlugin {
         ArticlesDispositionStrict dispo = new ArticlesDispositionStrict();
         dispo.setName(disposition);
         dispo.setEnabled(true);
-        List<CompletionInfo> allCompletions = findAllCompletions(monitorUserId, category, objectType, objectId, minLevel);
-        for (CompletionInfo c : allCompletions) {
+        List<VrCompletionInfo> allCompletions = findAllCompletions(monitorUserId, category, objectType, objectId, minLevel);
+        for (VrCompletionInfo c : allCompletions) {
             FullArticle aa = convert(c, dispo);
             aa.getArticle().setId(id);
             list.add(aa);
@@ -1006,7 +1007,7 @@ public class CorePlugin {
         return list;
     }
 
-    public FullArticle convert(CompletionInfo x, ArticlesDispositionStrict dispo) {
+    public FullArticle convert(VrCompletionInfo x, ArticlesDispositionStrict dispo) {
         AppArticleStrict a = new AppArticleStrict();
         a.setContent(x.getContent());
         a.setSubject(x.getMessage());
@@ -1018,12 +1019,12 @@ public class CorePlugin {
         return fa;
     }
 
-    public List<CompletionInfo> findAllCompletions(int monitorUserId, String category, String objectType, Object objectId, Level minLevel) {
-        return UPA.getPersistenceUnit().invokePrivileged(new Action<List<CompletionInfo>>() {
+    public List<VrCompletionInfo> findAllCompletions(int monitorUserId, String category, String objectType, Object objectId, Level minLevel) {
+        return UPA.getPersistenceUnit().invokePrivileged(new Action<List<VrCompletionInfo>>() {
             @Override
-            public List<CompletionInfo> run() {
-                List<CompletionInfo> cats = new ArrayList<>();
-                for (CompletionProvider bean : VrApp.getBeansForType(CompletionProvider.class)) {
+            public List<VrCompletionInfo> run() {
+                List<VrCompletionInfo> cats = new ArrayList<>();
+                for (VrCompletionService bean : VrApp.getBeansForType(VrCompletionService.class)) {
                     cats.addAll(bean.findCompletions(monitorUserId, category, objectType, objectId, minLevel));
                 }
                 return new ArrayList<>(cats);
@@ -1280,8 +1281,8 @@ public class CorePlugin {
         return bodyDaoManager.getEntityAutoFilterDataType(entityName, autoFilterName);
     }
 
-    public EntityEditorMainPhotoProvider getEntityMainPhotoProvider(String entityName) {
-        return VrUPAUtils.resolveCachedEntityPropertyInstance(UPA.getPersistenceUnit().getEntity(entityName), "ui.main-photo-provider", EntityEditorMainPhotoProvider.class);
+    public VrEditorMainPhotoProvider getEntityMainPhotoProvider(String entityName) {
+        return VrUPAUtils.resolveCachedEntityPropertyInstance(UPA.getPersistenceUnit().getEntity(entityName), "ui.main-photo-provider", VrEditorMainPhotoProvider.class);
     }
 
     public boolean isEnabledMainPhoto(String entityName) {
@@ -1289,7 +1290,7 @@ public class CorePlugin {
     }
 
     public String[] getMainPhotoPathList(String entityName, Object[] ids) {
-        EntityEditorMainPhotoProvider p = getEntityMainPhotoProvider(entityName);
+        VrEditorMainPhotoProvider p = getEntityMainPhotoProvider(entityName);
         if (p == null) {
             return null;
         }
@@ -1301,7 +1302,7 @@ public class CorePlugin {
     }
 
     public String[] getMainIconPathList(String entityName, Object[] ids) {
-        EntityEditorMainPhotoProvider p = getEntityMainPhotoProvider(entityName);
+        VrEditorMainPhotoProvider p = getEntityMainPhotoProvider(entityName);
         if (p == null) {
             return null;
         }
@@ -1313,7 +1314,7 @@ public class CorePlugin {
     }
 
     public String getMainPhotoPath(String entityName, Object id, Object valueOrNull) {
-        EntityEditorMainPhotoProvider p = getEntityMainPhotoProvider(entityName);
+        VrEditorMainPhotoProvider p = getEntityMainPhotoProvider(entityName);
         if (p == null) {
             return null;
         }
@@ -1321,7 +1322,7 @@ public class CorePlugin {
     }
 
     public String getMainIconPath(String entityName, Object id, Object valueOrNull) {
-        EntityEditorMainPhotoProvider p = getEntityMainPhotoProvider(entityName);
+        VrEditorMainPhotoProvider p = getEntityMainPhotoProvider(entityName);
         if (p == null) {
             return null;
         }

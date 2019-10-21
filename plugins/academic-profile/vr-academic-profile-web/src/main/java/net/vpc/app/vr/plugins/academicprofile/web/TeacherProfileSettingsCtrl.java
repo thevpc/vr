@@ -5,9 +5,8 @@
  */
 package net.vpc.app.vr.plugins.academicprofile.web;
 
-import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
-import net.vpc.app.vainruling.core.service.pages.VrActionInfo;
-import net.vpc.app.vainruling.core.service.pages.VrActionEnabler;
+import net.vpc.app.vainruling.VrActionInfo;
+import net.vpc.app.vainruling.VrActionEnabler;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppCompany;
@@ -45,8 +44,9 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.vpc.app.vainruling.core.service.model.AppUser;
-import net.vpc.app.vainruling.core.service.pages.VrPage;
-import net.vpc.app.vainruling.core.service.pages.VrPathItem;
+import net.vpc.app.vainruling.VrPage;
+import net.vpc.app.vainruling.VrPathItem;
+import net.vpc.app.vainruling.VrOnPageLoad;
 
 @VrPage(
         breadcrumb = {
@@ -72,11 +72,13 @@ public class TeacherProfileSettingsCtrl implements DocumentUploadListener, VrAct
     }
 
     @Override
-    public boolean isEnabled(VrActionInfo data) {
-        return AcademicPlugin.get().getCurrentTeacher() != null;
+    public void checkEnabled(VrActionInfo data) {
+        if (AcademicPlugin.get().getCurrentTeacher() == null) {
+            throw new SecurityException("Expected Teacher");
+        }
     }
 
-    @OnPageLoad
+    @VrOnPageLoad
     private void onPageReload() {
         Vr vr = Vr.get();
         getModel().setUser(core.getCurrentUser());

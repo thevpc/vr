@@ -4,11 +4,12 @@ import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import java.util.List;
 import org.springframework.stereotype.Component;
+import net.vpc.app.vainruling.VrEntityName;
 
 /**
  * Created by vpc on 6/25/17.
  */
-@ForEntity("AppUser")
+@VrEntityName("AppUser")
 @Component
 public class AppUserObjSearchFactory extends ProfileBasedEntityObjSearchFactory {
 

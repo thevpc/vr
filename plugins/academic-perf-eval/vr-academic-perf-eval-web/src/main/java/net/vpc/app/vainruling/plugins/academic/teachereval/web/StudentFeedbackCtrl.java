@@ -7,7 +7,6 @@ package net.vpc.app.vainruling.plugins.academic.teachereval.web;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
-import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.AcademicPerfEvalPlugin;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.dto.FQuestion;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.dto.FRow;
@@ -32,8 +31,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.logging.Logger;
-import net.vpc.app.vainruling.core.service.pages.VrPage;
-import net.vpc.app.vainruling.core.service.pages.VrPathItem;
+import net.vpc.app.vainruling.VrPage;
+import net.vpc.app.vainruling.VrPathItem;
+import net.vpc.app.vainruling.VrOnPageLoad;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -58,7 +58,7 @@ public class StudentFeedbackCtrl {
     protected AcademicPerfEvalPlugin feedback;
     protected Model model = new Model();
 
-    @OnPageLoad
+    @VrOnPageLoad
     public void onLoad() {
         ArrayList<SelectItem> items = new ArrayList<>();
         HashSet<Integer> visitedPeriods = new HashSet<>();

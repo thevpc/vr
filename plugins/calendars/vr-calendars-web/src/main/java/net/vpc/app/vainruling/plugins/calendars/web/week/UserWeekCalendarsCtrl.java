@@ -8,7 +8,6 @@ package net.vpc.app.vainruling.plugins.calendars.web.week;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.*;
-import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
 import net.vpc.app.vainruling.core.web.jsf.VrJsf;
 import net.vpc.app.vainruling.plugins.calendars.service.CalendarsPlugin;
 import net.vpc.app.vainruling.plugins.calendars.service.CalendarsPluginSecurity;
@@ -21,8 +20,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.faces.model.SelectItem;
 import java.util.*;
-import net.vpc.app.vainruling.core.service.pages.VrPage;
-import net.vpc.app.vainruling.core.service.pages.VrPathItem;
+import net.vpc.app.vainruling.VrPage;
+import net.vpc.app.vainruling.VrPathItem;
+import net.vpc.app.vainruling.VrOnPageLoad;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -120,7 +120,7 @@ public class UserWeekCalendarsCtrl extends AbstractWeekCalendarCtrl {
         onChangeUserType();
     }
 
-    @OnPageLoad
+    @VrOnPageLoad
     public void onRefresh(String cmd) {
         getModel().setUserTypeId(null);
         getModel().setUserTypes(VrJsf.toSelectItemList(core.findUserTypes()));

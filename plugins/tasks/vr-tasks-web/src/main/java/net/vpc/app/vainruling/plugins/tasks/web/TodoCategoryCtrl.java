@@ -12,8 +12,8 @@ import net.vpc.app.vainruling.plugins.tasks.service.model.TodoList;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
-import net.vpc.app.vainruling.core.service.pages.VrPage;
-import net.vpc.app.vainruling.core.service.pages.VrPathItem;
+import net.vpc.app.vainruling.VrPage;
+import net.vpc.app.vainruling.VrPathItem;
 
 /**
  * @author taha.bensalah@gmail.com

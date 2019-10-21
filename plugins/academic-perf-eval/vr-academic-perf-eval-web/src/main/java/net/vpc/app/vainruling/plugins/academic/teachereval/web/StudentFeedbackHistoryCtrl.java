@@ -5,8 +5,8 @@ import net.vpc.app.vainruling.plugins.academic.perfeval.model.AcademicFeedbackSe
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPluginSecurity;
 
 import java.util.List;
-import net.vpc.app.vainruling.core.service.pages.VrPage;
-import net.vpc.app.vainruling.core.service.pages.VrPathItem;
+import net.vpc.app.vainruling.VrPage;
+import net.vpc.app.vainruling.VrPathItem;
 
 @VrPage(
         breadcrumb = {

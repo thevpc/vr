@@ -7,8 +7,8 @@ package net.vpc.app.vainruling.core.web.jsf.ctrl.admin;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.CorePluginSecurity;
-import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
-import net.vpc.app.vainruling.core.service.pages.VrPage;
+import net.vpc.app.vainruling.VrPage;
+import net.vpc.app.vainruling.VrOnPageLoad;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -19,7 +19,7 @@ import net.vpc.app.vainruling.core.service.pages.VrPage;
 )
 public class UpdateAllFormulasCtrl {
 
-    @OnPageLoad
+    @VrOnPageLoad
     public void onInvoke() {
         CorePlugin.get().updateAllEntitiesFormulas();
     }

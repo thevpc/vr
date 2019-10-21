@@ -2,7 +2,7 @@ package net.vpc.app.vainruling.core.service;
 
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.service.editor.AutoFilterData;
-import net.vpc.app.vainruling.core.service.editor.EntityEditorSearch;
+import net.vpc.app.vainruling.VrEditorSearch;
 import net.vpc.app.vainruling.core.service.editor.EntityEditorSimpleSearch;
 import net.vpc.app.vainruling.core.service.util.I18n;
 import net.vpc.app.vainruling.core.service.util.UIConstants;
@@ -20,11 +20,11 @@ import net.vpc.upa.types.*;
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.logging.Level;
-import net.vpc.app.vainruling.core.service.editor.EntityEditorMainPhotoProvider;
 import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.common.util.MapUtils;
-import net.vpc.app.vainruling.core.service.editor.EntityEditorSearchFactory;
+import net.vpc.app.vainruling.VrEditorMainPhotoProvider;
+import net.vpc.app.vainruling.VrEditorSearchFactory;
 
 class CorePluginBodyDAOManager extends CorePluginBody {
 
@@ -558,7 +558,7 @@ class CorePluginBodyDAOManager extends CorePluginBody {
         return entityList;
     }
 
-    public long findCountByFilter(String entityName, String criteria, EntityEditorSearch objSearch, Map<String, Object> parameters) {
+    public long findCountByFilter(String entityName, String criteria, VrEditorSearch objSearch, Map<String, Object> parameters) {
         checkNavigate(entityName);
         PersistenceUnit pu = UPA.getPersistenceUnit();
         String qq = "Select count(1) from " + entityName + " o ";
@@ -649,7 +649,7 @@ class CorePluginBodyDAOManager extends CorePluginBody {
         return findDocumentsByFilter(entityName, _listFilter, null, textSearch, parameters);
     }
 
-    public List<Document> findDocumentsByFilter(String entityName, String criteria, EntityEditorSearch objSearch, String textSearch, Map<String, Object> parameters) {
+    public List<Document> findDocumentsByFilter(String entityName, String criteria, VrEditorSearch objSearch, String textSearch, Map<String, Object> parameters) {
         checkFindMany(entityName);
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity entity = pu.getEntity(entityName);
@@ -696,8 +696,8 @@ class CorePluginBodyDAOManager extends CorePluginBody {
         return list;
     }
 
-    public EntityEditorSearchFactory resolveEntityEditorSearchFactory(String entityName) {
-        return VrUPAUtils.resolveCachedEntityPropertyInstance(UPA.getPersistenceUnit().getEntity(entityName), UIConstants.ENTITY_TEXT_SEARCH_FACTORY, EntityEditorSearchFactory.class);
+    public VrEditorSearchFactory resolveEntityEditorSearchFactory(String entityName) {
+        return VrUPAUtils.resolveCachedEntityPropertyInstance(UPA.getPersistenceUnit().getEntity(entityName), UIConstants.ENTITY_TEXT_SEARCH_FACTORY, VrEditorSearchFactory.class);
     }
 
     public String createSearchHelperString(String name, String entityName) {
@@ -707,7 +707,7 @@ class CorePluginBodyDAOManager extends CorePluginBody {
         }
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity entity = pu.getEntity(entityName);
-        EntityEditorSearchFactory g = resolveEntityEditorSearchFactory(entityName);
+        VrEditorSearchFactory g = resolveEntityEditorSearchFactory(entityName);
         String s = null;
         if (g != null) {
             s = g.createHelperString(name, entity);
@@ -718,14 +718,14 @@ class CorePluginBodyDAOManager extends CorePluginBody {
         return s;
     }
 
-    public EntityEditorSearch createSearch(String name, String entityName, String expression) {
+    public VrEditorSearch createSearch(String name, String entityName, String expression) {
         if (StringUtils.isBlank(expression)) {
             return new EntityEditorSimpleSearch(null);
         }
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity entity = pu.getEntity(entityName);
-        EntityEditorSearchFactory g = resolveEntityEditorSearchFactory(entityName);
-        EntityEditorSearch objSearch=null;
+        VrEditorSearchFactory g = resolveEntityEditorSearchFactory(entityName);
+        VrEditorSearch objSearch=null;
         if (g != null) {
             objSearch = g.create(name, entity, expression);
         }

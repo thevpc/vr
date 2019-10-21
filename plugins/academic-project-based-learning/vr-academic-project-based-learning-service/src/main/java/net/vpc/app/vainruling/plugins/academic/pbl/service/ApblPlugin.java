@@ -40,7 +40,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.*;
 import java.util.function.Predicate;
 
-import net.vpc.app.vainruling.core.service.plugins.VrPlugin;
+import net.vpc.app.vainruling.VrPlugin;
 
 /**
  * Created by vpc on 9/25/16.

@@ -7,20 +7,19 @@ package net.vpc.app.vainruling.plugins.mailbox.web.extensions.editor;
 
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppContact;
-import net.vpc.app.vainruling.core.service.editor.EntityAction;
-
-import net.vpc.app.vainruling.core.service.editor.EntityViewActionDialog;
 import net.vpc.upa.AccessMode;
 
 import java.util.List;
+import net.vpc.app.vainruling.VrEditorActionDialog;
+import net.vpc.app.vainruling.VrEditorAction;
 
 /**
  * @author taha.bensalah@gmail.com
  */
-@EntityAction(entityType = AppContact.class,
+@VrEditorAction(entityType = AppContact.class,
         actionStyle = "fa-envelope-o"
 )
-public class SendContactWelcomeMailAction implements EntityViewActionDialog {
+public class SendContactWelcomeMailAction implements VrEditorActionDialog {
 
     @Override
     public void openDialog(String actionId, List<String> itemIds) {

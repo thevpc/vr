@@ -16,7 +16,7 @@
     </parent>
 
     <properties>
-        <version.vr>${{vrFwkCoreVersion}}</version.vr>
+        <version.vr>${{FwkCoreVersion}}</version.vr>
     </properties>
 
     <dependencies>
@@ -184,10 +184,10 @@
         <repository>
             <id>vpc-public-maven</id>
             <url>https://raw.github.com/thevpc/vpc-public-maven/master</url>
-            <snapshots>
+<!--            <snapshots>
                 <enabled>true</enabled>
                 <updatePolicy>always</updatePolicy>
-            </snapshots>
+            </snapshots>-->
         </repository>
     </repositories>
 </project>

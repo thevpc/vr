@@ -28,7 +28,8 @@ import net.vpc.upa.UPA;
 @Scope(value = "session")
 public class TodoModel extends AbstractObjectCtrl.Model<Todo> {
 
-    private String listName = TodoList.LABO_ACTION;
+    private String listName;
+    private TodoList todoList;
     private String title = "Titre";
     private List<Todo> todo = new ArrayList<>();
     private List<TodoText> todoText = new ArrayList<>();
@@ -149,11 +150,11 @@ public class TodoModel extends AbstractObjectCtrl.Model<Todo> {
     @Override
     public Todo getCurrent() {
         Todo c = super.getCurrent();
-        if(c==null) {
+        if (c == null) {
             return null;
         }
-        if(currentResponsibleId!=null){
-            AppUser u = UPA.getPersistenceUnit().invokePrivileged(()->CorePlugin.get().findUser(currentResponsibleId));
+        if (currentResponsibleId != null) {
+            AppUser u = UPA.getPersistenceUnit().invokePrivileged(() -> CorePlugin.get().findUser(currentResponsibleId));
             c.setResponsible(u);
         }
         return c;
@@ -244,6 +245,14 @@ public class TodoModel extends AbstractObjectCtrl.Model<Todo> {
 
     public void setCurrentResponsibleId(Integer currentResponsibleId) {
         this.currentResponsibleId = currentResponsibleId;
+    }
+
+    public TodoList getTodoList() {
+        return todoList;
+    }
+
+    public void setTodoList(TodoList list) {
+        this.todoList = list;
     }
 
 }

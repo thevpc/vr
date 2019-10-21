@@ -5,18 +5,16 @@
  */
 package net.vpc.app.vainruling.plugins.tasks.web;
 
-import net.vpc.app.vainruling.core.service.pages.OnPageLoad;
-import net.vpc.app.vainruling.core.service.pages.VrPageInfo;
+import net.vpc.app.vainruling.VrPageInfo;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.content.ContentText;
-import net.vpc.app.vainruling.core.service.content.TaskTextService;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.web.jsf.ctrl.AbstractObjectCtrl;
 
-import net.vpc.app.vainruling.core.service.pages.VrBreadcrumbItem;
-import net.vpc.app.vainruling.core.service.menu.VRMenuInfo;
-import net.vpc.app.vainruling.core.service.menu.VRMenuLabel;
+import net.vpc.app.vainruling.VrBreadcrumbItem;
+import net.vpc.app.vainruling.VrMenuInfo;
+import net.vpc.app.vainruling.VrMenuLabel;
 import net.vpc.app.vainruling.core.web.jsf.VrJsf;
 import net.vpc.app.vainruling.plugins.tasks.service.TaskPlugin;
 import net.vpc.app.vainruling.plugins.tasks.service.model.*;
@@ -30,14 +28,15 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import net.vpc.app.vainruling.core.service.menu.VRMenuProvider;
-import net.vpc.app.vainruling.core.service.model.AppProfile;
-import net.vpc.app.vainruling.core.service.pages.VrPageInfoResolver;
-import net.vpc.app.vainruling.core.service.pages.VrPage;
-import net.vpc.app.vainruling.core.service.pages.VrPathItem;
+import net.vpc.app.vainruling.VrPageInfoResolver;
+import net.vpc.app.vainruling.VrPage;
+import net.vpc.app.vainruling.VrPathItem;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.upa.UPA;
 import org.primefaces.event.SlideEndEvent;
+import net.vpc.app.vainruling.VrTaskTextService;
+import net.vpc.app.vainruling.VrOnPageLoad;
+import net.vpc.app.vainruling.VrMenuProvider;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -47,8 +46,8 @@ import org.primefaces.event.SlideEndEvent;
             @VrPathItem(title = "Todo", css = "fa-dashboard", ctrl = "")
         }, url = "modules/todo/todos"
 )
-@Scope("singleton")
-public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuProvider, VrPageInfoResolver, TaskTextService {
+@Scope("session")
+public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VrMenuProvider, VrPageInfoResolver, VrTaskTextService {
 
     @Autowired
     private TaskPlugin todoService;
@@ -71,13 +70,8 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuProvider
     public VrBreadcrumbItem getTitle() {
         VrBreadcrumbItem b = super.getTitle();
         TodoList list = getCurrentTodoList();
-        if (TodoList.LABO_ACTION.equals(list.getName())) {
-            b.setTitle("Mes Actions Labo");
-        } else if (TodoList.LABO_TICKET.equals(list.getName())) {
-            b.setTitle("Mes Ticktes Labo");
-        } else {
-            b.setTitle(list.getName());
-        }
+        String title = list.getLabel() == null ? list.getName() : list.getLabel();
+        b.setTitle(title);
         return b;
     }
 
@@ -113,7 +107,7 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuProvider
     }
 
     public TodoList getCurrentTodoList() {
-        return todoService.findTodoList(getModel().getListName());
+        return getModel().getTodoList();
     }
 
     public List<String> onCompleteCategory(String n) {
@@ -290,7 +284,7 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuProvider
         getModel().setMode(AccessMode.READ);
     }
 
-    @OnPageLoad
+    @VrOnPageLoad
     public void reloadPage(String cmd) {
         reloadPage(cmd, true);
     }
@@ -308,7 +302,11 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuProvider
     public void reloadPage(String cmd, boolean ustomization) {
         if (!StringUtils.isBlank(cmd)) {
             getModel().setListName(cmd);
+            getModel().setTodoList(todoService.findTodoList(cmd));
             getModel().setCmd(cmd);
+            if (!todoService.isTodoCollaborator(getModel().getTodoList(), null)) {
+                throw new IllegalArgumentException("Not Allowed List " + cmd);
+            }
         }
         refreshList();
     }
@@ -369,8 +367,8 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuProvider
     }
 
     @Override
-    public List<VRMenuInfo> createCustomMenus() {
-        List<VRMenuInfo> ok = new ArrayList<>();
+    public List<VrMenuInfo> createCustomMenus() {
+        List<VrMenuInfo> ok = new ArrayList<>();
         for (TodoList list : todoService.findTodoListsByResp(null)) {
             if (isAllowedList(list, false)) {
                 AppUser user = coreService.getCurrentUser();
@@ -382,10 +380,10 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VRMenuProvider
                             TodoStatusType.TO_VERIFY
                         }
                 ).size();
-                final VRMenuInfo vrMenuDef = new VRMenuInfo(list.getLabel() == null ? list.getName() : list.getLabel(), "/Todo", "todo", list.getName(),
+                final VrMenuInfo vrMenuDef = new VrMenuInfo(list.getLabel() == null ? list.getName() : list.getLabel(), "/Todo", "todo", list.getName(),
                         null, null, "", 100,
-                        new VRMenuLabel[]{
-                            new VRMenuLabel(String.valueOf(count), "severe")
+                        new VrMenuLabel[]{
+                            new VrMenuLabel(String.valueOf(count), "severe")
                         }
                 );
 //            vrMenuDef.

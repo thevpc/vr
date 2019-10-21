@@ -5,16 +5,16 @@
  */
 package net.vpc.app.vainruling.plugins.equipments.core.service.extensions.editor;
 
-import net.vpc.app.vainruling.core.service.editor.ForEntity;
 import net.vpc.app.vainruling.core.service.editor.PropertyMainPhotoProvider;
 import org.springframework.stereotype.Component;
+import net.vpc.app.vainruling.VrEntityName;
 
 /**
  *
  * @author vpc
  */
 @Component
-@ForEntity("Equipment")
+@VrEntityName("Equipment")
 public class EquipmentEditorMainPhotoProvider extends PropertyMainPhotoProvider {
 
     public EquipmentEditorMainPhotoProvider() {

@@ -6,53 +6,36 @@ import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import net.vpc.app.vainruling.core.service.CorePlugin;
-import net.vpc.app.vainruling.core.web.OnPageLoad;
-import net.vpc.app.vainruling.core.web.VrController;
-import $
-
-{{packageName(ProjectGroup)}}.${{packageName(ModuleName)}}.service.*;
+import net.vpc.app.vainruling.VrOnPageLoad;
+import net.vpc.app.vainruling.VrPage;
+import ${{packageName(ProjectGroup)}}.${{packageName(ModuleName)}}.service.*;
 
 /**
  * ${{className(vrPageName)}} component implementation.
  * A component is an MVC component defining a Controller (this class), a Model 
  * (sub class Model) and a view (url path to xhtml file)
  * 
- * @author ${{vrConfigAuthor}}
+ * @author ${{ConfigAuthor}}
  */
-@VrController(
+@VrPage(
         // bind controller to the menu
-        menu = "${{vrPageMenuPath}}",
+        menu = "${{PageMenuPath}}",
         // bind controller to the xhtml page
-        url = "modules/${{ModuleName}}/${{vrPageName}}",
+        url = "modules/${{ModuleName}}/${{PageName}}",
         // define security access user should have to use this component
-        securityKey = "Custom.Page.${{vrPageName}}"
+        securityKey = "Custom.Page.${{PageName}}"
 )
 @Controller
-public class $ {
-
-    {
-        className(vrPageName)
-    }
-}
-Ctrl {
-    private static final Logger 
-
-
-
-
-
-log = Logger.getLogger(${{className(vrPageName)}}Ctrl.class
-
-
-.getName());
+public class ${{className(PageName)}}Ctrl {
+    private static final Logger log = Logger.getLogger(${{className(PageName)}}Ctrl.class.getName());
 
     private final Model model = new Model();
 
     @Autowired
-        private CorePlugin core;
+    private CorePlugin core;
 
     @Autowired
-        private ${{className(ProjectName)}}${{className(ModuleName)}}Plugin ${{varName(ModuleName)}};
+    private ${{className(ProjectName)}}${{className(ModuleName)}}Plugin ${{varName(ModuleName)}};
 
     public Model getModel() {
         return model;
@@ -68,7 +51,7 @@ log = Logger.getLogger(${{className(vrPageName)}}Ctrl.class
      * @param conf initialization config.
      */
     @OnPageLoad
-        private void init(Config conf) {
+    private void init(Config conf) {
         if (conf != null) {
             getModel().setCounter(conf.initialCounter);
         }
@@ -84,45 +67,39 @@ log = Logger.getLogger(${{className(vrPageName)}}Ctrl.class
         getModel().setCounter(getModel().getCounter() + 1);
         //return to the same page
         return null;
-    
-
-
-
-
-
-}
+    }
 
     /**
      * Model Class for the current Controller (MVC Pattern enforced)
      */
     public static class Model {
 
-    private String message;
-    private int counter;
+        private String message;
+        private int counter;
 
-    public String getMessage() {
-        return message;
+        public String getMessage() {
+            return message;
+        }
+
+        public void setMessage(String message) {
+            this.message = message;
+        }
+
+        public int getCounter() {
+            return counter;
+        }
+
+        public void setCounter(int counter) {
+            this.counter = counter;
+        }
+
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    /**
+     * Config Class for the current Controller
+     */
+    public static class Config {
+
+        int initialCounter;
     }
-
-    public int getCounter() {
-        return counter;
-    }
-
-    public void setCounter(int counter) {
-        this.counter = counter;
-    }
-
-}
-
-/**
- * Config Class for the current Controller
- */
-public static class Config {
-
-    int initialCounter;
-}
 }

@@ -5,8 +5,8 @@
  */
 package net.vpc.app.vainruling.plugins.forum.service;
 
-import net.vpc.app.vainruling.core.service.plugins.Install;
-import net.vpc.app.vainruling.core.service.plugins.VrPlugin;
+import net.vpc.app.vainruling.VrPlugin;
+import net.vpc.app.vainruling.VrInstall;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -14,7 +14,7 @@ import net.vpc.app.vainruling.core.service.plugins.VrPlugin;
 @VrPlugin
 public class ForumPlugin {
 
-    @Install
+    @VrInstall
     private void installService() {
 
     }

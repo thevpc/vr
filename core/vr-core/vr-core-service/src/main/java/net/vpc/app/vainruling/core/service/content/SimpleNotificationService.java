@@ -6,13 +6,14 @@ import org.springframework.stereotype.Controller;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import net.vpc.app.vainruling.VrNotificationTextService;
 
 /**
  * Created by vpc on 9/11/16.
  */
 @Controller
 @Scope(value = "singleton")
-public class SimpleNotificationService implements NotificationTextService{
+public class SimpleNotificationService implements VrNotificationTextService{
     List<NotificationText> notificationTexts=new ArrayList<>();
 
     @Override

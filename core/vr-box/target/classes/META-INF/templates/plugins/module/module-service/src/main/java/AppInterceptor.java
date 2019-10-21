@@ -1,6 +1,4 @@
-package $
-
-{{packageName(ProjectGroup)}}.${{packageName(ModuleName)}}.service;
+package ${{packageName(ProjectGroup)}}.${{packageName(ModuleName)}}.service;
 
 import net.vpc.upa.config.*;
 import java.util.logging.Logger;
@@ -11,21 +9,6 @@ import java.util.logging.Logger;
  * @author ${{ConfigAuthor}}
  */
 @Callback
-public class $ {
-
-    {
-        className(ProjectName)
-    }
-}
-${{className(ModuleName)}}Interceptor {
-    private static final Logger 
-
-
-
-
-
-log = Logger.getLogger(${{className(ProjectName)}}${{className(ModuleName)}}Interceptor.class
-
-
-.getName());
+public class ${{className(ProjectName)}}${{className(ModuleName)}}Interceptor {
+    private static final Logger log = Logger.getLogger(${{className(ProjectName)}}${{className(ModuleName)}}Interceptor.class.getName());
 }
