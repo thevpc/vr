@@ -5,6 +5,8 @@
  */
 package net.vpc.app.vainruling.plugins.tasks.web;
 
+import javax.servlet.http.*;
+import java.io.IOException;
 import net.vpc.app.vainruling.VrPageInfo;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
@@ -28,6 +30,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import javax.faces.context.FacesContext;
 import net.vpc.app.vainruling.VrPageInfoResolver;
 import net.vpc.app.vainruling.VrPage;
 import net.vpc.app.vainruling.VrPathItem;
@@ -37,6 +40,8 @@ import org.primefaces.event.SlideEndEvent;
 import net.vpc.app.vainruling.VrTaskTextService;
 import net.vpc.app.vainruling.VrOnPageLoad;
 import net.vpc.app.vainruling.VrMenuProvider;
+import net.vpc.app.vainruling.core.web.jsf.Vr;
+import org.apache.commons.lang.StringEscapeUtils;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -63,7 +68,7 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VrMenuProvider
     }
 
     public List<TodoList> findMyActions() {
-        return todoService.findTodoListsByResp(null);
+        return todoService.findTodoListsByResp(null, false);
     }
 
     @Override
@@ -76,15 +81,15 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VrMenuProvider
     }
 
     public void onEstimationSlideEnd(SlideEndEvent event) {
-        getModel().getCurrent().setEstimation(event.getValue());
+        getModel().getCurrent().setEstimation((int) event.getValue());
     }
 
     public void onPrioritySlideEnd(SlideEndEvent event) {
-        getModel().setCurrentPriority(event.getValue());
+        getModel().setCurrentPriority((int) event.getValue());
     }
 
     public void onProgressSlideEnd(SlideEndEvent event) {
-        getModel().getCurrent().setProgress(event.getValue());
+        getModel().getCurrent().setProgress((int) event.getValue());
     }
 
     @Override
@@ -174,7 +179,101 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VrMenuProvider
         if ("New".equals(buttonId)) {
             return getModel().getMode() == AccessMode.READ;
         }
+        CorePlugin core = CorePlugin.get();
+        boolean admin = core.isCurrentSessionAdmin();
+        int currentUserId = core.getCurrentUserIdFF();
+        if ("Persist".equals(buttonId)) {
+            return getModel().getMode() == AccessMode.READ;
+        }
+        if ("Save".equals(buttonId)) {
+            if (getModel().getMode() == AccessMode.READ) {
+                return false;
+            }
+            Todo td = getModel().getCurrent();
+            if (td == null) {
+                return false;
+            }
+            if (admin) {
+                return true;
+            }
+            if ((td.getList().getRespUser() != null && td.getList().getRespUser().getId() == currentUserId)
+                    || (td.getInitiator() != null && td.getInitiator().getId() == currentUserId)
+                    || (td.getResponsible() != null && td.getResponsible().getId() == currentUserId)) {
+                return true;
+            }
+            return false;
+        }
+        if ("Remove".equals(buttonId)
+                || "archive".equals(buttonId)) {
+            if (getModel().getMode() == AccessMode.PERSIST) {
+                return false;
+            }
+            if (getModel().getMode() == AccessMode.UPDATE) {
+                Todo td = getModel().getCurrent();
+                if (td == null) {
+                    return false;
+                }
+                if (admin) {
+                    return true;
+                }
+                if ((td.getList().getRespUser() != null && td.getList().getRespUser().getId() == currentUserId)
+                        || (td.getInitiator() != null && td.getInitiator().getId() == currentUserId) //                    ||(td.getResponsible()!= null && td.getResponsible().getId() == currentUserId)
+                        ) {
+                    return true;
+                }
+            }
+            if (getModel().getMode() == AccessMode.READ) {
+                TodoList td = getModel().getTodoList();
+                if (td == null) {
+                    return false;
+                }
+                if (admin) {
+                    return true;
+                }
+                if (!td.isSystemList() && (td.getRespUser() != null && td.getRespUser().getId() == currentUserId)) {
+                    return true;
+                }
+            }
+            return false;
+        }
         return super.isEnabledButton(buttonId);
+    }
+
+    public String getUserTextIconHtml(AppUser user) {
+        if (user == null) {
+            return "";
+        }
+        String login = user.getLogin();
+        if (StringUtils.isBlank(login)) {
+            return "";
+        }
+        String label = Vr.get().hashToArr(login, "label-danger", "label-success", "label-info", "label-warning", "label-primary", "label-default");
+        String[] y = StringUtils.split(login, ". ");
+        String t = "?";
+        if (y.length >= 2) {
+            t = String.valueOf(Character.toUpperCase(y[0].charAt(0))) + String.valueOf(Character.toUpperCase(y[1].charAt(0)));
+        } else if (y.length >= 1) {
+            t = String.valueOf(Character.toUpperCase(y[0].charAt(0)));
+        }
+        return "<span class=\"label " + label + "\" title=\"" + user.getFullTitle() + "\">" + t + "</span>";
+    }
+
+    public String getCategoryIconHtml(TodoCategory cat) {
+        if (cat == null) {
+            return "";
+        }
+        String name = cat.getName();
+        if (StringUtils.isBlank(name)) {
+            name = cat.getShortName();
+        }
+        if (StringUtils.isBlank(name)) {
+            name = String.valueOf(cat.getId());
+        }
+        String label = Vr.get().hashToArr(name, "red", "yellow", "aqua", "blue", "green", "black", "black", "light-blue", "gray", "navy", "teal", "olive", "lime", "orange", "fuchsia", "purple", "maroon");
+        String[] y = StringUtils.split(name, ". ");
+        //<i class="fa fa-circle-o text-red"></i>
+//        return "<i class=\"fa fa-circle-o text-" + label + "\">"+StringEscapeUtils.escapeHtml(name) +"</i>";
+        return "<i class=\"text-" + label + "\">" + StringEscapeUtils.escapeHtml(name) + "</i>";
     }
 
     public void updateCurrentCategory() {
@@ -268,11 +367,28 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VrMenuProvider
     }
 
     public void onDeleteCurrent() {
-        updateCurrentCategory();
-        Todo c = getModel().getCurrent();
-        todoService.removeTodo(c.getId());
-        reloadPage(true);
-        getModel().setMode(AccessMode.READ);
+        if (getModel().getMode() == AccessMode.READ) {
+            TodoList td = getModel().getTodoList();
+            todoService.removeTodoList(td.getId());
+            FacesContext context = FacesContext.getCurrentInstance();
+            HttpServletRequest origRequest = (HttpServletRequest) context.getExternalContext().getRequest();
+            String contextPath = origRequest.getContextPath();
+            try {
+                FacesContext.getCurrentInstance().getExternalContext()
+                        .redirect(contextPath + "/p/welcome");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return;
+        }
+
+        if (getModel().getMode() == AccessMode.UPDATE) {
+            updateCurrentCategory();
+            Todo c = getModel().getCurrent();
+            todoService.removeTodo(c.getId());
+            reloadPage(true);
+            getModel().setMode(AccessMode.READ);
+        }
     }
 
     public void onArchiveCurrent() {
@@ -333,15 +449,10 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VrMenuProvider
             return false;
         }
         CorePlugin a = CorePlugin.get();
-        int u = a.getCurrentUserIdFF();
-        if (u < 0) {
-            return false;
-        }
         if (a.isCurrentSessionAdmin()) {
             return true;
         }
-        //default is true...
-        return true;
+        return l.isSharableList();
     }
 
     public boolean isListManager() {
@@ -369,62 +480,32 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VrMenuProvider
     @Override
     public List<VrMenuInfo> createCustomMenus() {
         List<VrMenuInfo> ok = new ArrayList<>();
-        for (TodoList list : todoService.findTodoListsByResp(null)) {
-            if (isAllowedList(list, false)) {
-                AppUser user = coreService.getCurrentUser();
-                int count = user == null ? 0 : todoService.findTodosByResponsible(list.getId(),
-                        user.getId(),
-                        new TodoStatusType[]{
-                            TodoStatusType.UNASSIGNED,
-                            TodoStatusType.ASSIGNED,
-                            TodoStatusType.TO_VERIFY
-                        }
-                ).size();
-                final VrMenuInfo vrMenuDef = new VrMenuInfo(list.getLabel() == null ? list.getName() : list.getLabel(), "/Todo", "todo", list.getName(),
-                        null, null, "", 100,
-                        new VrMenuLabel[]{
-                            new VrMenuLabel(String.valueOf(count), "severe")
-                        }
-                );
-//            vrMenuDef.
-                ok.add(vrMenuDef);
-            }
+        for (TodoList list : todoService.findTodoListsByResp(null, false)) {
+            AppUser user = coreService.getCurrentUser();
+            int count = user == null ? 0 : todoService.findTodosByResponsible(list.getId(),
+                    user.getId(),
+                    new TodoStatusType[]{
+                        TodoStatusType.UNASSIGNED,
+                        TodoStatusType.ASSIGNED,
+                        TodoStatusType.TO_VERIFY
+                    }
+            ).size();
+            final VrMenuInfo vrMenuDef = new VrMenuInfo(list.getLabel() == null ? list.getName() : list.getLabel(), "/Todo", "todo", list.getName(),
+                    null, null, "", 100,
+                    count == 0 ? null : new VrMenuLabel[]{
+                        new VrMenuLabel(String.valueOf(count), count < 3 ? "warning" : "severe")
+                    }
+            );
+            ok.add(vrMenuDef);
         }
         return ok;
-    }
-
-    protected boolean isAllowedList(TodoList list, boolean promoteAdmin) {
-        if (list == null) {
-            return false;
-        }
-        CorePlugin core = CorePlugin.get();
-        if (core.getCurrentUserId() == null) {
-            return false;
-        }
-        if (!StringUtils.isBlank(list.getCollaborators())) {
-            if (!core.isUserMatchesProfileFilter(core.getCurrentUserId(), list.getCollaborators())) {
-                return false;
-            }
-        }
-        if (list.getRespUser() != null) {
-            if (promoteAdmin) {
-                if (!core.isCurrentSessionAdminOrUser(core.getCurrentUserId())) {
-                    return false;
-                }
-            } else {
-                if (core.getCurrentUserId() != list.getRespUser().getId()) {
-                    return false;
-                }
-            }
-        }
-        return true;
     }
 
     @Override
     public VrPageInfo resolvePageInfo(String cmd) {
 //        String listName = cmd;
         TodoList list = todoService.findTodoList(cmd);
-        if (!isAllowedList(list, true)) {
+        if (!todoService.isAllowedList(list, true)) {
             return null;
         }
         String title = list.getLabel();

@@ -22,11 +22,23 @@ import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 public class AbstractAcademicImportAction implements VrImportFileAction {
 
     private String name;
+    private String exampleFilePath;
     private TreeSet<String> formats = new TreeSet<>();
 
-    public AbstractAcademicImportAction(String name, String... formats) {
+    public AbstractAcademicImportAction(String name, String[] formats, String exampleFilePath) {
         this.name = name;
+        this.exampleFilePath = exampleFilePath;
         this.formats.addAll(Arrays.asList(formats));
+    }
+
+    public AbstractAcademicImportAction(String name) {
+        this.name = name;
+        this.exampleFilePath = "/Config/import-templates/example." + name + ".xlsx";
+        this.formats.addAll(Arrays.asList(name + ".xlsx", "*." + name + ".xlsx"));
+    }
+
+    public String getExampleFilePath() {
+        return exampleFilePath;
     }
 
     @Override

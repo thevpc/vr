@@ -221,6 +221,7 @@ class CorePluginBodyFileSystem extends CorePluginBody {
     public VirtualFileSystem getUserFileSystem(final String login) {
         CorePluginSecurity.requireUser(login);
         AppUser u = getContext().getCorePlugin().findUser(login);
+        final CorePlugin core = getContext().getCorePlugin();
         if (u != null) {
             return UPA.getContext().invokePrivileged(new Action<VirtualFileSystem>() {
                 @Override
@@ -239,18 +240,32 @@ class CorePluginBodyFileSystem extends CorePluginBody {
                         }
 
                         for (AppProfile p : profiles) {
-                            String profileMountPoint = "/" + I18n.get().get("System.documents.profile-folder-name", new Arg("name", VrUtils.normalizeFileName(p.getName())));
-                            VirtualFileSystem profileFileSystem = getProfileFileSystem(p.getCode());
-                            if (profileFileSystem.get("/").listFiles().length > 0) {
-                                mfs.mount(profileMountPoint, profileFileSystem.get("/"));
+                            if (p.isShareFolder()) {
+                                String profileMountPoint = "/" + I18n.get().get("System.documents.profile-folder-name", new Arg("name", VrUtils.normalizeFileName(p.getName())));
+                                AppProfile appProfile = getContext().getCorePlugin().findProfileByCode(p.getCode());
+                                if (appProfile != null) {
+                                    VirtualFileSystem profileFileSystem = getProfileFileSystem(p.getCode());
+                                    final VFile rootFolder = profileFileSystem.get("/");
+//                                boolean visible = rootFolder.listFiles().length != 0;
+//                                if (!visible) {
+//                                    if (u.getLogin().equals(rootFolder.getACL().getOwner())
+//                                            || core.isUserMatchesProfileFilter(u.getId(), appProfile.getAdmin())
+//                                            || core.isUserAdmin(u.getId())) {
+//                                        visible = true;
+//                                    }
+//                                }
+//                                if (visible) {
+                                    mfs.mount(profileMountPoint, rootFolder);
+//                                }
+                                }
                             }
                         }
 
                         for (AppFsSharing e : getEnabledFsSharings()) {
-                            if (getContext().getCorePlugin().isUserMatchesProfileFilter(u.getId(), e.getAllowedUsers())) {
+                            if (core.isUserMatchesProfileFilter(u.getId(), e.getAllowedUsers())) {
                                 try {
                                     mountSubFS(mfs, e);
-                                } catch (IOException ex) {
+                                } catch (Exception ex) {
                                     log.log(Level.SEVERE, null, ex);
                                 }
                             }
@@ -294,19 +309,19 @@ class CorePluginBodyFileSystem extends CorePluginBody {
         if (StringUtils.isBlank(sharedPath)) {
             throw new IllegalArgumentException("Blank target path");
         }
-        if (getContext().getCorePlugin().isUserMatchesProfileFilter(e.getUser().getId(), e.getAllowedUsers())) {
-            if (sharedPath.contains("*")) {
-                for (VFile file : getRootFileSystem().get("/").find(sharedPath, VFile::isDirectory)) {
-                    mfs.mount("/" + mountPath + "/" + file.getName(), file);
-                }
-            } else {
-                VFile p = getRootFileSystem().get(sharedPath);
-                if (!p.exists() || !p.isDirectory()) {
-                    throw new IllegalArgumentException("Invalid path to mount : " + sharedPath);
-                }
-                mfs.mount("/" + mountPath, getRootFileSystem().get(sharedPath));
+//        if (getContext().getCorePlugin().isUserMatchesProfileFilter(e.getUser().getId(), e.getAllowedUsers())) {
+        if (sharedPath.contains("*")) {
+            for (VFile file : getRootFileSystem().get("/").find(sharedPath, VFile::isDirectory)) {
+                mfs.mount("/" + mountPath + "/" + file.getName(), file);
             }
+        } else {
+            VFile p = getRootFileSystem().get(sharedPath);
+            if (!p.exists() || !p.isDirectory()) {
+                throw new IOException("Invalid path to mount : " + sharedPath);
+            }
+            mfs.mount("/" + mountPath, getRootFileSystem().get(sharedPath));
         }
+//        }
     }
 
     protected VirtualFileSystem getProfileFileSystem(String profileCode) {
@@ -373,7 +388,7 @@ class CorePluginBodyFileSystem extends CorePluginBody {
         int uid = entry.getUser().getId();
         CorePluginSecurity.requireUser(uid);
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        if (entry.getId() <= 0) {
+        if (entry.getId() > 0) {
             pu.invokePrivileged(() -> pu.merge(entry));
         } else {
             pu.invokePrivileged(() -> pu.persist(entry));

@@ -1155,7 +1155,7 @@ public class EquipmentBorrowService {
                 .getResultList();
     }
 
-    public EquipmentBorrowRequest addEquipmentBorrowRequest(Integer userId, int eqId, Date from, Date to, Integer visaUserId, double qty) {
+    public EquipmentBorrowRequest addEquipmentBorrowRequest(Integer userId, int eqId, Date from, Date to, Integer visaUserId, double qty, boolean acceptOldDates) {
         AppUser bu = userId == null ? null : UPA.getPersistenceUnit().invokePrivileged(() -> core.findUser(userId));
         AppUser vu = visaUserId == null ? null : UPA.getPersistenceUnit().invokePrivileged(() -> core.findUser(visaUserId));
         Equipment eq = EquipmentPlugin.get().findEquipment(eqId);
@@ -1170,11 +1170,11 @@ public class EquipmentBorrowService {
         req.setToDate(to);
         req.setVisaUser(vu);
         req.setQuantity(qty);
-        addEquipmentBorrowRequest(req);
+        addEquipmentBorrowRequest(req, acceptOldDates);
         return req;
     }
 
-    public void addEquipmentBorrowRequest(EquipmentBorrowRequest req) {
+    public void addEquipmentBorrowRequest(EquipmentBorrowRequest req, boolean acceptOldDates) {
         AppUser u = req.getBorrowerUser();
         if (u == null) {
             u = core.getCurrentUser();
@@ -1197,8 +1197,10 @@ public class EquipmentBorrowService {
         if (fromDte == null || toDte == null || fromDte.compareTo(toDte) > 0) {
             throw new IllegalArgumentException("Invalid date range");
         }
-        if (fromDte.compareTo(new MutableDate().clearTime().getDateTime()) < 0) {
-            throw new IllegalArgumentException("Invalid date range");
+        if (!acceptOldDates) {
+            if (fromDte.compareTo(new MutableDate().clearTime().getDateTime()) < 0) {
+                throw new IllegalArgumentException("Invalid date range");
+            }
         }
         if (eq.getDepartment() == null) {
             throw new IllegalArgumentException("Invalid equipment, missing department");

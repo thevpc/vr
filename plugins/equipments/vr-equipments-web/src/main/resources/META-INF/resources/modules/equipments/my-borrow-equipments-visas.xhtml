@@ -68,24 +68,27 @@ and open the template in the editor.
                             <p:outputLabel value="#{i.borrowerUser.fullTitle}"/>
                         </p:column>
                         <p:column headerText="Visa">
-                            <p:outputLabel rendered="#{myBorrowEquipmentsVisasCtrl.isVisaVisible(i)}" value="#{vr.str(i.visaUser.fullName)} : #{vr.str(i.request.visaUserStatus)}" />
-                            <p:commandButton rendered="#{myBorrowEquipmentsVisasCtrl.isVisaAccept(i, true)}" value="accepter" action="#{myBorrowEquipmentsVisasCtrl.onAcceptVisa(i,true)}" update=":listForm"/>
-                            <p:commandButton rendered="#{myBorrowEquipmentsVisasCtrl.isVisaAccept(i, false)}" value="rejeter" action="#{myBorrowEquipmentsVisasCtrl.onAcceptVisa(i,false)}" update=":listForm"/>
+                            <p:outputLabel style="display: block" rendered="#{myBorrowEquipmentsVisasCtrl.isVisaVisible(i)}" value="#{vr.str(i.visaUser.fullName)}" />
+                            <p:outputLabel style="display: block" rendered="#{myBorrowEquipmentsVisasCtrl.isVisaVisible(i)}" value="#{vr.str(i.request.visaUserStatus)}" />
+                            <p:commandButton style="width: 70px;display: block;" styleClass="btn btn-block btn-success btn-xs" rendered="#{myBorrowEquipmentsVisasCtrl.isVisaAccept(i, true)}" value="accepter" action="#{myBorrowEquipmentsVisasCtrl.onAcceptVisa(i,true)}" update=":listForm"/>
+                            <p:commandButton style="width: 70px;display: block;" styleClass="btn btn-block btn-danger btn-xs" rendered="#{myBorrowEquipmentsVisasCtrl.isVisaAccept(i, false)}" value="rejeter" action="#{myBorrowEquipmentsVisasCtrl.onAcceptVisa(i,false)}" update=":listForm"/>
                         </p:column>
                         <p:column headerText="Technicien">
-                            <p:outputLabel value="#{vr.str(i.request.operatorUser.fullName)} : #{vr.str(i.request.operatorUserStatus)}" />
-                            <p:commandButton rendered="#{myBorrowEquipmentsVisasCtrl.isOperatorAccept(i, true)}" value="accepter" action="#{myBorrowEquipmentsVisasCtrl.onAcceptOperator(i,true)}" update=":listForm"/>
-                            <p:commandButton rendered="#{myBorrowEquipmentsVisasCtrl.isOperatorAccept(i, false)}" value="rejeter" action="#{myBorrowEquipmentsVisasCtrl.onAcceptOperator(i,false)}" update=":listForm"/>
+                            <p:outputLabel style="display: block" value="#{vr.str(i.request.operatorUser.fullName)}" />
+                            <p:outputLabel style="display: block" value="#{vr.str(i.request.operatorUserStatus)}" />
+                            <p:commandButton style="width: 70px;display: block;" styleClass="btn btn-block btn-success btn-xs" rendered="#{myBorrowEquipmentsVisasCtrl.isOperatorAccept(i, true)}" value="accepter" action="#{myBorrowEquipmentsVisasCtrl.onAcceptOperator(i,true)}" update=":listForm"/>
+                            <p:commandButton style="width: 70px;display: block;" styleClass="btn btn-block btn-danger btn-xs" rendered="#{myBorrowEquipmentsVisasCtrl.isOperatorAccept(i, false)}" value="rejeter" action="#{myBorrowEquipmentsVisasCtrl.onAcceptOperator(i,false)}" update=":listForm"/>
                         </p:column>
                         <p:column headerText="Direction">
-                            <p:outputLabel value="#{vr.str(i.request.superOperatorUser.fullName)} : #{vr.str(i.request.superOperatorUserStatus)}" />
-                            <p:commandButton rendered="#{myBorrowEquipmentsVisasCtrl.isSuperOperatorAccept(i, true)}" value="accepter" action="#{myBorrowEquipmentsVisasCtrl.onAcceptSuperOperator(i,true)}" update=":listForm"/>
-                            <p:commandButton rendered="#{myBorrowEquipmentsVisasCtrl.isSuperOperatorAccept(i, false)}" value="rejeter" action="#{myBorrowEquipmentsVisasCtrl.onAcceptSuperOperator(i,false)}" update=":listForm"/>
+                            <p:outputLabel style="display: block" value="#{vr.str(i.request.superOperatorUser.fullName)}" />
+                            <p:outputLabel style="display: block" value="#{vr.str(i.request.superOperatorUserStatus)}" />
+                            <p:commandButton style="width: 70px;display: block;" styleClass="btn btn-block btn-success btn-xs" rendered="#{myBorrowEquipmentsVisasCtrl.isSuperOperatorAccept(i, true)}" value="accepter" action="#{myBorrowEquipmentsVisasCtrl.onAcceptSuperOperator(i,true)}" update=":listForm"/>
+                            <p:commandButton style="width: 70px;display: block;" styleClass="btn btn-block btn-danger btn-xs" rendered="#{myBorrowEquipmentsVisasCtrl.isSuperOperatorAccept(i, false)}" value="rejeter" action="#{myBorrowEquipmentsVisasCtrl.onAcceptSuperOperator(i,false)}" update=":listForm"/>
                         </p:column>
                         <p:column headerText="Etat">
-                            <p:outputLabel value="#{vr.str(i.request.finalStatus)}" />
-                            <p:commandButton rendered="#{myBorrowEquipmentsVisasCtrl.isDeliver(i)}" value="prêter" action="#{myBorrowEquipmentsVisasCtrl.onDeliver(i)}" update=":listForm"/>
-                            <p:commandButton rendered="#{myBorrowEquipmentsVisasCtrl.isArchive(i)}" value="archiver" action="#{myBorrowEquipmentsVisasCtrl.onArchive(i)}" update=":listForm"/>
+                            <p:outputLabel style="display: block" value="#{vr.str(i.request.finalStatus)}" styleClass="label label-#{vr.hashToArr(vr.str(i.request.finalStatus),'danger','success','info','warning','primary','default')}"/>
+                            <p:commandButton style="width: 70px;display: block;" styleClass="btn btn-block btn-success btn-xs" rendered="#{myBorrowEquipmentsVisasCtrl.isDeliver(i)}" value="prêter" action="#{myBorrowEquipmentsVisasCtrl.onDeliver(i)}" update=":listForm"/>
+                            <p:commandButton style="width: 70px;display: block;" styleClass="btn btn-block btn-default btn-xs" rendered="#{myBorrowEquipmentsVisasCtrl.isArchive(i)}" value="archiver" action="#{myBorrowEquipmentsVisasCtrl.onArchive(i)}" update=":listForm"/>
                         </p:column>
                         <f:facet name="footer">
                             <p:outputLabel value="Total #{myBorrowEquipmentsVisasCtrl.model.equipments.size()}"/>

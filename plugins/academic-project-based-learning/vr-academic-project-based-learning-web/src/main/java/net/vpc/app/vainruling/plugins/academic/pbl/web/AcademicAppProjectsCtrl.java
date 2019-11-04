@@ -33,7 +33,6 @@ import net.vpc.common.strings.StringUtils;
 import net.vpc.common.vfs.VFile;
 import net.vpc.upa.UPA;
 import net.vpc.upa.filters.ObjectFilter;
-import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.DefaultTreeNode;
@@ -54,6 +53,7 @@ import net.vpc.upa.bulk.SheetFormatter;
 import net.vpc.app.vainruling.VrPage;
 import net.vpc.app.vainruling.VrPathItem;
 import net.vpc.app.vainruling.VrOnPageLoad;
+import org.primefaces.PrimeFaces;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -952,7 +952,7 @@ public class AcademicAppProjectsCtrl {
                 getModel().setSelectedPathUploaded(file.getPath());
                 p.setSpecFilePath(file.getPath());
             }
-            RequestContext.getCurrentInstance().update("myform:pathComp");
+            PrimeFaces.current().ajax().update("myform:pathComp");
 
         } catch (Exception ex) {
             FacesUtils.addErrorMessage(ex);

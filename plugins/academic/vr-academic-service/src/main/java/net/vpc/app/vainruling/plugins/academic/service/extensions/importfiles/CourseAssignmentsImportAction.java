@@ -14,9 +14,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class CourseAssignmentsImportAction extends AbstractAcademicImportAction {
 
-    // khaouwla bel kahla
     public CourseAssignmentsImportAction() {
-        super("Import ", "*.course-assignments.xlsx");
+        super("course-assignments");
     }
 
 }

@@ -55,14 +55,22 @@ public class AcademicReport {
     private Date createDateEnd;
     private boolean createAllowed;
     @Properties(
-            @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.PROFILE_EXPRESSION))
+            {
+                @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.PROFILE_EXPRESSION),
+                @Property(name = UIConstants.Form.SPAN, value = "MAX_VALUE")
+            }
+    )
     private String createProfiles;
 
     private Date updateDateStart;
     private Date updateDateEnd;
     private boolean updateAllowed;
     @Properties(
-            @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.PROFILE_EXPRESSION))
+            {
+                @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.PROFILE_EXPRESSION),
+                @Property(name = UIConstants.Form.SPAN, value = "MAX_VALUE")
+            }
+    )
     private String updateProfiles;
 
     private String evaluationPrivateShort;

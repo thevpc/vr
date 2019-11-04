@@ -15,6 +15,8 @@ public interface VrImportFileAction {
 
     String getName();
 
+    String getExampleFilePath();
+
     String getFileNameDescription();
 
     boolean isAcceptFileName(String name);

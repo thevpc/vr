@@ -40,20 +40,29 @@ public class AppProfile {
      * admin user(s)
      */
     @Summary
-    @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.PROFILE_EXPRESSION)
+    @Properties(
+            {
+                @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.PROFILE_EXPRESSION),
+                @Property(name = UIConstants.Form.SPAN, value = "MAX_VALUE")
+            }
+    )
     private String admin;
 
     /**
      * custom profiles type depends on creator plugin
      */
     private String customType;
-    
 
     /**
      * custom profiles are managed by application
      */
     @Field(defaultValue = "false")
     private boolean custom;
+    /**
+     * custom profiles are managed by application
+     */
+    @Field(defaultValue = "true")
+    private boolean shareFolder;
     /**
      * if true, this is considered as a composer group. A composer group is NOT
      * a top level group and hence should not be assigned directly to users. It
@@ -171,7 +180,6 @@ public class AppProfile {
 //        }
 //        return null;
 //    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -222,5 +230,13 @@ public class AppProfile {
     public void setShortDescription(String shortDescription) {
         this.shortDescription = shortDescription;
     }
-    
+
+    public boolean isShareFolder() {
+        return shareFolder;
+    }
+
+    public void setShareFolder(boolean shareFolder) {
+        this.shareFolder = shareFolder;
+    }
+
 }

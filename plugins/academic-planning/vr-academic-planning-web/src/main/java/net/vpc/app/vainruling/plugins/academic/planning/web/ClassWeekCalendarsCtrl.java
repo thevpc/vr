@@ -9,8 +9,6 @@ import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.plugins.academic.planning.service.AcademicPlanningPlugin;
 import net.vpc.app.vainruling.plugins.academic.planning.service.AcademicPlanningPluginSecurity;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.app.vainruling.plugins.calendars.service.dto.WeekCalendar;
-import net.vpc.app.vainruling.plugins.calendars.service.dto.CalendarDay;
 import net.vpc.app.vainruling.plugins.calendars.web.week.AbstractWeekCalendarCtrl;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
@@ -55,19 +53,39 @@ public class ClassWeekCalendarsCtrl extends AbstractWeekCalendarCtrl {
         for (NamedId t : pl.loadStudentPlanningListNames()) {
             getModel().getGroups().add(FacesUtils.createSelectItem(t.getStringId(), StringUtils.nonNull(t.getName())));
         }
-        WeekCalendar plannings = pl.loadClassPlanning(getModel().getGroupName());
-        if (plannings == null) {
-            updateModel(new ArrayList<CalendarDay>());
-        } else {
-            updateModel(plannings.getDays());
-        }
+        getModel().setCalendar(pl.loadClassPlanning(getModel().getGroupName()));
     }
 
     @VrOnPageLoad
     public void onRefresh(String cmd) {
         onRefresh();
     }
+    
+    public boolean isValidPlanning() {
+        return getModel().getPlanning() != null && (model.getPlanning().size()) > 0;
+    }
 
+    public boolean isMissingPlanning() {
+        return getModel().getGroupName() != null
+                && getModel().getGroupName().length() > 0
+                && (getModel().getPlanning() == null
+                || (getModel().getPlanning().size()) == 0);
+    }
+
+    public String getSelectedGroupLabel() {
+        String r = getModel().getGroupName();
+        if (StringUtils.isBlank(r)) {
+            return r;
+        }
+        for (SelectItem group : getModel().getGroups()) {
+            if (group.getValue() != null && group.getValue().equals(r)) {
+                return group.getLabel();
+            }
+        }
+        return r;
+    }
+
+    @Override
     public ModelExt getModel() {
         return (ModelExt) super.getModel();
     }

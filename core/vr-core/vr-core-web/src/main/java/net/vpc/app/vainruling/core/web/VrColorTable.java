@@ -1,35 +1,39 @@
 package net.vpc.app.vainruling.core.web;
 
+import net.vpc.app.vainruling.core.service.VrApp;
 import org.springframework.stereotype.Service;
-
 
 /**
  * Created by vpc on 7/3/16.
  */
 @Service
 public class VrColorTable {
+
+    public static VrColorTable get() {
+        return VrApp.getBean(VrColorTable.class);
+    }
     public final String[] bgcolors = new String[]{
-            "#DDE6CB",
-            "#C0F7BA",
-            "aliceblue",
-            "#E6E7F9",
-            "#EAD3F9",
-            "#FBFFBE",
-            "bisque",
-            "beige",
-            "#FDD5E0",
-            "peachpuff",
-            "lightcyan",
-            "mistyrose",
-            "lightgoldenrodyellow"
+        "#DDE6CB",
+        "#C0F7BA",
+        "aliceblue",
+        "#E6E7F9",
+        "#EAD3F9",
+        "#FBFFBE",
+        "bisque",
+        "beige",
+        "#FDD5E0",
+        "peachpuff",
+        "lightcyan",
+        "mistyrose",
+        "lightgoldenrodyellow"
     };
     public final String[] fgcolors = new String[]{
-            "mediumseagreen",
-            "#3FB3B3",
-            "#B563FF",
-            "darkorange",
-            "darksalmon",
-            "deeppink"
+        "mediumseagreen",
+        "#3FB3B3",
+        "#B563FF",
+        "darkorange",
+        "darksalmon",
+        "deeppink"
     };
 
     public int pos(int pos) {

@@ -19,7 +19,7 @@ import java.sql.Timestamp;
  * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "this.name")
-@Path("Education/Config")
+@Path("Repository/Education")
 public class AcademicProgramType {
 
     @Path("Main")

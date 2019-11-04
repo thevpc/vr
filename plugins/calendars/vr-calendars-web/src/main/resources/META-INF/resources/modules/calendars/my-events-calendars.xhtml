@@ -34,44 +34,51 @@
             <ui:define name="content">
                 <h:form id="form">
                     <p:growl id="messages" showDetail="true" />
-                    <h:panelGrid columns="4" style="margin-bottom:10px" cellpadding="5">
-                        <p:outputLabel value="Choisir Calendrier"/>
-                        <p:selectOneMenu  value="#{eventsCalendarsCtrl.model.calendar}"
-                                          styleClass="vr-form-field"
-                                          filter="true" filterMatchMode="contains"
-                                          >
+                    <div class="box box-default">
+                        <div class="box-body">
+                            <div class="form-group">
+                                <p:outputLabel value="Choisir Calendrier"/>
+                                <p:selectOneMenu  value="#{eventsCalendarsCtrl.model.calendar}"
+                                                  styleClass="form-control"
+                                                  filter="true" filterMatchMode="contains"
+                                                  >
 
-                            <f:selectItems value="#{eventsCalendarsCtrl.model.calendars}"/>
-                            <p:ajax listener="#{eventsCalendarsCtrl.onRefreshCurrentCalendar}"   update=":form:schedule"/>
+                                    <f:selectItems value="#{eventsCalendarsCtrl.model.calendars}"/>
+                                    <p:ajax listener="#{eventsCalendarsCtrl.onRefreshCurrentCalendar}"   update=":form:schedule"/>
 
-                        </p:selectOneMenu>
-                    </h:panelGrid>
-                    <h:panelGrid columnClasses="value">
-                        <p:schedule id="schedule" value="#{eventsCalendarsCtrl.model.eventModel}" 
-                                    widgetVar="myschedule" 
-                                    locale="fr" 
-                                    timeFormat="HH:MM"  
-                                    class="schedule-container"
+                                </p:selectOneMenu>
+                            </div>
+                        </div>
+                    </div>
 
-                                    >
+                    <div class="box box-primary">
+                        <div class="box-body">
+                            <h:panelGrid columnClasses="value" styleClass="vr-no-border-grid">
+                                <p:schedule id="schedule" value="#{eventsCalendarsCtrl.model.eventModel}" 
+                                            widgetVar="myschedule" 
+                                            locale="fr" 
+                                            timeFormat="HH:MM"  
+                                            class="schedule-container"
 
-                            <p:ajax event="dateSelect" disabled="#{!eventsCalendarsCtrl.model.currentCalendarEditable}" listener="#{eventsCalendarsCtrl.onDateSelect}" update=":form:eventDialog" oncomplete="PF('eventDialog').show();" />
-                            <p:ajax event="eventSelect" listener="#{eventsCalendarsCtrl.onEventSelect}" update=":form:eventDialog" 
-                                    oncomplete="PF('eventDialog').show();" />
-                            <p:ajax event="eventMove"  disabled="#{!eventsCalendarsCtrl.model.currentCalendarEditable}" listener="#{eventsCalendarsCtrl.onEventMove}" update="messages" />
-                            <p:ajax event="eventResize"  disabled="#{!eventsCalendarsCtrl.model.currentCalendarEditable}" listener="#{eventsCalendarsCtrl.onEventResize}" update="messages" />
+                                            >
 
-                        </p:schedule>
+                                    <p:ajax event="dateSelect" disabled="#{!eventsCalendarsCtrl.model.currentCalendarEditable}" listener="#{eventsCalendarsCtrl.onDateSelect}" update=":form:eventDialog" oncomplete="PF('eventDialog').show();" />
+                                    <p:ajax event="eventSelect" listener="#{eventsCalendarsCtrl.onEventSelect}" update=":form:eventDialog" 
+                                            oncomplete="PF('eventDialog').show();" />
+                                    <p:ajax event="eventMove"  disabled="#{!eventsCalendarsCtrl.model.currentCalendarEditable}" listener="#{eventsCalendarsCtrl.onEventMove}" update="messages" />
+                                    <p:ajax event="eventResize"  disabled="#{!eventsCalendarsCtrl.model.currentCalendarEditable}" listener="#{eventsCalendarsCtrl.onEventResize}" update="messages" />
 
-
-                    </h:panelGrid>
+                                </p:schedule>
+                            </h:panelGrid>
+                        </div>
+                    </div>                    
 
                     <p:dialog id="eventDialog" widgetVar="eventDialog" 
                               header="Détails"  
                               showEffect="explode" hideEffect="explode" modal="true" closable="true" closeOnEscape="true">
 
 
-                        <p:panelGrid id="eventDetails">
+                        <p:panelGrid id="eventDetails" styleClass="vr-no-border-grid">
                             <p:row>
                                 <p:column>
                                     <p:outputLabel for="title" value="Titre"/>
@@ -167,7 +174,7 @@
                                                      value="#{eventsCalendarsCtrl.model.event.location}"
                                                      converter="#{vr.entityObjConverter('AppArea')}"
                                                      styleClass="vr-form-field"
-                                                         filter="true" filterMatchMode="contains"
+                                                     filter="true" filterMatchMode="contains"
                                                      >
                                         <f:selectItems value="#{vr.entitySelectItems('AppArea',true,false)}"/>
                                     </p:selectOneMenu>

@@ -55,11 +55,12 @@ import net.vpc.upa.bulk.SheetParser;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.vpc.app.vainruling.core.service.util.JsonUtils;
+import net.vpc.app.vainruling.plugins.academic.service.integration.mapping.CoursePlansMapping;
 import net.vpc.common.util.MapUtils;
 
 /**
@@ -231,6 +232,10 @@ public class XlsxLoadImporter {
                 getClass().getSimpleName(), Level.INFO);
     }
 
+    private boolean isXlsxImportFile(VFile file, String name) {
+        return (file.getName().equals(name + ".xlsx") || file.getName().endsWith("." + name + ".xlsx"));
+    }
+
     private List<ImportFile> locateImportFile(VFile file, ImportOptions importOptions) throws IOException {
         if (importOptions == null) {
             importOptions = new ImportOptions();
@@ -251,19 +256,19 @@ public class XlsxLoadImporter {
                 return all;
             }
 
-            if (file.getName().equals("departments.xlsx")) {
+            if (isXlsxImportFile(file, "departments")) {
                 return Arrays.asList(new ImportFile(file, 1));
             }
-            if (file.getName().equals("teacher-degrees.xlsx")) {
+            if (isXlsxImportFile(file, "teacher-degrees")) {
                 return Arrays.asList(new ImportFile(file, 2));
             }
-            if (file.getName().equals("teachers.xlsx") || file.getName().endsWith(".teachers.xlsx")) {
+            if (isXlsxImportFile(file, "teachers")) {
                 return Arrays.asList(new ImportFile(file, 3));
             }
-            if (file.getName().equals("students.xlsx") || file.getName().endsWith(".students.xlsx")) {
+            if (isXlsxImportFile(file, "students")) {
                 return Arrays.asList(new ImportFile(file, 4));
             }
-            if (file.getName().equals("course-assignments.xlsx")) {
+            if (isXlsxImportFile(file, "course-assignments")) {
                 return Arrays.asList(new ImportFile(file, 5));
             }
         }
@@ -296,10 +301,10 @@ public class XlsxLoadImporter {
             return count;
         }
 
-        if (file.getName().equals("departments.xlsx") || file.getName().endsWith(".departments.xlsx")) {
+        if (isXlsxImportFile(file, "departments")) {
             importDepartments(file);
         }
-        if (file.getName().equals("load-conversion-table.xlsx") || file.getName().endsWith(".load-conversion-table.xlsx")) {
+        if (isXlsxImportFile(file, "load-conversion-table")) {
             if (file.length() > 0) {
                 count++;
                 importLoadConversionTable(file);
@@ -309,7 +314,7 @@ public class XlsxLoadImporter {
                 XlsxLoadImporter.this.importLoadConversionTable();
             }
         }
-        if (file.getName().equals("load-degrees.xlsx") || file.getName().endsWith(".load-degrees.xlsx")) {
+        if (isXlsxImportFile(file, "load-degrees")) {
             if (file.length() > 0) {
                 count++;
                 importTeacherDegrees(file);
@@ -319,17 +324,21 @@ public class XlsxLoadImporter {
                 XlsxLoadImporter.this.importTeacherDegrees();
             }
         }
-        if (file.getName().equals("teachers.xlsx") || file.getName().endsWith(".teachers.xlsx")) {
+        if (isXlsxImportFile(file, "teachers")) {
             count++;
             importTeachers(periodId, file);
         }
-        if (file.getName().equals("students.xlsx") || file.getName().endsWith(".students.xlsx")) {
+        if (isXlsxImportFile(file, "students")) {
             count++;
             importStudents(periodId, file);
         }
-        if (file.getName().equals("course-assignments.xlsx") || file.getName().endsWith(".course-assignments.xlsx")) {
+        if (isXlsxImportFile(file, "course-assignments")) {
             count++;
             importCourseAssignments(periodId, file, importOptions);
+        }
+        if (isXlsxImportFile(file, "course-plans")) {
+            count++;
+            importCoursePlans(periodId, file, importOptions);
         }
         long end = System.currentTimeMillis();
         String ch = Chronometer.formatPeriod(end - start);
@@ -896,17 +905,8 @@ public class XlsxLoadImporter {
     public int importStudents(int periodId, VFile file, boolean simulate) throws IOException {
         Chronometer ch = new Chronometer();
         log.log(Level.INFO, (simulate ? " Simulate " : "") + "importStudents from {0}", file);
-        File tmp = file.copyToNativeTempFile();
-        SheetParser sp = pfm.createSheetParser(tmp);
-        sp.setContainsHeader(false);
-        sp.setSheetIndex(0);
-        sp.setSkipRows(0);
-        DataReader rows = sp.parse();
-
         StudentMapping sm = new StudentMapping();
-        if (rows.hasNext()) {
-            ColumnMappingMatcher.match(sm, rows.readRow().getValues());
-        }
+        DataReader rows = openXlsxFile(file, sm);
 
         CorePlugin core = VrApp.getBean(CorePlugin.class);
         ImportStudentContext importStudentContext = new ImportStudentContext();
@@ -930,31 +930,32 @@ public class XlsxLoadImporter {
         return count;
     }
 
-    public void importCourseAssignments(int periodId, VFile file, ImportOptions importOptions) throws IOException {
+    public void importCourseAssignments(Integer defaultPeriodId, VFile file, ImportOptions importOptions) throws IOException {
+        importCourseAssignments(defaultPeriodId, file, importOptions, true);
+        importCourseAssignments(defaultPeriodId, file, importOptions, false);
+    }
+
+    public void importCourseAssignments(Integer defaultPeriodId, VFile file, ImportOptions importOptions, boolean simulate) throws IOException {
         final AcademicPlugin service = VrApp.getBean(AcademicPlugin.class);
         final CorePlugin core = VrApp.getBean(CorePlugin.class);
         if (importOptions == null) {
             importOptions = new ImportOptions();
         }
-        AppPeriod period = core.findPeriod(periodId);
-        if (period == null) {
-            throw new IllegalArgumentException("Missing Period");
-        }
+        ParseHelper ph = new ParseHelper();
         Chronometer ch = new Chronometer();
-        log.log(Level.INFO, "importCourseAssignments from {0}", file);
-        File tmp = file.copyToNativeTempFile();
-        SheetParser sp = pfm.createSheetParser(tmp);
-        sp.setContainsHeader(false);
-        CourseAssignmentsMapping sm = new CourseAssignmentsMapping();
-        sp.setSheetIndex(0);
-        sp.setSkipRows(1);
-        DataReader rows = sp.parse();
+        if (!simulate) {
+            log.log(Level.INFO, "importCourseAssignments from {0}", file);
+        }
         int all = 0;
         long count = 0;
         long maxCount = -1;
-        if (rows.hasNext()) {
-            ColumnMappingMatcher.match(sm, rows.readRow().getValues());
+        CourseAssignmentsMapping sm = new CourseAssignmentsMapping();
+        DataReader rows = openXlsxFile(file, sm);
+        if (sm.COURSE_NAME_COLUMN < 0) {
+            throw new IllegalArgumentException("Missing Course Name");
         }
+
+        Set<Integer> visitedPeriodIds = new HashSet<>();
         while (rows.hasNext() && (maxCount < 0 || count < maxCount)) {
             DataRow row = rows.readRow();
             LenientArray values = new LenientArray(row.getValues());
@@ -962,6 +963,7 @@ public class XlsxLoadImporter {
             String nbrGroupsString = values.getString(sm.NBR_GROUPS_COLUMN);
             String ignoreString = values.getString(sm.IGNORE_COLUMN);
             String courseName = values.getString(sm.COURSE_NAME_COLUMN);
+            String periodName = values.getString(sm.PERIOD_COLUMN);
 
             boolean ignoreRow = false;
             if ("##".equals(nbrGroupsString)) {
@@ -975,257 +977,347 @@ public class XlsxLoadImporter {
                     || "oui".equalsIgnoreCase(ignoreString))) {
                 ignoreRow = true;
             }
-            if (courseName == null || courseName.trim().length() == 0) {
+            if (StringUtils.isBlank(courseName)) {
                 ignoreRow = true;
             }
 
             if (!ignoreRow) {
+                AppPeriod period = sm.PERIOD_COLUMN < 0 ? defaultPeriodId == null ? null : core.findPeriod(defaultPeriodId) : core.findPeriod(periodName);
+                if (period == null) {
+                    throw new IllegalArgumentException("Missing Period");
+                }
+                visitedPeriodIds.add(period.getId());
                 AcademicCourseType courseType = null;
                 AppDepartment department = null;
                 AppDepartment ownerDepartment = null;
                 AcademicProgram program = null;
                 AcademicCourseLevel courseLevel = null;
-                AcademicCourseGroup courseGroup = null;
-                String discipline = null;
                 AcademicClass studentClass = null;
                 AcademicClass studentSubClass = null;
                 AcademicSemester semester = null;
                 AcademicTeacher teacher = null;
                 List<AcademicTeacher> teacherIntents = new ArrayList<>();
-                {
-                    String stringVal = values.getString(sm.DEPARTMENT_COLUMN);
-                    if (!StringUtils.isBlank(stringVal)) {
-                        department = core.findDepartment(stringVal);
-                        if (department == null) {
-                            throw new IllegalArgumentException("Invalid Department " + stringVal);
-                        }
-                    }
+                List<AcademicTeacher> teacherProposals = new ArrayList<>();
+                department = ph.parseDepartment(values.getString(sm.DEPARTMENT_COLUMN));
+                ownerDepartment = ph.parseDepartment(values.getString(sm.OWNER_DEPARTMENT_COLUMN));
+                program = ph.parseProgram(values.getString(sm.PROGRAM_COLUMN), department == null ? null : department.getId());
+                studentClass = ph.parseClassRequired(values.getString(sm.STUDENT_CLASS_COLUMN), program == null ? null : program.getId(), courseName);
+                studentSubClass = ph.parseClass(values.getString(sm.STUDENT_SUBLASS_COLUMN), program == null ? null : program.getId());
+                ph.chechMatch(studentClass, program, department);
+                if (program == null) {
+                    program = studentClass.getProgram();
                 }
-                {
-                    String stringVal = values.getString(sm.OWNER_DEPARTMENT_COLUMN);
-                    if (!StringUtils.isBlank(stringVal)) {
-                        ownerDepartment = core.findDepartment(stringVal);
-                    }
+                if (department == null) {
+                    department = program.getDepartment();
                 }
-                {
-                    String stringVal = values.getString(sm.PROGRAM_COLUMN);
-                    if (!StringUtils.isBlank(stringVal)) {
-                        if (department != null) {
-                            program = service.findProgram(department.getId(), stringVal);
-                        } else {
-                            List<AcademicProgram> allByName = service.findPrograms(stringVal);
-                            if (allByName.size() > 1) {
-                                throw new IllegalArgumentException("Too many Programs with name " + stringVal + " . Please mention department");
-                            } else if (allByName.size() > 0) {
-                                program = allByName.get(0);
-                            }
-                        }
-                        if (program == null) {
-                            throw new IllegalArgumentException("Invalid Program " + stringVal);
-                        }
-                    }
+                if (ownerDepartment == null) {
+                    ownerDepartment = department;
                 }
-                {
-                    String stringVal = values.getString(sm.STUDENT_CLASS_COLUMN);
-                    if (StringUtils.isBlank(stringVal)) {
-                        throw new IllegalArgumentException("Missing Class Name");
-                    }
-                    if (program == null) {
-                        List<AcademicClass> allByName = service.findAcademicClasses(stringVal);
-                        if (allByName.size() > 1) {
-                            throw new IllegalArgumentException("Too many Classes with name " + stringVal + " . Please mention program");
-                        } else if (allByName.size() > 0) {
-                            studentClass = allByName.get(0);
-                        }
-                    } else {
-                        studentClass = service.findAcademicClass(program.getId(), stringVal);
-                    }
-                    if (studentClass == null) {
-                        throw new IllegalArgumentException("Invalid Class " + stringVal);
-                    }
-                    if (program == null) {
-                        program = studentClass.getProgram();
-                    } else if (program.getId() != studentClass.getProgram().getId()) {
-                        throw new IllegalArgumentException("Invalid Class " + stringVal + " for Program " + program.getName());
-                    }
-                    if (department == null) {
-                        department = studentClass.resolveDepartment();
-                    } else if (department.getId() != studentClass.resolveDepartment().getId()) {
-                        throw new IllegalArgumentException("Invalid Class " + stringVal + " for Department " + program.getName());
-                    }
-                }
-                {
-                    String stringVal = values.getString(sm.STUDENT_SUBLASS_COLUMN);
-                    if (!StringUtils.isBlank(stringVal)) {
-                        studentSubClass = service.findAcademicClass(program.getId(), stringVal);
-                        if (studentSubClass == null) {
-                            throw new IllegalArgumentException("Invalid Class " + stringVal);
-                        }
-                    }
-                }
-                {
-                    String stringVal = values.getString(sm.SEMESTER_COLUMN);
-                    if (stringVal == null) {
-                        throw new IllegalArgumentException("Missing semester for " + courseName);
-                    }
-                    semester = service.findSemester(stringVal);
-                    if (semester == null) {
-                        throw new IllegalArgumentException("Invalid semester " + stringVal);
-                    }
-                }
-                {
-                    String stringVal = studentClass.getName() + "-" + semester.getName();
-                    courseLevel = service.findCourseLevel(studentClass.getId(), semester.getId());
-                    if (courseLevel == null) {
-                        courseLevel = new AcademicCourseLevel();
-                        courseLevel.setName(stringVal);
-//                            courseLevel.setProgram(program);
-                        courseLevel.setCreationDate(new Timestamp(System.currentTimeMillis()));
-                        courseLevel.setSemester(semester);
-                        courseLevel.setAcademicClass(studentClass);
-                        CorePlugin.get().save(null, courseLevel);
-                    }
-                }
-                {
-                    String stringVal = values.getString(sm.COURSE_GROUP_COLUMN);
-                    if (stringVal != null) {
-                        courseGroup = service.findCourseGroup(periodId, courseLevel.getAcademicClass().getId(), stringVal);
-                        if (courseGroup == null) {
-                            courseGroup = new AcademicCourseGroup();
-                            courseGroup.setName(stringVal);
-                            courseGroup.setAcademicClass(courseLevel.getAcademicClass());
-                            courseGroup.setPeriod(period);
-                            CorePlugin.get().save(null, courseGroup);
-                        }
-                    }
-                }
-                {
-                    discipline = service.formatDisciplinesNames(values.getString(sm.DISCIPLINE_COLUMN), true);
-                }
-                {
-                    String stringVal = values.getString(sm.COURSE_TYPE_COLUMN);
-                    if (stringVal == null) {
-                        throw new IllegalArgumentException("Missing module type for " + courseName);
-                    }
-                    courseType = service.findCourseType(stringVal);
-                    if (courseType == null) {
-                        throw new IllegalArgumentException("Invalid course type " + stringVal);
-                    }
-                }
+                semester = ph.parseSemesterRequired(values.getString(sm.SEMESTER_COLUMN), courseName);
+                courseLevel = ph.getOrCreateCourseLevel(studentClass, semester);
+                courseType = ph.parseCourseTypeRequired(values.getString(sm.COURSE_TYPE_COLUMN), courseName);
                 double valueC = values.getDouble(sm.LOAD_C_COLUMN);
-//                    {
-//                        String stringVal = Convert.toString(values[31]);
-//                        ModuleType v = service.findModuleType(stringVal);
-//                        if (v == null) {
-//                            v = new ModuleType();
-//                            v.setName(stringVal);
-//                            service.addModuleType(v);
-//                        }
-//                        d.setModuleType(v);
-//                    }
                 double valueTD = values.getDouble(sm.LOAD_TD_COLUMN);
                 double valueTP = values.getDouble(sm.LOAD_TP_COLUMN);
                 double valuePM = values.getDouble(sm.LOAD_PM_COLUMN);
                 double nbrGroups = values.getDouble(sm.NBR_GROUPS_COLUMN);
-                String teacherName = values.getString(sm.TEACHER_NAME_COUMN);
-                String teacherIntentsString = values.getString(sm.TEACHER_INTENTS_COUMN);
-                if (teacherName == null && teacherIntents == null) {
-                    System.out.println("Missing Assignment in Row " + Arrays.asList(values));
+                teacher = ph.parseTeacher(values.getString(sm.TEACHER_NAME_COLUMN));
+                teacherIntents = ph.parseTeacherList(values.getString(sm.TEACHER_INTENTS_COLUMN));
+                teacherProposals = ph.parseTeacherList(values.getString(sm.TEACHER_PROPOSAL_COLUMN));
+                if (teacher == null && teacherIntents.isEmpty() && teacherProposals.isEmpty()) {
+                    throw new IllegalArgumentException("Missing Assignment in Row " + Arrays.asList(values));
+                }
+                double effWeek = (Math.ceil(valueC / 15.0) + Math.floor(valueTP / 15.0)) * 1.5;
+                String coursePlanName = courseName;
+                for (String suffix : new String[]{
+                    "- TP", "- C", "- PS", "- PM",
+                    "\u2013 TP", "\u2013 C", "\u2013 PS", "\u2013 PM",
+                    "-TP", "-C", "-PS", "-PM",
+                    "\u2013TP", "\u2013C", "\u2013PS", "\u2013PM",}) {
+                    if (courseName.toUpperCase().endsWith(suffix)) {
+                        coursePlanName = courseName.substring(0, courseName.length() - suffix.length()).trim();
+                        break;
+                    }
+                }
+                AcademicCoursePlan coursePlan = service.findCoursePlan(period.getId(), courseLevel.getId(), coursePlanName);
+                if (coursePlan == null) {
+                    throw new IllegalArgumentException("Module not found " + period.getName() + " : " + courseLevel.getName() + " : " + coursePlanName);
+                }
+                boolean processed = false;
+                AcademicCourseAssignment d = simulate ? null : service.findCourseAssignment(coursePlan.getId(), studentClass == null ? null : studentClass.getId(), null);
+                if (d == null) {
+                    d = new AcademicCourseAssignment();
+                    d.setName(courseName);
+                    d.setCoursePlan(coursePlan);
+                    d.setOwnerDepartment(ownerDepartment != null ? ownerDepartment : department);
+                    d.setSubClass(studentSubClass);
+                    d.setValueC(valueC);
+                    d.setValueTD(valueTD);
+                    d.setValueTP(valueTP);
+                    d.setValuePM(valuePM);
+                    d.setCourseType(courseType);
+                    d.setGroupCount(nbrGroups);
+                    d.setValueEffWeek(effWeek);
+                    d.setTeacher(teacher);
+                    processed = true;
+                    if (!simulate) {
+                        core.save(null, d);
+                    }
                 } else {
-                    teacher = teacherName == null ? null : service.findTeacher(teacherName);
-                    if (teacherName != null && teacher == null) {
-                        log.log(Level.SEVERE, "Teacher not found " + teacherName);
-                    }
-                    for (String te : (teacherIntentsString == null ? "" : teacherIntentsString).split(",;")) {
-                        te = te.trim();
-                        if (!te.isEmpty()) {
-                            AcademicTeacher teo = service.findTeacher(te);
-                            if (teo != null) {
-                                teacherIntents.add(teo);
-                            } else if (teo == null) {
-                                log.log(Level.SEVERE, "Teacher not found " + te);
-                            }
-                        }
-                    }
-                    double effWeek = (Math.ceil(valueC / 15.0) + Math.floor(valueTP / 15.0)) * 1.5;
-                    String coursePlanName = courseName;
-                    for (String suffix : new String[]{
-                        "- TP", "- C", "- PS", "- PM",
-                        "\u2013 TP", "\u2013 C", "\u2013 PS", "\u2013 PM",
-                        "-TP", "-C", "-PS", "-PM",
-                        "\u2013TP", "\u2013C", "\u2013PS", "\u2013PM",}) {
-                        if (courseName.toUpperCase().endsWith(suffix)) {
-                            coursePlanName = courseName.substring(0, courseName.length() - suffix.length()).trim();
-                            break;
-                        }
-                    }
-                    AcademicCoursePlan coursePlan = service.findCoursePlan(periodId, courseLevel.getId(), coursePlanName);
-                    if (coursePlan == null) {
-                        coursePlan = new AcademicCoursePlan();
-                        coursePlan.setName(coursePlanName);
-                        coursePlan.setCourseLevel(courseLevel);
-                        coursePlan.setCourseGroup(courseGroup);
-                        coursePlan.setDiscipline(discipline);
-                        coursePlan.setPeriod(period);
-                        coursePlan.setValueC(valueC);
-                        coursePlan.setValueTD(valueTD);
-                        coursePlan.setValueTP(valueTP);
-                        coursePlan.setValuePM(valuePM);
-                        CorePlugin.get().save(null, coursePlan);
-                    }
-
-                    AcademicCourseAssignment d = service.findCourseAssignment(coursePlan.getId(), studentClass == null ? null : studentClass.getId(), null);
-                    if (d == null) {
-                        d = new AcademicCourseAssignment();
-                        d.setName(courseName);
-                        d.setCoursePlan(coursePlan);
-                        d.setOwnerDepartment(ownerDepartment != null ? ownerDepartment : department);
-                        d.setSubClass(studentSubClass);
-                        d.setValueC(valueC);
-                        d.setValueTD(valueTD);
-                        d.setValueTP(valueTP);
-                        d.setValuePM(valuePM);
-                        d.setCourseType(courseType);
-                        d.setGroupCount(nbrGroups);
-                        d.setValueEffWeek(effWeek);
+                    if (teacher != null) {
                         d.setTeacher(teacher);
-                        CorePlugin.get().save(null, d);
-                        count++;
-                    } else {
-                        for (AcademicTeacher ti : teacherIntents) {
-                            service.addIntent(ti.getId(), d.getId());
+                        processed = true;
+                        if (!simulate) {
+                            core.save(null, d);
                         }
                     }
                 }
-
+                if (!simulate) {
+                    for (AcademicTeacher ti : teacherIntents) {
+                        processed = true;
+                        service.addIntent(ti.getId(), d.getId());
+                    }
+                    for (AcademicTeacher ti : teacherProposals) {
+                        processed = true;
+                        service.addProposal(ti.getId(), d.getId());
+                    }
+                }
+                if (processed) {
+                    count++;
+                }
             } else {
                 System.out.println("Ignored Row " + Arrays.asList(values));
             }
         }
         TraceService trace = TraceService.get();
         ch.stop();
-        trace.trace("Academic.import-course-assignments", "success",
-                MapUtils.map("path", file.getPath(), "time", ch.toString(), "rows", count),
-                getClass().getSimpleName(), Level.INFO);
-        log.log(Level.INFO, "importCourseAssignments from {0} in {1}", new Object[]{file, ch.stop()});
-        service.updateAllCoursePlanValuesByLoadValues(periodId);
+        if (!simulate) {
+            trace.trace("Academic.import-course-assignments", "success",
+                    MapUtils.map("path", file.getPath(), "time", ch.toString(), "rows", count),
+                    getClass().getSimpleName(), Level.INFO);
+            log.log(Level.INFO, "importCourseAssignments from {0} in {1}", new Object[]{file, ch.stop()});
+            for (Integer periodId : visitedPeriodIds) {
+                service.updateAllCoursePlanValuesByLoadValues(periodId);
+            }
+        }
     }
 
-    private String[] codeAndName(String s) {
-        if (s == null) {
-            s = "";
+    public void importCoursePlans(Integer defaultPeriodId, VFile file, ImportOptions importOptions) throws IOException {
+        importCoursePlans(defaultPeriodId, file, importOptions, true);
+        importCoursePlans(defaultPeriodId, file, importOptions, false);
+    }
+
+    private DataReader openXlsxFile(VFile file, Object columnMapping) {
+        try {
+            File tmp = file.copyToNativeTempFile();
+            SheetParser sp = pfm.createSheetParser(tmp);
+            sp.setContainsHeader(false);
+            sp.setSheetIndex(0);
+            DataReader rows = sp.parse();
+            boolean columnsDetect = false;
+            if (rows.hasNext()) {
+                if (ColumnMappingMatcher.match(columnMapping, rows.readRow().getValues()) >= 3) {
+                    columnsDetect = true;
+                } else {
+                    if (rows.hasNext()) {
+                        if (ColumnMappingMatcher.match(columnMapping, rows.readRow().getValues()) < 3) {
+                            columnsDetect = true;
+                        }
+                    }
+                }
+            }
+            if (!columnsDetect) {
+                throw new IllegalArgumentException("Unable to resolve columns for file " + file.getPath());
+            }
+            return rows;
+        } catch (IOException ex) {
+            throw new UncheckedIOException(ex);
         }
-        String code = null;
-        String name = null;
-        int eq = s.indexOf('=');
-        if (eq >= 0) {
-            code = s.substring(0, eq);
-            name = s.substring(eq + 1);
-        } else {
-            code = s;
-            name = s;
+    }
+
+    public void importCoursePlans(Integer defaultPeriodId, VFile file, ImportOptions importOptions, boolean simulate) {
+        final AcademicPlugin service = VrApp.getBean(AcademicPlugin.class);
+        final CorePlugin core = VrApp.getBean(CorePlugin.class);
+        if (importOptions == null) {
+            importOptions = new ImportOptions();
         }
-        return new String[]{code, name};
+        ParseHelper ph = new ParseHelper();
+        Chronometer ch = new Chronometer();
+        if (!simulate) {
+            log.log(Level.INFO, "importCoursePlans from {0}", file);
+        }
+        CoursePlansMapping sm = new CoursePlansMapping();
+        DataReader rows = openXlsxFile(file, sm);
+        if (sm.COURSE_NAME_COLUMN < 0) {
+            throw new IllegalArgumentException("Missing Course Name");
+        }
+        int all = 0;
+        long count = 0;
+        long maxCount = -1;
+        Set<Integer> visitedPeriodIds = new HashSet<>();
+        while (rows.hasNext() && (maxCount < 0 || count < maxCount)) {
+            DataRow row = rows.readRow();
+            LenientArray values = new LenientArray(row.getValues());
+            all++;
+            String ignoreString = values.getString(sm.IGNORE_COLUMN);
+            String courseName = values.getString(sm.COURSE_NAME_COLUMN);
+            String periodName = values.getString(sm.PERIOD_COLUMN);
+
+            boolean ignoreRow = false;
+            if (courseName == null || courseName.trim().length() == 0) {
+                ignoreRow = true;
+            } else if (ignoreString != null
+                    && ("X".equalsIgnoreCase(ignoreString)
+                    || "true".equalsIgnoreCase(ignoreString)
+                    || "yes".equalsIgnoreCase(ignoreString)
+                    || "oui".equalsIgnoreCase(ignoreString))) {
+                ignoreRow = true;
+            }
+            if (StringUtils.isBlank(courseName)) {
+                ignoreRow = true;
+            }
+
+            if (!ignoreRow) {
+                AppPeriod period = sm.PERIOD_COLUMN < 0 ? defaultPeriodId == null ? null : core.findPeriod(defaultPeriodId) : core.findPeriod(periodName);
+                if (period == null) {
+                    throw new IllegalArgumentException("Missing Period");
+                }
+                visitedPeriodIds.add(period.getId());
+//                AcademicCourseType courseType = null;
+                AppDepartment department = null;
+//                AppDepartment ownerDepartment = null;
+                AcademicProgram program = null;
+                AcademicCourseLevel courseLevel = null;
+                AcademicCourseGroup courseGroup = null;
+                AcademicTeacher responsible = null;
+                String discipline = null;
+                AcademicClass studentClass = null;
+//                AcademicClass studentSubClass = null;
+                AcademicSemester semester = null;
+                department = ph.parseDepartment(values.getString(sm.DEPARTMENT_COLUMN));
+                program = ph.parseProgram(values.getString(sm.PROGRAM_COLUMN), department == null ? null : department.getId());
+                studentClass = ph.parseClassRequired(values.getString(sm.STUDENT_CLASS_COLUMN), program == null ? null : program.getId(), courseName);
+                ph.chechMatch(studentClass, program, department);
+                if (program == null) {
+                    program = studentClass.getProgram();
+                }
+                if (department == null) {
+                    department = program.getDepartment();
+                }
+                semester = ph.parseSemesterRequired(values.getString(sm.SEMESTER_COLUMN), courseName);
+                responsible = ph.parseTeacher(values.getString(sm.RESPONSIBLE_NAME_COLUMN));
+                courseLevel = ph.getOrCreateCourseLevel(studentClass, semester);
+                courseGroup = ph.parseOrCreateCourseGroup(values.getString(sm.COURSE_GROUP_COLUMN), studentClass, period);
+                discipline = service.formatDisciplinesNames(values.getString(sm.DISCIPLINE_COLUMN), true);
+                double valueC = values.getDouble(sm.LOAD_C_COLUMN);
+                double valueTD = values.getDouble(sm.LOAD_TD_COLUMN);
+                double valueTP = values.getDouble(sm.LOAD_TP_COLUMN);
+                double valuePM = values.getDouble(sm.LOAD_PM_COLUMN);
+                double credits = values.getDouble(sm.CREDITS_COLUMN);
+                double ects = values.getDouble(sm.ECTS_COLUMN);
+                int nbrGroupsC = values.getInt(sm.NBR_GROUPS_C_COLUMN);
+                int nbrGroupsTD = values.getInt(sm.NBR_GROUPS_TD_COLUMN);
+                int nbrGroupsTP = values.getInt(sm.NBR_GROUPS_TP_COLUMN);
+                int nbrGroupsPM = values.getInt(sm.NBR_GROUPS_PM_COLUMN);
+
+                if (nbrGroupsC == 0 && nbrGroupsTD == 0 && nbrGroupsTP == 0 && nbrGroupsPM == 0) {
+                    if (valueC > 0) {
+                        nbrGroupsC = 1;
+                    }
+                    if (valueTD > 0) {
+                        nbrGroupsTD = 1;
+                    }
+                    if (valueTP > 0) {
+                        nbrGroupsTP = 2;
+                    }
+                    if (valuePM > 0) {
+                        nbrGroupsPM = 2;
+                    }
+                } else if (nbrGroupsC > 0 && nbrGroupsTD == 0 && nbrGroupsTP == 0 && nbrGroupsPM == 0) {
+                    int x = nbrGroupsC;
+                    if (valueC > 0) {
+                        nbrGroupsC = x;
+                    }else{
+                        nbrGroupsC = 0;
+                    }
+                    if (valueTD > 0) {
+                        nbrGroupsTD = x;
+                    }
+                    if (valueTP > 0) {
+                        nbrGroupsTP = 2 * x;
+                    }
+                    if (valuePM > 0) {
+                        nbrGroupsPM = 2 * x;
+                    }
+                }
+                if (valueC < 0 || nbrGroupsC < 0 || (valueC * nbrGroupsC == 0 && nbrGroupsC + valueC != 0)) {
+                    throw new IllegalArgumentException("Invalid value/group C for " + courseName);
+                }
+                if (valueTD < 0 || nbrGroupsTD < 0 || (valueTD * nbrGroupsTD == 0 && valueTD + nbrGroupsTD != 0)) {
+                    throw new IllegalArgumentException("Invalid value/group TD for " + courseName);
+                }
+                if (valueTP < 0 || nbrGroupsTP < 0 || (valueTP * nbrGroupsTP == 0 && valueTP + nbrGroupsTP != 0)) {
+                    throw new IllegalArgumentException("Invalid value/group TP for " + courseName);
+                }
+                if (valuePM < 0 || nbrGroupsPM < 0 || (valuePM * nbrGroupsPM == 0 && valuePM + nbrGroupsPM != 0)) {
+                    throw new IllegalArgumentException("Invalid value/group PM for " + courseName);
+                }
+
+                String delegatedModuleName = values.getString(sm.DELEGATED_COURSE_NAME_COLUMN);
+                AcademicClass delegatedStudentClass = null;
+                AcademicCoursePlan delegatedCoursePlan = null;
+                if (!StringUtils.isBlank(delegatedModuleName)) {
+                    delegatedStudentClass = ph.parseClassRequired(values.getString(sm.DELEGATED_STUDENT_CLASS_COLUMN), null, courseName);
+                    ph.chechMatch(delegatedStudentClass, null, department);
+                    AcademicSemester delegatedSemester = ph.parseSemesterRequired(values.getString(sm.SEMESTER_COLUMN), courseName);
+                    AcademicCourseLevel delegatedCourseLevel = ph.getOrCreateCourseLevel(delegatedStudentClass, delegatedSemester);
+
+                    delegatedCoursePlan = service.findCoursePlan(period.getId(), delegatedCourseLevel.getId(), delegatedModuleName);
+                    if (delegatedCoursePlan == null) {
+                        throw new IllegalArgumentException("Delegated module " + delegatedModuleName + " not found");
+                    }
+                }
+
+                AcademicCoursePlan coursePlan = service.findCoursePlan(period.getId(), courseLevel.getId(), courseName);
+                if (coursePlan == null) {
+                    coursePlan = new AcademicCoursePlan();
+                    coursePlan.setName(courseName);
+                    coursePlan.setCourseLevel(courseLevel);
+                    coursePlan.setCourseGroup(courseGroup);
+                    coursePlan.setDiscipline(discipline);
+                    coursePlan.setPeriod(period);
+                    coursePlan.setValueC(valueC);
+                    coursePlan.setValueTD(valueTD);
+                    coursePlan.setValueTP(valueTP);
+                    coursePlan.setValuePM(valuePM);
+                    coursePlan.setGroupCountC(nbrGroupsC);
+                    coursePlan.setGroupCountTD(nbrGroupsTD);
+                    coursePlan.setGroupCountTP(nbrGroupsTP);
+                    coursePlan.setGroupCountPM(nbrGroupsPM);
+                    coursePlan.setResponsible(responsible);
+                    coursePlan.setDelegate(delegatedCoursePlan);
+                    coursePlan.setCredits(credits);
+                    coursePlan.setEcts(ects);
+                    if (!simulate) {
+                        core.save(null, coursePlan);
+                    }
+                }
+                count++;
+            } else {
+                System.out.println("Ignored Row " + Arrays.asList(values));
+            }
+        }
+        TraceService trace = TraceService.get();
+        ch.stop();
+        if (!simulate) {
+            trace.trace("Academic.import-course-plans", "success",
+                    MapUtils.map("path", file.getPath(), "time", ch.toString(), "rows", count),
+                    getClass().getSimpleName(), Level.INFO);
+            log.log(Level.INFO, "importCoursePlans from {0} in {1}", new Object[]{file, ch.stop()});
+            for (Integer periodId : visitedPeriodIds) {
+                service.updateAllCoursePlanValuesByLoadValues(periodId);
+            }
+        }
     }
 
     private static class ImportFile implements Comparable<ImportFile> {

@@ -1185,10 +1185,28 @@ public class Vr {
         return defaultVal;
     }
 
-    public String mapValue(String var, String defaultVal, String... fromTo) {
-        var = trim(var);
+    public String mapBootstrapColMdCount(int count) {
+        switch (count) {
+            case 1:
+                return "col-md-12";
+            case 2:
+                return "col-md-6";
+            case 3:
+                return "col-md-4";
+            case 4:
+                return "col-md-3";
+            case 5:
+                return "col-md-2";
+            case 6:
+                return "col-md-2";
+        }
+        return "col-md-1";
+    }
+
+    public String mapValue(Object var, String defaultVal, String... fromTo) {
+        String svar = trim(var);
         for (int i = 0; i < fromTo.length; i += 2) {
-            if (var.equals(fromTo[i])) {
+            if (svar.equals(fromTo[i])) {
                 return fromTo[i + 1];
             }
         }
@@ -1311,6 +1329,10 @@ public class Vr {
 
     public List<String> autoCompleteProfileExpression(String query) {
         return core.autoCompleteProfileExpression(query);
+    }
+
+    public List<String> autoCompleteUserLogin(String query) {
+        return core.autoCompleteUserLogin(query);
     }
 
     public void updateProfileExpressionUsersCount(Object any) {
@@ -1682,7 +1704,6 @@ public class Vr {
 
     public void closeDialog() {
         DialogBuilder.closeCurrent();
-        //RequestContext.getCurrentInstance().closeDialog(null);
     }
 
     public String strCoalesce(Object... any) {
@@ -1761,7 +1782,7 @@ public class Vr {
         return c.stream().map(x -> x.getPath()).collect(Collectors.toList());
     }
 
-    public static String urlName(String url, String name,String defaultName) {
+    public static String urlName(String url, String name, String defaultName) {
         if (!StringUtils.isBlank(name)) {
             return name;
         }
@@ -1782,5 +1803,37 @@ public class Vr {
             }
         }
         return defaultName;
+    }
+
+    public String getInvPercentString(int count) {
+        if (count <= 0) {
+            return "100%";
+        }
+        int x = 100 / count;
+        if (x <= 0) {
+            x = 1;
+        }
+        return x + "%";
+    }
+
+    public StreamedContent getContent(String path) {
+        return VrJsf.getContent(path);
+    }
+
+    public List<ContentText> filterImportant(List<ContentText> a, boolean important) {
+        return a.stream().filter(x -> x.isImportant() == important).collect(Collectors.toList());
+    }
+
+    public String setv(String n, Object v) {
+        FacesUtils.getHttpRequest().setAttribute(n, v);
+        return "";
+    }
+
+    public Object getv(String n) {
+        return FacesUtils.getHttpRequest().getAttribute(n);
+    }
+
+    public Object getOr(boolean v, Object a, Object b) {
+        return v ? a : b;
     }
 }

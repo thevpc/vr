@@ -12,11 +12,8 @@ import net.vpc.app.vainruling.core.service.TraceService;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.fs.VFileInfo;
 import net.vpc.app.vainruling.core.service.fs.VFileKind;
-import net.vpc.app.vainruling.core.service.fs.VrFSEntry;
-import net.vpc.app.vainruling.core.service.fs.VrFSTable;
 import net.vpc.app.vainruling.core.service.util.I18n;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
-import net.vpc.app.vainruling.core.web.*;
 import net.vpc.app.vainruling.core.web.jsf.DialogBuilder;
 import net.vpc.app.vainruling.core.web.jsf.VrJsf;
 import net.vpc.app.vainruling.core.web.jsf.ctrl.dialog.DocumentsUploadDialogCtrl;
@@ -34,7 +31,6 @@ import net.vpc.common.vfs.VirtualFileSystem;
 import net.vpc.upa.Action;
 import net.vpc.upa.UPA;
 import net.vpc.upa.VoidAction;
-import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
@@ -193,6 +189,31 @@ public class DocumentsCtrl implements VrMenuProvider, VrPageInfoResolver, Docume
 //        VirtualFileSystem userfs = rootfs.filter(null);
 //        return userfs;
 //    }
+    public void switchSelectionMode() {
+        getModel().setSelectionMode(!getModel().isSelectionMode());
+    }
+
+    public boolean hasParent() {
+        VFile f = getModel().getCurrent().getFile();
+        if (!f.getPath().equals("/")) {
+            VFile p = f.getParentFile();
+            if (p != null) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void goParent() {
+        VFile f = getModel().getCurrent().getFile();
+        if (!f.getPath().equals("/")) {
+            VFile p = f.getParentFile();
+            if (p != null) {
+                updateCurrent(p);
+            }
+        }
+    }
+
     public void updateCurrent(VFile file) {
         getModel().setCurrent(DocumentsUtils.createFileInfo(file));
         TraceService.get().trace("System.actions.visit-document", null, MapUtils.map("path", getModel().getCurrent().getFile().getPath()), "/System/Access", Level.FINE);
@@ -365,13 +386,26 @@ public class DocumentsCtrl implements VrMenuProvider, VrPageInfoResolver, Docume
 //        }
     }
 
+    public void setListMode(boolean b) {
+        getModel().setListMode(b);
+    }
+
     public Model getModel() {
         return model;
+    }
+
+    public boolean isSelectable(VFileInfo i) {
+        return getModel().isSelectionMode()
+                && i.isSelectable()
+                && isEnabledButton("SelectFile");
     }
 
     public boolean isEnabledButton(String buttonId) {
         if ("Refresh".equals(buttonId)) {
             return true;
+        }
+        if ("Cancel".equals(buttonId)) {
+            return false;
         }
         if ("NewFile".equals(buttonId)) {
             // I think this is useless, will be removed
@@ -498,18 +532,15 @@ public class DocumentsCtrl implements VrMenuProvider, VrPageInfoResolver, Docume
     }
 
     public void fireEventExtraDialogClosed() {
-        //Object obj
-        RequestContext.getCurrentInstance().closeDialog(new DialogResult(null, null));
+        DialogBuilder.closeCurrent(new DialogResult(null, null));
     }
 
     public void onSearch() {
-//        RequestContext.getCurrentInstance().closeDialog(new DialogResult(null, null));
         onRefresh();
     }
 
     public void onCancelSearch() {
         getModel().setSearchString("");
-//        RequestContext.getCurrentInstance().closeDialog(new DialogResult(null, null));
         onRefresh();
     }
 
@@ -557,7 +588,25 @@ public class DocumentsCtrl implements VrMenuProvider, VrPageInfoResolver, Docume
         private String searchString;
         private boolean newFolder;
         private boolean newFile;
+        private boolean listMode;
+        private boolean selectionMode;
         private List<AppFsSharing> currentSharings;
+
+        public boolean isSelectionMode() {
+            return selectionMode;
+        }
+
+        public void setSelectionMode(boolean selectionMode) {
+            this.selectionMode = selectionMode;
+        }
+
+        public boolean isListMode() {
+            return listMode;
+        }
+
+        public void setListMode(boolean listMode) {
+            this.listMode = listMode;
+        }
 
         public List<AppFsSharing> getCurrentSharings() {
             return currentSharings;

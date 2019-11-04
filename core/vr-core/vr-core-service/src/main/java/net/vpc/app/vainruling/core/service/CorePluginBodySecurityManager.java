@@ -137,7 +137,7 @@ class CorePluginBodySecurityManager extends CorePluginBody {
                         }
                     }
                 }
-                p.setInherited(String.join(",", s));
+                p.setInherited(String.join(",", new TreeSet<String>(s)));
                 UPA.getPersistenceUnit().merge(p);
             }
         }
@@ -152,7 +152,7 @@ class CorePluginBodySecurityManager extends CorePluginBody {
                 for (String parent : parents) {
                     s.remove(parent);
                 }
-                p.setInherited(String.join(",", s));
+                p.setInherited(String.join(",", new TreeSet<String>(s)));
                 UPA.getPersistenceUnit().merge(p);
             }
         }
@@ -676,7 +676,7 @@ class CorePluginBodySecurityManager extends CorePluginBody {
             profiles = new HashSet<>();
             uniformProfileCodesMapByUserId.put(userId, profiles);
             if (includeLogin) {
-                profiles.add(u.getLogin().toLowerCase());
+                profiles.add(VrUtils.normalize(u.getLogin()));
             }
             profiles.addAll(expandProfileCodes(profiles));
         } else {
@@ -686,7 +686,7 @@ class CorePluginBodySecurityManager extends CorePluginBody {
                 return null;
             }
             if (includeLogin) {
-                profiles.add(u.getLogin().toLowerCase());
+                profiles.add(VrUtils.normalize(u.getLogin()));
             }
         }
         return profiles;
@@ -707,11 +707,15 @@ class CorePluginBodySecurityManager extends CorePluginBody {
                                 if (list == null) {
                                     list = new HashSet<>();
                                     if (includeLogin) {
-                                        list.add(o.getUser().getLogin().toLowerCase());
+                                        list.add(VrUtils.normalize(o.getUser().getLogin()));
                                     }
                                     all.put(o.getUser().getId(), list);
                                 }
-                                list.add(o.getProfile().getCode().toLowerCase());
+                                if (StringUtils.isBlank(o.getProfile().getCode())) {
+                                    log.log(Level.SEVERE, "Profile witch invalid code {0} {1}", new Object[]{o.getProfile().getId(), o.getProfile().getName()});
+                                } else {
+                                    list.add(VrUtils.normalize(o.getProfile().getCode()));
+                                }
                             }
                         }
                         if (expandProfiles) {
@@ -752,7 +756,7 @@ class CorePluginBodySecurityManager extends CorePluginBody {
         Stack<String> stack = new Stack<>();
         for (String profile : profiles) {
             if (!StringUtils.isBlank(profile)) {
-                stack.push(profile.toLowerCase());
+                stack.push(VrUtils.normalize(profile));
             }
         }
         while (!stack.isEmpty()) {
@@ -764,8 +768,8 @@ class CorePluginBodySecurityManager extends CorePluginBody {
                 if (!StringUtils.isBlank(inherited)) {
                     String[] st = inherited.split("[ ,;]");
                     for (String s : st) {
-                        s = s.toLowerCase();
-                        if (!found.contains(s)) {
+                        s = VrUtils.normalize(s);
+                        if (s.length() > 0 && !found.contains(s)) {
                             stack.push(s);
                         }
                     }
@@ -776,13 +780,16 @@ class CorePluginBodySecurityManager extends CorePluginBody {
     }
 
     public List<AppProfile> findProfilesByUser(int userId) {
-        Set<String> codes = findUniformProfileCodesMapByUserId(userId, true, true);
+        Set<String> codes = findUniformProfileCodesMapByUserId(userId, false, true);
         List<AppProfile> pro = new ArrayList<>();
         if (codes != null) {
             for (String code : codes) {
                 AppProfile pp = findProfileByCode(code);
                 if (pp != null) {
                     pro.add(pp);
+                } else {
+                    log.log(Level.SEVERE, "Profile not found {0}", code);
+                    pp = findProfileByCode(code);
                 }
             }
         }
@@ -1087,19 +1094,67 @@ class CorePluginBodySecurityManager extends CorePluginBody {
         if (userOrProfile == null) {
             userOrProfile = "";
         }
-        userOrProfile = userOrProfile.trim().toLowerCase();
+        userOrProfile = VrUtils.normalize(userOrProfile);
         List<String> all = new ArrayList<>();
         for (AppProfile appProfile : findProfiles()) {
-            if (appProfile.getCode() != null && appProfile.getCode().toLowerCase().contains(userOrProfile)) {
+            if (appProfile.getCode() != null && VrUtils.normalize(appProfile.getCode()).contains(userOrProfile)) {
                 all.add(appProfile.getCode().trim());
             }
         }
         for (AppUser appUser : findUsers()) {
-            if (appUser.getLogin() != null && appUser.getLogin().toLowerCase().contains(userOrProfile)) {
+            if (appUser.getLogin() != null && VrUtils.normalize(appUser.getLogin()).contains(userOrProfile)) {
                 all.add(appUser.getLogin().trim());
             }
         }
         return all;
+    }
+
+    public List<String> autoCompleteUserLoginByPortion(String userPortion) {
+        if (userPortion == null) {
+            userPortion = "";
+        }
+        userPortion = VrUtils.normalize(userPortion);
+        List<String> all = new ArrayList<>();
+        for (AppUser appUser : findUsers()) {
+            if (appUser.getLogin() != null && VrUtils.normalize(appUser.getLogin()).contains(userPortion)) {
+                all.add(appUser.getLogin().trim());
+            }
+        }
+        return all;
+    }
+
+    public List<String> autoCompleteUserLogin(String login) {
+        if (login == null) {
+            login = "";
+        }
+        login = login.trim();
+        int x = login.length() - 1;
+        while (x >= 0) {
+            char c = login.charAt(x);
+            if (!Character.isLetterOrDigit(c) && c != '.') {
+                break;
+            }
+            x--;
+        }
+        if (x > 0) {
+            if (x < login.length() - 1) {
+                String prefix = login.substring(0, x + 1);
+                String suffix = login.substring(x + 1);
+                List<String> all = new ArrayList<>();
+                List<String> strings = autoCompleteUserLoginByPortion(suffix);
+                if (strings.isEmpty()) {
+                    strings = Arrays.asList("");
+                }
+                for (String s : strings) {
+                    all.add(prefix + s);
+                }
+                return all;
+            } else {
+                return Arrays.asList(login);
+            }
+        } else {
+            return new ArrayList<String>(new TreeSet<String>(autoCompleteUserLoginByPortion(login)));
+        }
     }
 
     public List<String> autoCompleteProfileExpression(String queryExpr) {

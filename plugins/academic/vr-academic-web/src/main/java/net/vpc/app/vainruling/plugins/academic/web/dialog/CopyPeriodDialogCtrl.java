@@ -16,7 +16,6 @@ import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.Convert;
 import net.vpc.common.util.IntegerParserConfig;
-import org.primefaces.context.RequestContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -100,7 +99,7 @@ public class CopyPeriodDialogCtrl {
 
     public void fireEventExtraDialogClosed() {
         //Object obj
-        RequestContext.getCurrentInstance().closeDialog(new DialogResult("ok", "ok"));
+        DialogBuilder.closeCurrent(new DialogResult("ok", "ok"));
     }
 
 

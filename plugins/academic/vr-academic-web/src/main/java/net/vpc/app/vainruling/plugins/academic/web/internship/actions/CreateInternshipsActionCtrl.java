@@ -16,7 +16,6 @@ import net.vpc.app.vainruling.plugins.academic.model.internship.config.AcademicI
 import net.vpc.app.vainruling.plugins.academic.model.internship.current.AcademicInternship;
 import net.vpc.app.vainruling.plugins.academic.model.internship.current.AcademicInternshipBoard;
 import net.vpc.app.vainruling.plugins.academic.model.internship.current.AcademicInternshipGroup;
-import org.primefaces.context.RequestContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;

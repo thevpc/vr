@@ -18,6 +18,7 @@ import java.sql.Timestamp;
 @Path("Todo")
 @Properties(
         {
+                @Property(name = UIConstants.Grid.ROW_STYLE, value = "(i.object.deleted) ?'vr-row-deleted':''"),
                 @Property(name = "ui.auto-filter.responsible", value = "{expr='this.responsible',order=1}"),
                 @Property(name = "ui.auto-filter.initiator", value = "{expr='this.initiator',order=2}"),
                 @Property(name = "ui.auto-filter.list", value = "{expr='this.list',order=3}"),

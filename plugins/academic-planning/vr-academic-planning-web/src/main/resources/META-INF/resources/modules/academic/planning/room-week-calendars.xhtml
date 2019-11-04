@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+
+      >
+
+    <h:head>
+    </h:head>
+
+    <h:body>
+        <ui:composition template="#{vr.privateTemplatePath}">
+            <ui:define name="content">
+                <h:form id="listForm">
+                    <div class="box box-default">
+                        <div class="box-body">
+                            <div class="form-group">
+                                <p:outputLabel value="Salle"/>
+                                <p:selectOneMenu value="#{roomWeekCalendarsCtrl.model.roomName}"
+                                                 filter="true" filterMatchMode="contains"
+                                                 styleClass="form-control"
+                                                 >
+                                    <p:ajax listener="#{roomWeekCalendarsCtrl.onRoomChanged}" update=":listForm"/>
+                                    <f:selectItem itemLabel="Selectionner Salle..." itemValue=""/>
+                                    <f:selectItems value="#{roomWeekCalendarsCtrl.model.rooms}"/>
+                                </p:selectOneMenu>
+                            </div>
+                        </div>
+                    </div>
+                    <h:panelGroup layout="block" styleClass="callout callout-danger" rendered="#{roomWeekCalendarsCtrl.missingPlanning}">
+                        <div class="">
+                            <h4>Emploi non disponible!</h4>
+                            <p>aucun emploi n'a pu être résolu pour la salle #{roomWeekCalendarsCtrl.selectedRoomLabel}</p>
+                        </div>                        
+                    </h:panelGroup>
+                    <h:panelGroup layout="block" styleClass="box box-primary" rendered="#{roomWeekCalendarsCtrl.validPlanning}">
+                        <div class="box-header with-border">
+                            <h3 class="box-title">
+                                <p:outputLabel value="#{vr.strcat('Emploi de la salle ',roomWeekCalendarsCtrl.selectedRoomLabel)}"/>
+                            </h3>
+                        </div>
+                        <!-- /.box-header -->
+                        <!-- form start -->
+                        <h:panelGroup layout="block" styleClass="box-body">
+                            <p:panelGrid rendered="#{roomWeekCalendarsCtrl.validPlanning}">
+                                <p:row>
+                                    <p:column styleClass="ui-widget-header"><p:outputLabel value=""/></p:column>
+                                    <p:column styleClass="ui-widget-header"><p:outputLabel value="#{roomWeekCalendarsCtrl.model.planning[0].dayName}"/></p:column>
+                                    <p:column styleClass="ui-widget-header"><p:outputLabel value="Mardi"/></p:column>
+                                    <p:column styleClass="ui-widget-header"><p:outputLabel value="Mercredi"/></p:column>
+                                    <p:column styleClass="ui-widget-header"><p:outputLabel value="Jeudi"/></p:column>
+                                    <p:column styleClass="ui-widget-header"><p:outputLabel value="Vendredi"/></p:column>
+                                    <p:column styleClass="ui-widget-header"><p:outputLabel value="Samedi"/></p:column>
+                                </p:row>
+                                <ui:repeat var="h" value="#{roomWeekCalendarsCtrl.model.hours}" varStatus="hs">
+                                    <p:row>
+                                        <p:column styleClass="ui-widget-header">
+                                            <p:outputLabel
+                                                value="#{roomWeekCalendarsCtrl.model.getHour(hs.index)}"/>
+                                        </p:column>
+                                        <ui:repeat var="r" value="#{roomWeekCalendarsCtrl.model.planning}">
+                                            <p:column style="width:15.5%;padding: 0px;vertical-align: top;">
+                                                <table style="width: 100%;height: 100%;"><tbody><tr>
+                                                            <p:repeat value="#{r.hours[hs.index].activities}" var="act">
+                                                                <td style="width: #{vr.getInvPercentString(r.hours[hs.index].activities.size())};height: 100%;#{roomWeekCalendarsCtrl.resolveCssStyleForCourse(act)}">
+                                                                    <h:panelGrid columns="1">
+                                                                        <p:outputLabel value="#{act.subject}"
+                                                                                       style="font-weight: bold"/>
+                                                                        <p:outputLabel value="#{act.actor}"
+                                                                                       style="#{roomWeekCalendarsCtrl.resolveCssStyleForClass(act)}"
+                                                                                       />
+                                                                        <p:outputLabel value="#{act.activity}"/>
+                                                                        <p:outputLabel value="#{act.room}"/>
+                                                                    </h:panelGrid>
+                                                                </td>
+                                                            </p:repeat>
+                                                        </tr></tbody></table>
+                                            </p:column>
+                                        </ui:repeat>
+                                    </p:row>
+                                </ui:repeat>
+                            </p:panelGrid>
+                        </h:panelGroup>
+                    </h:panelGroup>
+                </h:form>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

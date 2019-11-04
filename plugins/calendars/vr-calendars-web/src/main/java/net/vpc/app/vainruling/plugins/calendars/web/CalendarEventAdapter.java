@@ -5,11 +5,14 @@
  */
 package net.vpc.app.vainruling.plugins.calendars.web;
 
+import java.util.Collections;
 import java.util.Date;
+import java.util.Map;
 import net.vpc.app.vainruling.core.service.model.AppArea;
 import net.vpc.app.vainruling.plugins.calendars.model.AppCalendarEvent;
 import net.vpc.app.vainruling.plugins.calendars.model.RuntimeAppCalendarEvent;
 import net.vpc.common.strings.StringUtils;
+import org.primefaces.model.ScheduleRenderingMode;
 
 /**
  *
@@ -144,6 +147,16 @@ public class CalendarEventAdapter implements CalendarEventExt {
 
     public String getTypeName() {
         return typeName;
+    }
+
+    @Override
+    public ScheduleRenderingMode getRenderingMode() {
+        return ScheduleRenderingMode.BACKGROUND;
+    }
+
+    @Override
+    public Map<String, Object> getDynamicProperties() {
+        return Collections.emptyMap();
     }
 
 }

@@ -31,13 +31,22 @@ public class TodoList {
     @Summary
     private boolean systemList;
     @Summary
+    private boolean sharableList;
+    @Summary
     private AppUser respUser;
 
-    @Summary
-    private String collaborators;
 
     @Summary
     private TodoStatusGroup statusGroup;
+
+    @Summary
+    @Properties(
+            {
+                @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.PROFILE_EXPRESSION),
+                @Property(name = UIConstants.Form.SPAN, value = "MAX_VALUE")
+            }
+    )
+    private String collaborators;
 
     public int getId() {
         return id;
@@ -101,6 +110,14 @@ public class TodoList {
 
     public void setCollaborators(String collaborators) {
         this.collaborators = collaborators;
+    }
+
+    public boolean isSharableList() {
+        return sharableList;
+    }
+
+    public void setSharableList(boolean sharableList) {
+        this.sharableList = sharableList;
     }
 
 }

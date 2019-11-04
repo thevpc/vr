@@ -3,8 +3,10 @@ package net.vpc.app.vainruling.core.service.security;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 public class DefaultUserToken implements UserToken {
+
     private String domain;
     private String sessionId;
     private Integer userId;
@@ -25,7 +27,7 @@ public class DefaultUserToken implements UserToken {
     private int[] managedDepartments = {};
     private boolean manager;
     private Set<String> rights = new HashSet<>();
-    private Set<String> profileNames = new HashSet<>();
+    private Set<String> profileNames = new TreeSet<>();
 
     @Override
     public String getDomain() {
@@ -260,6 +262,6 @@ public class DefaultUserToken implements UserToken {
 
     @Override
     public void setProfileCodes(Set<String> profileNames) {
-        this.profileNames = profileNames;
+        this.profileNames = profileNames == null ? new TreeSet<>() : new TreeSet<>(profileNames);
     }
 }

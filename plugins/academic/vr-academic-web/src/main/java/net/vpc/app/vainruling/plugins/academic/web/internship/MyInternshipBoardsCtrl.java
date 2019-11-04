@@ -54,6 +54,7 @@ import java.util.logging.Logger;
 import net.vpc.app.vainruling.VrPage;
 import net.vpc.app.vainruling.VrPathItem;
 import net.vpc.app.vainruling.VrOnPageLoad;
+import net.vpc.app.vainruling.core.web.jsf.VrJsf;
 
 /**
  * internships for teachers
@@ -713,13 +714,9 @@ public class MyInternshipBoardsCtrl {
                 try {
                     String report = getModel().getRequestUploadType();
                     String login = core.getCurrentUserLogin();
-                    MirroredPath temp=CorePlugin.get().createTempUploadFolder();
-
-
-                    File f = new File(temp.getNativePath(), event.getFile().getFileName());
-                    event.getFile().write(f.getPath());
+                    VFile f = VrJsf.createTempFile(event);
                     AcademicInternship internship = getModel().getInternship();
-                    PathInfo uu = PathInfo.create(f);
+                    PathInfo uu = PathInfo.create(f.getPath());
                     String extensionPart = uu.getExtensionPart();
                     if (extensionPart == null) {
                         extensionPart = "pdf";
@@ -729,18 +726,18 @@ public class MyInternshipBoardsCtrl {
                     if ("report1".equals(report)) {
                         String validName = internship.getBoard().getInternshipType().getName() + "-" + internship.getCode() + "-" + login + "-spec." + extensionPart;
                         VFile ff = userHome.get(validName);
-                        temp.getPath().get(event.getFile().getFileName()).copyTo(ff);
+                        f.copyTo(ff);
                         internship.setSpecFilePath(ff.getBaseFile("vrfs").getPath());
                     } else if ("report2".equals(report)) {
                         String validName = internship.getBoard().getInternshipType().getName() + "-" + internship.getCode() + "-" + login + "-mid." + extensionPart;
                         VFile ff = userHome.get(validName);
-                        temp.getPath().get(event.getFile().getFileName()).copyTo(ff);
+                        f.copyTo(ff);
                         internship.setMidTermReportFilePath(ff.getBaseFile("vrfs").getPath());
 
                     } else if ("report3".equals(report)) {
                         String validName = internship.getBoard().getInternshipType().getName() + "-" + internship.getCode() + "-" + login + "-final." + extensionPart;
                         VFile ff = userHome.get(validName);
-                        temp.getPath().get(event.getFile().getFileName()).copyTo(ff);
+                        f.copyTo(ff);
                         internship.setReportFilePath(ff.getBaseFile("vrfs").getPath());
                     } else {
                         return;

@@ -7,7 +7,7 @@ import net.vpc.upa.config.*;
  * Created by vpc on 9/19/16.
  */
 @Entity
-@Path("Education/Projects/Apbl")
+@Path("Repository/Education")
 public class ApblSessionStatus {
     @Id
     @Sequence

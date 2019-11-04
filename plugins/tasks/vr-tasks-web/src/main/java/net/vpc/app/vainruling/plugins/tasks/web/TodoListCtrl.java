@@ -98,7 +98,7 @@ public class TodoListCtrl extends AbstractObjectCtrl<TodoList> {
     @Override
     public void reloadPage(String cmd, boolean enableCustomization) {
         getModel().setCmd(cmd);
-        getModel().setList(todoService.findTodoListsByResp(null));
+        getModel().setList(todoService.findTodoListsByResp(null,false));
         getModel().setCurrent(delegated_newInstance());
         onShowCategoriesList();
         onShowStatusesList();

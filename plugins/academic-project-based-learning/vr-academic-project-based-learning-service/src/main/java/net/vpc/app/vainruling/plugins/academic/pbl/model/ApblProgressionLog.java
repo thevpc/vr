@@ -5,6 +5,7 @@ import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.upa.config.*;
 
 import java.util.Date;
+import net.vpc.upa.RelationshipType;
 
 /**
  * Created by vpc on 9/19/16.
@@ -13,9 +14,8 @@ import java.util.Date;
 @Path("Education/Projects/Apbl")
 @Properties(
         {
-                @Property(name = "ui.auto-filter.session", value = "{expr='this.coaching.team.session',order=1}"),
-                @Property(name = "ui.auto-filter.teacher", value = "{expr='this.coaching.teacher',order=2}"),
-                @Property(name = "ui.auto-filter.team", value = "{expr='this.coaching.team',order=3}"),
+                @Property(name = "ui.auto-filter.session", value = "{expr='this.team.session',order=1}"),
+                @Property(name = "ui.auto-filter.team", value = "{expr='this.team',order=3}"),
         }
 )
 public class ApblProgressionLog {
@@ -23,6 +23,7 @@ public class ApblProgressionLog {
     @Sequence
     private int id;
     @Main
+    @ManyToOne(relationType = RelationshipType.COMPOSITION)
     private ApblTeam team;
     private AppUser user;
     @Summary

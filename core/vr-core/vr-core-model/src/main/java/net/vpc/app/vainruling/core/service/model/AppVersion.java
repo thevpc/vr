@@ -12,7 +12,7 @@ import net.vpc.upa.types.Timestamp;
  * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "this.serviceName")
-@Path("Admin")
+@Path("Admin/Config")
 public class AppVersion {
 
     @Path("Main")

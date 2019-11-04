@@ -21,35 +21,42 @@ and open the template in the editor.
             <ui:define name="content">
                 <h:form id="listForm" enctype="multipart/form-data">
                     <p:messages showDetail="true"/>
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <h3 class="box-title">Groupe à gérer</h3>
+                        </div>
+                        <!-- /.box-header -->
+                        <!-- form start -->
+                        <div class="box-body">
+                            <div class="form-group">
+                                <p:outputLabel value="Sélectionner"/>
+                                <p:selectOneMenu class="form-control" styleClass="form-control"
+                                                 value="#{updateMyProfilesCtrl.model.profile}"
+                                                 converter="#{vr.entityObjConverter('AppProfile')}"
+                                                 >
+                                    <f:selectItems value="#{updateMyProfilesCtrl.model.profiles}"/>
+                                    <p:ajax listener="#{updateMyProfilesCtrl.onChange}"   update=":listForm:pickList"/>
+                                </p:selectOneMenu>
+                            </div>                            
+                            <div class="form-group">
+                                <p:pickList id="pickList" value="#{updateProfileUsersActionCtrl.model.values}" var="v" effect="bounce"
+                                            itemValue="#{v.login}"
+                                            itemLabel="#{vr.strCoalesce(v.login,v.fullName)} (#{vr.strCoalesce(v.positionTitle1)})"
+                                            showSourceFilter="true" showTargetFilter="true" filterMatchMode="contains"
+                                            >
+                                    <f:facet name="sourceCaption">Disponibles</f:facet>
+                                    <f:facet name="targetCaption">Affectés</f:facet>
+                                </p:pickList>
+                            </div>                            
+                        </div>
+                        <!-- /.box-body -->
 
-                    <p:selectOneMenu class="form-control vr-form-control"
-                                     value="#{updateMyProfilesCtrl.model.profile}"
-                                     converter="#{vr.entityObjConverter('AppProfile')}"
-                                     style="max-width: 400px;display: inline-block; vertical-align: top;"
-                                     >
-                        <f:selectItems value="#{updateMyProfilesCtrl.model.profiles}"/>
-                        <p:ajax listener="#{updateMyProfilesCtrl.onChange}"   update=":listForm:pickList"/>
-                    </p:selectOneMenu>
-
-                    <p:commandButton title="Enregister" icon="fa fa-save"
-                                     styleClass="ui-ribbon-bigbutton  vr-toolbox-button btn btn-primary" ajax="true"
-                                     actionListener="#{updateProfileUsersActionCtrl.save}" update=":listForm"
-                                     style="display: inline;height: 34px"
-                                     />
-                    <div style="margin-top: 20px;">
-                        <p:pickList id="pickList" value="#{updateProfileUsersActionCtrl.model.values}" var="v" effect="bounce"
-                                    itemValue="#{v.login}"
-                                    itemLabel="#{vr.strCoalesce(v.login,v.fullName)} (#{vr.strCoalesce(v.positionTitle1)})"
-                                    showSourceFilter="true" showTargetFilter="true" filterMatchMode="contains"
-                                    >
-
-                            <f:facet name="sourceCaption">Disponibles</f:facet>
-                            <f:facet name="targetCaption">Affectés</f:facet>
-
-                        </p:pickList>
-
-                        <p:separator/>
-
+                        <div class="box-footer">
+                            <p:commandButton title="Enregister"
+                                             styleClass="btn btn-primary" ajax="true"
+                                             actionListener="#{updateProfileUsersActionCtrl.save}" update=":listForm"
+                                             />
+                        </div>
                     </div>
                 </h:form>
             </ui:define>

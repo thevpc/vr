@@ -21,7 +21,7 @@ import java.sql.Timestamp;
  * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "this.name")
-@Path("Education/Config")
+@Path("Repository/Education")
 @Properties(
         {
                 @Property(name = "ui.auto-filter.conversionTable", value = "{expr='this.conversionTable',order=1}")

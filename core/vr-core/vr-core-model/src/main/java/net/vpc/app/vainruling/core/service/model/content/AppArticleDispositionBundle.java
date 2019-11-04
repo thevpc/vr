@@ -11,7 +11,7 @@ import net.vpc.upa.config.*;
  * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "this.index, this.title")
-@Path("/Social/Config")
+@Path("/Repository/Social")
 public class AppArticleDispositionBundle {
 
     @Path("Main")

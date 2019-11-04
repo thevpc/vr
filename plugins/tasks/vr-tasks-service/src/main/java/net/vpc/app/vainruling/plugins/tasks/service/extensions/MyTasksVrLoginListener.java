@@ -42,7 +42,7 @@ public class MyTasksVrLoginListener implements VrLoginListener, VrImpersonateLis
             if (core.isUserMatchesProfileFilter(uid, "TodoOwner")) {
                 String name = u.getLogin() + "/my-todos";
                 TaskPlugin t = VrApp.getBean(TaskPlugin.class);
-                List<TodoList> all = t.findTodoListsByResp(uid);
+                List<TodoList> all = t.findTodoListsByResp(uid,false);
                 for (TodoList todoList : all) {
                     if (todoList.getName().equals(name)) {
                         return;

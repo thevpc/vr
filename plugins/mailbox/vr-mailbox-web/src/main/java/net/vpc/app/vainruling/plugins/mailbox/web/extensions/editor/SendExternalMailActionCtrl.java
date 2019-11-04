@@ -24,7 +24,6 @@ import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.NamedId;
 import net.vpc.upa.UPA;
-import org.primefaces.context.RequestContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Collections;

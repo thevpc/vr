@@ -5,6 +5,7 @@
  */
 package net.vpc.app.vainruling.core.service.model;
 
+import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.upa.*;
 import net.vpc.upa.config.*;
 import net.vpc.upa.config.Entity;
@@ -20,7 +21,8 @@ import net.vpc.upa.types.DateTime;
 @Path("Contact")
 @Properties(
         {
-            @Property(name = "ui.auto-filter.department", value = "{expr='this.department',order=1}")
+            @Property(name = UIConstants.Grid.ROW_STYLE, value = "(i.object.deleted) ?'vr-row-deleted':''")
+            ,   @Property(name = "ui.auto-filter.department", value = "{expr='this.department',order=1}")
             ,
                 @Property(name = "ui.auto-filter.type", value = "{expr='this.type',order=2}")
             ,

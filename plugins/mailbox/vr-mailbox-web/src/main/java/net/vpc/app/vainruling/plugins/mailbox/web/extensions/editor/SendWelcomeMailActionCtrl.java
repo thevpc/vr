@@ -7,7 +7,6 @@ package net.vpc.app.vainruling.plugins.mailbox.web.extensions.editor;
 
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.model.AppContact;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.core.service.notification.VrNotificationEvent;
 import net.vpc.app.vainruling.core.service.notification.VrNotificationSession;
@@ -17,7 +16,6 @@ import net.vpc.app.vainruling.core.web.jsf.ctrl.EditorCtrl;
 import net.vpc.app.vainruling.plugins.inbox.service.MailboxPlugin;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
-import org.primefaces.context.RequestContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;

@@ -12,7 +12,7 @@ import net.vpc.upa.config.*;
  * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "this.name")
-@Path("Equipment/Config")
+@Path("Repository/Equipment")
 public class EquipmentAcquisitionStatus {
 
     @Path("Main")

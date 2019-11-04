@@ -16,11 +16,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.vpc.app.vainruling.VrPlugin;
 import net.vpc.app.vainruling.VrStart;
 import net.vpc.app.vainruling.core.service.util.I18n;
@@ -39,6 +41,8 @@ import net.vpc.common.strings.StringUtils;
  */
 @VrPlugin
 public class TaskPlugin {
+
+    private static Logger log = java.util.logging.Logger.getLogger(TaskPlugin.class.getName());
 
     @Autowired
     CorePlugin core;
@@ -84,30 +88,44 @@ public class TaskPlugin {
                 .getResultList();
     }
 
-    public List<TodoList> findTodoListsByResp(Integer user) {
-        List<AppProfile> up = null;
+    public boolean isAllowedList(TodoList list, boolean promoteAdmin) {
+        if (list == null) {
+            return false;
+        }
+        CorePlugin core = CorePlugin.get();
+        if (core.getCurrentUserId() == null) {
+            return false;
+        }
+        if (list.getRespUser() == null) {
+            log.log(Level.SEVERE, "Todo List : {0} has no responsible. Will be ignored.", list.getId());
+            return false;
+        }
+        if (core.getCurrentUserId() == list.getRespUser().getId()) {
+            return true;
+        }
+        if (promoteAdmin) {
+            if (core.isCurrentSessionAdminOrUser(core.getCurrentUserId())) {
+                return true;
+            }
+        }
+        if (!StringUtils.isBlank(list.getCollaborators())) {
+            if (core.isUserMatchesProfileFilter(core.getCurrentUserId(), list.getCollaborators())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public List<TodoList> findTodoListsByResp(Integer user, boolean promoteAdmin) {
         if (user == null) {
             user = core.getCurrentUserId();
         }
-
         if (user == null) {
-            return findTodoLists();
+            return Collections.emptyList();
         }
         ArrayList<TodoList> list = new ArrayList<>();
         for (TodoList i : findTodoLists()) {
-            AppUser u = i.getRespUser();
-            boolean ok = false;
-            if (u != null) {
-                if (u.getId() == user) {
-                    ok = true;
-                }
-            }
-            if (!ok && !StringUtils.isBlank(i.getCollaborators())) {
-                if (core.isUserMatchesProfileFilter(user, i.getCollaborators())) {
-                    ok = true;
-                }
-            }
-            if (ok) {
+            if (isAllowedList(i, promoteAdmin)) {
                 list.add(i);
             }
         }

@@ -16,6 +16,10 @@ import java.sql.Timestamp;
  * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "this.sendTime desc")
+@Properties(
+        {
+                        @Property(name = UIConstants.Grid.ROW_STYLE, value = "(i.object.deleted) ?'vr-row-deleted':''")
+        })
 @Path("Social")
 public class MailboxSent {
 

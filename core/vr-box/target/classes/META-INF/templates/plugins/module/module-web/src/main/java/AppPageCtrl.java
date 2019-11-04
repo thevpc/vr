@@ -1,6 +1,4 @@
-package $
-
-{{packageName(ProjectGroup)}}.${{packageName(ModuleName)}}.web;
+package ${{packageName(ProjectGroup)}}.${{packageName(ModuleName)}}.web;
 
 import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +9,7 @@ import net.vpc.app.vainruling.VrPage;
 import ${{packageName(ProjectGroup)}}.${{packageName(ModuleName)}}.service.*;
 
 /**
- * ${{className(vrPageName)}} component implementation.
+ * ${{className(PageName)}} component implementation.
  * A component is an MVC component defining a Controller (this class), a Model 
  * (sub class Model) and a view (url path to xhtml file)
  * 
@@ -44,13 +42,13 @@ public class ${{className(PageName)}}Ctrl {
     /**
      * Page initialization.
      * Called when subsequent menu is clicked or the controller is invoked
-     * via url /p/${{className(vrPageName)}}
+     * via url /p/${{className(PageName)}}
      * controller url can accept config as json bound to the 'a' http request parameter
-     * Example : /p/${{className(vrPageName)}}?a={'initialCounter':15}
+     * Example : /p/${{className(PageName)}}?a={'initialCounter':15}
      * When subsequent menu is clicked, config param is passed as bare null!
      * @param conf initialization config.
      */
-    @OnPageLoad
+    @VrOnPageLoad
     private void init(Config conf) {
         if (conf != null) {
             getModel().setCounter(conf.initialCounter);

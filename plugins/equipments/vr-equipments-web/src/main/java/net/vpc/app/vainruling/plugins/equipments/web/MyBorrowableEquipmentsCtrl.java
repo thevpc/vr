@@ -65,10 +65,10 @@ public class MyBorrowableEquipmentsCtrl {
     public String getSelectedEquipmentString() {
         EquipmentForResponsibleInfo e = getModel().getSelectedEquipment();
         if (e == null) {
-            return "?";
+            return "<sélectionner équipement dans la liste>";
         }
         if (e.getEquipment() == null) {
-            return "?";
+            return "<sélectionner équipement dans la liste>";
         }
         StringBuilder sb = new StringBuilder();
         if (e.getEquipment().getType() != null && !StringUtils.isBlank(e.getEquipment().getType().getName())) {
@@ -151,7 +151,8 @@ public class MyBorrowableEquipmentsCtrl {
             EquipmentBorrowService ebs = VrApp.getBean(EquipmentBorrowService.class);
             Integer ii = getModel().getSelectedEquipment() == null ? -1 : getModel().getSelectedEquipment().getEquipment().getId();
             EquipmentBorrowRequest req = ebs.addEquipmentBorrowRequest(getModel().getBorrowUser(), ii,
-                    getModel().getFromDate(), getModel().getToDate(), getModel().getVisaUser(), getModel().getQuantity()
+                    getModel().getFromDate(), getModel().getToDate(), getModel().getVisaUser(), getModel().getQuantity(),
+                    getModel().isDelegatedBorrow()
             );
             if (getModel().getBorrowUser() != null && getModel().isDelegatedBorrow()) {
                 if (getModel().isSuperUserOperator()) {

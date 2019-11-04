@@ -12,7 +12,7 @@ import net.vpc.upa.config.*;
  * @author taha.bensalah@gmail.com
  */
 @Entity
-@Path("Todo/Config")
+@Path("Repository/Todo")
 public class TodoListProfile {
 
     @Path("Main")

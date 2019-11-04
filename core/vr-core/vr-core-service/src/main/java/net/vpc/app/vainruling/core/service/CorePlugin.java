@@ -426,13 +426,7 @@ public class CorePlugin {
     }
 
     public <T> T findOrCreate(T o) {
-        if (o instanceof AppUserType) {
-            return bodyDaoManager.findOrCreate(o, "code");
-        } else if (o instanceof AppUser) {
-            return bodyDaoManager.findOrCreate(o, "login");
-        } else {
-            return bodyDaoManager.findOrCreate(o);
-        }
+        return bodyDaoManager.findOrCreate(o);
     }
 
     public <T> T findOrCreate(T o, String field) {
@@ -461,6 +455,10 @@ public class CorePlugin {
 
     public List<String> autoCompleteProfileExpression(String queryExpr) {
         return bodySecurityManager.autoCompleteProfileExpression(queryExpr);
+    }
+
+    public List<String> autoCompleteUserLogin(String queryExpr) {
+        return bodySecurityManager.autoCompleteUserLogin(queryExpr);
     }
 
     public boolean isCurrentSessionMatchesProfileFilter(String profilePattern) {
@@ -1063,6 +1061,10 @@ public class CorePlugin {
 
     public boolean isCurrentAllowed(String key) {
         return bodySecurityAuth.isCurrentAllowed(key);
+    }
+
+    public boolean isUserAdmin(int uid) {
+        return bodySecurityAuth.isUserAdmin(uid);
     }
 
     public boolean isCurrentSessionAdmin() {

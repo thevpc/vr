@@ -139,20 +139,8 @@ public abstract class AbstractCmsTextService implements VrCmsTextService {
     }
 
     @Override
-    public boolean isEnabledAction(String action, int id) {
-        AppUser currentUser = core.getCurrentUser();
-        if (currentUser != null) {
-            FullArticle a = findArticle(id);
-            if (a != null) {
-                if (a.getUser() != null && currentUser.getId() == a.getUser().getId()) {
-                    return true;
-                }
-                if (core.isCurrentSessionAdmin()) {
-                    return true;
-                }
-            }
-        }
-        return false;
+    public boolean isEnabledActionById(String action, int id) {
+        return isEnabledAction(action,findArticle(id));
     }
 
     @Override

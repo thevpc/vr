@@ -20,7 +20,7 @@ public interface VrCmsTextService extends VrContentTextService {
 
     boolean isEnabledAction(String action, ContentText ctx);
 
-    boolean isEnabledAction(String action, int id);
+    boolean isEnabledActionById(String action, int id);
 
     /**
      * executes action and return true if the action wa
@@ -29,7 +29,7 @@ public interface VrCmsTextService extends VrContentTextService {
      * @param id
      * @return
      */
-    boolean onAction(String action, int id);
+    boolean onActionById(String action, int id);
 
     public boolean onAction(String action, ContentText a);
 

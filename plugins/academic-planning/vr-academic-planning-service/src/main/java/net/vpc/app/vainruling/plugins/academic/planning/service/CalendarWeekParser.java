@@ -4,18 +4,21 @@ import net.vpc.app.vainruling.plugins.calendars.service.dto.CalendarDay;
 import net.vpc.app.vainruling.plugins.calendars.service.dto.CalendarHour;
 import net.vpc.app.vainruling.plugins.calendars.service.dto.WeekCalendar;
 import net.vpc.common.strings.StringUtils;
-import net.vpc.upa.Closeable;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import net.vpc.app.vainruling.plugins.calendars.service.CalendarsUtils;
+import net.vpc.app.vainruling.plugins.calendars.service.dto.CalendarActivity;
 
 /**
  * Created by vpc on 10/12/16.
  */
 public class CalendarWeekParser {
+
     private String name;
     private String sourceName;
     private Node nNode;
@@ -26,12 +29,12 @@ public class CalendarWeekParser {
         this.nNode = nNode;
     }
 
-    public String getName(){
+    public String getName() {
         return name;
     }
 
-    public WeekCalendar parse(String id){
-        WeekCalendar dd = parsePlanningDataXML(nNode,sourceName);
+    public WeekCalendar parse(String id) {
+        WeekCalendar dd = parsePlanningDataXML(nNode, sourceName);
         if (dd != null) {
             dd.setId(id);
             dd.setPlanningUniformName(name.trim().toLowerCase());
@@ -63,7 +66,7 @@ public class CalendarWeekParser {
                 d.setDayName("Day " + p2.getDays().size());
                 p2.getDays().add(d);
             }
-            return p2;
+            return CalendarsUtils.buildWeekCalendar(p2);
         }
         return null;
     }
@@ -108,38 +111,40 @@ public class CalendarWeekParser {
             Element hourElement = (Element) hourNode;
             CalendarHour ph = new CalendarHour();
             ph.setHour(hourElement.getAttribute("name"));
+            CalendarActivity act = new CalendarActivity();
+            ph.setActivities(new ArrayList<>(Arrays.asList(act)));
             NodeList childNodes = hourElement.getChildNodes();
             for (int ci = 0; ci < childNodes.getLength(); ci++) {
                 Node cNode = childNodes.item(ci);
                 if (cNode.getNodeType() == Node.ELEMENT_NODE) {
                     Element cElement = (Element) cNode;
                     if ("Activity_Tag".equals(cElement.getNodeName())) {
-                        ph.setActivity(cElement.getAttribute("name"));
+                        act.setActivity(cElement.getAttribute("name"));
                     } else if ("Students".equals(cElement.getNodeName())) {
-                        ph.setStudents(cElement.getAttribute("name"));
+                        act.setStudents(cElement.getAttribute("name"));
                     } else if ("Teacher".equals(cElement.getNodeName())) {
-                        ph.setTeacher(cElement.getAttribute("name"));
+                        act.setTeacher(cElement.getAttribute("name"));
                     } else if ("Subject".equals(cElement.getNodeName())) {
-                        ph.setSubject(cElement.getAttribute("name"));
+                        act.setSubject(cElement.getAttribute("name"));
                     } else if ("Room".equals(cElement.getNodeName())) {
-                        ph.setRoom(cElement.getAttribute("name"));
+                        act.setRoom(cElement.getAttribute("name"));
                     }
                 }
             }
             String actor = "";
-            if (!StringUtils.isBlank(ph.getStudents())) {
+            if (!StringUtils.isBlank(act.getStudents())) {
                 if (actor.length() > 0) {
                     actor += " / ";
                 }
-                actor += ph.getStudents();
+                actor += act.getStudents();
             }
-            if (!StringUtils.isBlank(ph.getTeacher())) {
+            if (!StringUtils.isBlank(act.getTeacher())) {
                 if (actor.length() > 0) {
                     actor += " / ";
                 }
-                actor += ph.getTeacher();
+                actor += act.getTeacher();
             }
-            ph.setActor(actor);
+            act.setActor(actor);
             return (ph);
         }
         return null;

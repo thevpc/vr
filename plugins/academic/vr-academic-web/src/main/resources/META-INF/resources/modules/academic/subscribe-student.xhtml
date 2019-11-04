@@ -11,118 +11,168 @@ and open the template in the editor.
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://java.sun.com/jsf/core"
 
-        >
+      >
 
-<h:head>
-</h:head>
+    <h:head>
+    </h:head>
 
-<h:body>
-
-
-    <!--@elvariable id="subscribeStudentCtrl" type="net.vpc.app.vainruling.plugins.academic.web.SubscribeStudentCtrl"-->
-    <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.jsf.Vr"-->
-    <ui:composition template="#{vr.privateTemplatePath}">
-        <ui:define name="content">
-            <h:form id="listForm">
-                <p:messages id="messages" showDetail="true"/>
-
-                <div >
-                    <div class="table-responsive">
-                        <p:panelGrid columns="2" styleClass="vr-no-border-grid" style="margin-top: 20px">
-
-                            <p:outputLabel value="CIN"/>
-                            <p:inputText value="#{subscribeStudentCtrl.model.student.nin}"/>
-
-                            <p:outputLabel value="N° Inscription"/>
-                            <p:inputText value="#{subscribeStudentCtrl.model.student.subscriptionNumber}"/>
-
-                            <p:outputLabel value="Prénom"/>
-                            <p:inputText value="#{subscribeStudentCtrl.model.student.firstName}"/>
-
-                            <p:outputLabel value="Nom"/>
-                            <p:inputText value="#{subscribeStudentCtrl.model.student.lastName}"/>
-
-                            <p:outputLabel value="Nom (ar)"/>
-                            <p:inputText value="#{subscribeStudentCtrl.model.student.lastName2}"/>
-
-                            <p:outputLabel value="Prénom (ar)"/>
-                            <p:inputText value="#{subscribeStudentCtrl.model.student.firstName2}"/>
-
-                            <p:outputLabel value="GSM (98 222 333)"/>
-                            <p:inputText value="#{subscribeStudentCtrl.model.student.phone1}"/>
-
-                            <p:outputLabel value="Email"/>
-                            <p:inputText value="#{subscribeStudentCtrl.model.student.email}"/>
+    <h:body>
 
 
-                            <p:outputLabel value="Civlité"/>
-                            <p:selectOneMenu value="#{subscribeStudentCtrl.model.student.civilityId}">
-                                <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
-                                <f:selectItems value="#{subscribeStudentCtrl.model.civilityItems}"/>
-                            </p:selectOneMenu>
+        <!--@elvariable id="subscribeStudentCtrl" type="net.vpc.app.vainruling.plugins.academic.web.SubscribeStudentCtrl"-->
+        <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.jsf.Vr"-->
+        <ui:composition template="#{vr.privateTemplatePath}">
+            <ui:define name="content">
+                <h:form id="listForm">
+                    <p:messages id="messages" showDetail="true"/>
 
-                            <p:outputLabel value="Genre"/>
-                            <p:selectOneMenu value="#{subscribeStudentCtrl.model.student.genderId}">
-                                <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
-                                <f:selectItems value="#{subscribeStudentCtrl.model.genderItems}"/>
-                            </p:selectOneMenu>
+                    <div style="row">
+                        <div style="col-md-6">
+                            <div class="box box-primary">
+                                <div class="box-header with-border">
+                                    <h3 class="box-title">Contact</h3>
+                                </div>
+                                <!-- /.box-header -->
+                                <!-- form start -->
+                                <div class="box-body">
+                                    <div class="form-group">
+                                        <p:outputLabel value="CIN"/>
+                                        <p:inputText value="#{subscribeStudentCtrl.model.student.nin}"/>
+                                    </div>                            
+                                    <div class="form-group">
+                                        <p:outputLabel value="N° Inscription"/>
+                                        <p:inputText value="#{subscribeStudentCtrl.model.student.subscriptionNumber}"/>
+                                    </div>                            
+                                    <div class="form-group">
+                                        <p:outputLabel value="Prénom"/>
+                                        <p:inputText value="#{subscribeStudentCtrl.model.student.firstName}"/>
+                                    </div>                            
+                                    <div class="form-group">
+                                        <p:outputLabel value="Nom"/>
+                                        <p:inputText value="#{subscribeStudentCtrl.model.student.lastName}"/>
+                                    </div>                            
+                                    <div class="form-group">
+                                        <p:outputLabel value="Nom (ar)"/>
+                                        <p:inputText value="#{subscribeStudentCtrl.model.student.lastName2}"/>
+                                    </div>                            
+                                    <div class="form-group">
+                                        <p:outputLabel value="Prénom (ar)"/>
+                                        <p:inputText value="#{subscribeStudentCtrl.model.student.firstName2}"/>
+                                    </div>                            
+                                    <div class="form-group">
+                                        <p:outputLabel value="GSM (98 222 333)"/>
+                                        <p:inputText value="#{subscribeStudentCtrl.model.student.phone1}"/>
+                                    </div>                            
+                                    <div class="form-group">
+                                        <p:outputLabel value="Email"/>
+                                        <p:inputText value="#{subscribeStudentCtrl.model.student.email}"/>
+                                    </div>                            
+                                    <div class="form-group">
+                                        <p:outputLabel value="Civlité"/>
+                                        <p:selectOneMenu value="#{subscribeStudentCtrl.model.student.civilityId}" styleClass="form-control"
+                                                         filter="true" filterMatchMode="contains"
+                                                         >
+                                            <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
+                                            <f:selectItems value="#{subscribeStudentCtrl.model.civilityItems}"/>
+                                        </p:selectOneMenu>
+                                    </div>                            
+                                    <div class="form-group">
+                                        <p:outputLabel value="Genre"/>
+                                        <p:selectOneMenu value="#{subscribeStudentCtrl.model.student.genderId}"styleClass="form-control"
+                                                         filter="true" filterMatchMode="contains"
+                                                         >
+                                            <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
+                                            <f:selectItems value="#{subscribeStudentCtrl.model.genderItems}"/>
+                                        </p:selectOneMenu>
+                                    </div>                            
+                                <!-- /.box-body -->
 
-                            <p:outputLabel value="Classe"/>
-                            <p:selectOneMenu value="#{subscribeStudentCtrl.model.student.classId}">
-                                <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
-                                <f:selectItems value="#{subscribeStudentCtrl.model.classItems}"/>
-                            </p:selectOneMenu>
+                            </div>
+                        </div>
+                        <div style="col-md-6">
+                            <div class="box box-primary">
+                                <div class="box-header with-border">
+                                    <h3 class="box-title">Informations</h3>
+                                </div>
+                                <!-- /.box-header -->
+                                <!-- form start -->
+                                <div class="box-body">
+                                    <div class="form-group">
+                                        <p:outputLabel value="Classe"/>
+                                        <p:selectOneMenu value="#{subscribeStudentCtrl.model.student.classId}"styleClass="form-control"
+                                                         filter="true" filterMatchMode="contains"
+                                                         >
+                                            <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
+                                            <f:selectItems value="#{subscribeStudentCtrl.model.classItems}"/>
+                                        </p:selectOneMenu>
+                                    </div>                            
+                                    <div class="form-group">
+                                        <p:outputLabel value="1ere inscription"/>
+                                        <p:selectOneMenu value="#{subscribeStudentCtrl.model.student.startPeriodId}"styleClass="form-control"
+                                                         filter="true" filterMatchMode="contains"
+                                                         >
+                                            <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
+                                            <f:selectItems value="#{subscribeStudentCtrl.model.periodItems}"/>
+                                        </p:selectOneMenu>
+                                    </div>                            
+                                    <div class="form-group">
+                                        <p:outputLabel value="Prépa/License"/>
+                                        <p:selectOneMenu value="#{subscribeStudentCtrl.model.student.preClassPrepId}"styleClass="form-control"
+                                                         filter="true" filterMatchMode="contains"
+                                                         >
+                                            <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
+                                            <f:selectItems value="#{subscribeStudentCtrl.model.prepItems}"/>
+                                        </p:selectOneMenu>
+                                    </div>                            
+                                    <div class="form-group">
+                                        <p:outputLabel value="Rang Prepa/License"/>
+                                        <p:inputText value="#{subscribeStudentCtrl.model.student.preClassPrepRank}"/>
+                                    </div>                            
+                                    <div class="form-group">
+                                        <p:outputLabel value="Max Rang Prepa/License"/>
+                                        <p:inputText value="#{subscribeStudentCtrl.model.student.preClassPrepRankMax}"/>
+                                    </div>                            
+                                    <div class="form-group">
+                                        <p:outputLabel value="Bac"/>
+                                        <p:selectOneMenu value="#{subscribeStudentCtrl.model.student.preClassBacId}"styleClass="form-control"
+                                                         filter="true" filterMatchMode="contains"
+                                                         >
+                                            <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
+                                            <f:selectItems value="#{subscribeStudentCtrl.model.bacItems}"/>
+                                        </p:selectOneMenu>
+                                    </div>                            
+                                    <div class="form-group">
+                                        <p:outputLabel value="Moyenne Bac"/>
+                                        <p:inputText value="#{subscribeStudentCtrl.model.student.preClassBacScore}" styleClass="fo"/>
+                                    </div>                            
+                                </div>
+                                <!-- /.box-body -->
 
-                            <p:outputLabel value="1ere inscription"/>
-                            <p:selectOneMenu value="#{subscribeStudentCtrl.model.student.startPeriodId}">
-                                <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
-                                <f:selectItems value="#{subscribeStudentCtrl.model.periodItems}"/>
-                            </p:selectOneMenu>
-
-                            <p:outputLabel value="Prépa/License"/>
-                            <p:selectOneMenu value="#{subscribeStudentCtrl.model.student.preClassPrepId}">
-                                <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
-                                <f:selectItems value="#{subscribeStudentCtrl.model.prepItems}"/>
-                            </p:selectOneMenu>
-
-                            <p:outputLabel value="Rang Prepa/License"/>
-                            <p:inputText value="#{subscribeStudentCtrl.model.student.preClassPrepRank}"/>
-
-                            <p:outputLabel value="Max Rang Prepa/License"/>
-                            <p:inputText value="#{subscribeStudentCtrl.model.student.preClassPrepRankMax}"/>
-
-                            <p:outputLabel value="Bac"/>
-                            <p:selectOneMenu value="#{subscribeStudentCtrl.model.student.preClassBacId}">
-                                <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
-                                <f:selectItems value="#{subscribeStudentCtrl.model.bacItems}"/>
-                            </p:selectOneMenu>
-
-                            <p:outputLabel value="Moyenne Bac"/>
-                            <p:inputText value="#{subscribeStudentCtrl.model.student.preClassBacScore}"/>
-
-                        </p:panelGrid>
+                            </div>
+                        </div>
                     </div>
-                </div>
 
 
-                <p:separator/>
 
-                <div >
-                    <div class="table-responsive">
-                        <p:commandButton action="#{subscribeStudentCtrl.onImport}" value="Enregistrer"   styleClass="btn btn-primary"
-                                         update=":listForm" style="margin-left: 100px;"/>
+
+                    <div style="row">
+                        <div class="box-footer">
+                            <div class="form-group">
+                                <p:commandButton action="#{subscribeStudentCtrl.onImport}" value="Enregistrer"   styleClass="btn btn-primary"
+                                                 update=":listForm" style="margin-left: 100px;"/>
+                            </div>
+                        </div>
                     </div>
-                </div>
 
-            </h:form>
-
-
-        </ui:define>
+                </h:form>
 
 
-    </ui:composition>
+            </ui:define>
 
 
-</h:body>
+        </ui:composition>
+
+
+    </h:body>
 
 </html>

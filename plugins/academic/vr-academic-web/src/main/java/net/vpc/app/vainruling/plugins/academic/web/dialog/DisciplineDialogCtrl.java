@@ -12,7 +12,6 @@ import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.model.config.AcademicDiscipline;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
-import org.primefaces.context.RequestContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -102,7 +101,7 @@ public class DisciplineDialogCtrl {
 
     public void fireEventExtraDialogClosed() {
         //Object obj
-        RequestContext.getCurrentInstance().closeDialog(new DialogResult(getModel().getExpression(), getModel().getConfig().getUserInfo()));
+        DialogBuilder.closeCurrent(new DialogResult(getModel().getExpression(), getModel().getConfig().getUserInfo()));
     }
 
     public static class ExprItem {

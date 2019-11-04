@@ -9,43 +9,54 @@ and open the template in the editor.
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:p="http://primefaces.org/ui"
-        >
+      >
 
-<h:head>
-</h:head>
+    <h:head>
+    </h:head>
 
-<h:body>
+    <h:body>
 
-    <!--@elvariable id="corePlugin" type="net.vpc.app.vainruling.core.service.CorePlugin"-->
-    <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.jsf.Vr"-->
-    <!--@elvariable id="passwdCtrl" type="net.vpc.app.vainruling.core.web.jsf.ctrl.PasswdCtrl"-->
-    <ui:composition template="#{vr.privateTemplatePath}">
-        <ui:define name="content">
-            <h:form id="listForm" enctype="multipart/form-data">
-                <p:messages id="messages" showDetail="true" autoUpdate="true"/>
+        <!--@elvariable id="corePlugin" type="net.vpc.app.vainruling.core.service.CorePlugin"-->
+        <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.jsf.Vr"-->
+        <!--@elvariable id="passwdCtrl" type="net.vpc.app.vainruling.core.web.jsf.ctrl.PasswdCtrl"-->
+        <ui:composition template="#{vr.privateTemplatePath}">
+            <ui:define name="content">
+                <h:form id="listForm" enctype="multipart/form-data">
+                    <p:messages id="messages" showDetail="true" autoUpdate="true"/>
 
-                <div  style="margin-bottom: 20px;" >
-                    <h:outputText
-                            value="Vous êtes #{corePlugin.currentUser.firstName} (#{corePlugin.currentUserLogin})"/>
-                </div>
-                <div >
-                    <p:panelGrid columns="2" styleClass="vr-no-border-grid">
-                        <h:outputText styleClass="vr-form-field vr-form-fixed-width-medium" value="Ancien Mot de passe: "/>
-                        <p:password  styleClass="vr-form-field" value="#{passwdCtrl.model.oldPassword}"/>
-                        <h:outputText  styleClass="vr-form-field vr-form-fixed-width-medium" value="Mot de passe: "/>
-                        <p:password  styleClass="vr-form-field" id="pwd1" value="#{passwdCtrl.model.password1}" feedback="true"/>
-                        <h:outputText  styleClass="vr-form-field vr-form-fixed-width-medium" value="Répéter Mot de passe: "/>
-                        <p:password styleClass="vr-form-field" id="pwd2" value="#{passwdCtrl.model.password2}" feedback="true"/>
-                    </p:panelGrid>
-                    <p:commandButton value="valider"  style="margin-top: 20px;" styleClass="btn btn-primary" action="#{passwdCtrl.onChangePassword}" update="messages"/>
-                </div>
-            </h:form>
-        </ui:define>
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <h3 class="box-title"><h:outputText value="Vous êtes #{corePlugin.currentUser.fullTitle} (#{corePlugin.currentUserLogin})"/></h3>
+                        </div>
+                        <!-- /.box-header -->
+                        <!-- form start -->
+                        <div class="box-body">
+                            <div class="form-group">
+                                <p:outputLabel value="Ancien Mot de passe"/>
+                                <p:password  styleClass="form-control" value="#{passwdCtrl.model.oldPassword}"/>
+                            </div>  
+                            <div class="form-group">
+                                <p:outputLabel  value="Mot de passe"/>
+                                <p:password  styleClass="form-control" id="pwd1" value="#{passwdCtrl.model.password1}" feedback="true"/>
+                            </div>  
+                            <div class="form-group">
+                                <p:outputLabel  value="Répéter Mot de passe"/>
+                                <p:password styleClass="form-control" id="pwd2" value="#{passwdCtrl.model.password2}" feedback="true"/>
+                            </div>  
+                        </div>
+                        <!-- /.box-body -->
+
+                        <div class="box-footer">
+                            <p:commandButton value="valider"  style="margin-top: 20px;" styleClass="btn btn-primary" action="#{passwdCtrl.onChangePassword}" update="messages"/>
+                        </div>
+                    </div>
+                </h:form>
+            </ui:define>
 
 
-    </ui:composition>
+        </ui:composition>
 
 
-</h:body>
+    </h:body>
 
 </html>

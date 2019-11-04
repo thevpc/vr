@@ -7,18 +7,16 @@ import org.springframework.stereotype.Service;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 /**
  *
  * @author vpc
  */
 @Service
-public class DepartmentImportAction extends AbstractAcademicImportAction{
+public class DepartmentImportAction extends AbstractAcademicImportAction {
 
     // khaouwla bel kahla
-    
     public DepartmentImportAction() {
-        super("Import ", "*.departments.xlsx","departments.xlsx");
+        super("departments");
     }
-    
+
 }

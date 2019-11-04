@@ -9,31 +9,54 @@ and open the template in the editor.
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:p="http://primefaces.org/ui"
-        >
+      xmlns:f="http://java.sun.com/jsf/core"
+      >
 
-<h:head>
-</h:head>
+    <h:head>
+    </h:head>
 
-<h:body>
-
-
-    <ui:composition template="#{vr.privateTemplatePath}">
-        <ui:define name="content">
-            <h:form id="itemForm" enctype="multipart/form-data">
-                <p:growl id="growl" showDetail="true" sticky="true"/>
-                <p:fileUpload fileUploadListener="#{importFileCtrl.handleFileUpload}"
-                              label="Import any Academic File"
-                              mode="advanced"
-                              update="growl"
-                              auto="true" sizeLimit="100000000" allowTypes="/(\.|\/)(xlsx)$/"/>
-                <p:separator/>
-            </h:form>
-        </ui:define>
+    <h:body>
 
 
-    </ui:composition>
+        <ui:composition template="#{vr.privateTemplatePath}">
+            <ui:define name="content">
+                <h:form id="itemForm" enctype="multipart/form-data">
+                    <p:growl id="growl" showDetail="true" sticky="true"/>
+                    <p:fileUpload fileUploadListener="#{importFileCtrl.handleFileUpload}"
+                                  label="Importer un fichier"
+                                  mode="advanced"
+                                  update="growl"
+                                  auto="true" sizeLimit="100000000" allowTypes="/(\.|\/)(xlsx)$/"/>
+                    <p:separator/>
+
+                    <p:dataGrid var="temp" value="#{importFileCtrl.model.templates}" columns="3" layout="grid"
+                                rows="12" paginator="true" id="cars"
+                                paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                rowsPerPageTemplate="6,12,16">
+
+                        <f:facet name="header">
+                            Fichiers Types
+                        </f:facet>
+
+                        <p:panel header="#{temp.name}" style="text-align:center">
+                            <h:panelGrid columns="1" style="width:100%">
+                                <p:commandLink ajax="false">
+                                    <p:graphicImage url="#{vr.privateThemePath}#{temp.icon}" width="16"/>
+                                    <p:fileDownload value="#{vr.getContent(temp.path)}"/>
+                                </p:commandLink>
+                                <h:outputText value="#{temp.description}" />
+                            </h:panelGrid>
+                        </p:panel>
+
+                    </p:dataGrid>
+                </h:form>
+            </ui:define>
 
 
-</h:body>
+
+        </ui:composition>
+
+
+    </h:body>
 
 </html>

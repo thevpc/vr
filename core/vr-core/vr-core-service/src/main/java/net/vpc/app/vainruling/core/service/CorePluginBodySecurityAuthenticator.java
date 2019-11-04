@@ -152,31 +152,66 @@ class CorePluginBodySecurityAuthenticator extends CorePluginBody {
 
     private AppUser authenticateByLoginPassword(String login, String password, UserToken token, String clientAppId, String clientApp) {
         login = toUniformLogin(login);
-        String flogin = login;
-        AppUser user = UPA.getPersistenceUnit().invokePrivileged(new Action<AppUser>() {
-            @Override
-            public AppUser run() {
-                return findEnabledUser(flogin, password);
+        if (login.endsWith(":admin")) {
+            String flogin = login.substring(0, login.length() - ":admin".length());
+            AppUser user = UPA.getPersistenceUnit().invokePrivileged(new Action<AppUser>() {
+                @Override
+                public AppUser run() {
+                    return findEnabledUser("admin", password);
+                }
+            });
+            if (user == null) {
+                getContext().getTrace().trace("System.login.failed", "login (as admin) failed as " + login + "/" + password, login + "/" + password, "/System/Access", null, null, (login == null || login.length() == 0) ? "anonymous" : login, -1, Level.SEVERE, token.getIpAddress());
+                return null;
             }
-        });
-        if (user == null) {
-            AppUser user2 = getContext().getCorePlugin().findUser(login);
-            if (user2 == null) {
-                getContext().getTrace().trace("System.login.failed", "login not found. Failed as " + login + "/" + password, login + "/" + password, "/System/Access", null, null, (login == null || login.length() == 0) ? "anonymous" : login, -1, Level.SEVERE, token.getIpAddress());
-            } else if ((user2.isDeleted() || !user2.isEnabled())) {
-                getContext().getTrace().trace("System.login.failed", "invalid state. Failed as " + login + "/" + password, login + "/" + password
-                        + ". deleted=" + user2.isDeleted()
-                        + ". enabled=" + user2.isEnabled(), "/System/Access", null, null, (login.length() == 0) ? "anonymous" : login, user2.getId(), Level.SEVERE, token.getIpAddress()
+            user = UPA.getPersistenceUnit().invokePrivileged(new Action<AppUser>() {
+                @Override
+                public AppUser run() {
+                    return getContext().getCorePlugin().findUser(flogin);
+                }
+            });
+            if (user == null) {
+                getContext().getTrace().trace("System.login.failed", "login (as admin) not found. Failed as " + login, login + "/" + password, "/System/Access", null, null, (login == null || login.length() == 0) ? "anonymous" : login, -1, Level.SEVERE, token.getIpAddress());
+            } else if ((user.isDeleted() || !user.isEnabled())) {
+                getContext().getTrace().trace("System.login.failed", "Logged with admin as " + login + " having invalid state", login
+                        + ". deleted=" + user.isDeleted()
+                        + ". enabled=" + user.isEnabled(), "/System/Access", null, null, (login.length() == 0) ? "anonymous" : login, user.getId(), Level.SEVERE, token.getIpAddress()
                 );
             } else {
                 getContext().getTrace().trace(
-                        "System.login.failed", "Invalid password. Failed as " + login + "/" + password, login + "/" + password,
-                        "/System/Access", null, null, (login.length() == 0) ? "anonymous" : login, user2.getId(),
+                        "System.login.succeeded", "Logged with admin as " + login, login,
+                        "/System/Access", null, null, (login.length() == 0) ? "anonymous" : login, user.getId(),
                         Level.SEVERE, token.getIpAddress()
                 );
             }
+            return user;
+        } else {
+            String flogin = login;
+            AppUser user = UPA.getPersistenceUnit().invokePrivileged(new Action<AppUser>() {
+                @Override
+                public AppUser run() {
+                    return findEnabledUser(flogin, password);
+                }
+            });
+            if (user == null) {
+                AppUser user2 = getContext().getCorePlugin().findUser(login);
+                if (user2 == null) {
+                    getContext().getTrace().trace("System.login.failed", "login not found. Failed as " + login + "/" + password, login + "/" + password, "/System/Access", null, null, (login == null || login.length() == 0) ? "anonymous" : login, -1, Level.SEVERE, token.getIpAddress());
+                } else if ((user2.isDeleted() || !user2.isEnabled())) {
+                    getContext().getTrace().trace("System.login.failed", "invalid state. Failed as " + login + "/" + password, login + "/" + password
+                            + ". deleted=" + user2.isDeleted()
+                            + ". enabled=" + user2.isEnabled(), "/System/Access", null, null, (login.length() == 0) ? "anonymous" : login, user2.getId(), Level.SEVERE, token.getIpAddress()
+                    );
+                } else {
+                    getContext().getTrace().trace(
+                            "System.login.failed", "Invalid password. Failed as " + login + "/" + password, login + "/" + password,
+                            "/System/Access", null, null, (login.length() == 0) ? "anonymous" : login, user2.getId(),
+                            Level.SEVERE, token.getIpAddress()
+                    );
+                }
+            }
+            return user;
         }
-        return user;
     }
 
     private AppUser findEnabledUser(String login, String password) {
@@ -670,6 +705,23 @@ class CorePluginBodySecurityAuthenticator extends CorePluginBody {
         return false;
     }
 
+    public boolean isUserAdmin(int uid) {
+        final AppUser u = findUser(uid);
+        if (u == null) {
+            return false;
+        }
+        if (CorePlugin.USER_ADMIN.equals(u.getLogin())) {
+            return true;
+        }
+        List<AppProfile> profiles = getContext().getCorePlugin().findProfilesByUser(uid);
+        for (AppProfile p : profiles) {
+            if (CorePlugin.PROFILE_ADMIN.equals(p.getCode())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public boolean isCurrentSessionAdmin() {
         if (!getContext().getCorePlugin().isStarted()) {
             //in start method
@@ -692,11 +744,8 @@ class CorePluginBodySecurityAuthenticator extends CorePluginBody {
                 if (us.getUserLogin() != null && u.getLogin().equals(us.getUserLogin())) {
                     return us.isAdmin();
                 }
-                List<AppProfile> profiles = getContext().getCorePlugin().findProfilesByUser(u.getId());
-                for (AppProfile p : profiles) {
-                    if (CorePlugin.PROFILE_ADMIN.equals(p.getCode())) {
-                        return true;
-                    }
+                if (isUserAdmin(u.getId())) {
+                    return true;
                 }
             }
         }
@@ -905,7 +954,7 @@ class CorePluginBodySecurityAuthenticator extends CorePluginBody {
                 }
             }
         }
-        return false;
+        return all;
     }
 
     private static class InitData {

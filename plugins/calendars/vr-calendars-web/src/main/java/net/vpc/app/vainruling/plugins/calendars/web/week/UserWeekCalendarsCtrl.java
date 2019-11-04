@@ -11,8 +11,6 @@ import net.vpc.app.vainruling.core.service.model.*;
 import net.vpc.app.vainruling.core.web.jsf.VrJsf;
 import net.vpc.app.vainruling.plugins.calendars.service.CalendarsPlugin;
 import net.vpc.app.vainruling.plugins.calendars.service.CalendarsPluginSecurity;
-import net.vpc.app.vainruling.plugins.calendars.service.dto.WeekCalendar;
-import net.vpc.app.vainruling.plugins.calendars.service.dto.CalendarDay;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.Convert;
 import net.vpc.common.util.IntegerParserConfig;
@@ -23,20 +21,22 @@ import java.util.*;
 import net.vpc.app.vainruling.VrPage;
 import net.vpc.app.vainruling.VrPathItem;
 import net.vpc.app.vainruling.VrOnPageLoad;
+import net.vpc.upa.UPA;
 
 /**
  * @author taha.bensalah@gmail.com
  */
 @VrPage(
         breadcrumb = {
-                @VrPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
-//        css = "fa-table",
-//        title = "Tous les Emplois",
+            @VrPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
+        //        css = "fa-table",
+        //        title = "Tous les Emplois",
         url = "modules/calendars/user-week-calendars",
         menu = "/Calendars",
         securityKey = CalendarsPluginSecurity.RIGHT_CUSTOM_EDUCATION_USER_CALENDARS
 )
 public class UserWeekCalendarsCtrl extends AbstractWeekCalendarCtrl {
+
     @Autowired
     private CalendarsPlugin calendars;
     @Autowired
@@ -57,23 +57,27 @@ public class UserWeekCalendarsCtrl extends AbstractWeekCalendarCtrl {
         int userDeptId = Convert.toInt(getModel().getUserDepartmentId(), IntegerParserConfig.LENIENT_F);
         int oldSelectedUser = Convert.toInt(getModel().getUserId(), IntegerParserConfig.LENIENT_F);
         boolean oldSelectedUserFound = false;
-        Set<Integer> userIds = new HashSet<>();
-        if(userTypeId>=0 && userDeptId>=0) {
-            for (AppUser user : userTypeId < 0 ? core.findUsers() : core.findUsersByTypeAndDepartment(userTypeId,userDeptId)) {
+        final Set<Integer> userIds = new HashSet<>();
+        if (userTypeId >= 0 && userDeptId >= 0) {
+            for (AppUser user : userTypeId < 0 ? core.findUsers() : core.findUsersByTypeAndDepartment(userTypeId, userDeptId)) {
                 if (user.isEnabled()) {
                     userIds.add(user.getId());
                 }
             }
         }
-        userIds = calendars.findUsersWithPublicWeekCalendars(userIds);
+//        userIds.clear();
+        userIds.addAll(calendars.findUsersWithPublicWeekCalendars(userIds));
+
         List<AppUser> users = new ArrayList<>();
-        for (Integer userId : userIds) {
-            users.add(core.findUser(userId));
-        }
+        UPA.getPersistenceUnit().invokePrivileged(() -> {
+            for (Integer userId : userIds) {
+                users.add(core.findUser(userId));
+            }
+        });
         Collections.sort(users, new Comparator<AppUser>() {
             @Override
             public int compare(AppUser o1, AppUser o2) {
-                return StringUtils.nonNull((o1==null?"":o1.getFullTitle())).compareTo(StringUtils.nonNull((o2==null?"":o2.getFullTitle())));
+                return StringUtils.nonNull((o1 == null ? "" : o1.getFullTitle())).compareTo(StringUtils.nonNull((o2 == null ? "" : o2.getFullTitle())));
             }
         });
         getModel().setUsers(VrJsf.toSelectItemList(users));
@@ -92,12 +96,7 @@ public class UserWeekCalendarsCtrl extends AbstractWeekCalendarCtrl {
 
     public void onChangeUser() {
         int oldSelectedUser = Convert.toInt(getModel().getUserId(), IntegerParserConfig.LENIENT_F);
-        WeekCalendar plannings = calendars.findMergedUserPublicWeekCalendar(oldSelectedUser);
-        if (plannings == null) {
-            updateModel(new ArrayList<CalendarDay>());
-        } else {
-            updateModel(plannings.getDays());
-        }
+        getModel().setCalendar(calendars.findMergedUserPublicWeekCalendar(oldSelectedUser));
     }
 
     public int getPeriodId() {
@@ -113,7 +112,7 @@ public class UserWeekCalendarsCtrl extends AbstractWeekCalendarCtrl {
             }
             return -1;
         }
-        return Convert.toInt(p,IntegerParserConfig.LENIENT_F);
+        return Convert.toInt(p, IntegerParserConfig.LENIENT_F);
     }
 
     public void onRefresh() {
@@ -133,7 +132,7 @@ public class UserWeekCalendarsCtrl extends AbstractWeekCalendarCtrl {
         String ii = getModel().getUserId();
         if (ii != null && ii.length() > 0) {
             AppUser tt = core.findUser(
-                    Convert.toInt(ii,IntegerParserConfig.LENIENT_F)
+                    Convert.toInt(ii, IntegerParserConfig.LENIENT_F)
             );
             if (tt != null) {
                 return tt;
@@ -144,6 +143,7 @@ public class UserWeekCalendarsCtrl extends AbstractWeekCalendarCtrl {
 //        return a.getCurrentTeacher();
     }
 
+    @Override
     public ModelExt getModel() {
         return (ModelExt) super.getModel();
     }

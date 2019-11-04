@@ -29,10 +29,16 @@ import org.w3c.dom.NodeList;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.util.*;
+import java.util.function.Predicate;
 import net.vpc.app.vainruling.core.service.ProfileRightBuilder;
 import net.vpc.app.vainruling.VrPlugin;
 import net.vpc.app.vainruling.VrStart;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
+import net.vpc.app.vainruling.plugins.calendars.service.CalendarsPlugin;
+import net.vpc.app.vainruling.plugins.calendars.service.CalendarsUtils;
+import net.vpc.app.vainruling.plugins.calendars.service.dto.CalendarActivity;
+import net.vpc.app.vainruling.plugins.calendars.service.dto.CalendarDay;
+import net.vpc.app.vainruling.plugins.calendars.service.dto.CalendarHour;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -45,12 +51,12 @@ public class AcademicPlanningPlugin {
     @Autowired
     AcademicPlugin academicPlugin;
 
-    public static AcademicPlanningPlugin get(){
+    public static AcademicPlanningPlugin get() {
         return VrApp.getBean(AcademicPlanningPlugin.class);
     }
 
     @VrStart
-    private void onStart(){
+    private void onStart() {
         if (core == null) {
             core = CorePlugin.get();
         }
@@ -59,9 +65,6 @@ public class AcademicPlanningPlugin {
         b.addName(AcademicPlanningPluginSecurity.RIGHT_CUSTOM_EDUCATION_CLASS_PLANNING);
         b.execute();
     }
-
-
-
 
     public Set<Integer> retainTeachersWithPublicCalendars(Set<Integer> teacherIds) {
         Set<Integer> validTeachers = new HashSet<>();
@@ -166,7 +169,6 @@ public class AcademicPlanningPlugin {
         });
     }
 
-
     public Set<Integer> retainStudentsWithPublicCalendars(Set<Integer> studentIds) {
         Set<Integer> all = new HashSet<>();
         SetValueMap<String, Integer> nameMapping = new SetValueMap<>();
@@ -269,10 +271,39 @@ public class AcademicPlanningPlugin {
     }
 
     public WeekCalendar loadClassPlanning(String className) {
-        String uniformClassName = className == null ? "" : VrUtils.normalizeName(className);
-        if (StringUtils.isBlank(uniformClassName)) {
+        if (className == null) {
+            className = "";
+        }
+        if (StringUtils.isBlank(className)) {
             return null;
         }
+        if (className.startsWith("[L2]:")) {
+            String prefix = className.substring("[L2]:".length());
+            String uniformClassName = VrUtils.normalizeName(prefix);
+            if (StringUtils.isBlank(uniformClassName)) {
+                return null;
+            }
+            List<WeekCalendar> found = loadClassPlannings(week -> {
+                String yy = VrUtils.normalizeName(week.getName());
+                return yy.startsWith(uniformClassName + ".") || yy.startsWith(uniformClassName + "-");
+            }, false);
+            String bestName = prefix;
+            if (found.size() > 0) {
+                bestName = found.get(0).getPlanningName().substring(0, prefix.length());
+            }
+            return CalendarsPlugin.get().mergeWeekCalendars(found, bestName);
+        } else {
+            String uniformClassName = VrUtils.normalizeName(className);
+            if (StringUtils.isBlank(uniformClassName)) {
+                return null;
+            }
+            List<WeekCalendar> found = loadClassPlannings(week -> uniformClassName.equals(VrUtils.normalizeName(week.getName())), true);
+            return found.isEmpty() ? null : found.get(0);
+        }
+    }
+
+    public List<WeekCalendar> loadClassPlannings(Predicate<CalendarWeekParser> filter, boolean first) {
+        List<WeekCalendar> all = new ArrayList<>();
         VFile[] emploisFiles = getEmploiFolder().listFiles((VFile pathname) -> pathname.getName().toLowerCase().endsWith("_subgroups.xml"));
         VFile p = emploisFiles.length > 0 ? emploisFiles[0] : null;
         if (p != null && p.exists()) {
@@ -282,9 +313,15 @@ public class AcademicPlanningPlugin {
                 try {
                     int counter = 0;
                     while ((week = parser.next()) != null) {
-                        if (uniformClassName.equals(VrUtils.normalizeName(week.getName()))) {
+                        if (filter == null || filter.test(week)) {
                             counter++;
-                            return week.parse("Class-" + counter);
+                            WeekCalendar r = week.parse("Class-" + counter);
+                            if (r != null) {
+                                all.add(r);
+                                if (first) {
+                                    break;
+                                }
+                            }
                         }
                     }
                 } finally {
@@ -294,7 +331,53 @@ public class AcademicPlanningPlugin {
                 e.printStackTrace();
             }
         }
-        return null;
+        return all;
+    }
+
+    public WeekCalendar loadRoomPlanning(String className) {
+        if (className == null) {
+            className = "";
+        }
+        if (StringUtils.isBlank(className)) {
+            return null;
+        }
+        String uniformClassName = VrUtils.normalizeName(className);
+        if (StringUtils.isBlank(uniformClassName)) {
+            return null;
+        }
+        return loadRoomPlanning(room -> uniformClassName.equals(VrUtils.normalizeName(room)), true);
+    }
+
+    public WeekCalendar loadRoomPlanning(Predicate<String> filterByRoomName, boolean clearRoomName) {
+        List<WeekCalendar> all = loadClassPlannings(null, false);
+        List<WeekCalendar> toMerge = new ArrayList<>();
+        Set<String> names = new TreeSet<>();
+        for (WeekCalendar w : all) {
+            boolean empty = true;
+            for (CalendarDay day : w.getDays()) {
+                for (CalendarHour hour : day.getHours()) {
+                    for (Iterator<CalendarActivity> it = hour.getActivities().iterator(); it.hasNext();) {
+                        CalendarActivity activity = it.next();
+                        if (filterByRoomName.test(activity.getRoom())) {
+                            if (clearRoomName) {
+                                activity.setRoom("");
+                            }
+                            empty = false;
+                            names.add(activity.getRoom());
+                        } else {
+                            it.remove();
+                        }
+                    }
+                }
+            }
+            if (!empty) {
+                toMerge.add(w);
+            }
+        }
+        if (toMerge.isEmpty()) {
+            return null;
+        }
+        return CalendarsPlugin.get().mergeWeekCalendars(toMerge, String.join(";", names));
     }
 
     private Set<String> splitOtherNames(String value) {
@@ -307,6 +390,29 @@ public class AcademicPlanningPlugin {
             }
         }
         return all;
+    }
+
+    public List<NamedId> loadRoomPlanningListNames() {
+        ArrayList<NamedId> ret = new ArrayList<>();
+        List<WeekCalendar> all = loadClassPlannings(null, false);
+        Set<String> names = new TreeSet<>();
+        for (WeekCalendar w : all) {
+            boolean empty = true;
+            for (CalendarDay day : w.getDays()) {
+                for (CalendarHour hour : day.getHours()) {
+                    for (Iterator<CalendarActivity> it = hour.getActivities().iterator(); it.hasNext();) {
+                        CalendarActivity activity = it.next();
+                        if (!StringUtils.isBlank(activity.getRoom())) {
+                            names.add(activity.getRoom());
+                        }
+                    }
+                }
+            }
+        }
+        for (String name : names) {
+            ret.add(new NamedId(VrUtils.normalize(name), name));
+        }
+        return ret;
     }
 
     public List<NamedId> loadStudentPlanningListNames() {
@@ -342,9 +448,15 @@ public class AcademicPlanningPlugin {
                 e.printStackTrace();
             }
         }
+
+        for (NamedId aa : all.toArray(new NamedId[0])) {
+            String n = CalendarsUtils.parentStudentsDescriminator((String) aa.getName());
+            if (!n.equals(aa.getName())) {
+                NamedId y = new NamedId("[L2]:" + VrUtils.normalizeName(n), n);
+                all.add(y);
+            }
+        }
         return new ArrayList<>(all);
     }
-
-
 
 }

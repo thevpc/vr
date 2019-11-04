@@ -49,12 +49,7 @@ public class AcademicPluginBodyTeachers extends AcademicPluginBody {
         core.addProfileRight("Teacher", AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_TEACHER);
 
         AppProfile teacherProfile = core.findOrCreateCustomProfile("Teacher", "UserType");
-        StringCollection stringCollection = VrUtils.createStringMap(teacherProfile.getInherited());
-        if (!stringCollection.contains("LocalMailUser")) {
-            stringCollection.add("LocalMailUser");
-            teacherProfile.setInherited(stringCollection.toString());
-        }
-
+        core.addProfileParents("Teacher", "LocalMailUser");
         ProfileRightBuilder prb = new ProfileRightBuilder();
         prb.addProfileRight(teacherProfile.getId(), AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_MY_COURSE_LOAD);
 
@@ -168,7 +163,7 @@ public class AcademicPluginBodyTeachers extends AcademicPluginBody {
                     @Override
                     public List<NamedId> run() {
                         return findEnabledTeachers(periodId).stream()
-                                .map(x -> new NamedId(x.getId(), x.resolveFullName()))
+                                .map(x -> new NamedId(x.getId(), x.resolveFullTitle()))
                                 .collect(Collectors.toList());
                     }
                 }
@@ -178,7 +173,7 @@ public class AcademicPluginBodyTeachers extends AcademicPluginBody {
     public List<AcademicTeacher> findEnabledTeachers(int periodId) {
         CorePluginSecurity.requireRight(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_TEACHER);
         List<AcademicTeacher> periodId1 = UPA.getPersistenceUnit()
-                .createQuery("Select distinct(u.teacher) from AcademicTeacherPeriod u where u.teacher.deleted=false and u.enabled=true order by u.teacher.user.fullName and u.periodId=:periodId")
+                .createQuery("Select u.teacher from AcademicTeacherPeriod u where u.teacher.deleted=false and u.enabled=true and u.periodId=:periodId order by u.teacher.user.fullName")
                 .setParameter("periodId", periodId)
                 .getResultList();
         //there is a bug in distinct implementation in UPA, should fix it.
@@ -217,7 +212,7 @@ public class AcademicPluginBodyTeachers extends AcademicPluginBody {
                             + " left join AcademicCourseAssignment a on a.teacherId=t.id "
                             + " left join AcademicCourseIntent     b on b.teacherId=t.id "
                             + " where ((a.id != null) or (b.id != null)) "
-                            + VrUtils.conditionalString(" and t.departmentId=:teacherDepId ", teacherDepId >= 0)
+                            + VrUtils.conditionalString(" and t.user.departmentId=:teacherDepId ", teacherDepId >= 0)
                             + VrUtils.conditionalString(" and a.coursePlan.period.id=:periodId ", periodId >= 0)
                             + VrUtils.conditionalString(" and a.coursePlan.courseLevel.semesterId=:semesterId ", semesterId >= 0)
                             + VrUtils.conditionalString(" and a.coursePlan.courseLevel.academicClass.program.departmentId=:assignmentDepId ", assignmentDepId >= 0)

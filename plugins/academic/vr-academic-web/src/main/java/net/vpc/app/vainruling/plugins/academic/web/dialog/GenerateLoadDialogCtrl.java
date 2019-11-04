@@ -21,7 +21,6 @@ import net.vpc.common.util.IntegerParserConfig;
 import net.vpc.upa.Action;
 import net.vpc.upa.UPA;
 import net.vpc.upa.VoidAction;
-import org.primefaces.context.RequestContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -165,7 +164,7 @@ public class GenerateLoadDialogCtrl {
 
     public void fireEventExtraDialogClosed() {
         //Object obj
-        RequestContext.getCurrentInstance().closeDialog(new DialogResult(getModel().getVersion(), getModel().getVersion()));
+        DialogBuilder.closeCurrent(new DialogResult(getModel().getVersion(), getModel().getVersion()));
     }
 
 

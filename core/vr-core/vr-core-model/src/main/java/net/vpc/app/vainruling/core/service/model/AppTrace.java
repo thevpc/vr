@@ -20,7 +20,8 @@ import java.sql.Timestamp;
                 @Property(name = "ui.auto-filter.module", value = "{expr='this.module',order=1}"),
                 @Property(name = "ui.auto-filter.action", value = "{expr='this.action',order=2}"),
                 @Property(name = "ui.auto-filter.user", value = "{expr='this.user',order=3}"),
-                @Property(name = "ui.auto-filter.level", value = "{expr='this.level',order=4}")
+                @Property(name = "ui.auto-filter.level", value = "{expr='this.level',order=4}"),
+                @Property(name = "ui.auto-filter.objectName", value = "{expr='this.objectName',order=5}")
         }
 )
 public class AppTrace {

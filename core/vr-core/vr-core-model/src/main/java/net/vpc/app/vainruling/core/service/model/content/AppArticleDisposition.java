@@ -13,7 +13,7 @@ import net.vpc.upa.config.*;
  * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "this.name")
-@Path("/Social/Config")
+@Path("/Repository/Social")
 public class AppArticleDisposition implements CmsTextDisposition {
 
     @Path("Main")

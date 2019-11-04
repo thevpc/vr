@@ -11,98 +11,88 @@ and open the template in the editor.
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://java.sun.com/jsf/core"
 
-        >
+      >
 
-<h:head>
-</h:head>
+    <h:head>
+    </h:head>
 
-<h:body>
-
-
-    <ui:composition template="#{vr.privateTemplatePath}">
-        <ui:define name="content">
-            <!--                <h:form id="buttonsForm">
-
-                                 /.row
-                                <div >
-                                    <p:outputLabel id="buttons">
-                                        <p:commandButton value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton " ajax="true" actionListener="# {myPlanningCtrl.onRefresh}"  update=":listForm"/>
-                                    </p:outputLabel>
-                                </div>
-
-                            </h:form>-->
-            <h:form id="listForm">
-
-                <div >
-                    <p:selectOneMenu value="#{teacherWeekCalendarsCtrl.model.teacherId}"
-                                     filter="true" filterMatchMode="contains"
-                    >
-                        <p:ajax listener="#{teacherWeekCalendarsCtrl.onTeacherChanged}" update=":listForm"/>
-                        <f:selectItem itemLabel="Selectionner Enseignant..." itemValue=""/>
-                        <f:selectItems value="#{teacherWeekCalendarsCtrl.model.teachers}"/>
-                    </p:selectOneMenu>
-                    <!--<p:commandButton value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton " ajax="true" actionListener="# {teacherCourseLoadCtrl.onRefresh}"  update=":listForm"/>-->
-                </div>
-
-                <div >
-                    <div class="table-responsive">
-                        <p:outputLabel value="Aucun Emploi du temps n'a pu etre resolu" rendered="#{
-                                    teacherWeekCalendarsCtrl.model.teacherId ne null 
-                                    and 
-                                    teacherWeekCalendarsCtrl.model.teacherId.length() gt 0
-                                    and 
-                                    (teacherWeekCalendarsCtrl.model.planning eq null 
-                                    or (teacherWeekCalendarsCtrl.model.planning.size()) eq 0
-                                    )
-                            }"/>
-                        <p:panelGrid
-                                rendered="#{teacherWeekCalendarsCtrl.model.planning ne null and (teacherWeekCalendarsCtrl.model.planning.size()) gt 0}">
-                            <p:row>
-                                <p:column styleClass="ui-widget-header"><p:outputLabel value=""/></p:column>
-                                <p:column styleClass="ui-widget-header"><p:outputLabel
-                                        value="#{teacherWeekCalendarsCtrl.model.planning[0].dayName}"/></p:column>
-                                <p:column styleClass="ui-widget-header"><p:outputLabel value="Mardi"/></p:column>
-                                <p:column styleClass="ui-widget-header"><p:outputLabel value="Mercredi"/></p:column>
-                                <p:column styleClass="ui-widget-header"><p:outputLabel value="Jeudi"/></p:column>
-                                <p:column styleClass="ui-widget-header"><p:outputLabel value="Vendredi"/></p:column>
-                                <p:column styleClass="ui-widget-header"><p:outputLabel value="Samedi"/></p:column>
-                            </p:row>
-                            <ui:repeat var="h" value="#{teacherWeekCalendarsCtrl.model.planning[0].hours}" varStatus="hs">
-                                <p:row>
-                                    <p:column styleClass="ui-widget-header">
-                                        <p:outputLabel
-                                                value="#{teacherWeekCalendarsCtrl.model.planning[hs.index].hours[hs.index].hour}"/>
-                                    </p:column>
-                                    <ui:repeat var="r" value="#{teacherWeekCalendarsCtrl.model.planning}">
-                                        <p:column
-                                                style="width:15.5%;#{teacherWeekCalendarsCtrl.resolveCssStyleForCourse(r.hours[hs.index].subject)}"
-                                                >
-                                            <h:panelGrid columns="1">
-                                                <p:outputLabel value="#{r.hours[hs.index].subject}"
-                                                               style="font-weight: bold"/>
-                                                <p:outputLabel value="#{r.hours[hs.index].actor}"
-                                                               style="#{teacherWeekCalendarsCtrl.resolveCssStyleForClass(r.hours[hs.index].students)}"
-                                                        />
-                                                <p:outputLabel value="#{r.hours[hs.index].activity}"/>
-                                                <p:outputLabel value="#{r.hours[hs.index].room}"/>
-                                            </h:panelGrid>
-                                        </p:column>
-                                    </ui:repeat>
-                                </p:row>
-                            </ui:repeat>
-                        </p:panelGrid>
+    <h:body>
+        <ui:composition template="#{vr.privateTemplatePath}">
+            <ui:define name="content">
+                <h:form id="listForm">
+                    <div class="box box-default">
+                        <div class="box-body">
+                            <div class="form-group">
+                                <p:outputLabel value="Enseignant"/>
+                                <p:selectOneMenu value="#{teacherWeekCalendarsCtrl.model.teacherId}"
+                                                 filter="true" filterMatchMode="contains"
+                                                 styleClass="form-control"
+                                                 >
+                                    <p:ajax listener="#{teacherWeekCalendarsCtrl.onTeacherChanged}" update=":listForm"/>
+                                    <f:selectItem itemLabel="Selectionner Enseignant..." itemValue=""/>
+                                    <f:selectItems value="#{teacherWeekCalendarsCtrl.model.teachers}"/>
+                                </p:selectOneMenu>
+                            </div>
+                        </div>
                     </div>
-                </div>
+                    <h:panelGroup layout="block" styleClass="callout callout-danger" rendered="#{teacherWeekCalendarsCtrl.missingPlanning}">
+                        <div class="">
+                            <h4>Emploi non disponible!</h4>
+                            <p>aucun emploi n'a pu être résolu pour l'enseignant #{teacherWeekCalendarsCtrl.selectedTeacherLabel}</p>
+                        </div>                        
+                    </h:panelGroup>
+                    <h:panelGroup layout="block" styleClass="box box-primary" rendered="#{teacherWeekCalendarsCtrl.validPlanning}">
+                        <div class="box-header with-border">
+                            <h3 class="box-title">
+                                <p:outputLabel value="#{vr.strcat('Emploi de la salle ',teacherWeekCalendarsCtrl.selectedTeacherLabel)}"/>
+                            </h3>
+                        </div>
+                        <!-- /.box-header -->
+                        <!-- form start -->
+                        <h:panelGroup layout="block" styleClass="box-body">
+                            <p:panelGrid rendered="#{teacherWeekCalendarsCtrl.validPlanning}">
+                                <p:row>
+                                    <p:column styleClass="ui-widget-header"><p:outputLabel value=""/></p:column>
+                                    <p:column styleClass="ui-widget-header"><p:outputLabel value="#{teacherWeekCalendarsCtrl.model.planning[0].dayName}"/></p:column>
+                                    <p:column styleClass="ui-widget-header"><p:outputLabel value="Mardi"/></p:column>
+                                    <p:column styleClass="ui-widget-header"><p:outputLabel value="Mercredi"/></p:column>
+                                    <p:column styleClass="ui-widget-header"><p:outputLabel value="Jeudi"/></p:column>
+                                    <p:column styleClass="ui-widget-header"><p:outputLabel value="Vendredi"/></p:column>
+                                    <p:column styleClass="ui-widget-header"><p:outputLabel value="Samedi"/></p:column>
+                                </p:row>
+                                <ui:repeat var="h" value="#{teacherWeekCalendarsCtrl.model.hours}" varStatus="hs">
+                                    <p:row>
+                                        <p:column styleClass="ui-widget-header">
+                                            <p:outputLabel
+                                                value="#{teacherWeekCalendarsCtrl.model.getHour(hs.index)}"/>
+                                        </p:column>
+                                        <ui:repeat var="r" value="#{teacherWeekCalendarsCtrl.model.planning}">
+                                            <p:column style="width:15.5%;padding: 0px;vertical-align: top;">
+                                                <table style="width: 100%;height: 100%;"><tbody><tr>
+                                                            <p:repeat value="#{r.hours[hs.index].activities}" var="act">
+                                                                <td style="width: #{vr.getInvPercentString(r.hours[hs.index].activities.size())};height: 100%;#{teacherWeekCalendarsCtrl.resolveCssStyleForCourse(act)}">
 
-            </h:form>
-
-
-        </ui:define>
-
-
-    </ui:composition>
-
-
-</h:body>
-
+                                                                    <h:panelGrid columns="1">
+                                                                        <p:outputLabel value="#{act.subject}"
+                                                                                       style="font-weight: bold"/>
+                                                                        <p:outputLabel value="#{act.actor}"
+                                                                                       style="#{teacherWeekCalendarsCtrl.resolveCssStyleForClass(act)}"
+                                                                                       />
+                                                                        <p:outputLabel value="#{act.activity}"/>
+                                                                        <p:outputLabel value="#{act.room}"/>
+                                                                    </h:panelGrid>
+                                                                </td>
+                                                            </p:repeat>
+                                                        </tr></tbody></table>
+                                            </p:column>
+                                        </ui:repeat>
+                                    </p:row>
+                                </ui:repeat>
+                            </p:panelGrid>
+                        </h:panelGroup>
+                    </h:panelGroup>
+                </h:form>
+            </ui:define>
+        </ui:composition>
+    </h:body>
 </html>

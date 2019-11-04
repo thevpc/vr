@@ -177,7 +177,7 @@ and open the template in the editor.
 
                                         <div class="form-group">
                                             <p:outputLabel value="Le stage commence "/>
-                                            <p:calendar styleClass="vr-form-control-calendar"
+                                            <p:calendar style="margin-left: 5px;margin-top: 5px" inputStyleClass="form-control"
                                                         value="#{myInternshipsCtrl.model.internship.startDate}"
 
                                                         disabled="#{!myInternshipsCtrl.model.student or !myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesDescr}"/>
@@ -185,7 +185,7 @@ and open the template in the editor.
 
                                         <div class="form-group">
                                             <p:outputLabel value="Et se termine "/>
-                                            <p:calendar styleClass="vr-form-control-calendar"
+                                            <p:calendar style="margin-left: 5px;margin-top: 5px" inputStyleClass="form-control"
                                                         value="#{myInternshipsCtrl.model.internship.endDate}"
 
                                                         disabled="#{!myInternshipsCtrl.model.student or !myInternshipsCtrl.model.internship.internshipStatus.studentUpdatesDescr}"/>

@@ -11,7 +11,7 @@ import net.vpc.upa.config.*;
  * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "this.name")
-@Path("Todo/Config")
+@Path("Repository/Todo")
 public class TodoCategory {
 
     @Path("Main")

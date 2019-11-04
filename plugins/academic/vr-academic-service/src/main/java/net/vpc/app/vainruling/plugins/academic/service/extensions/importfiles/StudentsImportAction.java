@@ -16,7 +16,7 @@ public class StudentsImportAction extends AbstractAcademicImportAction {
 
     // khaouwla bel kahla
     public StudentsImportAction() {
-        super("Import ", "*.students.xlsx","students.xlsx");
+        super("students");
     }
 
 }

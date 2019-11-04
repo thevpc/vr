@@ -20,7 +20,7 @@ import net.vpc.upa.config.Sequence;
  * @author vpc
  */
 @Entity
-@Path("Equipment/Config")
+@Path("Repository/Equipment")
 public class EquipmentIssueStatus {
 
     @Id

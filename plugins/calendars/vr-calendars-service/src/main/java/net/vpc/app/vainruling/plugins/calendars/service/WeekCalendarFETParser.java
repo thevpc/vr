@@ -6,10 +6,11 @@
 package net.vpc.app.vainruling.plugins.calendars.service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import net.vpc.app.vainruling.core.service.model.AppUser;
+import net.vpc.app.vainruling.plugins.calendars.service.dto.CalendarActivity;
 import net.vpc.app.vainruling.plugins.calendars.service.dto.CalendarDay;
 import net.vpc.app.vainruling.plugins.calendars.service.dto.CalendarHour;
 import net.vpc.app.vainruling.plugins.calendars.service.dto.WeekCalendar;
@@ -30,19 +31,14 @@ public class WeekCalendarFETParser {
         int count = 0;
         if (p != null && p.exists()) {
             try {
-
                 DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
                 DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
                 Document doc = dBuilder.parse(p.getInputStream());
                 //read this - http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work
                 doc.getDocumentElement().normalize();
-
                 NodeList nList = doc.getElementsByTagName("User");
-
                 for (int temp = 0; temp < nList.getLength(); temp++) {
-
                     Node nNode = nList.item(temp);
-
 //                    System.out.println("\nCurrent Element :" + nNode.getNodeName());
                     if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 
@@ -115,7 +111,7 @@ public class WeekCalendarFETParser {
                 d.setDayName("Day " + p2.getDays().size());
                 p2.getDays().add(d);
             }
-            return p2;
+            return CalendarsUtils.buildWeekCalendar(p2);
         }
         return null;
     }
@@ -160,38 +156,40 @@ public class WeekCalendarFETParser {
             Element hourElement = (Element) hourNode;
             CalendarHour ph = new CalendarHour();
             ph.setHour(hourElement.getAttribute("name"));
+            CalendarActivity act = new CalendarActivity();
+            ph.setActivities(new ArrayList<>(Arrays.asList(act)));
             NodeList childNodes = hourElement.getChildNodes();
             for (int ci = 0; ci < childNodes.getLength(); ci++) {
                 Node cNode = childNodes.item(ci);
                 if (cNode.getNodeType() == Node.ELEMENT_NODE) {
                     Element cElement = (Element) cNode;
                     if ("Activity_Tag".equals(cElement.getNodeName())) {
-                        ph.setActivity(cElement.getAttribute("name"));
+                        act.setActivity(cElement.getAttribute("name"));
                     } else if ("Students".equals(cElement.getNodeName())) {
-                        ph.setStudents(cElement.getAttribute("name"));
+                        act.setStudents(cElement.getAttribute("name"));
                     } else if ("Teacher".equals(cElement.getNodeName())) {
-                        ph.setTeacher(cElement.getAttribute("name"));
+                        act.setTeacher(cElement.getAttribute("name"));
                     } else if ("Subject".equals(cElement.getNodeName())) {
-                        ph.setSubject(cElement.getAttribute("name"));
+                        act.setSubject(cElement.getAttribute("name"));
                     } else if ("Room".equals(cElement.getNodeName())) {
-                        ph.setRoom(cElement.getAttribute("name"));
+                        act.setRoom(cElement.getAttribute("name"));
                     }
                 }
             }
             String actor = "";
-            if (!StringUtils.isBlank(ph.getStudents())) {
+            if (!StringUtils.isBlank(act.getStudents())) {
                 if (actor.length() > 0) {
                     actor += " / ";
                 }
-                actor += ph.getStudents();
+                actor += act.getStudents();
             }
-            if (!StringUtils.isBlank(ph.getTeacher())) {
+            if (!StringUtils.isBlank(act.getTeacher())) {
                 if (actor.length() > 0) {
                     actor += " / ";
                 }
-                actor += ph.getTeacher();
+                actor += act.getTeacher();
             }
-            ph.setActor(actor);
+            act.setActor(actor);
             return (ph);
         }
         return null;

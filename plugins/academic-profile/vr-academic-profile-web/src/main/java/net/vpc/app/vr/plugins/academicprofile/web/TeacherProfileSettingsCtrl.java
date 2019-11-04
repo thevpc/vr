@@ -10,7 +10,6 @@ import net.vpc.app.vainruling.VrActionEnabler;
 import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.VrApp;
 import net.vpc.app.vainruling.core.service.model.AppCompany;
-import net.vpc.app.vainruling.core.web.*;
 import net.vpc.app.vainruling.core.web.jsf.DialogBuilder;
 import net.vpc.app.vainruling.core.web.jsf.Vr;
 import net.vpc.app.vainruling.core.web.jsf.ctrl.DocumentUploadListener;
@@ -32,7 +31,6 @@ import net.vpc.common.vfs.VFile;
 import net.vpc.common.vfs.VFileFilter;
 import net.vpc.upa.UPA;
 import net.vpc.upa.VoidAction;
-import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 

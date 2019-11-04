@@ -194,9 +194,9 @@ public class AcademicPluginCompletionProvider implements VrCompletionService {
                     h.checkNotDefault(c.getPreClassRank() > 0 ? c.getPreClassRank() : c.getPreClassRank2(), studentEntity.getField("preClassRank").getTitle());
                     h.checkNotDefault(c.getPreClassRankByProgram(), studentEntity.getField("preClassRankByProgram").getTitle());
                     h.checkNotDefault(c.getPreClassScore(), studentEntity.getField("preClassScore").getTitle());
-                    h.check(c.getPreClassChoice1() != null || !StringUtils.isBlank(c.getPreClassChoice1Other()));
-                    h.check(c.getPreClassChoice2() != null || !StringUtils.isBlank(c.getPreClassChoice2Other()));
-                    h.check(c.getPreClassChoice3() != null || !StringUtils.isBlank(c.getPreClassChoice3Other()));
+                    h.check(c.getPreClassChoice1() != null || !StringUtils.isBlank(c.getPreClassChoice1Other()),studentEntity.getField("preClassChoice1").getTitle());
+                    h.check(c.getPreClassChoice2() != null || !StringUtils.isBlank(c.getPreClassChoice2Other()),studentEntity.getField("preClassChoice2").getTitle());
+                    h.check(c.getPreClassChoice3() != null || !StringUtils.isBlank(c.getPreClassChoice3Other()),studentEntity.getField("preClassChoice3").getTitle());
                 }
                 if (h.getCompletionPercent() < 100) {
                     if (Level.SEVERE.intValue() >= minLevel.intValue()) {

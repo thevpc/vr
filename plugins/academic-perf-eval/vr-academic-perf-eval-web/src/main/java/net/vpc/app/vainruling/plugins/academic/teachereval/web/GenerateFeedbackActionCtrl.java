@@ -14,7 +14,6 @@ import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.Convert;
 import net.vpc.common.util.IntegerParserConfig;
-import org.primefaces.context.RequestContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.logging.Logger;
@@ -80,7 +79,7 @@ public class GenerateFeedbackActionCtrl {
     }
 
     public void fireEventExtraDialogCancel() {
-        RequestContext.getCurrentInstance().closeDialog(null);
+        DialogBuilder.closeCurrent(null);
     }
 
     public Model getModel() {

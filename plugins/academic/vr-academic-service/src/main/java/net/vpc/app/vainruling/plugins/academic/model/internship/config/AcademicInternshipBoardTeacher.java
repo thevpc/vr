@@ -14,7 +14,7 @@ import net.vpc.upa.config.*;
  * @author taha.bensalah@gmail.com
  */
 @Entity()
-@Path("Education/Config")
+@Path("Repository/Education")
 public class AcademicInternshipBoardTeacher {
 
     @Path("Main")

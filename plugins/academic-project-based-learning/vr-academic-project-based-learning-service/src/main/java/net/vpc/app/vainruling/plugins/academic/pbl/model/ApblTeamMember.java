@@ -1,7 +1,7 @@
 package net.vpc.app.vainruling.plugins.academic.pbl.model;
 
-import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.plugins.academic.model.config.AcademicStudent;
+import net.vpc.upa.RelationshipType;
 import net.vpc.upa.config.*;
 
 /**
@@ -26,6 +26,7 @@ public class ApblTeamMember {
     @Main
     private AcademicStudent student;
     @Summary
+    @ManyToOne(relationType = RelationshipType.COMPOSITION)
     private ApblTeam team;
     private String description;
 

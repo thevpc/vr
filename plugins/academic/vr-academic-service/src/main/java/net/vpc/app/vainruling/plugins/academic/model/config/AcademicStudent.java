@@ -26,6 +26,7 @@ import net.vpc.app.vainruling.plugins.academic.model.current.AcademicPreClassTyp
 @Path("Contact")
 @Properties(
         {
+             @Property(name = UIConstants.Grid.ROW_STYLE, value = "(i.object.deleted) ?'vr-row-deleted':''"),
                 @Property(name = "ui.auto-filter.department", value = "{expr='this.user.department',order=1}"),
                 @Property(name = "ui.auto-filter.lastClass1", value = "{expr='this.lastClass1',order=2}"),
                 @Property(name = "ui.auto-filter.stage", value = "{expr='this.stage',order=3,initial='ATTENDING'}"),

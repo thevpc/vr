@@ -16,7 +16,7 @@ import java.util.Objects;
  * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "index, name")
-@Path("Education/Config")
+@Path("Repository/Education")
 public class AcademicSemester {
 
     @Path("Main")

@@ -27,7 +27,6 @@ public class DocumentsUtils {
 
     private static final Logger log = Logger.getLogger(DocumentsUtils.class.getName());
 
-
     public static String evalVFileDesc(VFile file) {
         if (file.isFile()) {
             return VrUtils.formatFileSize(file.length());
@@ -63,31 +62,27 @@ public class DocumentsUtils {
         return "";
     }
 
-
 //    public static VirtualFileSystem createFS() {
 //        CorePlugin fsp = VrApp.getBean(CorePlugin.class);
 //        VirtualFileSystem rootfs = fsp.getRootFileSystem();
 //        VirtualFileSystem userfs = rootfs.filter(null);
 //        return userfs;
 //    }
-
-
     public static List<VFileInfo> searchFiles(VFile curr, String searchString) {
         if (StringUtils.isBlank(searchString)) {
             return loadFiles(curr);
         }
-        VFileFilter fileFilter=null;
-        if(searchString.startsWith("\"")
+        VFileFilter fileFilter = null;
+        if (searchString.startsWith("\"")
                 && searchString.endsWith("\"")
-                && searchString.length()>1
-                && !searchString.substring(1,searchString.length()-1).contains("\"")
-                ){
-            searchString="*"+searchString+"*";
-            fileFilter = new ExactFileFilter(searchString.substring(1,searchString.length()-1));
-        }else if(!searchString.contains("*")){
-            searchString="*"+searchString+"*";
+                && searchString.length() > 1
+                && !searchString.substring(1, searchString.length() - 1).contains("\"")) {
+            searchString = "*" + searchString + "*";
+            fileFilter = new ExactFileFilter(searchString.substring(1, searchString.length() - 1));
+        } else if (!searchString.contains("*")) {
+            searchString = "*" + searchString + "*";
             fileFilter = new WildcardFileFilter(searchString);
-        }else{
+        } else {
             fileFilter = new WildcardFileFilter(searchString);
         }
         List<VFileInfo> result = new ArrayList<>();
@@ -154,7 +149,6 @@ public class DocumentsUtils {
         return sb.toString();
     }
 
-
     public static List<VFileInfo> loadFiles(VFile curr) {
         VFile[] all = curr.getFileSystem().listFiles(curr.getPath());
         ArrayList<VFileInfo> ret = new ArrayList<>();
@@ -167,7 +161,6 @@ public class DocumentsUtils {
         }
         return ret;
     }
-
 
     public static VFileInfo createFileInfo(VFile file) {
         return createFileInfo(file.getName(), VFileKind.ORDINARY, file);
@@ -191,7 +184,11 @@ public class DocumentsUtils {
             }
         } else {
             String n = file.getName().toLowerCase();
-            String e = PathInfo.create(n).getExtensionPart();
+            String e = "";
+            int lastIndexOf = n.lastIndexOf('.');
+            if (lastIndexOf >= 0) {
+                e = n.substring(lastIndexOf + 1);
+            }
             iconCss = VrWebHelper.extensionsToCss.get(e);
             if (iconCss == null) {
                 iconCss = "file";
@@ -228,6 +225,7 @@ public class DocumentsUtils {
     }
 
     public static class ViewFormat {
+
         private String labelCss;
         private String iconCss;
 
@@ -248,8 +246,8 @@ public class DocumentsUtils {
         }
     }
 
-
     private static class WildcardFileFilter implements VFileFilter {
+
         private Pattern p;
 
         public WildcardFileFilter(String str) {
@@ -261,11 +259,13 @@ public class DocumentsUtils {
             return p.matcher(net.vpc.common.strings.StringUtils.normalizeString(pathname.getName())).matches();
         }
     }
+
     private static class ExactFileFilter implements VFileFilter {
+
         private String name;
 
         public ExactFileFilter(String str) {
-            this.name=str;
+            this.name = str;
         }
 
         @Override

@@ -337,6 +337,12 @@ table.NoPaddingTableClass td {
     font-weight: bold;
 }
 
+.vr-auto-complete {
+    width: 100%;
+    border: 0px;
+    padding: 0px;
+}
+
 .vr-whish-course {
 
     /*color: var(--vr-color-main18);*/

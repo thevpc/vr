@@ -11,122 +11,173 @@ and open the template in the editor.
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://java.sun.com/jsf/core"
 
->
+      >
 
-<h:head>
-</h:head>
+    <h:head>
+    </h:head>
 
-<h:body>
-
-
-    <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.jsf.Vr"-->
-    <!--@elvariable id="subscribeTeacherCtrl" type="net.vpc.app.vainruling.plugins.academic.web.SubscribeTeacherCtrl"-->
-    <ui:composition template="#{vr.privateTemplatePath}">
-        <ui:define name="content">
-            <h:form id="listForm">
-                <p:messages id="messages" showDetail="true"/>
-
-                <div >
-                    <div class="table-responsive">
-                        <p:panelGrid columns="2" styleClass="vr-no-border-grid" style="margin-top: 20px">
-
-                            <p:outputLabel value="CIN"/>
-                            <p:inputText value="#{subscribeTeacherCtrl.model.teacher.nin}"/>
-
-                            <p:outputLabel value="Prénom"/>
-                            <p:inputText value="#{subscribeTeacherCtrl.model.teacher.firstName}"/>
-
-                            <p:outputLabel value="Nom"/>
-                            <p:inputText value="#{subscribeTeacherCtrl.model.teacher.lastName}"/>
-
-                            <p:outputLabel value="Nom (ar)"/>
-                            <p:inputText value="#{subscribeTeacherCtrl.model.teacher.lastName2}"/>
-
-                            <p:outputLabel value="Prénom (ar)"/>
-                            <p:inputText value="#{subscribeTeacherCtrl.model.teacher.firstName2}"/>
-
-                            <p:outputLabel value="Civlité"/>
-                            <p:selectOneMenu value="#{subscribeTeacherCtrl.model.teacher.civilityId}">
-                                <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
-                                <f:selectItems value="#{subscribeTeacherCtrl.model.civilityItems}"/>
-                            </p:selectOneMenu>
-
-                            <p:outputLabel value="Genre"/>
-                            <p:selectOneMenu value="#{subscribeTeacherCtrl.model.teacher.genderId}">
-                                <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
-                                <f:selectItems value="#{subscribeTeacherCtrl.model.genderItems}"/>
-                            </p:selectOneMenu>
-
-                            <p:outputLabel value="GSM (98 222 333)"/>
-                            <p:inputText value="#{subscribeTeacherCtrl.model.teacher.phone}"/>
+    <h:body>
 
 
-                            <p:outputLabel value="Email"/>
-                            <p:inputText value="#{subscribeTeacherCtrl.model.teacher.email}"/>
+        <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.jsf.Vr"-->
+        <!--@elvariable id="subscribeTeacherCtrl" type="net.vpc.app.vainruling.plugins.academic.web.SubscribeTeacherCtrl"-->
+        <ui:composition template="#{vr.privateTemplatePath}">
+            <ui:define name="content">
+                <h:form id="listForm">
+                    <p:messages id="messages" showDetail="true"/>
+                    <div style="row">
+                        <div style="col-md-6">
+                            <div class="box box-primary">
+                                <div class="box-header with-border">
+                                    <h3 class="box-title">Contact</h3>
+                                </div>
+                                <!-- /.box-header -->
+                                <!-- form start -->
+                                <div class="box-body">
+                                    <div class="form-group">
+                                        <p:outputLabel value="CIN"/>
+                                        <p:inputText value="#{subscribeTeacherCtrl.model.teacher.nin}" styleClass="form-control"/>
+                                    </div>
+                                    <div class="form-group">
+                                        <p:outputLabel value="Prénom"/>
+                                        <p:inputText value="#{subscribeTeacherCtrl.model.teacher.firstName}" styleClass="form-control"/>
+                                    </div>
+                                    <div class="form-group">
+                                        <p:outputLabel value="Nom"/>
+                                        <p:inputText value="#{subscribeTeacherCtrl.model.teacher.lastName}" styleClass="form-control"/>
+                                    </div>
+                                    <div class="form-group">
+                                        <p:outputLabel value="Nom (ar)"/>
+                                        <p:inputText value="#{subscribeTeacherCtrl.model.teacher.lastName2}" styleClass="form-control"/>
+                                    </div>
+                                    <div class="form-group">
+                                        <p:outputLabel value="Prénom (ar)"/>
+                                        <p:inputText value="#{subscribeTeacherCtrl.model.teacher.firstName2}" styleClass="form-control"/>
+                                    </div>
+                                    <div class="form-group">
+                                        <p:outputLabel value="Civlité"/>
+                                        <p:selectOneMenu value="#{subscribeTeacherCtrl.model.teacher.civilityId}" styleClass="form-control"
+                                                         filter="true" filterMatchMode="contains"
+                                                         >
+                                            <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
+                                            <f:selectItems value="#{subscribeTeacherCtrl.model.civilityItems}"/>
+                                        </p:selectOneMenu>
+                                    </div>
+                                    <div class="form-group">
+                                        <p:outputLabel value="Genre"/>
+                                        <p:selectOneMenu value="#{subscribeTeacherCtrl.model.teacher.genderId}" styleClass="form-control"
+                                                         filter="true" filterMatchMode="contains"
+                                                         >
+                                            <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
+                                            <f:selectItems value="#{subscribeTeacherCtrl.model.genderItems}"/>
+                                        </p:selectOneMenu>
+                                    </div>
+                                    <div class="form-group">
+                                        <p:outputLabel value="GSM (98 222 333)"/>
+                                        <p:inputText value="#{subscribeTeacherCtrl.model.teacher.phone}" styleClass="form-control"/>
+                                    </div>
+                                    <div class="form-group">
+                                        <p:outputLabel value="Email"/>
+                                        <p:inputText value="#{subscribeTeacherCtrl.model.teacher.email}" styleClass="form-control"/>
+                                    </div>
+                                </div>
 
-                            <p:outputLabel value="Discipline Officielle"/>
-                            <p:selectOneMenu value="#{subscribeTeacherCtrl.model.teacher.officialDisciplineId}">
-                                <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
-                                <f:selectItems value="#{subscribeTeacherCtrl.model.officialDisciplineItems}"/>
-                            </p:selectOneMenu>
+                            </div>
+                        </div>
+                        <div style="col-md-6">
+                            <div class="box box-primary">
+                                <div class="box-header with-border">
+                                    <h3 class="box-title">Informations</h3>
+                                </div>
+                                <!-- /.box-header -->
+                                <!-- form start -->
+                                <div class="box-body">
+                                    <div class="form-group">
+                                        <p:outputLabel value="Discipline Officielle"/>
+                                        <p:selectOneMenu value="#{subscribeTeacherCtrl.model.teacher.officialDisciplineId}" styleClass="form-control"
+                                                         filter="true" filterMatchMode="contains"
+                                                         >
+                                            <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
+                                            <f:selectItems value="#{subscribeTeacherCtrl.model.officialDisciplineItems}"/>
+                                        </p:selectOneMenu>
+                                    </div>
+                                    <div class="form-group">
+                                        <p:outputLabel value="Autres disciplines (info,meca,electronique,fpga)"/>
+                                        <p:inputText value="#{subscribeTeacherCtrl.model.teacher.discipline}"  styleClass="form-control"/>
+                                    </div>
+                                    <div class="form-group">
+                                        <p:outputLabel value="Grade"/>
+                                        <p:selectOneMenu value="#{subscribeTeacherCtrl.model.teacher.degreeId}" styleClass="form-control"
+                                                         filter="true" filterMatchMode="contains"
+                                                         >
+                                            <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
+                                            <f:selectItems value="#{subscribeTeacherCtrl.model.degreeItems}"/>
+                                        </p:selectOneMenu>
+                                    </div>
+                                    <div class="form-group">
+                                        <p:outputLabel value="Situation"/>
+                                        <p:selectOneMenu value="#{subscribeTeacherCtrl.model.teacher.situationId}" styleClass="form-control"
+                                                         filter="true" filterMatchMode="contains"
+                                                         >
+                                            <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
+                                            <f:selectItems value="#{subscribeTeacherCtrl.model.situationItems}"/>
+                                        </p:selectOneMenu>
+                                    </div>
+                                    <div class="form-group">
+                                        <p:outputLabel value="Charge S1 / S2"/>
+                                        <div class="row">
+                                            <div class="col-xs-6">
+                                                <p:inputText value="#{subscribeTeacherCtrl.model.teacher.weekLoads[0]}"  styleClass="form-control"/>
+                                            </div>
+                                            <div class="col-xs-6">
+                                                <p:inputText value="#{subscribeTeacherCtrl.model.teacher.weekLoads[1]}"  styleClass="form-control"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <p:outputLabel value="1er contrat"/>
+                                        <p:selectOneMenu value="#{subscribeTeacherCtrl.model.teacher.startPeriodId}" styleClass="form-control"
+                                                         filter="true" filterMatchMode="contains"
+                                                         >
+                                            <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
+                                            <f:selectItems value="#{subscribeTeacherCtrl.model.periodItems}"/>
+                                        </p:selectOneMenu>
+                                    </div>
+                                    <div class="form-group">
+                                        <p:outputLabel value="Département"/>
+                                        <p:selectOneMenu value="#{subscribeTeacherCtrl.model.teacher.departmentId}" styleClass="form-control"
+                                                         filter="true" filterMatchMode="contains"
+                                                         >
+                                            <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
+                                            <f:selectItems value="#{subscribeTeacherCtrl.model.departmentItems}"/>
+                                        </p:selectOneMenu>
+                                    </div>
+                                </div>
 
-                            <p:outputLabel value="Autres disciplines (info,meca,electronique,fpga)"/>
-                            <p:inputText value="#{subscribeTeacherCtrl.model.teacher.discipline}"/>
+                                <!-- /.box-body -->
 
-                            <p:outputLabel value="Grade"/>
-                            <p:selectOneMenu value="#{subscribeTeacherCtrl.model.teacher.degreeId}">
-                                <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
-                                <f:selectItems value="#{subscribeTeacherCtrl.model.degreeItems}"/>
-                            </p:selectOneMenu>
-
-                            <p:outputLabel value="Situation"/>
-                            <p:selectOneMenu value="#{subscribeTeacherCtrl.model.teacher.situationId}">
-                                <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
-                                <f:selectItems value="#{subscribeTeacherCtrl.model.situationItems}"/>
-                            </p:selectOneMenu>
-
-                            <p:outputLabel value="Charge S1 / S2"/>
-                            <ui:fragment>
-                                <p:inputText value="#{subscribeTeacherCtrl.model.teacher.weekLoads[0]}"/>
-                                <p:inputText value="#{subscribeTeacherCtrl.model.teacher.weekLoads[1]}"/>
-                            </ui:fragment>
-
-
-                            <p:outputLabel value="1er contrat"/>
-                            <p:selectOneMenu value="#{subscribeTeacherCtrl.model.teacher.startPeriodId}">
-                                <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
-                                <f:selectItems value="#{subscribeTeacherCtrl.model.periodItems}"/>
-                            </p:selectOneMenu>
-
-                            <p:outputLabel value="Département"/>
-                            <p:selectOneMenu value="#{subscribeTeacherCtrl.model.teacher.departmentId}">
-                                <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
-                                <f:selectItems value="#{subscribeTeacherCtrl.model.departmentItems}"/>
-                            </p:selectOneMenu>
-
-                        </p:panelGrid>
+                            </div>
+                        </div>
                     </div>
-                </div>
-
-
-                <p:separator/>
-
-                <div >
-                    <div class="table-responsive">
-                        <p:commandButton action="#{subscribeTeacherCtrl.onImport}" value="Enregistrer" styleClass="btn btn-primary"
-                                         update=":listForm" style="margin-left: 100px;"/>
+                    <div style="row">
+                        <div class="box-footer">
+                            <div class="form-group">
+                                <p:commandButton action="#{subscribeTeacherCtrl.onImport}" value="Enregistrer" styleClass="btn btn-primary"
+                                                 update=":listForm" style="margin-left: 100px;"/>
+                            </div>
+                        </div>
                     </div>
-                </div>
-
-            </h:form>
 
 
-        </ui:define>
+                </h:form>
 
 
-    </ui:composition>
+            </ui:define>
 
 
-</h:body>
+        </ui:composition>
+
+
+    </h:body>
 
 </html>

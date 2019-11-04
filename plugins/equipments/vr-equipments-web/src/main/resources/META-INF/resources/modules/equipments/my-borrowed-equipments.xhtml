@@ -30,7 +30,7 @@ and open the template in the editor.
                                  paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                  rowsPerPageTemplate="1000,2000,5000,1000"
                                  widgetVar="othersTable"
-                                 emptyMessage="Aucune prêt"
+                                 emptyMessage="Aucun prêt"
                                  >
                         <p:column exportable="false" headerText="" style="width: 65px;">
                             <img src="#{vr.getIconUrl(i.photo,null)}"
@@ -49,7 +49,11 @@ and open the template in the editor.
                         <p:column headerText="Libellé">
                             <p:outputLabel value="#{i.equipment.department.code} - #{i.name}" />
                         </p:column>
-                        <p:column headerText="Quantité" >
+                        <p:column headerText="Quantité" id= "keyColumnId" >
+                            <f:facet name="header">
+                                <h:outputText value="Quantité" />
+                                <p:tooltip value="Quantité dans le stock/Quantité disponible après autres réservations" for="keyColumnId" />
+                            </f:facet> 
                             <p:outputLabel value="#{i.borrowQuantity}" />
                         </p:column>
                         <p:column headerText="De">
@@ -62,11 +66,11 @@ and open the template in the editor.
                             <p:outputLabel value="#{vr.str(i.visaUser.fullName)}" />
                         </p:column>
                         <p:column headerText="Etat" >
-                            <p:outputLabel value="#{vr.str(i.status)}" />
+                            <p:outputLabel value="#{vr.str(i.status)}" styleClass="label label-#{vr.hashToArr(vr.str(i.status),'danger','success','info','warning','primary','default')}"/>
                         </p:column>
                         <p:column headerText="Actions">
-                            <p:commandButton value="Annuler" rendered="#{i.cancelEnabled}" action="#{myBorrowedEquipmentsCtrl.onCancel(i)}" update=":listForm" />
-                            <p:commandButton value="Archiver" rendered="#{i.archiveEnabled}" action="#{myBorrowedEquipmentsCtrl.onArchive(i)}" update=":listForm" />
+                            <p:commandButton value="Annuler" style="width: 70px;" rendered="#{i.cancelEnabled}" action="#{myBorrowedEquipmentsCtrl.onCancel(i)}" update=":listForm" />
+                            <p:commandButton value="Archiver" style="width: 70px;" rendered="#{i.archiveEnabled}" action="#{myBorrowedEquipmentsCtrl.onArchive(i)}" update=":listForm" />
                         </p:column>
                         <f:facet name="footer">
                             <p:outputLabel value="Total #{myBorrowableEquipmentsCtrl.model.equipments.size()}"/>

@@ -285,11 +285,11 @@ public class VrBoxProject extends DefaultProjectTemplate {
 
     public void createModuleWebJsf_Page(String name) throws UncheckedIOException {
         setConfigValue("PageName", name);
-        copyXml("/plugins/module/module-web/src/main/resources/META-INF/resources/modules/module/page.xhtml", "src/main/resources/META-INF/resources/modules/${ModuleName}", "${vrPageName}.xhtml");
+        copyXml("/plugins/module/module-web/src/main/resources/META-INF/resources/modules/module/page.xhtml", "src/main/resources/META-INF/resources/modules/${ModuleName}", "${PageName}.xhtml");
         copyJava("/plugins/module/module-web/src/main/java/AppPageCtrl.java", "src/main/java");
         targetAppendProperties("src/main/resources/i18n/presentation.properties",
                 new String[]{
-                    "Controller.${{varName(vrPageName)}}", "${{PageName}}",
+                    "Controller.${{varName(PageName)}}", "${{PageName}}",
                     "Package.${{pathToPackage(PageMenuPath)}}", "Name for ${{pathToPackage(PageMenuPath)}}"
                 }
         );

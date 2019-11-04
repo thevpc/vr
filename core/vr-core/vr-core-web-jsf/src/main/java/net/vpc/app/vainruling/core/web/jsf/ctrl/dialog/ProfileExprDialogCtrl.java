@@ -13,7 +13,6 @@ import net.vpc.app.vainruling.core.web.jsf.DialogBuilder;
 import net.vpc.app.vainruling.core.service.editor.DialogResult;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
-import org.primefaces.context.RequestContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.faces.model.SelectItem;
@@ -140,7 +139,7 @@ public class ProfileExprDialogCtrl {
 
     public void fireEventExtraDialogClosed() {
         //Object obj
-        RequestContext.getCurrentInstance().closeDialog(new DialogResult(getModel().getExpression(), getModel().getConfig().getUserInfo()));
+        DialogBuilder.closeCurrent(new DialogResult(getModel().getExpression(), getModel().getConfig().getUserInfo()));
     }
 
     public static class ProfileExprItem {

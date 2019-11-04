@@ -20,12 +20,48 @@ import javax.faces.model.SelectItem;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.vpc.app.vainruling.core.service.fs.MirroredPath;
+import net.vpc.common.io.IOUtils;
 
 public class VrJsf {
+
+    public static VFile createTempFile(FileUploadEvent event) {
+        MirroredPath temp = CorePlugin.get().createTempUploadFolder();
+        VFile o = temp.getPath().get(event.getFile().getFileName());
+        try (InputStream is = event.getFile().getInputstream()) {
+            try (OutputStream os = o.getOutputStream()) {
+                IOUtils.copy(is, os);
+            }
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+        return o;
+    }
+
+    public static StreamedContent getContent(String path) {
+        InputStream stream = null;
+        try {
+            CorePlugin core = CorePlugin.get();
+            VFile file = UPA.getPersistenceUnit().invokePrivileged(() -> core.getRootFileSystem().get(path));
+            if (file.isDirectory()) {
+                //should zip it?
+            } else {
+                core.markDownloaded(file);
+                stream = file.getInputStream();
+                return new DefaultStreamedContent(stream, file.probeContentType(), file.getName());
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(DocumentsUtils.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
     public static StreamedContent getContent(VFileInfo i) {
         InputStream stream = null;
         try {
@@ -77,6 +113,10 @@ public class VrJsf {
             }
         });
         VFile nativeFile = rootfs.get(path).getBaseFile("NativeFS");
+        VFile pf = nativeFile.getParentFile();
+        if (!pf.exists()) {
+            pf.mkdirs();
+        }
         String p = nativeFile.getPath();
 
         File f = new File(VrPlatformUtils.validatePath(p));
@@ -92,7 +132,11 @@ public class VrJsf {
             }
         }
         f.getParentFile().mkdirs();
-        event.getFile().write(f.getPath());
+        try (InputStream is=event.getFile().getInputstream()){
+            IOUtils.copy(is, f);
+        } catch (Exception e) {
+            throw new IOException(e);
+        }
         return rootfs.get(path).getParentFile().get(f.getName());
     }
 
@@ -129,6 +173,5 @@ public class VrJsf {
         }
         return list;
     }
-
 
 }

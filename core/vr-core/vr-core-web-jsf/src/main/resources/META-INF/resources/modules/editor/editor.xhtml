@@ -224,9 +224,9 @@ and open the template in the editor.
                                              update=" :listForm  :pageTitleForm"
                                              />
 
-<!--                            <p:commandButton title="Retour" icon="fa fa-backward"
-                                             action="# {vr.goBack}"
-                                             ajax="false" styleClass="ui-ribbon-bigbutton  vr-toolbox-button"/>-->
+                            <!--                            <p:commandButton title="Retour" icon="fa fa-backward"
+                                                                         action="# {vr.goBack}"
+                                                                         ajax="false" styleClass="ui-ribbon-bigbutton  vr-toolbox-button"/>-->
 
 
                             <!--                            <p:commandButton
@@ -240,37 +240,37 @@ and open the template in the editor.
                                                             <p:ajax event="dialogReturn" listener="#_{editorCtrl.onActionDialogClosed}" update=" :listForm   :pageTitleForm" />
     
                                                         </p:commandButton>-->
-<!--                            <p:commandButton
-                                value="# {editorCtrl.model.actions.get(0).value}"
-                                rendered="# {editorCtrl.model.actions.size() gt 0 and editorCtrl.isEnabledButton(editorCtrl.model.actions.get(0).key)}"
-                                icon="# {editorCtrl.model.actions.get(0).icon}"
-                                styleClass="ui-ribbon-bigbutton   vr-toolbox-button"
-                                ajax="true"
-                                onclick="document.getElementById('listForm:processOpenActionDialog0').click();"
-                                >
-                            </p:commandButton>
-
-                            <p:commandButton value="# {editorCtrl.model.actions.get(1).value}"
-                                             rendered="# {editorCtrl.model.actions.size() gt 1 and editorCtrl.isEnabledButton(editorCtrl.model.actions.get(1).key)}"
-                                             icon="# {editorCtrl.model.actions.get(1).icon}"
-                                             styleClass="ui-ribbon-bigbutton   vr-toolbox-button"
-                                             ajax="true"
-                                             actionListener="# {editorCtrl.openActionDialog(editorCtrl.model.actions.get(1).key)}"
-                                             >
-                                <p:ajax event="dialogReturn" listener="# {editorCtrl.onActionDialogClosed}"
-                                        update=" :listForm   :pageTitleForm"/>
-                            </p:commandButton>
-
-                            <p:commandButton value="# {editorCtrl.model.actions.get(2).value}"
-                                             rendered="# {editorCtrl.model.actions.size() gt 2 and editorCtrl.isEnabledButton(editorCtrl.model.actions.get(2).key)}"
-                                             icon="# {editorCtrl.model.actions.get(2).icon}"
-                                             styleClass="ui-ribbon-bigbutton   vr-toolbox-button"
-                                             ajax="true"
-                                             actionListener="# {editorCtrl.openActionDialog(editorCtrl.model.actions.get(2).key)}"
-                                             >
-                                <p:ajax event="dialogReturn" listener="# {editorCtrl.onActionDialogClosed}"
-                                        update=" :listForm   :pageTitleForm"/>
-                            </p:commandButton>-->
+                            <!--                            <p:commandButton
+                                                            value="# {editorCtrl.model.actions.get(0).value}"
+                                                            rendered="# {editorCtrl.model.actions.size() gt 0 and editorCtrl.isEnabledButton(editorCtrl.model.actions.get(0).key)}"
+                                                            icon="# {editorCtrl.model.actions.get(0).icon}"
+                                                            styleClass="ui-ribbon-bigbutton   vr-toolbox-button"
+                                                            ajax="true"
+                                                            onclick="document.getElementById('listForm:processOpenActionDialog0').click();"
+                                                            >
+                                                        </p:commandButton>
+                            
+                                                        <p:commandButton value="# {editorCtrl.model.actions.get(1).value}"
+                                                                         rendered="# {editorCtrl.model.actions.size() gt 1 and editorCtrl.isEnabledButton(editorCtrl.model.actions.get(1).key)}"
+                                                                         icon="# {editorCtrl.model.actions.get(1).icon}"
+                                                                         styleClass="ui-ribbon-bigbutton   vr-toolbox-button"
+                                                                         ajax="true"
+                                                                         actionListener="# {editorCtrl.openActionDialog(editorCtrl.model.actions.get(1).key)}"
+                                                                         >
+                                                            <p:ajax event="dialogReturn" listener="# {editorCtrl.onActionDialogClosed}"
+                                                                    update=" :listForm   :pageTitleForm"/>
+                                                        </p:commandButton>
+                            
+                                                        <p:commandButton value="# {editorCtrl.model.actions.get(2).value}"
+                                                                         rendered="# {editorCtrl.model.actions.size() gt 2 and editorCtrl.isEnabledButton(editorCtrl.model.actions.get(2).key)}"
+                                                                         icon="# {editorCtrl.model.actions.get(2).icon}"
+                                                                         styleClass="ui-ribbon-bigbutton   vr-toolbox-button"
+                                                                         ajax="true"
+                                                                         actionListener="# {editorCtrl.openActionDialog(editorCtrl.model.actions.get(2).key)}"
+                                                                         >
+                                                            <p:ajax event="dialogReturn" listener="# {editorCtrl.onActionDialogClosed}"
+                                                                    update=" :listForm   :pageTitleForm"/>
+                                                        </p:commandButton>-->
 
                             <!-- some crazy bug in PF cant help make this work (stackoverflow in dynaform) -->
                             <ui:repeat value="#{editorCtrl.model.actions}" var="aac">
@@ -286,7 +286,7 @@ and open the template in the editor.
                                                  action="#{vr.gotoPage(aac.command[0],aac.command[1])}"
                                                  />
                             </ui:repeat><!-- -->
-                            
+
                         </p:outputPanel>
                     </div>
                     <div>
@@ -316,19 +316,21 @@ and open the template in the editor.
                     </p:panelGrid>
                     <!-- /.row -->
 
-                    <div style="margin-bottom: 10px;">
-                        <p:inputText
-                            title="#{editorCtrl.model.searchTextHelper}"
-                            value="#{editorCtrl.model.searchText}" placeholder="Chercher ..." styleClass="form-control"
-                            style="width: 100%"
-                            onkeypress="if (event.keyCode == 13) {
+                    <ui:fragment rendered="#{editorCtrl.isListMode()}">
+                        <div style="margin-bottom: 10px;">
+                            <p:inputText
+                                title="#{editorCtrl.model.searchTextHelper}"
+                                value="#{editorCtrl.model.searchText}" placeholder="Chercher ..." styleClass="form-control"
+                                style="width: 100%"
+                                onkeypress="if (event.keyCode == 13) {
                                         onSearchByText();
                                         return false;
                                     }"
-                            />
-                        <p:remoteCommand name="onSearchByText" actionListener="#{editorCtrl.onAutoFilterChange}"
-                                         update=":listForm"/>
-                    </div>
+                                />
+                            <p:remoteCommand name="onSearchByText" actionListener="#{editorCtrl.onAutoFilterChange}"
+                                             update=":listForm"/>
+                        </div>
+                    </ui:fragment>
                     <p:growl id="growl" showDetail="true" sticky="true"/>
                     <p:outputPanel id="editItemList" rendered="#{editorCtrl.isListMode()}">
                         <div>
@@ -688,8 +690,8 @@ and open the template in the editor.
                                     <!--<p:panelGrid columns="2" style="border-style: hidden"-->
                                     <!--columnClasses="nopadding,nopadding">-->
 
-                                <!--<p:inputText id="tprofileexpr" value="#_{data.value}" required="#_{data.required}"-->
-                                <!--disabled="#_{data.disabled}" styleClass="form-control"/>-->
+                                    <!--<p:inputText id="tprofileexpr" value="#_{data.value}" required="#_{data.required}"-->
+                                    <!--disabled="#_{data.disabled}" styleClass="form-control"/>-->
                                     <!--<p:commandButton-->
                                     <!--style="padding-top: 8px; margin-bottom: 3px; margin-left: 1px; padding-bottom: 8px;"-->
                                     <!--ajax="true" value=""-->
@@ -764,10 +766,10 @@ and open the template in the editor.
                                                 styleClass="btn  btn-default vr-form-control-right-button30"
                                                 style="margin-left: 3px;margin-right: 3px;margin-top: 5px;"
                                                 ajax="false"
-                                            >
+                                                >
                                                 <p:fileDownload value="#{vr.downloadPath(vr.trim(data.value))}"/>
                                             </p:commandLink>
-                                            
+
                                             <p:commandButton
                                                 styleClass="vr-form-control-right-button30"
                                                 ajax="true" value=""

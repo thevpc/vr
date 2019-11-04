@@ -10,188 +10,309 @@ and open the template in the editor.
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://java.sun.com/jsf/core"
->
+      >
 
-<h:head>
-</h:head>
+    <h:head>
+        <style>
+            .pb-filemng-template {
+                margin-top: 40px;
+                font-family: 'Sansita', sans-serif;
+            }
 
-<h:body>
+            .pb-filemng-navbar {
+                margin-bottom: 0;
+            }
+
+            .treeview-toggle-btn {
+                margin-left: 15px;
+            }
+
+            .pb-filemng-template-btn {
+                background-color: Transparent;
+                background-repeat:no-repeat;
+                border: none;
+                cursor:pointer;
+                outline:none;
+                color: gray;
+                padding: 0px 13px 0px 13px;
+            }
+
+            .pb-filemng-active {
+                border-bottom: 2px solid #6d97db;
+                color: #5f6977;
+            }
+
+            .pb-filemng-template-btn:hover {
+                color: blue;
+            }
+
+            .pb-filemng-body-folders > img:hover {
+                cursor: pointer;
+            }
+
+            .btn-align {
+                margin-top: 7px;
+            }
+
+            .pb-filemng-template-treeview {
+                border-right: 1px solid gray;
+            }
+
+            .pb-filemng-folder {
+                color: orange;
+                padding-bottom: 3px;
+            }
+
+            .pb-filemng-paragraphs {
+                margin-top: -20px;
+                text-align: center;
+            }
+
+            .img-responsive {
+                margin: 0 auto;
+            }
+
+            @media screen and (max-width: 767px) {
+
+                .pb-filemng-template-treeview {
+                    border-right: none;
+                }
+
+                #options {
+                    text-align: center;
+                }
+
+                #options > li {
+                    display: inline-block;
+                }
+
+                #pb-filemng-navigation > ul {
+                    text-align: center;
+                }
+
+                #pb-filemng-navigation > ul > li {
+                    display: inline-block;
+                }
+
+            }
+        </style>
+
+    </h:head>
+
+    <h:body>
 
 
-    <!--@elvariable id="documentsCtrl" type="net.vpc.app.vainruling.core.web.jsf.ctrl.DocumentsCtrl"-->
-    <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.jsf.Vr"-->
-    <ui:composition template="#{vr.privateTemplatePath}">
-        <ui:define name="content">
-            <h:form id="listForm" enctype="multipart/form-data">
-                <p:messages showDetail="true"/>
-                <p:confirmDialog message="Etes vous sur de vouloir supprimer ce document/repertoire ?"
-                                 header="Processus de suppression"
-                                 widgetVar="confirmationDelete">
-                    <p:commandButton value="Oui en effet" onclick="PF('confirmationDelete').hide();
+        <!--@elvariable id="documentsCtrl" type="net.vpc.app.vainruling.core.web.jsf.ctrl.DocumentsCtrl"-->
+        <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.jsf.Vr"-->
+        <ui:composition template="#{vr.privateTemplatePath}">
+            <ui:define name="content">
+                <h:form id="listForm" enctype="multipart/form-data">
+                    <p:messages showDetail="true"/>
+                    <p:confirmDialog message="Etes vous sur de vouloir supprimer ce document/repertoire ?"
+                                     header="Processus de suppression"
+                                     widgetVar="confirmationDelete">
+                        <p:commandButton value="Oui en effet" onclick="PF('confirmationDelete').hide();
                                 processOnDeleteCurrent();"/>
-                    <p:commandButton value="Non" onclick="PF('confirmationDelete').hide()" type="button"/>
-                </p:confirmDialog>
+                        <p:commandButton value="Non" onclick="PF('confirmationDelete').hide()" type="button"/>
+                    </p:confirmDialog>
 
-                <div style="margin-bottom: 10px;">
-                    <p:commandButton rendered="#{documentsCtrl.isEnabledButton('Refresh')}"
-                                     title="Actualiser" icon="fa fa-refresh"
-                                     styleClass="ui-ribbon-bigbutton  vr-toolbox-button btn btn-default" ajax="true"
-                                     actionListener="#{documentsCtrl.onRefresh}" update=":listForm"/>
-                    <p:commandButton rendered="#{documentsCtrl.isEnabledButton('NewFolder')}"
-                                     title="Nouveau Répertoire" icon="fa fa-folder-o"
-                                     styleClass="ui-ribbon-bigbutton  vr-toolbox-button btn-primary" ajax="true"
-                                     actionListener="#{documentsCtrl.onNewFolder}"
-                                     onclick="PF('dlgNewFolder').show();"
-                    />
-                    <p:commandButton rendered="#{documentsCtrl.isEnabledButton('NewFile')}"
-                                     title="Nouveau Fichier" icon="fa fa-file-o"
-                                     styleClass="ui-ribbon-bigbutton  vr-toolbox-button btn-primary" ajax="true"
-                                     actionListener="#{documentsCtrl.onNewFile}" update=":listForm"/>
-                    <p:commandButton rendered="#{documentsCtrl.isEnabledButton('Upload')}"
-                                     title="Téléverser" icon="fa fa-cloud-upload"
-                                     styleClass="ui-ribbon-bigbutton  vr-toolbox-button btn-success" ajax="true"
-                                     actionListener="#{documentsCtrl.onUpload}" update=":listForm"/>
-                    <p:commandButton rendered="#{documentsCtrl.isEnabledButton('Remove')}"
-                                     title="Supprimer" icon="fa fa-trash-o"
-                                     styleClass="ui-ribbon-bigbutton  vr-toolbox-button btn btn-danger" ajax="true"
-                                     onclick="PF('confirmationDelete').show();"/>
-                    <p:commandButton rendered="#{documentsCtrl.isEnabledButton('Cancel')}"
-                                     title="Fermer" icon="fa fa-arrow-left"
-                                     styleClass="ui-ribbon-bigbutton  vr-toolbox-button btn-default" ajax="true"
-                                     actionListener="#{documentsCtrl.onCancel}" update=":listForm"/>
-                    <p:button rendered="#{documentsCtrl.isEnabledButton('Search')}"
-                              title="Chercher" icon="fa fa-search"
-                              styleClass="ui-ribbon-bigbutton  vr-toolbox-button btn-default"
-                              onclick="PF('dlgSearch').show(); return false;"
-                    />
-                    <p:commandButton rendered="#{documentsCtrl.isEnabledButton('Security')}"
-                                     title="Sécurité" icon="fa fa-users"
-                                     styleClass="ui-ribbon-bigbutton  vr-toolbox-button btn-default" ajax="true"
-                                     actionListener="#{documentsCtrl.onShowSecurityDialog}" update=":listForm"/>
-                </div>
-                <div>
-                    <p:dataTable id="filesTable" var="i" value="#{documentsCtrl.model.files}"
-                                 class="table table-bordered table-hover"
-                                 paginatorAlwaysVisible="false"
-                                 paginator="true"
-                                 paginatorPosition="bottom"
-                                 rows="100"
-                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                                 rowsPerPageTemplate="20,50,100,200,1000"
-                    >
-                        <p:column headerText="" width="60">
-                            <p:selectBooleanCheckbox value="#{i.selected}"
-                                                     disabled="#{!i.selectable || !documentsCtrl.isEnabledButton('SelectFile')}"
-                                                     styleClass="vr-icon-prefix-#{i.iconCss}"/>
-                        </p:column>
-                        <p:column headerText="#{documentsCtrl.model.current.file.path}">
-                            <p:commandLink value="#{i.name}"
-                                           rendered="#{i.file.directory}"
-                                           actionListener="#{documentsCtrl.updateCurrent(i.file)}"
-                                           ajax="true"
-                                           update=":listForm"
-                                           style="#{i.labelCss}"
-                            />
-                            <!--<h:outputText value="# {i.name}" rendered="# {! i.file.directory}"/>-->
-                            <p:commandLink rendered="#{!i.file.directory}"
-                                           disabled="#{!documentsCtrl.isEnabledButton('Download',i)}"
-                                           value="#{i.longName}"
-                                           ajax="false"
-                                           update="filesTable"
-                                           style="#{i.labelCss}"
-                                           onclick="PrimeFaces.monitorDownload(null, updateFilesTable)"
-                            >
-                                <p:fileDownload value="#{documentsCtrl.getContent(i)}"/>
-                            </p:commandLink>
-                            <!--<p:outputLabel rendered="# {!i.file.directory and !documentsCtrl.isEnabledButton('Download',i)}" value="#{i.name}"/>-->
-                        </p:column>
-                        <p:column headerText="Taille" width="100">
-                            <h:outputText rendered="#{!i.file.directory}" value="#{i.file.length()}"
-                                          converter="fileSizeConverter"/>
-                            <h:outputText rendered="#{i.file.directory}" value="#{i.desc}"/>
-                        </p:column>
-                        <p:column headerText="Modification" width="150">
-                            <h:outputText value="#{i.lastModifiedDate}">
-                                <f:convertDateTime type="date" pattern="dd-MM-yyyy HH:mm"/>
-                            </h:outputText>
-                        </p:column>
-                        <p:column headerText="Téléch." width="80">
-                            <h:outputText rendered="#{!i.file.directory}" value="#{i.downloads}"/>
-                        </p:column>
-                    </p:dataTable>
-                </div>
-                <p:remoteCommand name="processOnDeleteCurrent" process="@form" update=":listForm " action="#{documentsCtrl.onRemove()}"/>
-                <p:remoteCommand name="updateFilesTable" update="filesTable"/>
-                <p:remoteCommand name="onNewFolder" update=":newFolderForm"/>
-            </h:form>
-            <p:dialog header="Chercher" widgetVar="dlgSearch" modal="true" height="250" minWidth="350">
-                <h:form id="searchForm">
-                    <div class="box box-info">
+                    <div style="margin-bottom: 10px;">
+                        <p:commandButton rendered="#{documentsCtrl.isEnabledButton('Refresh')}"
+                                         title="Actualiser" icon="fa fa-refresh"
+                                         styleClass="ui-ribbon-bigbutton  vr-toolbox-button btn btn-default" ajax="true"
+                                         actionListener="#{documentsCtrl.onRefresh}" update=":listForm"/>
+                        <p:commandButton rendered="#{documentsCtrl.isEnabledButton('NewFolder')}"
+                                         title="Nouveau Répertoire" icon="fa fa-folder-o"
+                                         styleClass="ui-ribbon-bigbutton  vr-toolbox-button btn-primary" ajax="true"
+                                         actionListener="#{documentsCtrl.onNewFolder}"
+                                         onclick="PF('dlgNewFolder').show();"
+                                         />
+                        <p:commandButton rendered="#{documentsCtrl.isEnabledButton('NewFile')}"
+                                         title="Nouveau Fichier" icon="fa fa-file-o"
+                                         styleClass="ui-ribbon-bigbutton  vr-toolbox-button btn-primary" ajax="true"
+                                         actionListener="#{documentsCtrl.onNewFile}" update=":listForm"/>
+                        <p:commandButton rendered="#{documentsCtrl.isEnabledButton('Upload')}"
+                                         title="Téléverser" icon="fa fa-cloud-upload"
+                                         styleClass="ui-ribbon-bigbutton  vr-toolbox-button btn-success" ajax="true"
+                                         actionListener="#{documentsCtrl.onUpload}" update=":listForm"/>
+                        <p:commandButton rendered="#{documentsCtrl.isEnabledButton('Remove')}"
+                                         title="Supprimer" icon="fa fa-trash-o"
+                                         styleClass="ui-ribbon-bigbutton  vr-toolbox-button btn btn-danger" ajax="true"
+                                         onclick="PF('confirmationDelete').show();"/>
+                        <p:commandButton rendered="#{documentsCtrl.isEnabledButton('Cancel')}"
+                                         title="Fermer" icon="fa fa-arrow-left"
+                                         styleClass="ui-ribbon-bigbutton  vr-toolbox-button btn-default" ajax="true"
+                                         actionListener="#{documentsCtrl.onCancel}" update=":listForm"/>
+                    </div>
+
+                    <div class="row">
+                        <p:inputText value="#{documentsCtrl.model.searchString}" styleClass="form-control"/>
+                    </div>
+
+                    <div class="box box-primary">
                         <div class="box-header with-border">
-                            <h3 class="box-sub-title">Dans : #{documentsCtrl.model.current.file.path}</h3>
-                            <div class="box-body">
-                                <div class="form-group">
-                                    <div>
-                                        <p:outputLabel value="Nom du fichier ..."/>
-                                        <p:inputText value="#{documentsCtrl.model.searchString}"
-                                                     styleClass="form-control"/>
-                                    </div>
+                            <h3 class="box-title"><p:outputLabel value="#{documentsCtrl.model.current.path}"/></h3>
+                            <div class="box-tools pull-right">
+                                <div class="btn-group">
+                                    <p:commandLink class="btn btn-box-tool" actionListener="#{documentsCtrl.goParent()}" rendered="#{documentsCtrl.hasParent()}" update="@form" process="@this" title="Dossier Parent">
+                                        <i class="fa fa-arrow-up"></i>
+                                    </p:commandLink>
+                                    <button type="button" class="btn btn-box-tool dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                        <i class="fa fa-wrench"></i></button>
+                                    <ul class="dropdown-menu" role="menu">
+                                        <li>
+                                            <p:commandLink actionListener="#{documentsCtrl.setListMode(true)}" update="@form" process="@this">
+                                                <i class="fa fa-list"></i> List
+                                            </p:commandLink>
+                                        </li>
+                                        <li>
+                                            <p:commandLink actionListener="#{documentsCtrl.setListMode(false)}" update="@form" process="@this">
+                                                <i class="fa fa-list"></i> Icones
+                                            </p:commandLink>
+                                        </li>
+                                        <li>
+                                            <p:commandLink actionListener="#{documentsCtrl.switchSelectionMode()}" update="@form" process="@this">
+                                                <i class="fa fa-check-square-o"></i> Sélection
+                                            </p:commandLink>
+                                        </li>
+                                        <ui:fragment rendered="#{documentsCtrl.isEnabledButton('Security')}">
+                                            <li>
+                                                <p:commandLink actionListener="#{documentsCtrl.onShowSecurityDialog()}" ajax="true" update="@form" process="@this">
+                                                    <i class="fa fa-users"></i> Sécurité
+                                                </p:commandLink>
+                                            </li>
+                                        </ui:fragment>
+                                    </ul>
                                 </div>
                             </div>
                         </div>
+                        <!-- /.box-header -->
+                        <!-- form start -->
+                        <div class="box-body">
+                            <p:dataTable id="filesTable" var="i" value="#{documentsCtrl.model.files}"
+                                         class="table table-bordered table-hover"
+                                         paginatorAlwaysVisible="false"
+                                         paginator="true"
+                                         paginatorPosition="bottom"
+                                         rows="100"
+                                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                         rowsPerPageTemplate="20,50,100,200,1000"
+                                         rendered="#{documentsCtrl.model.listMode}"
+                                         >
+                                <p:column headerText="" width="60">
+                                    <p:selectBooleanCheckbox value="#{i.selected}" rendered="#{documentsCtrl.isSelectable(i)}"
+                                                             styleClass="vr-icon-prefix-#{i.iconCss}"/>
+                                    <p:graphicImage url="#{vr.privateThemePath}/images/icons/#{i.iconCss}.png" style="width: 16px"
+                                                    rendered="#{!documentsCtrl.isSelectable(i)}"
+                                                    />
+                                </p:column>
+                                <p:column headerText="#{documentsCtrl.model.current.file.path}">
+                                    <p:commandLink value="#{i.name}"
+                                                   rendered="#{i.file.directory}"
+                                                   actionListener="#{documentsCtrl.updateCurrent(i.file)}"
+                                                   ajax="true"
+                                                   update=":listForm"
+                                                   style="#{i.labelCss}"
+                                                   />
+                                    <!--<h:outputText value="# {i.name}" rendered="# {! i.file.directory}"/>-->
+                                    <p:commandLink rendered="#{!i.file.directory}"
+                                                   disabled="#{!documentsCtrl.isEnabledButton('Download',i)}"
+                                                   value="#{i.longName}"
+                                                   ajax="false"
+                                                   update="filesTable"
+                                                   style="#{i.labelCss}"
+                                                   onclick="PrimeFaces.monitorDownload(null, updateFilesTable)"
+                                                   >
+                                        <p:fileDownload value="#{documentsCtrl.getContent(i)}"/>
+                                    </p:commandLink>
+                                    <!--<p:outputLabel rendered="# {!i.file.directory and !documentsCtrl.isEnabledButton('Download',i)}" value="#{i.name}"/>-->
+                                </p:column>
+                                <p:column headerText="Taille" width="100">
+                                    <h:outputText rendered="#{!i.file.directory}" value="#{i.file.length()}"
+                                                  converter="fileSizeConverter"/>
+                                    <h:outputText rendered="#{i.file.directory}" value="#{i.desc}"/>
+                                </p:column>
+                                <p:column headerText="Modification" width="150">
+                                    <h:outputText value="#{i.lastModifiedDate}">
+                                        <f:convertDateTime type="date" pattern="dd-MM-yyyy HH:mm"/>
+                                    </h:outputText>
+                                </p:column>
+                                <p:column headerText="Téléch." width="80">
+                                    <h:outputText rendered="#{!i.file.directory}" value="#{i.downloads}"/>
+                                </p:column>
+                            </p:dataTable>
+                            <h:panelGroup layout="block" styleClass="col-sm-9 col-md-8 pb-filemng-template-body" rendered="#{!documentsCtrl.model.listMode}">
+                                <ui:repeat value="#{documentsCtrl.model.files}" var="i">
+                                    <div class="col-xs-6 col-sm-6 col-md-3 pb-filemng-body-folders">
+                                        <p:commandLink actionListener="#{documentsCtrl.updateCurrent(i.file)}" update=":listForm" title="#{i.name}" rendered="#{i.file.directory}">
+                                            <img class="img-responsive" src="#{vr.privateThemePath}/images/icons/#{i.iconCss}.png" style="width: 64px"/>
+                                        </p:commandLink>
+                                        <p:commandLink rendered="#{!i.file.directory}"
+                                                       disabled="#{!documentsCtrl.isEnabledButton('Download',i)}"
+                                                       value="#{i.longName}"
+                                                       ajax="false"
+                                                       update="filesTable"
+                                                       style="#{i.labelCss}"
+                                                       onclick="PrimeFaces.monitorDownload(null, updateFilesTable)"
+                                                       >
+                                            <img class="img-responsive" src="#{vr.privateThemePath}/images/icons/#{i.iconCss}.png" style="width: 64px"/>
+                                            <p:fileDownload value="#{documentsCtrl.getContent(i)}"/>
+                                        </p:commandLink>
+                                        <br/>
+                                        <p class="pb-filemng-paragraphs">
+                                            <p:selectBooleanCheckbox value="#{i.selected}" rendered="#{documentsCtrl.isSelectable(i)}" itemLabel="#{i.name}"/>
+                                            <p:outputLabel value="#{i.name}" rendered="#{!documentsCtrl.isSelectable(i)}"/>
+                                        </p>
+                                    </div>
+                                </ui:repeat>
+                            </h:panelGroup>
+                        </div>
+                        <!-- /.box-body -->
 
+                        <div class="box-footer">
+                        </div>
                     </div>
-                    <div class="btn-group vr-form-button-group">
-                        <p:commandButton styleClass="btn btn-lg btn-primary vr-dialog-button" value="Chercher"
-                                         actionListener="#{documentsCtrl.onSearch}"
-                                         update=":listForm"
-                                         oncomplete="PF('dlgSearch').hide();"
-                        />
-                        <p:commandButton styleClass="btn btn-lg btn-default vr-dialog-button" value="Annuler"
-                                         style="margin-right: 10px;"
-                                         actionListener="#{documentsCtrl.onCancelSearch}"
-                                         update=":listForm"
-                                         oncomplete="PF('dlgSearch').hide();"
-                        />
-                    </div>
+
+                    <p:remoteCommand name="processOnDeleteCurrent" process="@form" update=":listForm " action="#{documentsCtrl.onRemove()}"/>
+                    <p:remoteCommand name="updateFilesTable" update="filesTable"/>
+                    <p:remoteCommand name="onNewFolder" update=":newFolderForm"/>
                 </h:form>
-            </p:dialog>
-            <p:dialog header="Nouveau Dossier" widgetVar="dlgNewFolder" modal="true" height="250" minWidth="350"
-                      onShow="onNewFolder();" update="newFolderForm"
-            >
-                <h:form id="newFolderForm">
-                    <div class="box box-warning">
-                        <div class="box-header with-border">
-                            <div class="box-body">
-                                <div class="form-group">
-                                    <div>
-                                        <p:outputLabel value="Nom"/>
-                                        <p:inputText value="#{documentsCtrl.model.newName}" styleClass="form-control"/>
+                <p:dialog header="Nouveau Dossier" widgetVar="dlgNewFolder" modal="true" height="250" minWidth="350"
+                          onShow="onNewFolder();" update="newFolderForm"
+                          >
+                    <h:form id="newFolderForm">
+                        <div class="box box-warning">
+                            <div class="box-header with-border">
+                                <div class="box-body">
+                                    <div class="form-group">
+                                        <div>
+                                            <p:outputLabel value="Nom"/>
+                                            <p:inputText value="#{documentsCtrl.model.newName}" styleClass="form-control"/>
+                                        </div>
                                     </div>
                                 </div>
+
                             </div>
 
                         </div>
-
-                    </div>
-                    <div class="btn-group vr-form-button-group">
-                        <p:commandButton styleClass="btn btn-lg btn-primary" value="Enregistrer"
-                                         actionListener="#{documentsCtrl.onSave}"
-                                         oncomplete="PF('dlgNewFolder').hide();"
-                                         update=":listForm"
-                        />
-                        <p:commandButton styleClass="btn btn-lg btn-default" value="Fermer" style="margin-right: 10px;"
-                                         oncomplete="PF('dlgNewFolder').hide();"
-                        />
-                    </div>
-                </h:form>
-            </p:dialog>
-        </ui:define>
+                        <div class="btn-group vr-form-button-group">
+                            <p:commandButton styleClass="btn btn-lg btn-primary" value="Enregistrer"
+                                             actionListener="#{documentsCtrl.onSave}"
+                                             oncomplete="PF('dlgNewFolder').hide();"
+                                             update=":listForm"
+                                             />
+                            <p:commandButton styleClass="btn btn-lg btn-default" value="Fermer" style="margin-right: 10px;"
+                                             oncomplete="PF('dlgNewFolder').hide();"
+                                             />
+                        </div>
+                    </h:form>
+                </p:dialog>
+            </ui:define>
 
 
-    </ui:composition>
+        </ui:composition>
 
 
-</h:body>
+    </h:body>
 
 </html>

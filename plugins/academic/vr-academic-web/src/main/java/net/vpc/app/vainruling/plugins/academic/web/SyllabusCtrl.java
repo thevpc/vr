@@ -20,7 +20,7 @@ import net.vpc.app.vainruling.VrOnPageLoad;
         //        css = "fa-table",
         //        title = "Inscription Etudiant",
         url = "modules/academic/syllabus",
-        menu = "/Education/Config",
+        menu = "/Education/StudyPlan",
         securityKey = "Custom.Education.Syllabus"
 )
 public class SyllabusCtrl implements VrActionEnabler {

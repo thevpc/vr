@@ -321,7 +321,7 @@ and open the template in the editor.
                                 <img src="#{vr.url(corePlugin.getUserIcon(i.user.id))}"
                                      style="width: 40px ; height: 40px; margin-right: 10px;"
                                      alt="User Image"
-                                     onclick="document.getElementById('mainPhotoImg').src='#{vr.url(corePlugin.getUserPhoto(i.user.id))}';$('#'+PF('photodlg').id).find('.ui-dialog-title')[0].textContent='#{i.user.resolveFullName()}';PF('photodlg').show();"
+                                     onclick="document.getElementById('mainPhotoImg').src='#{vr.url(corePlugin.getUserPhoto(i.user.id))}';$('#'+PF('photodlg').id).find('.ui-dialog-title')[0].textContent='#{i.user.fullTitle}';PF('photodlg').show();"
                                 />
                             </p:column>
                             <p:column headerText="Enseignant" style="width: 30%;" sortBy="#{i.resolveFullName()}">

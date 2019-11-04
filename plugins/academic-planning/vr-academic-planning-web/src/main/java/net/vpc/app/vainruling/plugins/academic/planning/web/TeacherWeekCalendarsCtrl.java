@@ -33,9 +33,9 @@ import net.vpc.app.vainruling.VrOnPageLoad;
  */
 @VrPage(
         breadcrumb = {
-                @VrPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
-//        css = "fa-table",
-//        title = "Emploi par Enseignant",
+            @VrPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
+        //        css = "fa-table",
+        //        title = "Emploi par Enseignant",
         url = "modules/academic/planning/teacher-week-calendars",
         menu = "/Calendars",
         securityKey = AcademicPlanningPluginSecurity.RIGHT_CUSTOM_EDUCATION_TEACHER_PLANNING
@@ -52,14 +52,38 @@ public class TeacherWeekCalendarsCtrl extends AbstractWeekCalendarCtrl {
         onRefresh();
     }
 
+    public boolean isValidPlanning() {
+        return getModel().getPlanning() != null && (model.getPlanning().size()) > 0;
+    }
+
+    public boolean isMissingPlanning() {
+        return getModel().getTeacherId() != null
+                && getModel().getTeacherId().length() > 0
+                && (getModel().getPlanning() == null
+                || (getModel().getPlanning().size()) == 0);
+    }
+
+    public String getSelectedTeacherLabel() {
+        String r = getModel().getTeacherId();
+        if (StringUtils.isBlank(r)) {
+            return r;
+        }
+        for (SelectItem room : getModel().getTeachers()) {
+            if (room.getValue() != null && room.getValue().equals(r)) {
+                return room.getLabel();
+            }
+        }
+        return r;
+    }
+
     public int getPeriodId() {
         String p = "";//getModel().getSelectedPeriod();
         if (StringUtils.isBlank(p)) {
             CorePlugin core = VrApp.getBean(CorePlugin.class);
             AppConfig appConfig = core.getCurrentConfig();
-            if(appConfig!=null) {
+            if (appConfig != null) {
                 AppPeriod mainPeriod = appConfig.getMainPeriod();
-                if(mainPeriod!=null) {
+                if (mainPeriod != null) {
                     return mainPeriod.getId();
                 }
             }
@@ -76,12 +100,7 @@ public class TeacherWeekCalendarsCtrl extends AbstractWeekCalendarCtrl {
             getModel().getTeachers().add(FacesUtils.createSelectItem(t.getStringId(), t.getStringName()));
         }
         int t = StringUtils.isBlank(getModel().getTeacherId()) ? -1 : Integer.parseInt(getModel().getTeacherId());
-        WeekCalendar plannings = pl.loadTeacherPlanning(t);
-        if (plannings == null) {
-            updateModel(new ArrayList<CalendarDay>());
-        } else {
-            updateModel(plannings.getDays());
-        }
+        getModel().setCalendar(pl.loadTeacherPlanning(t));
     }
 
     @VrOnPageLoad

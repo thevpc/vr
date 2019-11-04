@@ -27,14 +27,15 @@ import net.vpc.app.vainruling.VrOnPageLoad;
  */
 @VrPage(
         breadcrumb = {
-                @VrPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
-//        css = "fa-table",
-//        title = "Mon Emploi du temps",
+            @VrPathItem(title = "Education", css = "fa-dashboard", ctrl = "")},
+        //        css = "fa-table",
+        //        title = "Mon Emploi du temps",
         url = "modules/calendars/my-week-calendars",
         menu = "/Calendars",
         securityKey = CalendarsPluginSecurity.RIGHT_CUSTOM_EDUCATION_MY_PLANNING
 )
 public class MyWeekCalendarsCtrl extends AbstractWeekCalendarCtrl {
+
     @Autowired
     CorePlugin core;
     @Autowired
@@ -74,13 +75,7 @@ public class MyWeekCalendarsCtrl extends AbstractWeekCalendarCtrl {
                 getModel().setSelectionIndex(null);
             }
         }
-
-        WeekCalendar planning = getModel().getSelectionIndex() == null ? null : plannings.get(getModel().getSelectionIndex());
-        if (planning == null) {
-            updateModel(new ArrayList<CalendarDay>());
-        } else {
-            updateModel(planning.getDays());
-        }
+        getModel().setCalendar(getModel().getSelectionIndex() == null ? null : plannings.get(getModel().getSelectionIndex()));
     }
 
     @VrOnPageLoad

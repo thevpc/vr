@@ -18,7 +18,6 @@ import net.vpc.common.strings.StringUtils;
 import net.vpc.common.vfs.VFile;
 import net.vpc.upa.UPA;
 import net.vpc.upa.VoidAction;
-import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
 import org.springframework.stereotype.Controller;
 
@@ -58,7 +57,7 @@ public class DocumentsUploadDialogCtrl {
     }
 
     public void fireEventExtraDialogClosed() {
-        RequestContext.getCurrentInstance().closeDialog(
+        DialogBuilder.closeCurrent(
                 new DialogResult(null, getModel().getConfig().getUserInfo())
         );
     }
@@ -84,37 +83,34 @@ public class DocumentsUploadDialogCtrl {
 
     public void handleNewFile(FileUploadEvent event) {
         if(getModel().getListener()!=null){
-            RequestContext.getCurrentInstance().closeDialog(
+            DialogBuilder.closeCurrent(
                     new DialogResult(null, getModel().getConfig().getUserInfo())
             );
             getModel().getListener().onUpload(event);
             return;
         }
-        UPA.getContext().invokePrivileged(new VoidAction() {
-            @Override
-            public void run() {
-                try {
-                    String fspath = getModel().getConfig().getFspath();
-                    if(StringUtils.isBlank(fspath)){
-                        fspath="/Upload/";
-                    }
-                    if(!fspath.startsWith("/")){
-                        fspath=fspath="/"+fspath;
-                    }
-                    CorePlugin fsp = VrApp.getBean(CorePlugin.class);
-                    VFile ufs = fsp.getUserFolder(fsp.getCurrentUserLogin());
-                    VFile folder = ufs.get("/Upload");
-                    folder.mkdirs();
-                    VFile file=CorePlugin.get().uploadFile(folder, new FileUploadEventHandler(event) );
-                    String baseFile = file.getBaseFile("vrfs").getPath();
-                    RequestContext.getCurrentInstance().closeDialog(
-                            new DialogResult(baseFile, getModel().getConfig().getUserInfo())
-                    );
-                    FacesUtils.addInfoMessage(event.getFile().getFileName() + " successfully uploaded.");
-                } catch (Exception ex) {
-                    Logger.getLogger(DocumentsCtrl.class.getName()).log(Level.SEVERE, null, ex);
-                    FacesUtils.addErrorMessage(ex,event.getFile().getFileName() + " uploading failed.");
+        UPA.getContext().invokePrivileged(() -> {
+            try {
+                String fspath = getModel().getConfig().getFspath();
+                if(StringUtils.isBlank(fspath)){
+                    fspath="/Uploads/";
                 }
+                if(!fspath.startsWith("/")){
+                    fspath="/"+fspath;
+                }
+                CorePlugin fsp = VrApp.getBean(CorePlugin.class);
+                VFile ufs = fsp.getUserFolder(fsp.getCurrentUserLogin());
+                VFile folder = ufs.get("/Uploads");
+                folder.mkdirs();
+                VFile file=CorePlugin.get().uploadFile(folder, new FileUploadEventHandler(event) );
+                String baseFile = file.getBaseFile("vrfs").getPath();
+                DialogBuilder.closeCurrent(
+                        new DialogResult(baseFile, getModel().getConfig().getUserInfo())
+                );
+                FacesUtils.addInfoMessage(event.getFile().getFileName() + " successfully uploaded.");
+            } catch (Exception ex) {
+                Logger.getLogger(DocumentsCtrl.class.getName()).log(Level.SEVERE, null, ex);
+                FacesUtils.addErrorMessage(ex,event.getFile().getFileName() + " uploading failed.");
             }
         });
     }

@@ -6,7 +6,6 @@
 package net.vpc.app.vainruling.plugins.academic.model.current;
 
 import net.vpc.app.vainruling.core.service.model.AppGovernorate;
-import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.FormulaType;
 import net.vpc.upa.UserFieldModifier;
@@ -20,7 +19,7 @@ import java.sql.Timestamp;
  * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "this.name")
-@Path("Education/Config")
+@Path("Repository/Education")
 public class AcademicBac {
 
     @Path("Main")

@@ -65,7 +65,7 @@ public class HotCmsTextService extends AbstractCmsTextService {
     }
 
     @Override
-    public boolean onAction(String action, int id) {
+    public boolean onActionById(String action, int id) {
         ExternalContext ec = FacesContext.getCurrentInstance()
                 .getExternalContext();
         try {

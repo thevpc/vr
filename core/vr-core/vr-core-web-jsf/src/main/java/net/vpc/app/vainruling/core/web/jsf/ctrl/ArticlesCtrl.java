@@ -28,7 +28,7 @@ import java.util.List;
 public class ArticlesCtrl extends AbstractCmsTextService {
 
     @Override
-    public boolean onAction(String action, int id) {
+    public boolean onActionById(String action, int id) {
         if (id <= 0) {
             return false;
         }
@@ -158,20 +158,8 @@ public class ArticlesCtrl extends AbstractCmsTextService {
     }
 
     @Override
-    public boolean isEnabledAction(String action, int id) {
-        AppUser currentUser = core.getCurrentUser();
-        if (currentUser != null) {
-            AppArticle a = core.findArticle(id);
-            if (a != null) {
-                if (a.getSender() != null && currentUser.getId() == a.getSender().getId()) {
-                    return true;
-                }
-                if (core.isCurrentSessionAdmin()) {
-                    return true;
-                }
-            }
-        }
-        return false;
+    public boolean isEnabledActionById(String action, int id) {
+        return isEnabledAction(action,findArticle(id));
     }
 
     @Override

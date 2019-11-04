@@ -1,10 +1,13 @@
 package net.vpc.app.vainruling.core.web.jsf.ctrl;
 
+import java.io.File;
 import net.vpc.app.vainruling.core.service.util.UploadedFileHandler;
 import net.vpc.common.vfs.VFile;
 import org.primefaces.event.FileUploadEvent;
 
 import java.io.IOException;
+import java.io.InputStream;
+import net.vpc.common.io.IOUtils;
 
 /**
  * Created by vpc on 1/1/17.
@@ -23,8 +26,8 @@ public class FileUploadEventHandler implements UploadedFileHandler{
 
     @Override
     public void write(String path) throws IOException {
-        try {
-            event.getFile().write(path);
+        try (InputStream is=event.getFile().getInputstream()){
+            IOUtils.copy(is, new File(path));
         } catch (Exception e) {
             throw new IOException(e);
         }

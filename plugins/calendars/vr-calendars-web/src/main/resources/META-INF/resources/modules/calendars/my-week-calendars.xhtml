@@ -10,97 +10,101 @@ and open the template in the editor.
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://java.sun.com/jsf/core"
->
+      >
 
-<h:head>
-</h:head>
+    <h:head>
+    </h:head>
 
-<h:body>
+    <h:body>
 
 
-    <!--@elvariable id="myWeekCalendarsCtrl" type="net.vpc.app.vainruling.plugins.calendars.web.MyPlanningListCtrl"-->
-    <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.jsf.Vr"-->
-    <ui:composition template="#{vr.privateTemplatePath}">
-        <ui:define name="content">
-            <!--                <h:form id="buttonsForm">
+        <!--@elvariable id="myWeekCalendarsCtrl" type="net.vpc.app.vainruling.plugins.calendars.web.MyPlanningListCtrl"-->
+        <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.jsf.Vr"-->
+        <ui:composition template="#{vr.privateTemplatePath}">
+            <ui:define name="content">
+                <!--                <h:form id="buttonsForm">
+    
+                                     /.row
+                                    <div >
+                                        <p:outputLabel id="buttons">
+                                            <p:commandButton value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton " ajax="true" actionListener="# {myPlanningCtrl.onRefresh}"  update=":listForm"/>
+                                        </p:outputLabel>
+                                    </div>
+    
+                                </h:form>-->
+                <h:form id="listForm">
 
-                                 /.row
-                                <div >
-                                    <p:outputLabel id="buttons">
-                                        <p:commandButton value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton " ajax="true" actionListener="# {myPlanningCtrl.onRefresh}"  update=":listForm"/>
-                                    </p:outputLabel>
-                                </div>
+                    <div >
+                        <p:selectOneMenu value="#{myWeekCalendarsCtrl.model.selectionIndex}">
+                            <p:ajax listener="#{myWeekCalendarsCtrl.onGroupChanged}" update=":listForm"/>
+                            <f:selectItem itemLabel="Selectionner..." itemValue=""/>
+                            <f:selectItems value="#{myWeekCalendarsCtrl.model.groups}"/>
+                        </p:selectOneMenu>
+                        <!--<p:commandButton value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton " ajax="true" actionListener="# {teacherCourseLoadCtrl.onRefresh}"  update=":listForm"/>-->
+                    </div>
 
-                            </h:form>-->
-            <h:form id="listForm">
-
-                <div >
-                    <p:selectOneMenu value="#{myWeekCalendarsCtrl.model.selectionIndex}">
-                        <p:ajax listener="#{myWeekCalendarsCtrl.onGroupChanged}" update=":listForm"/>
-                        <f:selectItem itemLabel="Selectionner..." itemValue=""/>
-                        <f:selectItems value="#{myWeekCalendarsCtrl.model.groups}"/>
-                    </p:selectOneMenu>
-                    <!--<p:commandButton value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton " ajax="true" actionListener="# {teacherCourseLoadCtrl.onRefresh}"  update=":listForm"/>-->
-                </div>
-
-                <div >
-                    <div class="table-responsive">
-                        <p:outputLabel value="Aucun Emploi du temps n'a pu etre resolu" rendered="#{
-                                    myWeekCalendarsCtrl.model.selectionIndex ne null
-                                    and
-                                    (myWeekCalendarsCtrl.model.planning eq null 
-                                    or (myWeekCalendarsCtrl.model.planning.size()) eq 0
-                                    )
+                    <div >
+                        <div class="table-responsive">
+                            <p:outputLabel value="Aucun Emploi du temps n'a pu etre resolu" rendered="#{
+                                           myWeekCalendarsCtrl.model.selectionIndex ne null
+                                               and
+                                               (myWeekCalendarsCtrl.model.planning eq null 
+                                               or (myWeekCalendarsCtrl.model.planning.size()) eq 0
+                                               )
                             }"/>
-                        <p:panelGrid
+                            <p:panelGrid
                                 style="width: 100%"
                                 rendered="#{myWeekCalendarsCtrl.model.planning ne null and (myWeekCalendarsCtrl.model.planning.size()) gt 0}">
-                            <p:row>
-                                <p:column styleClass="ui-widget-header"><p:outputLabel value=""/></p:column>
-                                <p:column styleClass="ui-widget-header"><p:outputLabel
-                                        value="#{myWeekCalendarsCtrl.model.planning[0].dayName}"/></p:column>
-                                <p:column styleClass="ui-widget-header"><p:outputLabel value="Mardi"/></p:column>
-                                <p:column styleClass="ui-widget-header"><p:outputLabel value="Mercredi"/></p:column>
-                                <p:column styleClass="ui-widget-header"><p:outputLabel value="Jeudi"/></p:column>
-                                <p:column styleClass="ui-widget-header"><p:outputLabel value="Vendredi"/></p:column>
-                                <p:column styleClass="ui-widget-header"><p:outputLabel value="Samedi"/></p:column>
-                            </p:row>
-                            <ui:repeat var="h" value="#{myWeekCalendarsCtrl.model.planning[0].hours}" varStatus="hs">
                                 <p:row>
-                                    <p:column styleClass="ui-widget-header">
-                                        <p:outputLabel
-                                                value="#{myWeekCalendarsCtrl.model.planning[hs.index].hours[hs.index].hour}"/>
-                                    </p:column>
-                                    <ui:repeat var="r" value="#{myWeekCalendarsCtrl.model.planning}">
-                                        <p:column
-                                                style="width:15.5%;#{myWeekCalendarsCtrl.resolveCssStyleForCourse(r.hours[hs.index].subject)}"
-                                                >
-                                            <h:panelGrid columns="1">
-                                                <p:outputLabel value="#{r.hours[hs.index].subject}"
-                                                               style="font-weight: bold"/>
-                                                <p:outputLabel value="#{r.hours[hs.index].actor}"
-                                                               style="#{myWeekCalendarsCtrl.resolveCssStyleForClass(r.hours[hs.index].students)}"
-                                                        />
-                                                <p:outputLabel value="#{r.hours[hs.index].activity}"/>
-                                                <p:outputLabel value="#{r.hours[hs.index].room}"/>
-                                            </h:panelGrid>
-                                        </p:column>
-                                    </ui:repeat>
+                                    <p:column styleClass="ui-widget-header"><p:outputLabel value=""/></p:column>
+                                    <p:column styleClass="ui-widget-header"><p:outputLabel
+                                            value="#{myWeekCalendarsCtrl.model.planning[0].dayName}"/></p:column>
+                                    <p:column styleClass="ui-widget-header"><p:outputLabel value="Mardi"/></p:column>
+                                    <p:column styleClass="ui-widget-header"><p:outputLabel value="Mercredi"/></p:column>
+                                    <p:column styleClass="ui-widget-header"><p:outputLabel value="Jeudi"/></p:column>
+                                    <p:column styleClass="ui-widget-header"><p:outputLabel value="Vendredi"/></p:column>
+                                    <p:column styleClass="ui-widget-header"><p:outputLabel value="Samedi"/></p:column>
                                 </p:row>
-                            </ui:repeat>
-                        </p:panelGrid>
+                                <ui:repeat var="h" value="#{myWeekCalendarsCtrl.model.hours}" varStatus="hs">
+                                    <p:row>
+                                        <p:column styleClass="ui-widget-header" style="padding: 0px;">
+                                            <p:outputLabel
+                                                value="#{myWeekCalendarsCtrl.model.getHour(hs.index)}"/>
+                                        </p:column>
+                                        <ui:repeat var="r" value="#{myWeekCalendarsCtrl.model.planning}">
+                                            <p:column style="width:15.5%;padding: 0px;vertical-align: top;">
+                                                <table style="width: 100%;height: 100%;"><tbody><tr>
+                                                            <p:repeat value="#{r.hours[hs.index].activities}" var="act">
+                                                                <td style="width: #{vr.getInvPercentString(r.hours[hs.index].activities.size())};height: 100%;#{myWeekCalendarsCtrl.resolveCssStyleForCourse(act)}">
+                                                                    <h:panelGrid columns="1">
+                                                                        <p:outputLabel value="#{act.subject}"
+                                                                                       style="font-weight: bold"/>
+                                                                        <p:outputLabel value="#{act.actor}"
+                                                                                       style="#{myWeekCalendarsCtrl.resolveCssStyleForClass(act)}"
+                                                                                       />
+                                                                        <p:outputLabel value="#{act.activity}"/>
+                                                                        <p:outputLabel value="#{act.room}"/>
+                                                                    </h:panelGrid>
+                                                                </td>
+                                                            </p:repeat>
+                                                        </tr></tbody></table>
+                                            </p:column>
+                                        </ui:repeat>
+                                    </p:row>
+                                </ui:repeat>
+                            </p:panelGrid>
+                        </div>
                     </div>
-                </div>
 
-            </h:form>
-
-
-        </ui:define>
+                </h:form>
 
 
-    </ui:composition>
+            </ui:define>
 
 
-</h:body>
+        </ui:composition>
+
+
+    </h:body>
 
 </html>

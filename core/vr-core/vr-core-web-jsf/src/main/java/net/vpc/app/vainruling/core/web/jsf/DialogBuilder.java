@@ -1,13 +1,9 @@
 package net.vpc.app.vainruling.core.web.jsf;
 
-import net.vpc.app.vainruling.core.service.editor.DialogResult;
 import org.primefaces.PrimeFaces;
 
 import java.util.HashMap;
 import java.util.Map;
-import javax.faces.context.FacesContext;
-import net.vpc.common.jsf.FacesUtils;
-import org.primefaces.util.Constants;
 
 public class DialogBuilder {
 
@@ -147,6 +143,20 @@ public class DialogBuilder {
 //        }
         //end disable primefaces bug
         PrimeFaces.current().dialog().closeDynamic(null);
+//        PrimeFaces.current().dialog().closeDynamic(new DialogResult(null, null));
+    }
+
+    public static void closeCurrent(Object data) {
+        // disable bug in Primefaces
+//        FacesContext facesContext = FacesContext.getCurrentInstance();
+//        Map<String, String> params = facesContext.getExternalContext().getRequestParameterMap();
+////        Map<String, Object> session = facesContext.getExternalContext().getSessionMap();
+//        if(params.get(Constants.DIALOG_FRAMEWORK.CONVERSATION_PARAM)==null){
+//            FacesUtils.getHttpRequest().getP.(Constants.DIALOG_FRAMEWORK.CONVERSATION_PARAM,"DUMMY_CONVERSATION_PARAM");
+////            params.put(Constants.DIALOG_FRAMEWORK.CONVERSATION_PARAM,"DUMMY_CONVERSATION_PARAM");
+//        }
+        //end disable primefaces bug
+        PrimeFaces.current().dialog().closeDynamic(data);
 //        PrimeFaces.current().dialog().closeDynamic(new DialogResult(null, null));
     }
 }

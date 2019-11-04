@@ -8,7 +8,6 @@ package net.vpc.app.vainruling.core.service.util;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
-import net.vpc.common.strings.StringUtils;
 import net.vpc.common.util.Convert;
 
 /**
@@ -17,7 +16,8 @@ import net.vpc.common.util.Convert;
  */
 public class ColumnMappingMatcher {
 
-    public static void match(Object o, Object[] columnTitles) {
+    public static int match(Object o, Object[] columnTitles) {
+        int found = 0;
         try {
             String[] scolumnTitles = new String[columnTitles.length];
             Map<String, Integer> m = new HashMap<>();
@@ -36,6 +36,7 @@ public class ColumnMappingMatcher {
                         if (m.get(y) != null) {
                             declaredField.set(o, m.get(y));
                             ok = true;
+                            found++;
                             break;
                         }
                     }
@@ -47,5 +48,6 @@ public class ColumnMappingMatcher {
         } catch (Exception ex) {
             throw new IllegalArgumentException(ex);
         }
+        return found;
     }
 }

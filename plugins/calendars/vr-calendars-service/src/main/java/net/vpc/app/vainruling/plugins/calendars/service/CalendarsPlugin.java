@@ -26,6 +26,7 @@ import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.UPA;
 import net.vpc.upa.VoidAction;
 import net.vpc.app.vainruling.VrStart;
+import net.vpc.app.vainruling.plugins.calendars.service.dto.CalendarActivity;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -33,13 +34,17 @@ import net.vpc.app.vainruling.VrStart;
 @VrPlugin()
 public class CalendarsPlugin {
 
+    public static CalendarsPlugin get() {
+        return VrApp.getBean(CalendarsPlugin.class);
+    }
+
     @Autowired
     CorePlugin core;
     Map<String, AppWeekCalendarProvider> weekCalendarProviders;
     Map<String, AppCalendarService> calendarEventServices;
 
     @VrStart
-    public void onStart() {
+    private void onStart() {
         weekCalendarProviders = VrApp.getContext().getBeansOfType(AppWeekCalendarProvider.class);
         calendarEventServices = VrApp.getContext().getBeansOfType(AppCalendarService.class);
         core.addProfileRightName(CalendarsPluginSecurity.RIGHT_CUSTOM_EDUCATION_MY_PLANNING, "MyPlanning");
@@ -94,6 +99,9 @@ public class CalendarsPlugin {
 
     public WeekCalendar mergeWeekCalendars(List<WeekCalendar> plannings, String newName) {
         return UPA.getPersistenceUnit().invokePrivileged(() -> {
+            if(plannings.size()==1){
+                return plannings.get(0);
+            }
             Map<String, WeekCalendar> planningsMap = new HashMap<>();
 
             for (WeekCalendar calendarWeek : plannings) {
@@ -116,7 +124,6 @@ public class CalendarsPlugin {
                 WeekCalendar fusion = new WeekCalendar();
                 fusion.setSourceName("");
                 fusion.setPlanningName(newName);
-                HashSet<String> visited = new HashSet<>();
                 for (WeekCalendar pp : planningsMap.values()) {
                     if (fusion.getDays() == null) {
                         fusion.setDays(new ArrayList<CalendarDay>());
@@ -136,12 +143,6 @@ public class CalendarsPlugin {
                             fusion.getDays().add(day0);
                         }
                         for (CalendarHour hour : day.getHours()) {
-                            String ha = "A:" + day.getDayName() + ":" + hour.getHour() + ":" + StringUtils.nonNull(hour.getActivity());
-                            String hr = "R:" + day.getDayName() + ":" + hour.getHour() + ":" + StringUtils.nonNull(hour.getRoom());
-                            String hs = "S:" + day.getDayName() + ":" + hour.getHour() + ":" + StringUtils.nonNull(hour.getStudents());
-                            String hj = "J:" + day.getDayName() + ":" + hour.getHour() + ":" + StringUtils.nonNull(hour.getSubject());
-                            String hc = "C:" + day.getDayName() + ":" + hour.getHour() + ":" + StringUtils.nonNull(hour.getActor());
-
                             CalendarHour h0 = null;
                             for (CalendarHour dd : day0.getHours()) {
                                 if (dd.getHour().equals(hour.getHour())) {
@@ -153,44 +154,23 @@ public class CalendarsPlugin {
                             if (h0 == null) {
                                 h0 = new CalendarHour();
                                 h0.setHour(hour.getHour());
-                                h0.setActivity(hour.getActivity());
-                                h0.setRoom(hour.getRoom());
-                                h0.setStudents(hour.getStudents());
-                                h0.setSubject(hour.getSubject());
-                                h0.setActor(hour.getActor());
-
+                                for (CalendarActivity act2 : hour.getActivities()) {
+                                    if (!CalendarsUtils.isBlank(act2)) {
+                                        h0.getActivities().add(new CalendarActivity(act2));
+                                    }
+                                }
                                 day0.getHours().add(h0);
-                                visited.add(ha);
-                                visited.add(hr);
-                                visited.add(hs);
-                                visited.add(hj);
-                                visited.add(hc);
                             } else {
-                                if (!visited.contains(ha) && !StringUtils.isBlank(hour.getActivity())) {
-                                    h0.setActivity((StringUtils.isBlank(h0.getActivity())) ? hour.getActivity() : (h0.getActivity() + " / " + hour.getActivity()));
-                                    visited.add(ha);
-                                }
-                                if (!visited.contains(hr) && !StringUtils.isBlank(hour.getRoom())) {
-                                    h0.setRoom((StringUtils.isBlank(h0.getRoom())) ? hour.getRoom() : (h0.getRoom() + " / " + hour.getRoom()));
-                                    visited.add(hr);
-                                }
-                                if (!visited.contains(hs) && !StringUtils.isBlank(hour.getStudents())) {
-                                    h0.setStudents((StringUtils.isBlank(h0.getStudents())) ? hour.getStudents() : (h0.getStudents() + " / " + hour.getStudents()));
-                                    visited.add(hs);
-                                }
-                                if (!visited.contains(hj) && !StringUtils.isBlank(hour.getSubject())) {
-                                    h0.setSubject((StringUtils.isBlank(h0.getSubject())) ? hour.getSubject() : (h0.getSubject() + " / " + hour.getSubject()));
-                                    visited.add(hj);
-                                }
-                                if (!visited.contains(hc) && !StringUtils.isBlank(hour.getActor())) {
-                                    h0.setActor((StringUtils.isBlank(h0.getActor())) ? hour.getActor() : (h0.getActor() + " / " + hour.getActor()));
-                                    visited.add(hj);
+                                for (CalendarActivity act2 : hour.getActivities()) {
+                                    if (!h0.getActivities().contains(act2)) {
+                                        h0.getActivities().add(new CalendarActivity(act2));
+                                    }
                                 }
                             }
                         }
                     }
                 }
-                return fusion;
+                return CalendarsUtils.buildWeekCalendar(fusion);
             } else if (planningsMap.size() == 1) {
                 for (WeekCalendar calendarWeek : planningsMap.values()) {
                     return calendarWeek;

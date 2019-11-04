@@ -1,8 +1,7 @@
 package net.vpc.app.vainruling.plugins.academic.pbl.model;
 
-import net.vpc.app.vainruling.core.service.model.AppPeriod;
-import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
+import net.vpc.upa.RelationshipType;
 import net.vpc.upa.config.*;
 
 /**
@@ -23,6 +22,7 @@ public class ApblSessionManager {
     @Main
     private AcademicTeacher teacher;
     @Summary
+    @ManyToOne(relationType = RelationshipType.COMPOSITION)
     private ApblSession session;
 
     public int getId() {

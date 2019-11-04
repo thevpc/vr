@@ -24,7 +24,6 @@ import net.vpc.common.vfs.VirtualFileSystem;
 import net.vpc.upa.Action;
 import net.vpc.upa.UPA;
 import net.vpc.upa.VoidAction;
-import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
 import org.springframework.stereotype.Controller;
 
@@ -50,10 +49,8 @@ public class DocumentsDialogCtrl {
         openDialog(VrUtils.parseJSONObject(config, Config.class));
     }
 
-
     public void openDialog(Config config) {
         initContent(config);
-
 
         new DialogBuilder("/modules/files/documents-dialog")
                 .setResizable(true)
@@ -124,8 +121,7 @@ public class DocumentsDialogCtrl {
 //        }
         if ("Security".equals(buttonId)) {
             return UPA.getPersistenceGroup().getSecurityManager().isAllowedKey(CorePluginSecurity.RIGHT_FILESYSTEM_ASSIGN_RIGHTS)
-                    &&
-                    !getModel().getCurrent().getFile().getACL().isReadOnly();
+                    && !getModel().getCurrent().getFile().getACL().isReadOnly();
         }
         return CorePlugin.get().getCurrentToken().isAdmin();
     }
@@ -140,10 +136,7 @@ public class DocumentsDialogCtrl {
                 sb.append(file.getFile().getBaseFile("vrfs").getPath());
             }
         }
-        //Object obj
-        RequestContext.getCurrentInstance().closeDialog(
-                new DialogResult(sb.toString(), getModel().getConfig().getUserInfo())
-        );
+        DialogBuilder.closeCurrent(new DialogResult(sb.toString(), getModel().getConfig().getUserInfo()));
     }
 
     public void initContent(Config cmd) {
@@ -226,7 +219,6 @@ public class DocumentsDialogCtrl {
 //        VirtualFileSystem userfs = rootfs.filter(null);
 //        return userfs;
 //    }
-
     public void selectDirectory(VFile file) {
         getModel().setCurrent(DocumentsUtils.createFileInfo(file.getName(), VFileKind.ORDINARY, file));
         onRefresh();
@@ -234,7 +226,7 @@ public class DocumentsDialogCtrl {
 
     public void selectFile(VFile file) {
         getModel().setCurrent(DocumentsUtils.createFileInfo(file));
-        RequestContext.getCurrentInstance().closeDialog(
+        DialogBuilder.closeCurrent(
                 new DialogResult(getModel().getCurrent().getFile().getBaseFile("vrfs").getPath(), getModel().getConfig().getUserInfo())
         );
     }
@@ -255,7 +247,6 @@ public class DocumentsDialogCtrl {
     public void onRefresh() {
         getModel().setFiles(DocumentsUtils.loadFiles(getModel().getCurrent().getFile()));
     }
-
 
     public void handleNewFile(FileUploadEvent event) {
         UPA.getContext().invokePrivileged(new VoidAction() {

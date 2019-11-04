@@ -23,15 +23,29 @@ import java.util.logging.Level;
 import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.common.util.MapUtils;
-import net.vpc.app.vainruling.VrEditorMainPhotoProvider;
 import net.vpc.app.vainruling.VrEditorSearchFactory;
+import net.vpc.app.vainruling.core.service.model.AppGender;
+import net.vpc.app.vainruling.core.service.model.AppUserType;
 
 class CorePluginBodyDAOManager extends CorePluginBody {
 
     public <T> T findOrCreate(T o) {
-        PersistenceUnit pu = UPA.getPersistenceUnit();
-        Entity e = pu.getEntity(o.getClass());
-        return findOrCreate(o, e.getMainField().getName());
+        String fname = null;
+        if (o == null) {
+            throw new IllegalArgumentException("Null Object");
+        }
+        if (o instanceof AppUserType) {
+            fname = "code";
+        } else if (o instanceof AppUser) {
+            fname = "login";
+        } else if (o instanceof AppGender) {
+            fname = "code";
+        } else {
+            PersistenceUnit pu = UPA.getPersistenceUnit();
+            Entity e = pu.getEntity(o.getClass());
+            fname = e.getMainField().getName();
+        }
+        return findOrCreate(o, fname);
     }
 
     public <T> T findOrCreate(T o, String field) {
@@ -725,7 +739,7 @@ class CorePluginBodyDAOManager extends CorePluginBody {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity entity = pu.getEntity(entityName);
         VrEditorSearchFactory g = resolveEntityEditorSearchFactory(entityName);
-        VrEditorSearch objSearch=null;
+        VrEditorSearch objSearch = null;
         if (g != null) {
             objSearch = g.create(name, entity, expression);
         }

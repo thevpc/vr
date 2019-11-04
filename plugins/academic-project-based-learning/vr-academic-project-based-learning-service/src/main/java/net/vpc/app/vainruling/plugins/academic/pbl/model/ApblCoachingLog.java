@@ -4,6 +4,7 @@ import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.upa.config.*;
 
 import java.util.Date;
+import net.vpc.upa.RelationshipType;
 
 /**
  * Created by vpc on 9/19/16.
@@ -22,6 +23,7 @@ public class ApblCoachingLog {
     @Sequence
     private int id;
     @Main
+    @ManyToOne(relationType = RelationshipType.COMPOSITION)
     private ApblCoaching coaching;
     @Summary
     private Date appointmentDate;

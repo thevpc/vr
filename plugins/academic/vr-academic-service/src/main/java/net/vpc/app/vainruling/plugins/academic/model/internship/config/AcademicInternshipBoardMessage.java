@@ -16,7 +16,7 @@ import java.util.Date;
  * @author taha.bensalah@gmail.com
  */
 @Entity(listOrder = "this.name")
-@Path("Education/Config")
+@Path("Repository/Education")
 public class AcademicInternshipBoardMessage {
 
     @Path("Main")

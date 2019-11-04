@@ -23,6 +23,7 @@ import java.sql.Timestamp;
 @Path("Contact")
 @Properties(
         {
+             @Property(name = UIConstants.Grid.ROW_STYLE, value = "(i.object.deleted) ?'vr-row-deleted':''"),
                 @Property(name = "cache.navigationDepth", valueType = "int", value = "5"),
                 @Property(name = "ui.auto-filter.department", value = "{expr='this.user.department',order=1}"),
                 @Property(name = "ui.auto-filter.officialDiscipline", value = "{expr='this.officialDiscipline',order=2}"),

@@ -5,6 +5,7 @@
  */
 package net.vpc.app.vainruling.core.service.model;
 
+import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.upa.config.*;
 
 
@@ -15,7 +16,8 @@ import net.vpc.upa.config.*;
 @Path("Contact")
 @Properties(
         {
-            @Property(name = "ui.auto-filter.company", value = "{expr='this.company',order=1}")
+                        @Property(name = UIConstants.Grid.ROW_STYLE, value = "(i.object.deleted) ?'vr-row-deleted':''")
+            ,@Property(name = "ui.auto-filter.company", value = "{expr='this.company',order=1}")
             ,
                 @Property(name = "ui.auto-filter.positionTitle1", value = "{expr='this.positionTitle1',order=2}")
             ,

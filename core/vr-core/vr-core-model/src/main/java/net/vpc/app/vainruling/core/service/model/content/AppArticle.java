@@ -41,8 +41,8 @@ public class AppArticle {
     @Summary
     @Properties(
             {
-                @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.PROFILE_EXPRESSION)
-                , @Property(name = UIConstants.Form.SPAN, value = "MAX_VALUE")
+                @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.PROFILE_EXPRESSION),
+                @Property(name = UIConstants.Form.SPAN, value = "MAX_VALUE")
             }
     )
     private String recipientProfiles;

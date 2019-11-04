@@ -7,27 +7,22 @@ generate Vain Ruling Web Framework project/modules/components
 
 ##COMMANDS##:
     {{new}} \[**<options>**\]... <project-name>
-    {{n}} \[**<options>**\]... <project-name>
-    Creates a new parent maven project and an initial VRWF app.
+    {{n}}   \[**<options>**\]... <project-name>
+    Create a new parent maven project and an initial VRWF app.
     options
         **--name** <project-name>
             project name in the form of group:name#version
         **--load** <from-file>
             load previous project configuration saved using --save option
         **--save** <to-file>
-
         **--edu**
             include education plugins
-
         **--equip**
             include equipment plugins
-
         **--all**
             include all plugins
-
         **--exp**
             include experimental plugins
-
         **--none**
             do not include any plugin
 
