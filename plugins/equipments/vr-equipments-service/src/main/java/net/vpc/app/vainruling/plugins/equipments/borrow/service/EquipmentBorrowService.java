@@ -647,9 +647,9 @@ public class EquipmentBorrowService {
                     .setArchive(false)
                     .setCancelled(false)
             )) {
-                EquipmentForResponsibleInfo old = map.get(e.getEquipment().getId());
+                EquipmentForResponsibleInfo old = map.get(e.getId());
                 if (old == null) {
-                    map.put(e.getEquipment().getId(), new EquipmentForResponsibleInfo(EquipmentBorrowOperatorType.USER, e));
+                    map.put(e.getId(), new EquipmentForResponsibleInfo(EquipmentBorrowOperatorType.USER, e));
                 }
             }
         }
@@ -661,9 +661,9 @@ public class EquipmentBorrowService {
                     .setArchive(false)
                     .setCancelled(false)
             )) {
-                EquipmentForResponsibleInfo old = map.get(e.getEquipment().getId());
+                EquipmentForResponsibleInfo old = map.get(e.getId());
                 if (old == null) {
-                    map.put(e.getEquipment().getId(), new EquipmentForResponsibleInfo(EquipmentBorrowOperatorType.OPERATOR, e));
+                    map.put(e.getId(), new EquipmentForResponsibleInfo(EquipmentBorrowOperatorType.OPERATOR, e));
                 }
             }
         }
@@ -675,9 +675,9 @@ public class EquipmentBorrowService {
                     .setArchive(false)
                     .setCancelled(false)
             )) {
-                EquipmentForResponsibleInfo old = map.get(e.getEquipment().getId());
+                EquipmentForResponsibleInfo old = map.get(e.getId());
                 if (old == null) {
-                    map.put(e.getEquipment().getId(), new EquipmentForResponsibleInfo(EquipmentBorrowOperatorType.SUPER_OPERATOR, e));
+                    map.put(e.getId(), new EquipmentForResponsibleInfo(EquipmentBorrowOperatorType.SUPER_OPERATOR, e));
                 }
             }
         }

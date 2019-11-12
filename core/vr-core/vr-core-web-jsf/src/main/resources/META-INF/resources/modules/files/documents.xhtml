@@ -13,90 +13,6 @@ and open the template in the editor.
       >
 
     <h:head>
-        <style>
-            .pb-filemng-template {
-                margin-top: 40px;
-                font-family: 'Sansita', sans-serif;
-            }
-
-            .pb-filemng-navbar {
-                margin-bottom: 0;
-            }
-
-            .treeview-toggle-btn {
-                margin-left: 15px;
-            }
-
-            .pb-filemng-template-btn {
-                background-color: Transparent;
-                background-repeat:no-repeat;
-                border: none;
-                cursor:pointer;
-                outline:none;
-                color: gray;
-                padding: 0px 13px 0px 13px;
-            }
-
-            .pb-filemng-active {
-                border-bottom: 2px solid #6d97db;
-                color: #5f6977;
-            }
-
-            .pb-filemng-template-btn:hover {
-                color: blue;
-            }
-
-            .pb-filemng-body-folders > img:hover {
-                cursor: pointer;
-            }
-
-            .btn-align {
-                margin-top: 7px;
-            }
-
-            .pb-filemng-template-treeview {
-                border-right: 1px solid gray;
-            }
-
-            .pb-filemng-folder {
-                color: orange;
-                padding-bottom: 3px;
-            }
-
-            .pb-filemng-paragraphs {
-                margin-top: -20px;
-                text-align: center;
-            }
-
-            .img-responsive {
-                margin: 0 auto;
-            }
-
-            @media screen and (max-width: 767px) {
-
-                .pb-filemng-template-treeview {
-                    border-right: none;
-                }
-
-                #options {
-                    text-align: center;
-                }
-
-                #options > li {
-                    display: inline-block;
-                }
-
-                #pb-filemng-navigation > ul {
-                    text-align: center;
-                }
-
-                #pb-filemng-navigation > ul > li {
-                    display: inline-block;
-                }
-
-            }
-        </style>
-
     </h:head>
 
     <h:body>
@@ -119,39 +35,48 @@ and open the template in the editor.
                     <div style="margin-bottom: 10px;">
                         <p:commandButton rendered="#{documentsCtrl.isEnabledButton('Refresh')}"
                                          title="Actualiser" icon="fa fa-refresh"
-                                         styleClass="ui-ribbon-bigbutton  vr-toolbox-button btn btn-default" ajax="true"
+                                         styleClass="ui-ribbon-bigbutton  vr-toolbox-button-fixed-height btn btn-default" ajax="true"
                                          actionListener="#{documentsCtrl.onRefresh}" update=":listForm"/>
                         <p:commandButton rendered="#{documentsCtrl.isEnabledButton('NewFolder')}"
                                          title="Nouveau Répertoire" icon="fa fa-folder-o"
-                                         styleClass="ui-ribbon-bigbutton  vr-toolbox-button btn-primary" ajax="true"
+                                         styleClass="ui-ribbon-bigbutton  vr-toolbox-button-fixed-height btn-default" ajax="true"
                                          actionListener="#{documentsCtrl.onNewFolder}"
                                          onclick="PF('dlgNewFolder').show();"
                                          />
-                        <p:commandButton rendered="#{documentsCtrl.isEnabledButton('NewFile')}"
+<!--                        <p:commandButton rendered="#_{documentsCtrl.isEnabledButton('NewFile')}"
                                          title="Nouveau Fichier" icon="fa fa-file-o"
-                                         styleClass="ui-ribbon-bigbutton  vr-toolbox-button btn-primary" ajax="true"
-                                         actionListener="#{documentsCtrl.onNewFile}" update=":listForm"/>
+                                         styleClass="ui-ribbon-bigbutton  vr-toolbox-button-fixed-height btn-default" ajax="true"
+                                         actionListener="#_{documentsCtrl.onNewFile}" update=":listForm"/>-->
                         <p:commandButton rendered="#{documentsCtrl.isEnabledButton('Upload')}"
                                          title="Téléverser" icon="fa fa-cloud-upload"
-                                         styleClass="ui-ribbon-bigbutton  vr-toolbox-button btn-success" ajax="true"
+                                         styleClass="ui-ribbon-bigbutton  vr-toolbox-button-fixed-height btn-default" ajax="true"
                                          actionListener="#{documentsCtrl.onUpload}" update=":listForm"/>
                         <p:commandButton rendered="#{documentsCtrl.isEnabledButton('Remove')}"
                                          title="Supprimer" icon="fa fa-trash-o"
-                                         styleClass="ui-ribbon-bigbutton  vr-toolbox-button btn btn-danger" ajax="true"
+                                         styleClass="ui-ribbon-bigbutton  vr-toolbox-button-fixed-height btn btn-danger" ajax="true"
                                          onclick="PF('confirmationDelete').show();"/>
+                        <p:commandButton rendered="#{documentsCtrl.isEnabledButton('Copy')}"
+                                         title="Copier" icon="fa fa-copy"
+                                         styleClass="ui-ribbon-bigbutton  vr-toolbox-button-fixed-height btn btn-default" ajax="true"
+                                         actionListener="#{documentsCtrl.onCopy}"  update=":listForm"/>
+                        <p:commandButton rendered="#{documentsCtrl.isEnabledButton('Cut')}"
+                                         title="Couper" icon="fa fa-cut"
+                                         styleClass="ui-ribbon-bigbutton  vr-toolbox-button-fixed-height btn btn-default" ajax="true"
+                                         actionListener="#{documentsCtrl.onCut}"  update=":listForm"/>
+                        <p:commandButton rendered="#{documentsCtrl.isEnabledButton('Paste')}"
+                                         title="Couper" icon="fa fa-paste"
+                                         styleClass="ui-ribbon-bigbutton  vr-toolbox-button-fixed-height btn btn-default" ajax="true"
+                                         actionListener="#{documentsCtrl.onPaste}"  update=":listForm"/>
                         <p:commandButton rendered="#{documentsCtrl.isEnabledButton('Cancel')}"
                                          title="Fermer" icon="fa fa-arrow-left"
-                                         styleClass="ui-ribbon-bigbutton  vr-toolbox-button btn-default" ajax="true"
+                                         styleClass="ui-ribbon-bigbutton  vr-toolbox-button-fixed-height btn-default" ajax="true"
                                          actionListener="#{documentsCtrl.onCancel}" update=":listForm"/>
                     </div>
 
-                    <div class="row">
-                        <p:inputText value="#{documentsCtrl.model.searchString}" styleClass="form-control"/>
-                    </div>
 
                     <div class="box box-primary">
                         <div class="box-header with-border">
-                            <h3 class="box-title"><p:outputLabel value="#{documentsCtrl.model.current.path}"/></h3>
+                            <h3 class="box-title">Vous êtes ici : <p:outputLabel value="#{documentsCtrl.model.current.path}"/></h3>
                             <div class="box-tools pull-right">
                                 <div class="btn-group">
                                     <p:commandLink class="btn btn-box-tool" actionListener="#{documentsCtrl.goParent()}" rendered="#{documentsCtrl.hasParent()}" update="@form" process="@this" title="Dossier Parent">
@@ -162,19 +87,21 @@ and open the template in the editor.
                                     <ul class="dropdown-menu" role="menu">
                                         <li>
                                             <p:commandLink actionListener="#{documentsCtrl.setListMode(true)}" update="@form" process="@this">
-                                                <i class="fa fa-list"></i> List
+                                                <i class="fa fa-list"></i> Afficher Liste
                                             </p:commandLink>
                                         </li>
                                         <li>
                                             <p:commandLink actionListener="#{documentsCtrl.setListMode(false)}" update="@form" process="@this">
-                                                <i class="fa fa-list"></i> Icones
+                                                <i class="fa fa-list"></i> Afficher Icones
                                             </p:commandLink>
                                         </li>
+                                        <li class="divider"></li>
                                         <li>
                                             <p:commandLink actionListener="#{documentsCtrl.switchSelectionMode()}" update="@form" process="@this">
-                                                <i class="fa fa-check-square-o"></i> Sélection
+                                                <i class="fa fa-check-square-o"></i> Mode Sélection
                                             </p:commandLink>
                                         </li>
+                                        <li class="divider"></li>
                                         <ui:fragment rendered="#{documentsCtrl.isEnabledButton('Security')}">
                                             <li>
                                                 <p:commandLink actionListener="#{documentsCtrl.onShowSecurityDialog()}" ajax="true" update="@form" process="@this">
@@ -189,6 +116,8 @@ and open the template in the editor.
                         <!-- /.box-header -->
                         <!-- form start -->
                         <div class="box-body">
+                            <p:inputText value="#{documentsCtrl.model.searchString}" styleClass="form-control" style="margin-bottom: 5px;" placeholder="chercher..."/>
+
                             <p:dataTable id="filesTable" var="i" value="#{documentsCtrl.model.files}"
                                          class="table table-bordered table-hover"
                                          paginatorAlwaysVisible="false"
@@ -221,6 +150,7 @@ and open the template in the editor.
                                                    ajax="false"
                                                    update="filesTable"
                                                    style="#{i.labelCss}"
+                                                   styleClass="#{i.copied ?'file-copied':i.cut?'file-cut':''}"
                                                    onclick="PrimeFaces.monitorDownload(null, updateFilesTable)"
                                                    >
                                         <p:fileDownload value="#{documentsCtrl.getContent(i)}"/>
@@ -249,19 +179,21 @@ and open the template in the editor.
                                         </p:commandLink>
                                         <p:commandLink rendered="#{!i.file.directory}"
                                                        disabled="#{!documentsCtrl.isEnabledButton('Download',i)}"
-                                                       value="#{i.longName}"
                                                        ajax="false"
                                                        update="filesTable"
                                                        style="#{i.labelCss}"
                                                        onclick="PrimeFaces.monitorDownload(null, updateFilesTable)"
+                                                        title="#{i.name}" 
                                                        >
-                                            <img class="img-responsive" src="#{vr.privateThemePath}/images/icons/#{i.iconCss}.png" style="width: 64px"/>
+                                            <img class="img-responsive vr-fs-icon" src="#{vr.privateThemePath}/images/icons/#{i.iconCss}.png" style="width: 64px"/>
                                             <p:fileDownload value="#{documentsCtrl.getContent(i)}"/>
                                         </p:commandLink>
                                         <br/>
                                         <p class="pb-filemng-paragraphs">
-                                            <p:selectBooleanCheckbox value="#{i.selected}" rendered="#{documentsCtrl.isSelectable(i)}" itemLabel="#{i.name}"/>
-                                            <p:outputLabel value="#{i.name}" rendered="#{!documentsCtrl.isSelectable(i)}"/>
+                                            <p:selectBooleanCheckbox value="#{i.selected}" rendered="#{documentsCtrl.isSelectable(i)}" itemLabel="#{i.name}" 
+                                                                     styleClass="pb-label #{i.copied ?'file-copied':i.cut?'file-cut':''}"
+                                                                     />
+                                            <p:outputLabel value="#{i.name}" rendered="#{!documentsCtrl.isSelectable(i)}" styleClass="pb-label #{i.copied ?'file-copied':i.cut?'file-cut':''}"/>
                                         </p>
                                     </div>
                                 </ui:repeat>
@@ -270,6 +202,7 @@ and open the template in the editor.
                         <!-- /.box-body -->
 
                         <div class="box-footer">
+                            <p:outputLabel value="#{documentsCtrl.model.files.size()} fichier(s) ou dossier(s)"/>
                         </div>
                     </div>
 

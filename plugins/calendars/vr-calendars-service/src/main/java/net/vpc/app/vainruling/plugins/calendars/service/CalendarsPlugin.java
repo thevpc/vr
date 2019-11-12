@@ -26,6 +26,7 @@ import net.vpc.upa.PersistenceUnit;
 import net.vpc.upa.UPA;
 import net.vpc.upa.VoidAction;
 import net.vpc.app.vainruling.VrStart;
+import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.plugins.calendars.service.dto.CalendarActivity;
 
 /**
@@ -98,8 +99,48 @@ public class CalendarsPlugin {
     }
 
     public WeekCalendar mergeWeekCalendars(List<WeekCalendar> plannings, String newName) {
+        StringBuilder sb = new StringBuilder();
+        if (StringUtils.isBlank(newName)) {
+            int max = 0;
+            List<String> names = new ArrayList<>();
+            for (int i = 0; i < plannings.size(); i++) {
+                String s = VrUtils.normalizeName(plannings.get(i).getPlanningName());
+                names.add(s);
+                int len = s.length();
+                if (max < len) {
+                    max = len;
+                }
+            }
+            String s0 = StringUtils.trim(plannings.get(0).getPlanningName());
+            String s0n = VrUtils.normalizeName(s0);
+
+            for (int i = 0; i < max; i++) {
+                boolean eq = true;
+                for (int j = 1; j < plannings.size(); j++) {
+                    String n = VrUtils.normalizeName(plannings.get(j).getPlanningName());
+                    if (i < n.length()
+                            && i < s0n.length()
+                            && n.charAt(i) == s0n.charAt(i)) {
+                        //ok
+                    } else {
+                        eq = false;
+                    }
+                }
+                if (eq) {
+                    sb.append(s0.charAt(i));
+                } else {
+                    break;
+                }
+            }
+            if (sb.length() > 0 && (sb.charAt(sb.length() - 1) == '-' || sb.charAt(sb.length() - 1) == '.')) {
+                sb.deleteCharAt(sb.length() - 1);
+            }
+            newName = sb.toString();
+        }
+        String newNameNew = newName;
+
         return UPA.getPersistenceUnit().invokePrivileged(() -> {
-            if(plannings.size()==1){
+            if (plannings.size() == 1) {
                 return plannings.get(0);
             }
             Map<String, WeekCalendar> planningsMap = new HashMap<>();
@@ -122,8 +163,10 @@ public class CalendarsPlugin {
 
             if (planningsMap.size() > 1) {
                 WeekCalendar fusion = new WeekCalendar();
+                fusion.setId(VrUtils.normalizeName(newNameNew));
                 fusion.setSourceName("");
-                fusion.setPlanningName(newName);
+                fusion.setPlanningName(newNameNew);
+                fusion.setPlanningUniformName(VrUtils.normalizeName(newNameNew));
                 for (WeekCalendar pp : planningsMap.values()) {
                     if (fusion.getDays() == null) {
                         fusion.setDays(new ArrayList<CalendarDay>());

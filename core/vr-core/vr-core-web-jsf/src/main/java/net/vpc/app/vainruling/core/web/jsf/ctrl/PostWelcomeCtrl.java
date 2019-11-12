@@ -72,7 +72,8 @@ public class PostWelcomeCtrl {
                 a.setSubTitle(getModel().getSubTitle());
                 a.setContent(getModel().getContent());
                 a.setDisposition(d);
-                a.setDecoration(Vr.get().rand("danger", "sucess", "warning", "info", "default", "primary"));
+                //"danger"
+                a.setDecoration(Vr.get().rand("sucess", "warning", "info", "default", "primary"));
                 a.setRecipientProfiles(getModel().getRecipients());
                 a.setIncludeSender(true);
                 if(!getModel().getFiles().isEmpty()){

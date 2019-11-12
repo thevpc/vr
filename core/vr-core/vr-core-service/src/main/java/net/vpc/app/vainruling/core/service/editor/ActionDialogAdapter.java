@@ -5,7 +5,6 @@
  */
 package net.vpc.app.vainruling.core.service.editor;
 
-import net.vpc.app.vainruling.core.service.editor.ActionParam;
 import net.vpc.app.vainruling.core.service.util.PlatformReflector;
 import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.AccessMode;
@@ -27,7 +26,7 @@ import net.vpc.app.vainruling.VrEditorAction;
 public class ActionDialogAdapter {
 
     private final VrEditorActionProcessor instance;
-    private Class entityType;
+    private String entityType;
     private boolean confirm;
     private String actionName;
     private String actionMessage;
@@ -39,11 +38,10 @@ public class ActionDialogAdapter {
     public ActionDialogAdapter(VrEditorActionProcessor instance) {
         this.instance = instance;
         VrEditorAction a = (VrEditorAction) PlatformReflector.getTargetClass(instance).getAnnotation(VrEditorAction.class);
-        entityType = a.entityType();
-        if (!(instance instanceof VrEditorActionDialog) 
+        entityType = a.entityName();
+        if (!(instance instanceof VrEditorActionDialog)
                 && !(instance instanceof VrEditorActionInvoke)
-                && !(instance instanceof VrEditorActionGoto)
-                ) {
+                && !(instance instanceof VrEditorActionGoto)) {
             throw new IllegalArgumentException("Unexpected");
         }
         confirm = a.confirm();
@@ -57,7 +55,7 @@ public class ActionDialogAdapter {
         description = i18n.get(simpleName + ".description");
         label = i18n.get(simpleName + ".label");
         label = StringUtils.isBlank(label) ? actionName : label;
-        
+
     }
 
     public String getDescription() {
@@ -67,7 +65,6 @@ public class ActionDialogAdapter {
     public void setDescription(String description) {
         this.description = description;
     }
-    
 
     public boolean isDialog() {
         return instance instanceof VrEditorActionDialog;
@@ -76,7 +73,7 @@ public class ActionDialogAdapter {
     public boolean isInvoke() {
         return instance instanceof VrEditorActionInvoke;
     }
-    
+
     public boolean isGoto() {
         return instance instanceof VrEditorActionGoto;
     }
@@ -94,10 +91,10 @@ public class ActionDialogAdapter {
     }
 
     public boolean acceptEntity(String entityName) {
-        if (Void.class.equals(entityType)) {
+        if (StringUtils.isBlank(entityType)) {
             return true;
         }
-        return entityType.getSimpleName().equals(entityName);
+        return entityType.equals(entityName);
     }
 
     public boolean isConfirm() {
@@ -120,7 +117,7 @@ public class ActionDialogAdapter {
         return actionName;
     }
 
-    public boolean isEnabled(Class entityType, AccessMode mode, Object value) {
+    public boolean isEnabled(String entityType, AccessMode mode, Object value) {
         boolean b = instance.isEnabled(getId(), entityType, mode, value);
         if (b) {
             PersistenceUnit e = UPA.getPersistenceUnit();
@@ -138,13 +135,13 @@ public class ActionDialogAdapter {
         return ((VrEditorActionInvoke) instance).getParams();
     }
 
-    public ActionDialogResult invoke(Class entityType, Object obj, List<String> selectedIdStrings, Object[] args) {
+    public ActionDialogResult invoke(String entityType, Object obj, List<String> selectedIdStrings, Object[] args) {
         return ((VrEditorActionInvoke) instance).invoke(getId(), entityType, obj, selectedIdStrings, args);
     }
 
     public String[] getCommand(List<String> itemIds) {
-        if(instance instanceof VrEditorActionGoto){
-            return ((VrEditorActionGoto)instance).getCommand(getId(), itemIds);
+        if (instance instanceof VrEditorActionGoto) {
+            return ((VrEditorActionGoto) instance).getCommand(getId(), itemIds);
         }
         return new String[0];
     }

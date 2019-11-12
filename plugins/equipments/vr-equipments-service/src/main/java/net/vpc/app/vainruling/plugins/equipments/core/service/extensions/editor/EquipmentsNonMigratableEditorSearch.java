@@ -7,12 +7,12 @@ package net.vpc.app.vainruling.plugins.equipments.core.service.extensions.editor
 
 import java.util.ArrayList;
 import java.util.List;
-import net.vpc.app.vainruling.core.service.editor.HashtagObjSearchFactory;
 import net.vpc.app.vainruling.plugins.equipments.core.service.EquipmentPlugin;
 import net.vpc.upa.Document;
-import net.vpc.upa.Entity;
 import org.springframework.stereotype.Component;
 import net.vpc.app.vainruling.VrEntityName;
+import net.vpc.app.vainruling.core.service.util.TextSearchFilter;
+import net.vpc.app.vainruling.core.service.editor.VrEditorSearchBase;
 
 /**
  *
@@ -20,14 +20,20 @@ import net.vpc.app.vainruling.VrEntityName;
  */
 @VrEntityName("Equipment")
 @Component
-public class EquipmentsNonMigratableObjSearchFactory extends HashtagObjSearchFactory {
+public class EquipmentsNonMigratableEditorSearch extends VrEditorSearchBase {
 
-    public EquipmentsNonMigratableObjSearchFactory() {
-        super("#nonmigratable", "non migratable");
+    @Override
+    public String getName() {
+        return "#nonmigratable";
     }
 
     @Override
-    public List filterDocumentListByTag(List list, String name, Entity entity, String expression) {
+    public String getTitle() {
+        return "Afficher les équipements non migrables";
+    }
+
+    @Override
+    public List filterDocumentList(List<Document> list, String entityName, String expression) {
         ArrayList<Document> filtered = new ArrayList<Document>();
         EquipmentPlugin eqp = EquipmentPlugin.get();
         for (Document doc : (List<Document>) list) {
@@ -36,7 +42,7 @@ public class EquipmentsNonMigratableObjSearchFactory extends HashtagObjSearchFac
                 filtered.add(doc);
             }
         }
-        return filtered;
+        return TextSearchFilter.filterList(filtered, expression, entityName);
     }
 
 }

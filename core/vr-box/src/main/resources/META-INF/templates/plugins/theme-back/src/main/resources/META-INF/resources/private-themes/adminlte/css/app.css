@@ -753,7 +753,7 @@ button.vr-toolbox-button > span.ui-button-text {
     min-height: 0 !important;
     min-width: 200px !important;
     margin: 1px 1px 1px 1px !important;
-    font-size: 10px !important;
+    /*font-size: 10px !important;*/
     display: block;
     clear: both;
 }
@@ -1394,4 +1394,98 @@ span.ui-autocomplete.vr-form-control:focus{
 
 .ui-menu .ui-menuitem-link {
     width: 100%;
+}
+
+
+.pb-filemng-template {
+    margin-top: 40px;
+    font-family: 'Sansita', sans-serif;
+}
+
+.pb-filemng-navbar {
+    margin-bottom: 0;
+}
+
+.treeview-toggle-btn {
+    margin-left: 15px;
+}
+
+.pb-filemng-template-btn {
+    background-color: Transparent;
+    background-repeat:no-repeat;
+    border: none;
+    cursor:pointer;
+    outline:none;
+    color: gray;
+    padding: 0px 13px 0px 13px;
+}
+
+.pb-filemng-active {
+    border-bottom: 2px solid #6d97db;
+    color: #5f6977;
+}
+
+.pb-filemng-template-btn:hover {
+    color: blue;
+}
+
+.pb-filemng-body-folders > img:hover {
+    cursor: pointer;
+}
+
+.btn-align {
+    margin-top: 7px;
+}
+
+.pb-filemng-template-treeview {
+    border-right: 1px solid gray;
+}
+
+.pb-filemng-folder {
+    color: orange;
+    padding-bottom: 3px;
+}
+
+.pb-filemng-paragraphs {
+    margin-top: -20px;
+    text-align: center;
+}
+.pb-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.img-responsive {
+    margin: 0 auto;
+}
+.file-copied {
+    color: darkcyan;
+}
+.file-cut {
+    color: crimson;
+}
+
+@media screen and (max-width: 767px) {
+
+    .pb-filemng-template-treeview {
+        border-right: none;
+    }
+
+    #options {
+        text-align: center;
+    }
+
+    #options > li {
+        display: inline-block;
+    }
+
+    #pb-filemng-navigation > ul {
+        text-align: center;
+    }
+
+    #pb-filemng-navigation > ul > li {
+        display: inline-block;
+    }
+
 }

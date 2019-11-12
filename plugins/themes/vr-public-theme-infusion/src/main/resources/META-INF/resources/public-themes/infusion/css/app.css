@@ -692,7 +692,7 @@ table.jqplot-table-legend.vr-no-legend {
     min-height: 0 !important;
     min-width: 200px !important;
     margin: 1px 1px 1px 1px !important;
-    font-size: 10px !important;
+/*    font-size: 10px !important;*/
     display: block;
     clear: both;
 }

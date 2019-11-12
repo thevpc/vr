@@ -25,19 +25,19 @@ import net.vpc.app.vainruling.VrEditorAction;
 /**
  * @author taha.bensalah@gmail.com
  */
-@VrEditorAction(entityType = AcademicCoursePlan.class,
+@VrEditorAction(entityName = "AcademicCoursePlan",
         actionStyle = "fa-envelope-o",
         confirm = true
 )
 public class RemoveDuplicatesCoursePlanAction implements VrEditorActionInvoke {
 
     @Override
-    public boolean isEnabled(String actionId, Class entityType, AccessMode mode, Object value) {
+    public boolean isEnabled(String actionId, String entityType, AccessMode mode, Object value) {
         return true;
     }
 
     @Override
-    public ActionDialogResult invoke(String actionId, Class entityType, Object obj, List<String> selectedIdStrings, Object[] args) {
+    public ActionDialogResult invoke(String actionId, String entityType, Object obj, List<String> selectedIdStrings, Object[] args) {
         AcademicPlugin aca = VrApp.getBean(AcademicPlugin.class);
         PersistenceUnit pu = UPA.getPersistenceUnit();
         ListValueMap<String, AcademicCoursePlan> all = new ListValueMap<>();

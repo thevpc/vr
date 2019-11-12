@@ -109,7 +109,7 @@ public class EntityDetailPropertyView extends PropertyView {
             }
             idExpr.append(")");
             CorePlugin core = VrApp.getBean(CorePlugin.class);
-            count = core.findCountByFilter(relation.getSourceEntity().getName(), idExpr.toString(), null, parameters);
+            count = core.findCountByFilter(relation.getSourceEntity().getName(), idExpr.toString(), null, null, parameters);
         } else {
             count = 0;
         }

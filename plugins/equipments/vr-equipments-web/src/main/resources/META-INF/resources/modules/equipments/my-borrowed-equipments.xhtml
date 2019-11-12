@@ -49,7 +49,7 @@ and open the template in the editor.
                         <p:column headerText="Libellé">
                             <p:outputLabel value="#{i.equipment.department.code} - #{i.name}" />
                         </p:column>
-                        <p:column headerText="Quantité" id= "keyColumnId" >
+                        <p:column headerText="Quantité" id= "keyColumnId"  >
                             <f:facet name="header">
                                 <h:outputText value="Quantité" />
                                 <p:tooltip value="Quantité dans le stock/Quantité disponible après autres réservations" for="keyColumnId" />
@@ -65,10 +65,10 @@ and open the template in the editor.
                         <p:column headerText="Visa">
                             <p:outputLabel value="#{vr.str(i.visaUser.fullName)}" />
                         </p:column>
-                        <p:column headerText="Etat" >
-                            <p:outputLabel value="#{vr.str(i.status)}" styleClass="label label-#{vr.hashToArr(vr.str(i.status),'danger','success','info','warning','primary','default')}"/>
+                        <p:column headerText="Etat"  style="vertical-align: top">
+                            <p:outputLabel value="#{vr.str(i.status)}" styleClass="label label-#{borrowHelper.getStyle(i.status)}"/>
                         </p:column>
-                        <p:column headerText="Actions">
+                        <p:column headerText="Actions" style="vertical-align: top">
                             <p:commandButton value="Annuler" style="width: 70px;" rendered="#{i.cancelEnabled}" action="#{myBorrowedEquipmentsCtrl.onCancel(i)}" update=":listForm" />
                             <p:commandButton value="Archiver" style="width: 70px;" rendered="#{i.archiveEnabled}" action="#{myBorrowedEquipmentsCtrl.onArchive(i)}" update=":listForm" />
                         </p:column>

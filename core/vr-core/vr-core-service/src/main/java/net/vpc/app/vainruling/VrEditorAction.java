@@ -23,7 +23,7 @@ import java.lang.annotation.Target;
 @Component
 public @interface VrEditorAction {
 
-    Class entityType() default Void.class;
+    String entityName() default "";
 
     String actionName() default "";
 

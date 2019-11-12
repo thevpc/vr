@@ -30,10 +30,21 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import net.vpc.app.vainruling.core.service.ProfileRightBuilder;
 import net.vpc.app.vainruling.VrPlugin;
 import net.vpc.app.vainruling.VrStart;
+import net.vpc.app.vainruling.core.service.VrLabel;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCourseAssignment;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCoursePlan;
+import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCourseType;
+import net.vpc.app.vainruling.plugins.academic.planning.service.model.CalendarAssignment;
+import net.vpc.app.vainruling.plugins.academic.planning.service.model.CalendarAssignmentsMapping;
+import net.vpc.app.vainruling.plugins.academic.planning.service.model.CalendarClass;
+import net.vpc.app.vainruling.plugins.academic.planning.service.model.CalendarCoursePlan;
+import net.vpc.app.vainruling.plugins.academic.planning.service.model.CalendarTeacher;
+import net.vpc.app.vainruling.plugins.academic.service.integration.parsers.AcademicClassParser;
 import net.vpc.app.vainruling.plugins.calendars.service.CalendarsPlugin;
 import net.vpc.app.vainruling.plugins.calendars.service.CalendarsUtils;
 import net.vpc.app.vainruling.plugins.calendars.service.dto.CalendarActivity;
@@ -220,6 +231,234 @@ public class AcademicPlanningPlugin {
         return all;
     }
 
+    public CalendarAssignmentsMapping loadAllAssignments(int periodId, int semesterId, Integer clazzId) {
+        CalendarAssignmentsMappingBuilder b = new CalendarAssignmentsMappingBuilder();
+        List<CalendarAssignmentsMapping> a = new ArrayList<>();
+        AcademicClassParser cp = new AcademicClassParser();
+        List<WeekCalendar> all = loadAllGroupedClassPlannings()
+                .stream().filter((x)
+                        -> {
+                    if (clazzId == null) {
+                        return VrUtils.normalize(x.getPlanningUniformName()).matches("[a-z]{2,3}\\d[.]\\d");
+                    }
+                    AcademicClass ac = cp.get(x.getPlanningUniformName());
+                    return (ac != null && clazzId.equals(ac.getId()));
+                }
+                ).collect(Collectors.toList());
+        for (WeekCalendar lcp : all) {
+            a.add(classCalendarToCalendarAssignmentsMapping(lcp, periodId, semesterId, clazzId, b));
+        }
+        return mergeCalendarAssignmentsMappings(a.toArray(new CalendarAssignmentsMapping[0]));
+    }
+
+    public CalendarAssignmentsMapping classCalendarToCalendarAssignmentsMapping(WeekCalendar classCalendar, int periodId, int semesterId, Integer clazzId, CalendarAssignmentsMappingBuilder b) {
+        CalendarAssignmentsMapping mm = new CalendarAssignmentsMapping();
+        b.setPeriod(core.findPeriod(periodId));
+        b.setSemester(academicPlugin.findSemester(semesterId));
+        CalendarClass c = b.findCalendarClass(classCalendar.getPlanningName());
+        if (c.getAcademicClass() == null) {
+            return null;
+        }
+        AcademicCourseType tpType = b.getParsers().getCourseTypes().get("TP");
+        AcademicCourseType cType = b.getParsers().getCourseTypes().get("C");
+        Map<String, CalendarAssignment> mmm = new LinkedHashMap<>();
+        HashSet<Integer> visitedCoursePrograms = new HashSet<Integer>();
+        HashSet<Integer> visitedAssignments = new HashSet<Integer>();
+        for (CalendarDay day : classCalendar.getDays()) {
+            for (CalendarHour hour : day.getHours()) {
+                for (CalendarActivity activity : hour.getActivities()) {
+                    CalendarAssignment cass = new CalendarAssignment();
+                    cass.setAcademicClass(c);
+                    String subject = StringUtils.trim(activity.getSubject());
+                    if (!StringUtils.isBlank(subject)) {
+                        boolean tp = false;
+                        boolean qz = false;
+                        if (subject.endsWith("(1/15)")) {
+                            subject = subject.substring(0, subject.length() - 6).trim();
+                            qz = true;
+                        }
+                        if (subject.toLowerCase().endsWith("(tp)")) {
+                            subject = subject.substring(0, subject.length() - 4).trim();
+                            tp = true;
+                        }
+                        CalendarCoursePlan ccc = b.findCalendarCoursePlanByClass(c.getAcademicClass().getId(), subject);
+//                        if (ccc.getCoursePlan() == null && StringUtils.isBlank(ccc.getCoursePlanName())) {
+//                            ccc = b.findCalendarCoursePlanByClass(c.getAcademicClass().getId(), subject);
+//                        }
+                        cass.setCoursePlan(ccc);
+                        AcademicCoursePlan seenCP = cass.getCoursePlan().getCoursePlan();
+                        if (seenCP != null) {
+                            visitedCoursePrograms.add(seenCP.getId());
+                        }
+                        cass.setTeacher(b.findCalendarTeacher(activity.getTeacher()));
+                        int weeks = 14;//
+                        double timeSlot = 1.5;//
+                        if (tp) {
+                            cass.setTp(timeSlot * weeks);
+                        } else {
+                            if (qz) {
+                                cass.setC(timeSlot * weeks / 2.0);
+                                cass.setTd(0);
+                            } else {
+                                cass.setC(timeSlot * weeks);
+                                cass.setTd(0);
+                            }
+                        }
+                        cass.setGrp(1);
+                        if (qz) {
+                            cass.setW(0.5);
+                        } else {
+                            cass.setW(1);
+                        }
+                        cass.setCourseType(tp ? tpType : cType);
+                        String k = buildCalendarAssignmentGroupKey(cass);
+                        CalendarAssignment oo = mmm.get(k);
+                        if (oo == null) {
+                            if (cass.getAcademicClass().getAcademicClass() != null && cass.getCoursePlan().getCoursePlan() != null) {
+                                List<AcademicCourseAssignment> assignments = academicPlugin.findAssignments(null, cass.getCoursePlan().getCoursePlan().getId(), cass.getAcademicClass().getAcademicClass().getId(),
+                                        null,
+                                        null, semesterId, cass.getCourseType().getId());
+                                for (AcademicCourseAssignment assignment : assignments) {
+                                    visitedAssignments.add(assignment.getId());
+                                }
+                                if (cass.getTeacher().getTeacher() == null) {
+                                    for (AcademicCourseAssignment assignment : assignments) {
+                                        if (assignment.getTeacher() != null) {
+                                            cass.getLabels().add(VrLabel.forDanger("AssignedToOther", "Assigned to " + assignment.getTeacher().getUser().getFullName())
+                                                    .setAction("AcademicCourseAssignment", String.valueOf(assignment.getId()))
+                                            );
+                                            cass.getLabels().add(VrLabel.forInfo("Assignable", "Assignable"));
+                                        } else {
+                                            cass.getLabels().add(VrLabel.forInfo("Assignable", "Assignable"));
+                                            cass.getLabels().add(VrLabel.forDanger("NotAssigned", "Not Assigned").setAction("AcademicCourseAssignment", String.valueOf(assignment.getId())));
+                                        }
+                                    }
+                                } else {
+                                    for (AcademicCourseAssignment assignment : assignments) {
+                                        if (assignment.getTeacher() == null) {
+                                            cass.setAssignment(assignment);
+                                            cass.getLabels().add(VrLabel.forWarning("NotAssigned", "Not Assigned").setAction("AcademicCourseAssignment", String.valueOf(assignment.getId())));
+                                            cass.getLabels().add(VrLabel.forInfo("Assignable", "Assignable"));
+                                        } else if (assignment.getTeacher().getId() != cass.getTeacher().getTeacher().getId()) {
+                                            cass.getLabels().add(VrLabel.forDanger("AssignedToOther", "Assigned to " + assignment.getTeacher().getUser().getFullName())
+                                                    .setAction("AcademicCourseAssignment", String.valueOf(assignment.getId()))
+                                            );
+                                            cass.getLabels().add(VrLabel.forInfo("Assignable", "Assignable"));
+                                        } else {
+                                            if (cass.getAssignment() == null) {
+                                                cass.setAssignment(assignment);
+                                            } else {
+                                                cass.getLabels().add(VrLabel.forDanger("AssignedExtra", "Too Many Assignements").setAction("AcademicCourseAssignment", String.valueOf(assignment.getId())));
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            mmm.put(k, cass);
+                        } else {
+                            oo.setC(oo.getC() + cass.getC());
+                            oo.setTd(oo.getTd() + cass.getTd());
+                            oo.setTp(oo.getTp() + cass.getTp());
+                            oo.setW(oo.getW() + cass.getW());
+                        }
+                    }
+                }
+            }
+        }
+        mm.getElements().addAll(mmm.values());
+        for (CalendarAssignment element : mm.getElements()) {
+            if (element.getC() != 0 && element.getTd() == 0) {
+                if (Math.abs(element.getC() - 21) < 1E-2) {
+                    element.setC(15);
+                    element.setTd(6);
+                } else if (Math.abs(element.getC() - 31.5) < 1E-2) {
+                    element.setC(21);
+                    element.setTd(10.5);
+                } else if (Math.abs(element.getC() - 42) < 1E-2) {
+                    element.setC(30);
+                    element.setTd(12);
+                }
+            }
+        }
+        if (true) {
+            for (AcademicCourseAssignment assignment : academicPlugin.findAssignments(periodId, null, clazzId, null, null, semesterId, null)) {
+                if (!visitedAssignments.contains(assignment.getId())) {
+                    visitedAssignments.add(assignment.getId());
+                    visitedCoursePrograms.add(assignment.getCoursePlan().getId());
+                    if (assignment.getCourseType().getId() == cType.getId() || assignment.getCourseType().getId() == tpType.getId()) {
+                        CalendarAssignment cs = new CalendarAssignment();
+                        cs.setAssignment(assignment);
+                        double grp = assignment.getGroupCount();
+                        cs.setC(assignment.getValueC() * grp);
+                        cs.setTd(assignment.getValueTD() * grp);
+                        cs.setTp(assignment.getValueTP() * grp);
+                        AcademicClass cls2 = assignment.getSubClass() != null ? assignment.getSubClass() : assignment.getCoursePlan().getCourseLevel().getAcademicClass();
+                        cs.setAcademicClass(new CalendarClass(cls2.getName(), cls2));
+                        cs.setCoursePlan(new CalendarCoursePlan(null, assignment.getCoursePlan()));
+                        cs.setTeacher(new CalendarTeacher(assignment.getTeacher() == null ? "Unconnu" : assignment.getTeacher().getUser().getFullName(), assignment.getTeacher()));
+                        cs.getLabels().add(VrLabel.forWarning("MissingPlanning", "Not Planned Assignement").setAction("AcademicCourseAssignment", String.valueOf(assignment.getId())));
+                        cs.setCourseType(assignment.getCourseType());
+                        mm.getElements().add(cs);
+                    }
+                }
+            }
+            for (AcademicCoursePlan cp : academicPlugin.findCoursePlans(periodId, null, clazzId, semesterId)) {
+                if (!visitedCoursePrograms.contains(cp.getId())) {
+                    visitedCoursePrograms.add(cp.getId());
+                    CalendarAssignment cs = new CalendarAssignment();
+                    cs.setC(cp.getValueC() * cp.getGroupCountC());
+                    cs.setTd(cp.getValueTD() * cp.getGroupCountTD());
+                    cs.setTp(cp.getValueTP() * cp.getGroupCountTP());
+                    if (cs.getC() != 0 || cs.getTp() != 0) {
+                        if (cs.getC() != 0) {
+                            cs.setCourseType(cType);
+                        } else {
+                            cs.setCourseType(tpType);
+                        }
+                        AcademicClass cls = cp.getCourseLevel().getAcademicClass();
+                        cs.setAcademicClass(new CalendarClass(cls.getName(), cls));
+                        cs.setCoursePlan(new CalendarCoursePlan(null, cp));
+                        cs.setTeacher(new CalendarTeacher("Unconnu", null));
+                        cs.getLabels().add(VrLabel.forWarning("MissingCourse", "Not Planned Course").setAction("AcademicCoursePlan", String.valueOf(cp.getId())));
+                        mm.getElements().add(cs);
+                    }
+                }
+            }
+        }
+        return mm;
+    }
+
+    private CalendarAssignmentsMapping mergeCalendarAssignmentsMappings(CalendarAssignmentsMapping... all) {
+        Map<String, CalendarAssignment> mmm = new HashMap<>();
+        for (CalendarAssignmentsMapping m : all) {
+            for (CalendarAssignment cass : m.getElements()) {
+                String k = buildCalendarAssignmentGroupKey(cass);
+                CalendarAssignment oo = mmm.get(k);
+                if (oo == null) {
+                    mmm.put(k, cass);
+                } else {
+                    oo = oo.copy();
+                    mmm.put(k, oo);
+                    oo.setC(oo.getC() + cass.getC());
+                    oo.setTd(oo.getTd() + cass.getTd());
+                    oo.setTp(oo.getTp() + cass.getTp());
+                    oo.setW(oo.getW() + cass.getW());
+                }
+            }
+        }
+        CalendarAssignmentsMapping r = new CalendarAssignmentsMapping();
+        r.getElements().addAll(mmm.values());
+        return r;
+    }
+
+    private String buildCalendarAssignmentGroupKey(CalendarAssignment cass) {
+        boolean tp = cass.getTp() > 0;
+        return cass.getAcademicClass().getAcademicClassName() + "\n"
+                + cass.getCoursePlan().getCoursePlanName() + "\n"
+                + cass.getTeacher().getTeacherName() + "\n"
+                + (tp ? "TP" : "C");
+    }
+
     public List<WeekCalendar> loadStudentPlanningList(int studentId) {
         AcademicStudent student = academicPlugin.findStudent(studentId);
         List<WeekCalendar> list = new ArrayList<>();
@@ -300,6 +539,56 @@ public class AcademicPlanningPlugin {
             List<WeekCalendar> found = loadClassPlannings(week -> uniformClassName.equals(VrUtils.normalizeName(week.getName())), true);
             return found.isEmpty() ? null : found.get(0);
         }
+    }
+
+    public List<WeekCalendar> loadAllGroupedClassPlannings() {
+        return loadAllClassPlannings(true, true);
+    }
+
+    public List<WeekCalendar> loadAllClassPlannings(boolean group, boolean removeGrouped) {
+        List<WeekCalendar> found = loadClassPlannings(null, false);
+        if (!group) {
+            return found;
+        }
+        Map<String, List<WeekCalendar>> mapped = new LinkedHashMap<>();
+        for (Iterator<WeekCalendar> it = found.iterator(); it.hasNext();) {
+            WeekCalendar weekCalendar = it.next();
+            String n0 = VrUtils.normalize(weekCalendar.getPlanningUniformName());
+            String n = CalendarsUtils.parentStudentsDescriminator(n0);
+            if (!n.equals(n0)) {
+                List<WeekCalendar> a = mapped.get(n);
+                if (a == null) {
+                    a = new ArrayList<>();
+                    mapped.put(n, a);
+                }
+                a.add(weekCalendar);
+            } else {
+                List<WeekCalendar> a = null;
+                if (!removeGrouped) {
+                    a = mapped.get(n);
+                    if (a == null) {
+                        a = new ArrayList<>();
+                        mapped.put(n, a);
+                    }
+                    a.add(weekCalendar);
+                }
+                a = mapped.get(n0);
+                if (a == null) {
+                    a = new ArrayList<>();
+                    mapped.put(n0, a);
+                }
+                a.add(weekCalendar);
+            }
+        }
+        List<WeekCalendar> result = new ArrayList<>();
+        for (List<WeekCalendar> value : mapped.values()) {
+            if (value.size() == 1) {
+                result.add(value.get(0));
+            } else if (value.size() > 0) {
+                result.add(CalendarsPlugin.get().mergeWeekCalendars(value, null));
+            }
+        }
+        return result;
     }
 
     public List<WeekCalendar> loadClassPlannings(Predicate<CalendarWeekParser> filter, boolean first) {

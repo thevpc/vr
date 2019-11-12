@@ -340,6 +340,21 @@ public class AcademicPluginBodyLoad extends AcademicPluginBody {
         }
 
         teacher_stat.setSemestrialLoad(findTeacherSemestrialLoads.toArray(new AcademicTeacherSemestrialLoad[findTeacherSemestrialLoads.size()]));
+
+        Set<Integer> semestersForLoads = new HashSet<>();
+
+        for (AcademicTeacherSemestrialLoad load : findTeacherSemestrialLoads) {
+            semestersForLoads.add(load.getSemester());
+        }
+
+        for (AcademicCourseAssignmentInfo assignment : assignments) {
+            AcademicSemester sem = assignment.getAssignment().getCoursePlan().getCourseLevel().getSemester();
+            if(!semestersForLoads.contains(sem.getIndex())){
+                log.severe("AcademicTeacherSemestrialLoad missing for teacherId=" + teacherId + " (" + teacher + "). Particularly S"+sem.getIndex());
+                throw new IllegalArgumentException("AcademicTeacherSemestrialLoad missing for teacherId=" + teacherId + " (" + teacher + "). Particularly S"+sem.getIndex());
+            }
+        }
+
         List<AcademicSemester> semesters = getContext().getPlugin().findSemesters();
         TeacherSemesterStat[] sems = new TeacherSemesterStat[semesters.size()];
         teacher_stat.setSemesters(sems);

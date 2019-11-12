@@ -40,7 +40,10 @@ import org.springframework.stereotype.Controller;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.vpc.common.util.MapUtils;
@@ -48,6 +51,7 @@ import net.vpc.app.vainruling.VrPageInfoResolver;
 import net.vpc.app.vainruling.VrPage;
 import net.vpc.app.vainruling.VrOnPageLoad;
 import net.vpc.app.vainruling.VrMenuProvider;
+import net.vpc.app.vainruling.core.service.CorePluginSSE;
 import net.vpc.app.vainruling.core.service.model.AppFsSharing;
 
 /**
@@ -133,12 +137,7 @@ public class DocumentsCtrl implements VrMenuProvider, VrPageInfoResolver, Docume
         if (c == null) {
             c = new Config();
         }
-        VirtualFileSystem rootfs = UPA.getContext().invokePrivileged(new Action<VirtualFileSystem>() {
-            @Override
-            public VirtualFileSystem run() {
-                return core.getRootFileSystem();
-            }
-        });
+        VirtualFileSystem rootfs = UPA.getContext().invokePrivileged(core::getRootFileSystem);
         VirtualFileSystem fs = null;
         String login = core.getCurrentUserLogin();
         if (StringUtils.isBlank(login)) {
@@ -164,6 +163,7 @@ public class DocumentsCtrl implements VrMenuProvider, VrPageInfoResolver, Docume
                 fs = core.getUserFileSystem(login);
             }
         }
+        getModel().setSearchString(null);
         getModel().setFileSystem(fs);
         updatePath(c.getPath());
         onRefresh();
@@ -191,10 +191,19 @@ public class DocumentsCtrl implements VrMenuProvider, VrPageInfoResolver, Docume
 //    }
     public void switchSelectionMode() {
         getModel().setSelectionMode(!getModel().isSelectionMode());
+        if (!getModel().isSelectionMode() && getModel().getFiles() != null) {
+            for (VFileInfo file : getModel().getFiles()) {
+                file.setSelected(false);
+            }
+        }
     }
 
     public boolean hasParent() {
-        VFile f = getModel().getCurrent().getFile();
+        VFileInfo c = getModel().getCurrent();
+        if (c == null) {
+            return false;
+        }
+        VFile f = c.getFile();
         if (!f.getPath().equals("/")) {
             VFile p = f.getParentFile();
             if (p != null) {
@@ -204,14 +213,74 @@ public class DocumentsCtrl implements VrMenuProvider, VrPageInfoResolver, Docume
         return false;
     }
 
+    private void reloadCurrent() {
+        if (getModel().getCurrent() != null) {
+            updateCurrent(getModel().getCurrent().getFile());
+        }
+    }
+
     public void goParent() {
-        VFile f = getModel().getCurrent().getFile();
+        VFileInfo c = getModel().getCurrent();
+        if (c == null) {
+            return;
+        }
+        VFile f = c.getFile();
         if (!f.getPath().equals("/")) {
             VFile p = f.getParentFile();
             if (p != null) {
                 updateCurrent(p);
             }
         }
+    }
+
+    public void onPaste() {
+        VirtualFileSystem rfs = UPA.getPersistenceUnit().invokePrivileged(() -> CorePlugin.get().getRootFileSystem());
+        try {
+            for (Iterator<String> it = getModel().getCopiedFiles().iterator(); it.hasNext();) {
+                String file = it.next();
+                VFile of = rfs.get(file);
+                if (of.exists()) {
+                    if (getModel().isCut()) {
+                        of.renameTo(getModel().getCurrent().getFile().get(of.getName()));
+                    } else {
+                        of.copyTo(getModel().getCurrent().getFile().get(of.getName()));
+                    }
+                }
+                it.remove();
+            }
+            getModel().setCut(false);
+            reloadCurrent();
+        } catch (IOException ex) {
+            FacesUtils.addErrorMessage(ex);
+            log.log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void onCopy() {
+        copySelected(false);
+    }
+
+    public void onCut() {
+        copySelected(true);
+    }
+
+    public void copySelected(boolean cut) {
+        boolean someCopied = false;
+        getModel().setCut(false);
+        getModel().getCopiedFiles().clear();
+        for (VFileInfo file : getModel().getFiles()) {
+            if (file.isSelected()) {
+                String rp = CorePluginSSE.getRootPath(file.getFile());
+                if (rp != null) {
+                    getModel().getCopiedFiles().add(rp);
+                    someCopied = true;
+                }
+            }
+        }
+        if (someCopied && cut) {
+            getModel().setCut(true);
+        }
+        reloadCurrent();
     }
 
     public void updateCurrent(VFile file) {
@@ -375,11 +444,33 @@ public class DocumentsCtrl implements VrMenuProvider, VrPageInfoResolver, Docume
 //        FacesContext.getCurrentInstance().getPartialViewContext().setRenderAll(true);//.add("listForm");
     }
 
+    public boolean isCopied(VFile file) {
+        if (file == null) {
+            return false;
+        }
+        String p = CorePluginSSE.getRootPath(file);
+        return getModel().getCopiedFiles().contains(p);
+    }
+
     public void onRefresh() {
         if (getModel().getCurrent() == null) {
             getModel().setFiles(new ArrayList<>());
         } else {
-            getModel().setFiles(DocumentsUtils.searchFiles(getModel().getCurrent().getFile(), getModel().getSearchString()));
+            List<VFileInfo> searchFiles = DocumentsUtils.searchFiles(getModel().getCurrent().getFile(), getModel().getSearchString());
+            for (VFileInfo searchFile : searchFiles) {
+                VFile f = searchFile.getFile();
+                if (isCopied(f)) {
+                    if (getModel().isCut()) {
+                        searchFile.setCut(true);
+                    } else {
+                        searchFile.setCopied(true);
+                    }
+                } else {
+                    searchFile.setCut(false);
+                    searchFile.setCopied(false);
+                }
+            }
+            getModel().setFiles(searchFiles);
         }
 //        if(FacesContext.getCurrentInstance()!=null) {
 //            FacesContext.getCurrentInstance().getPartialViewContext().getRenderIds().add("listForm");
@@ -395,7 +486,7 @@ public class DocumentsCtrl implements VrMenuProvider, VrPageInfoResolver, Docume
     }
 
     public boolean isSelectable(VFileInfo i) {
-        return getModel().isSelectionMode()
+        return i != null && getModel().isSelectionMode()
                 && i.isSelectable()
                 && isEnabledButton("SelectFile");
     }
@@ -407,22 +498,52 @@ public class DocumentsCtrl implements VrMenuProvider, VrPageInfoResolver, Docume
         if ("Cancel".equals(buttonId)) {
             return false;
         }
-        if ("NewFile".equals(buttonId)) {
-            // I think this is useless, will be removed
-            return false;
-//            return getModel().getArea().isEmpty()
-//                    && UPA.getPersistenceGroup().getSecurityManager().isAllowedKey(CorePlugin.RIGHT_FILESYSTEM_WRITE)
-//                    && getModel().getCurrent().getFile().isAllowedCreateChild(VFileType.FILE, null);
-        }
+//        if ("NewFile".equals(buttonId)) {
+//            // I think this is useless, will be removed
+//            return false;
+////            return getModel().getArea().isEmpty()
+////                    && UPA.getPersistenceGroup().getSecurityManager().isAllowedKey(CorePlugin.RIGHT_FILESYSTEM_WRITE)
+////                    && getModel().getCurrent().getFile().isAllowedCreateChild(VFileType.FILE, null);
+//        }
         VFileInfo current = getModel().getCurrent();
         if (current == null) {
+            return false;
+        }
+        if ("Paste".equals(buttonId)) {
+            Set<String> f = getModel().getCopiedFiles();
+            if (f.isEmpty()) {
+                return false;
+            }
+            VirtualFileSystem rootfs = UPA.getContext().invokePrivileged(core::getRootFileSystem);
+            Boolean FILE_RIGHT = null;
+            Boolean FOLDER_RIGHT = null;
+            for (String copiedFile : f) {
+                VFile r = rootfs.get(copiedFile);
+                if (r != null) {
+                    if (r.isDirectory()) {
+                        if (FOLDER_RIGHT == null) {
+                            FOLDER_RIGHT = isEnabledButton("NewFolder");
+                        }
+                        if (FOLDER_RIGHT) {
+                            return true;
+                        }
+                    } else {
+                        if (FILE_RIGHT == null) {
+                            FILE_RIGHT = isEnabledButton("NewFile");
+                        }
+                        if (FILE_RIGHT) {
+                            return true;
+                        }
+                    }
+                }
+            }
             return false;
         }
         if ("NewFolder".equals(buttonId)) {
             return UPA.getPersistenceGroup().getSecurityManager().isAllowedKey(CorePluginSecurity.RIGHT_FILESYSTEM_WRITE)
                     && current.getFile().isAllowedCreateChild(VFileType.DIRECTORY, null);
         }
-        if ("Upload".equals(buttonId)) {
+        if ("Upload".equals(buttonId) || "NewFile".equals(buttonId)) {
             VFile file = current.getFile();
             return UPA.getPersistenceGroup().getSecurityManager().isAllowedKey(CorePluginSecurity.RIGHT_FILESYSTEM_WRITE)
                     && (file.isAllowedCreateChild(VFileType.FILE, null)
@@ -431,6 +552,13 @@ public class DocumentsCtrl implements VrMenuProvider, VrPageInfoResolver, Docume
         if ("Remove".equals(buttonId)) {
             return UPA.getPersistenceGroup().getSecurityManager().isAllowedKey(CorePluginSecurity.RIGHT_FILESYSTEM_WRITE)
                     && current.getFile().isAllowedRemoveChild(null, null);
+        }
+        if ("Cut".equals(buttonId)) {
+            return UPA.getPersistenceGroup().getSecurityManager().isAllowedKey(CorePluginSecurity.RIGHT_FILESYSTEM_WRITE)
+                    && current.getFile().isAllowedRemoveChild(null, null);
+        }
+        if ("copy".equals(buttonId)) {
+            return true;
         }
 //        if ("Save".equals(buttonId)) {
 //            return getModel().getArea().equals("NewFile") || getModel().getArea().equals("NewFolder");
@@ -584,6 +712,8 @@ public class DocumentsCtrl implements VrMenuProvider, VrPageInfoResolver, Docume
         VirtualFileSystem fileSystem;
         Config config;
         private List<net.vpc.app.vainruling.core.service.fs.VFileInfo> files = new ArrayList<>();
+        private Set<String> copiedFiles = new LinkedHashSet<>();
+        private boolean cut;
         private String newName;
         private String searchString;
         private boolean newFolder;
@@ -591,6 +721,22 @@ public class DocumentsCtrl implements VrMenuProvider, VrPageInfoResolver, Docume
         private boolean listMode;
         private boolean selectionMode;
         private List<AppFsSharing> currentSharings;
+
+        public Set<String> getCopiedFiles() {
+            return copiedFiles;
+        }
+
+        public void setCopiedFiles(Set<String> copiedFiles) {
+            this.copiedFiles = copiedFiles;
+        }
+
+        public boolean isCut() {
+            return cut;
+        }
+
+        public void setCut(boolean cut) {
+            this.cut = cut;
+        }
 
         public boolean isSelectionMode() {
             return selectionMode;

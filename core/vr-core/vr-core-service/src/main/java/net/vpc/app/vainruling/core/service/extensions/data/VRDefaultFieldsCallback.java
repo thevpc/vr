@@ -13,6 +13,7 @@ import net.vpc.upa.config.OnPreCreate;
 import net.vpc.upa.config.OnUpdateFormula;
 import net.vpc.upa.exceptions.UPAException;
 import net.vpc.upa.HierarchyExtension;
+import net.vpc.upa.exceptions.UpdateDocumentNotAllowedException;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -53,6 +54,8 @@ public class VRDefaultFieldsCallback {
                 for (Object o : entity.createQueryBuilder().setLazyListLoadingEnabled(true).getResultList()) {
                     try {
                         entity.merge(o);
+                    }catch (UpdateDocumentNotAllowedException e){
+                        throw e;
                     }catch (Exception e){
                         e.printStackTrace();
                     }

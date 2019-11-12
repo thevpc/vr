@@ -14,7 +14,6 @@ import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCourseAssignment;
 import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCoursePlan;
-import net.vpc.common.strings.StringUtils;
 import net.vpc.upa.CustomFormulaContext;
 import net.vpc.upa.config.Callback;
 import net.vpc.upa.config.NamedFormula;
@@ -27,10 +26,19 @@ import net.vpc.upa.config.NamedFormula;
 public class AcademicCoursePlanFormulasExtension {
 
     @NamedFormula
+    public String academicCoursePlan_teachers_Formula(CustomFormulaContext ctx) {
+        AcademicCoursePlan d = (AcademicCoursePlan) ctx.reloadUpdateObject();
+        AcademicPlugin t = VrApp.getBean(AcademicPlugin.class);
+        return t.findAssignments(null,d.getId(), null, null, null, null,null)
+                .stream().map(x -> x.getTeacher() == null ? null : x.getTeacher().getUser().getFullName())
+                .filter(x -> x != null).distinct().sorted().collect(Collectors.joining(", "));
+    }
+
+    @NamedFormula
     public String academicCoursePlan_validationErrors_Formula(CustomFormulaContext ctx) {
         AcademicCoursePlan d = (AcademicCoursePlan) ctx.reloadUpdateObject();
         AcademicPlugin t = VrApp.getBean(AcademicPlugin.class);
-        List<AcademicCourseAssignment> assignments = t.findAcademicCourseAssignmentListByCoursePlanId(d.getId());
+        List<AcademicCourseAssignment> assignments = t.findAssignments(null,d.getId(), null, null, null, null,null);
         Set<String> errors = new TreeSet<String>();
 
         if (d.getValueC() < 0) {

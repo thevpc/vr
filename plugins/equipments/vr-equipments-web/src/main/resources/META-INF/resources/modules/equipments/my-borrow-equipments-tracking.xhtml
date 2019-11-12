@@ -28,133 +28,155 @@ and open the template in the editor.
                     <p:messages id="messages" showDetail="true" closable="true">
                         <p:autoUpdate />
                     </p:messages>
-                    <p:panelGrid id="details" columns="2" styleClass="vr-no-border-grid">
-                        <p:outputLabel value="équipement à rendre"/>
-                        <p:outputLabel 
-                            style="margin-left: 5px;margin-top: 5px"
-                            value="#{myBorrowEquipmentsTrackingCtrl.selectedEquipmentString}"/>
-                        <p:outputLabel value="quantité"/>
-                        <p:inputText 
-                            style="margin-left: 5px;margin-top: 5px"
-                            value="#{myBorrowEquipmentsTrackingCtrl.model.quantity}"/>
-                    </p:panelGrid>
-
-                    <p:commandButton value="Rendre un prêt" 
-                                     styleClass="btn btn-primary" 
-                                     action="#{myBorrowEquipmentsTrackingCtrl.onReturnEquipment}"
-                                     update=":listForm" style="margin-bottom: 20px;margin-top: 20px;" />
-
-                    <p:fieldset legend="Filtre" toggleable="true">
-                        <p:panelGrid id="filter" columns="2" styleClass="vr-no-border-grid">
-                            <p:outputLabel value="Departement"/>
-                            <p:selectOneMenu class="form-control vr-form-control"
-                                             value="#{myBorrowEquipmentsTrackingCtrl.model.department}"
-                                             filter="true" filterMatchMode="contains" style="margin-left: 5px;margin-top: 5px"
-                                             >
-                                <f:selectItems value="#{vr.entitySelectItemsNullable('AppDepartment')}"/>
-                                <p:ajax listener="#{myBorrowEquipmentsTrackingCtrl.onChangeDepartment}"
-                                        update=":listForm"/>
-                            </p:selectOneMenu>
-                            <p:outputLabel value="Utilisateur"/>
-                            <p:selectOneMenu class="form-control vr-form-control"
-                                             value="#{myBorrowEquipmentsTrackingCtrl.model.user}"
-                                             filter="true" filterMatchMode="contains"
-                                             style="margin-left: 5px;margin-top: 5px"
-                                             >
-                                <f:selectItems value="#{myBorrowEquipmentsTrackingCtrl.model.users}"/>
-                                <p:ajax listener="#{myBorrowEquipmentsTrackingCtrl.onChangeUser}"
-                                        update=":listForm"/>
-                            </p:selectOneMenu>
-                        </p:panelGrid>
-                    </p:fieldset>
-                    <p:dataTable id="equipementsTable" var="i" value="#{myBorrowEquipmentsTrackingCtrl.model.equipments}"
-                                 class="table table-bordered table-hover"
-                                 paginatorAlwaysVisible="false"
-                                 paginator="true"
-                                 paginatorPosition="bottom"
-                                 rows="1000"
-                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                                 rowsPerPageTemplate="1000,2000,5000,1000"
-                                 widgetVar="othersTable"
-                                 emptyMessage="Aucun Equipement"
-                                 selectionMode="single" selection="#{myBorrowEquipmentsTrackingCtrl.model.selectedEquipment}" rowKey="#{i.infoId}"
-                                 >
-                        <f:facet name="header">Equipements en prêt</f:facet>
-                        <p:ajax event="rowSelect" listener="#{myBorrowEquipmentsTrackingCtrl.onRowSelect}" update=":listForm" />
-                        <p:column exportable="false" headerText="" style="width: 65px;">
-                            <img src="#{vr.getIconUrl(i.photo,null)}"
-                                 style="width: 40px ; height: 40px; margin-right: 10px;"
-                                 alt="Image"
-                                 onclick="document.getElementById('mainPhotoImg').src = '#{vr.getImageUrl(i.photo,null)}';
-                                         $('#' + PF('photodlg').id).find('.ui-dialog-title')[0].textContent = '#{i.name}';
-                                         PF('photodlg').show();"/>
-                        </p:column>
-                        <p:column headerText="Date">
-                            <p:outputLabel value="#{i.operationDate}"/>
-                        </p:column>
-                        <p:column headerText="Type">
-                            <p:outputLabel value="#{i.equipment.type.name}"/>
-                        </p:column>
-                        <p:column headerText="Libellé">
-                            <p:outputLabel value="#{i.equipment.department.name} - #{i.name}" />
-                        </p:column>
-                        <p:column headerText="Quantité" style="width: 80px;">
-                            <p:outputLabel value="#{i.borrowQuantity}" />
-                        </p:column>
-                        <p:column headerText="Etat">
-                            <p:outputLabel value="#{i.status}"/>
-                        </p:column>
-
-                        <p:column headerText="Par">
-                            <p:outputLabel value="#{i.borrowerUser.fullName}" />
-                        </p:column>
-
-                        <p:column headerText="De">
-                            <p:outputLabel value="#{i.fromDate}" />
-                        </p:column>
-
-                        <p:column headerText="A">
-                            <p:outputLabel value="#{i.toDate}" />
-                        </p:column>
-                        <p:column headerText="Action">
-                            <p:outputLabel value="#{vr.str(i.request.finalStatus)}" />
-                            <p:commandButton value="rendre" action="#{myBorrowEquipmentsTrackingCtrl.onReturnSelectedEquipment(i)}" update=":listForm"/>
-                        </p:column>
-                        <f:facet name="footer">
-                            <p:outputLabel value="Total #{myBorrowEquipmentsTrackingCtrl.model.equipments.size()}"/>
-
-                            <div style="float: right;">
-                                <h:commandLink>
-                                    <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-xls16.png"
-                                                    width="16"/>
-                                    <p:dataExporter type="xls" target="equipementsTable"
-                                                    fileName="#{corePlugin.getPreferredFileName('my-borrowable')}"
-                                                    postProcessor="#{vr.postProcessDataExporterXLS}"/>
-                                </h:commandLink>
-
-                                <h:commandLink>
-                                    <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-pdf16.png"
-                                                    width="16"/>
-                                    <p:dataExporter type="pdf" target="equipementsTable"
-                                                    fileName="#{corePlugin.getPreferredFileName('my-borrowable')}"/>
-                                </h:commandLink>
-
-                                <h:commandLink>
-                                    <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-csv16.png"
-                                                    width="16"/>
-                                    <p:dataExporter type="csv" target="equipementsTable"
-                                                    fileName="#{corePlugin.getPreferredFileName('my-borrowable')}"/>
-                                </h:commandLink>
-
-                                <h:commandLink>
-                                    <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-xml16.png"
-                                                    width="16"/>
-                                    <p:dataExporter type="xml" target="equipementsTable"
-                                                    fileName="#{corePlugin.getPreferredFileName('my-borrowable')}"/>
-                                </h:commandLink>
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <h3 class="box-title">Rendre Equipement : <p:outputLabel  style="margin-left: 5px" value="#{myBorrowEquipmentsTrackingCtrl.selectedEquipmentString}"/></h3>
+                        </div>
+                        <!-- /.box-header -->
+                        <!-- form start -->
+                        <div class="box-body">
+                            <div class="form-group">
+                                <p:outputLabel value="quantité"/>
+                                <p:inputText 
+                                    style="margin-left: 5px;margin-top: 5px"
+                                    value="#{myBorrowEquipmentsTrackingCtrl.model.quantity}" styleClass="form-control"/>
                             </div>
-                        </f:facet>
-                    </p:dataTable>
+                        </div>
+                        <!-- /.box-body -->
+
+                        <div class="box-footer">
+                            <p:commandButton value="Rendre un prêt" 
+                                             styleClass="btn btn-primary" 
+                                             action="#{myBorrowEquipmentsTrackingCtrl.onReturnEquipment}"
+                                             update=":listForm" style="margin-bottom: 20px;margin-top: 20px;" />
+                        </div>
+                    </div>
+
+
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <h3 class="box-title">Equipements disponibles</h3>
+                        </div>
+                        <!-- /.box-header -->
+                        <!-- form start -->
+                        <div class="box-body">
+                            <div class="form-group">
+                                <p:outputLabel value="Departement"/>
+                                <p:selectOneMenu class="form-control vr-form-control"
+                                                 value="#{myBorrowEquipmentsTrackingCtrl.model.department}"
+                                                 filter="true" filterMatchMode="contains" style="margin-left: 5px;margin-top: 5px"
+                                                 >
+                                    <f:selectItems value="#{vr.entitySelectItemsNullable('AppDepartment')}"/>
+                                    <p:ajax listener="#{myBorrowEquipmentsTrackingCtrl.onChangeDepartment}"
+                                            update=":listForm"/>
+                                </p:selectOneMenu>
+                            </div>
+                            <div class="form-group">
+                                <p:outputLabel value="Utilisateur"/>
+                                <p:selectOneMenu class="form-control vr-form-control"
+                                                 value="#{myBorrowEquipmentsTrackingCtrl.model.user}"
+                                                 filter="true" filterMatchMode="contains"
+                                                 style="margin-left: 5px;margin-top: 5px"
+                                                 >
+                                    <f:selectItems value="#{myBorrowEquipmentsTrackingCtrl.model.users}"/>
+                                    <p:ajax listener="#{myBorrowEquipmentsTrackingCtrl.onChangeUser}"
+                                            update=":listForm"/>
+                                </p:selectOneMenu>
+                            </div>
+                            <p:dataTable id="equipementsTable" var="i" value="#{myBorrowEquipmentsTrackingCtrl.model.equipments}"
+                                         class="table table-bordered table-hover"
+                                         paginatorAlwaysVisible="false"
+                                         paginator="true"
+                                         paginatorPosition="bottom"
+                                         rows="1000"
+                                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                         rowsPerPageTemplate="1000,2000,5000,1000"
+                                         widgetVar="othersTable"
+                                         emptyMessage="Aucun Equipement"
+                                         selectionMode="single" selection="#{myBorrowEquipmentsTrackingCtrl.model.selectedEquipment}" rowKey="#{i.infoId}"
+                                         >
+                                <f:facet name="header">Equipements en prêt</f:facet>
+                                <p:ajax event="rowSelect" listener="#{myBorrowEquipmentsTrackingCtrl.onRowSelect}" update=":listForm" />
+                                <p:column exportable="false" headerText="" style="width: 65px;">
+                                    <img src="#{vr.getIconUrl(i.photo,null)}"
+                                         style="width: 40px ; height: 40px; margin-right: 10px;"
+                                         alt="Image"
+                                         onclick="document.getElementById('mainPhotoImg').src = '#{vr.getImageUrl(i.photo,null)}';
+                                                     $('#' + PF('photodlg').id).find('.ui-dialog-title')[0].textContent = '#{i.name}';
+                                                     PF('photodlg').show();"/>
+                                </p:column>
+                                <p:column headerText="Date">
+                                    <p:outputLabel value="#{i.operationDate}"/>
+                                </p:column>
+                                <p:column headerText="Type">
+                                    <p:outputLabel value="#{i.equipment.type.name}"/>
+                                </p:column>
+                                <p:column headerText="Libellé">
+                                    <p:outputLabel value="#{i.equipment.department.name} - #{i.name}" />
+                                </p:column>
+                                <p:column headerText="Quantité" style="width: 80px;">
+                                    <p:outputLabel value="#{i.borrowQuantity}" />
+                                </p:column>
+                                <p:column headerText="Etat">
+                                    <p:outputLabel value="#{i.status}"/>
+                                </p:column>
+
+                                <p:column headerText="Par">
+                                    <p:outputLabel value="#{i.borrowerUser.fullName}" />
+                                </p:column>
+
+                                <p:column headerText="De">
+                                    <p:outputLabel value="#{i.fromDate}" />
+                                </p:column>
+
+                                <p:column headerText="A">
+                                    <p:outputLabel value="#{i.toDate}" />
+                                </p:column>
+                                <p:column headerText="Action" style="vertical-align: top">
+                                    <p:outputLabel value="#{vr.str(i.request.finalStatus)}" styleClass="label label-#{borrowHelper.getStyle(i.request.finalStatus)}"/>
+                                    <p:commandButton value="rendre" action="#{myBorrowEquipmentsTrackingCtrl.onReturnSelectedEquipment(i)}" update=":listForm"/>
+                                </p:column>
+                                <f:facet name="footer">
+                                    <p:outputLabel value="Total #{myBorrowEquipmentsTrackingCtrl.model.equipments.size()}"/>
+
+                                    <div style="float: right;">
+                                        <h:commandLink>
+                                            <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-xls16.png"
+                                                            width="16"/>
+                                            <p:dataExporter type="xls" target="equipementsTable"
+                                                            fileName="#{corePlugin.getPreferredFileName('my-borrowable')}"
+                                                            postProcessor="#{vr.postProcessDataExporterXLS}"/>
+                                        </h:commandLink>
+
+                                        <h:commandLink>
+                                            <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-pdf16.png"
+                                                            width="16"/>
+                                            <p:dataExporter type="pdf" target="equipementsTable"
+                                                            fileName="#{corePlugin.getPreferredFileName('my-borrowable')}"/>
+                                        </h:commandLink>
+
+                                        <h:commandLink>
+                                            <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-csv16.png"
+                                                            width="16"/>
+                                            <p:dataExporter type="csv" target="equipementsTable"
+                                                            fileName="#{corePlugin.getPreferredFileName('my-borrowable')}"/>
+                                        </h:commandLink>
+
+                                        <h:commandLink>
+                                            <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-xml16.png"
+                                                            width="16"/>
+                                            <p:dataExporter type="xml" target="equipementsTable"
+                                                            fileName="#{corePlugin.getPreferredFileName('my-borrowable')}"/>
+                                        </h:commandLink>
+                                    </div>
+                                </f:facet>
+                            </p:dataTable>
++                        </div>
+                        <!-- /.box-body -->
+
+                        <div class="box-footer">
+                        </div>
+                    </div>
                 </h:form>
                 <p:dialog header="Photo" widgetVar="photodlg" modal="true" height="400">
                     <img id="mainPhotoImg" src=""

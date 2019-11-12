@@ -11,6 +11,7 @@ import org.w3c.dom.NodeList;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.app.vainruling.plugins.calendars.service.CalendarsUtils;
 import net.vpc.app.vainruling.plugins.calendars.service.dto.CalendarActivity;
 
@@ -37,7 +38,7 @@ public class CalendarWeekParser {
         WeekCalendar dd = parsePlanningDataXML(nNode, sourceName);
         if (dd != null) {
             dd.setId(id);
-            dd.setPlanningUniformName(name.trim().toLowerCase());
+            dd.setPlanningUniformName(VrUtils.normalizeName(name));
             return dd;
         }
         return null;

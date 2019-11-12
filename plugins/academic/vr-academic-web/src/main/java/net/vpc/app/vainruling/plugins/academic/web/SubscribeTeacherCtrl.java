@@ -65,6 +65,7 @@ public class SubscribeTeacherCtrl {
 
     @VrOnPageLoad
     public void onRefresh(String cmd) {
+        getModel().setTeacher(new AcademicTeacherImport());
         onRefresh();
     }
 
@@ -83,7 +84,15 @@ public class SubscribeTeacherCtrl {
     }
 
     public void onRefresh() {
-        getModel().setTeacher(new AcademicTeacherImport());
+        getModel().getTeacher().setDiscipline(null);
+        getModel().getTeacher().setEmail(null);
+        getModel().getTeacher().setFirstName(null);
+        getModel().getTeacher().setFirstName2(null);
+        getModel().getTeacher().setLastName(null);
+        getModel().getTeacher().setLastName2(null);
+        getModel().getTeacher().setNin(null);
+        getModel().getTeacher().setPhone(null);
+        getModel().getTeacher().setPhone(null);
         AcademicPlugin ap = VrApp.getBean(AcademicPlugin.class);
         int semesterMaxWeeks = ap.getSemesterMaxWeeks();
         getModel().getTeacher().setWeekLoads(new int[]{semesterMaxWeeks, semesterMaxWeeks});

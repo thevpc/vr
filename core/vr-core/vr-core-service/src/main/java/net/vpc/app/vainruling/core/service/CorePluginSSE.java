@@ -24,6 +24,27 @@ public class CorePluginSSE {
         return VrApp.getBean(CorePluginSSE.class);
     }
 
+    public static VFile getRootFile(VFile file){
+        if (file == null) {
+            return null;
+        }
+        VFile f = file.getBaseFile("vrfs");
+        if (f == null) {
+            return null;
+        }
+        return f;
+    }
+    public static String getRootPath(VFile file){
+        if (file == null) {
+            return null;
+        }
+        VFile f = file.getBaseFile("vrfs");
+        if (f == null) {
+            return null;
+        }
+        return f.getPath();
+    }
+
     public long importFile(VFile file, VrImportFileOptions o) throws IOException {
         if (file.isDirectory()) {
             int d = o.getMaxDepth();

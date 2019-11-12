@@ -21,7 +21,7 @@ import net.vpc.app.vainruling.VrEditorAction;
 /**
  * @author taha.bensalah@gmail.com
  */
-@VrEditorAction(entityType = Equipment.class,
+@VrEditorAction(entityName = "Equipment",
         actionStyle = "fa-calculator",
         confirm = true
 )
@@ -35,7 +35,7 @@ public class ReturnBorrowedEquipmentAction implements VrEditorActionInvoke {
     }
 
     @Override
-    public boolean isEnabled(String actionId, Class entityType, AccessMode mode, Object value) {
+    public boolean isEnabled(String actionId, String entityType, AccessMode mode, Object value) {
         if (value == null) {
             return false;
         }
@@ -49,7 +49,7 @@ public class ReturnBorrowedEquipmentAction implements VrEditorActionInvoke {
     }
 
     @Override
-    public ActionDialogResult invoke(String actionId, Class entityType, Object obj, List<String> selectedIdStrings, Object[] args) {
+    public ActionDialogResult invoke(String actionId, String entityType, Object obj, List<String> selectedIdStrings, Object[] args) {
         double qty = ((Number) args[0]).doubleValue();
         EquipmentBorrowService ebs = VrApp.getBean(EquipmentBorrowService.class);
         PersistenceUnit pu = UPA.getPersistenceUnit();

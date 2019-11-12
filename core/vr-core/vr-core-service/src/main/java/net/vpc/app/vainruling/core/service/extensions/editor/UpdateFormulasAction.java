@@ -5,7 +5,6 @@
  */
 package net.vpc.app.vainruling.core.service.extensions.editor;
 
-import net.vpc.app.vainruling.core.service.model.AppConfig;
 
 import net.vpc.app.vainruling.core.service.editor.ActionDialogResult;
 import net.vpc.app.vainruling.core.service.editor.ActionDialogResultPostProcess;
@@ -19,18 +18,18 @@ import net.vpc.app.vainruling.VrEditorAction;
 /**
  * @author taha.bensalah@gmail.com
  */
-@VrEditorAction(entityType = AppConfig.class,
+@VrEditorAction(entityName = "AppConfig",
         actionStyle = "fa-calculator"
 )
 public class UpdateFormulasAction implements VrEditorActionInvoke {
 
     @Override
-    public boolean isEnabled(String actionId, Class entityType, AccessMode mode, Object value) {
+    public boolean isEnabled(String actionId, String entityType, AccessMode mode, Object value) {
         return true;//value != null;
     }
 
     @Override
-    public ActionDialogResult invoke(String actionId, Class entityType, Object obj, List<String> selectedIdStrings, Object[] args) {
+    public ActionDialogResult invoke(String actionId, String entityType, Object obj, List<String> selectedIdStrings, Object[] args) {
         UPA.getPersistenceUnit().updateAllFormulas();
         return new ActionDialogResult("Mise à jour réussie", ActionDialogResultPostProcess.RELOAD_ALL);
     }

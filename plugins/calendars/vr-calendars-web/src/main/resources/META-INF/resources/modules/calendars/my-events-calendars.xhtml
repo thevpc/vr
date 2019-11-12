@@ -56,10 +56,10 @@
                             <h:panelGrid columnClasses="value" styleClass="vr-no-border-grid">
                                 <p:schedule id="schedule" value="#{eventsCalendarsCtrl.model.eventModel}" 
                                             widgetVar="myschedule" 
-                                            locale="fr" 
-                                            timeFormat="HH:MM"  
+                                            timeFormat="HH:mm"  
                                             class="schedule-container"
-
+                                            timeZone="GMT+2"
+                                            locale="en_GB"
                                             >
 
                                     <p:ajax event="dateSelect" disabled="#{!eventsCalendarsCtrl.model.currentCalendarEditable}" listener="#{eventsCalendarsCtrl.onDateSelect}" update=":form:eventDialog" oncomplete="PF('eventDialog').show();" />
@@ -241,6 +241,9 @@
 
 
         <script type="text/javascript">
+            PrimeFaces.locales['en_GB'] = {
+                firstDay: 2
+            };
             PrimeFaces.locales ['fr'] = {
                 closeText: "Fermer",
                 prevText: "Précédent",
@@ -251,7 +254,7 @@
                 dayNamesShort: ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"],
                 dayNamesMin: ["D", "L", "M", "M", "J", "V", "S"],
                 weekHeader: "Semaine",
-                firstDay: 1,
+                firstDay: 2,
                 isRTL: false,
                 showMonthAfterYear: false,
                 yearSuffix: "",

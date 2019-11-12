@@ -26,6 +26,8 @@ public class VFileInfo implements Comparable<VFileInfo> {
     private String desc;
     private boolean selectable;
     private boolean selected;
+    private boolean copied;
+    private boolean cut;
     private long downloads;
     private String aclDirCreateDirectory;
     private String aclDirCreateFile;
@@ -458,6 +460,22 @@ public class VFileInfo implements Comparable<VFileInfo> {
 
     public void setSelectable(boolean selectable) {
         this.selectable = selectable;
+    }
+
+    public boolean isCopied() {
+        return copied;
+    }
+
+    public void setCopied(boolean copied) {
+        this.copied = copied;
+    }
+
+    public boolean isCut() {
+        return cut;
+    }
+
+    public void setCut(boolean cut) {
+        this.cut = cut;
     }
 
 }

@@ -11,7 +11,7 @@ import net.vpc.app.vainruling.VrEntityName;
  */
 @VrEntityName("AppUser")
 @Component
-public class AppUserObjSearchFactory extends ProfileBasedEntityObjSearchFactory {
+public class AppUserByProfileEditorSearch extends ProfileBasedEntityEditorSearch {
 
     @Override
     protected List filterDocumentByProfileFilter(List objects, String profileSearchText) {

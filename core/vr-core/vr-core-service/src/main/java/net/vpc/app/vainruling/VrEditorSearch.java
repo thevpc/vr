@@ -1,35 +1,42 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- *
- * and open the template in the editor.
- */
 package net.vpc.app.vainruling;
-
 
 import java.util.List;
 import java.util.Map;
+import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.upa.Document;
 
 /**
- * @author taha.bensalah@gmail.com
+ *
+ * Implementations must be annotated with @ForEntity(...).
+ * <pre>
+ * @Properties({
+ * @Property(name = UIConstants.ENTITY_TEXT_SEARCH_FACTORY, value =
+ * "full_name_of_your_class_here") } )
+ * </pre>
+ *
+ * Created by vpc on 6/25/17.
  */
-public abstract class VrEditorSearch {
-    private String name;
+public interface VrEditorSearch {
 
-    public VrEditorSearch(String name) {
-        this.name = name;
+    default String getId() {
+        return VrUtils.getBeanName(this);
     }
 
-    public String getName() {
-        return name;
+
+    default String getTitle() {
+        return getName();
     }
 
-    public String createPreProcessingExpression(String entityName,Map<String,Object> parameters,String paramPrefix) {
+    default String createHelperString(String name, String entityName) {
+        return "Tapez ici les mots clés de recherche.";
+    }
+
+    default String createPreProcessingExpression(String entityName, Map<String, Object> parameters, String paramPrefix) {
         return null;
     }
 
-    public List filterDocumentList(List<Document> list, String entityName) {
-        return list;
-    }
+    String getName();
+
+    List filterDocumentList(List<Document> list, String entityName, String expression);
 
 }

@@ -74,9 +74,9 @@ public class EquipmentForResponsibleInfo implements Comparable<EquipmentForRespo
                         break;
                     }
                     case BORROWED: {
-                        if(request.getBorrow()!=null && request.getBorrow().getRemainingQuantity()<=0){
+                        if (request.getBorrow() != null && request.getBorrow().getRemainingQuantity() <= 0) {
                             this.status = EquipmentBorrowStatusExt.RETURNED;
-                        }else{
+                        } else {
                             this.status = EquipmentBorrowStatusExt.BORROWED;
                         }
                         break;
@@ -101,21 +101,21 @@ public class EquipmentForResponsibleInfo implements Comparable<EquipmentForRespo
         this.borrowerUser = request.getBorrowerUser();
         this.borrowRemainingQuantity = request.getBorrow() == null ? 0 : request.getBorrow().getRemainingQuantity();
         this.infoId = "Request-" + request.getId();
-        if (request.getBorrow() == null && !request.isCancelled()) {
-            this.cancelEnabled = true;
-        }
-        if (!this.cancelEnabled) {
-            if (request.isArchive()) {
-                this.archiveEnabled = false;
-            } else {
-                switch (this.status) {
-                    case CANCELLED:
-                    case REJECTED:
-                    case RETURNED: {
-                        this.archiveEnabled = true;
-                        break;
-                    }
+        switch (status) {
+            case ACCEPTED: {
+                if (request.getBorrow() == null && !request.isCancelled()) {
+                    this.cancelEnabled = true;
                 }
+                this.archiveEnabled = true;
+                break;
+            }
+            case REJECTED: {
+                this.archiveEnabled = true;
+                break;
+            }
+            case RETURNED: {
+                this.archiveEnabled = true;
+                break;
             }
         }
     }

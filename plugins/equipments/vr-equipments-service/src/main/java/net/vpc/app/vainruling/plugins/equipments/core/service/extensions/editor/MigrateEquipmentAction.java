@@ -19,18 +19,18 @@ import net.vpc.app.vainruling.VrEditorAction;
 /**
  * @author taha.bensalah@gmail.com
  */
-@VrEditorAction(entityType = Equipment.class,
+@VrEditorAction(entityName = "Equipment",
         actionStyle = "fa-calculator"
 )
 public class MigrateEquipmentAction implements VrEditorActionInvoke {
 
     @Override
-    public boolean isEnabled(String actionId, Class entityType, AccessMode mode, Object value) {
+    public boolean isEnabled(String actionId, String entityType, AccessMode mode, Object value) {
         return value != null;//value != null;
     }
 
     @Override
-    public ActionDialogResult invoke(String actionId, Class entityType, Object obj, List<String> selectedIdStrings, Object[] args) {
+    public ActionDialogResult invoke(String actionId, String entityType, Object obj, List<String> selectedIdStrings, Object[] args) {
         EquipmentPlugin equipmentPlugin = VrApp.getBean(EquipmentPlugin.class);
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity entity = pu.getEntity(entityType);

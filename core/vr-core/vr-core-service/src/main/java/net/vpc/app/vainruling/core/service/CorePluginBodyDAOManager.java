@@ -2,10 +2,7 @@ package net.vpc.app.vainruling.core.service;
 
 import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.core.service.editor.AutoFilterData;
-import net.vpc.app.vainruling.VrEditorSearch;
-import net.vpc.app.vainruling.core.service.editor.EntityEditorSimpleSearch;
 import net.vpc.app.vainruling.core.service.util.I18n;
-import net.vpc.app.vainruling.core.service.util.UIConstants;
 import net.vpc.app.vainruling.core.service.util.VrUPAUtils;
 import net.vpc.app.vainruling.core.service.util.VrUtils;
 import net.vpc.common.strings.StringUtils;
@@ -20,14 +17,44 @@ import net.vpc.upa.types.*;
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 import net.vpc.app.vainruling.core.service.model.AppDepartment;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.common.util.MapUtils;
-import net.vpc.app.vainruling.VrEditorSearchFactory;
+import net.vpc.app.vainruling.core.service.editor.KeywordsEditorSearch;
 import net.vpc.app.vainruling.core.service.model.AppGender;
 import net.vpc.app.vainruling.core.service.model.AppUserType;
+import net.vpc.app.vainruling.core.service.util.ManyToManyMap;
+import net.vpc.app.vainruling.VrEditorSearch;
 
 class CorePluginBodyDAOManager extends CorePluginBody {
+
+    private ManyToManyMap<String, String> vrEditorSearchFactoryToEntity = new ManyToManyMap<>();
+    private Map<String, List<VrEditorSearch>> entityToVrEditorSearchFactoryList = new HashMap<>();
+
+    public VrEditorSearch getEditorSearch(String beanName) {
+        if (StringUtils.isBlank(beanName)) {
+            return VrApp.getBean(KeywordsEditorSearch.class);
+        }
+        return VrApp.getBean(beanName);
+    }
+
+    public List<VrEditorSearch> findEntityEditorSearchs(String entityName) {
+        LinkedHashSet<String> a = new LinkedHashSet<>(vrEditorSearchFactoryToEntity.getSecondValues(entityName));
+        a.addAll(vrEditorSearchFactoryToEntity.getSecondValues(""));
+        return a.stream().map(x -> (VrEditorSearch) VrApp.getBean(x)).collect(Collectors.toList());
+    }
+
+    public void addEntityEditorSearch(String entityName, String beanName) {
+        VrEditorSearch c = getEditorSearch(beanName);
+        if (StringUtils.isBlank(entityName) || entityName.equals("*")) {
+            entityToVrEditorSearchFactoryList.clear();
+            vrEditorSearchFactoryToEntity.add("", beanName);
+        } else {
+            entityToVrEditorSearchFactoryList.remove(entityName);
+            vrEditorSearchFactoryToEntity.add(entityName, beanName);
+        }
+    }
 
     public <T> T findOrCreate(T o) {
         String fname = null;
@@ -572,7 +599,7 @@ class CorePluginBodyDAOManager extends CorePluginBody {
         return entityList;
     }
 
-    public long findCountByFilter(String entityName, String criteria, VrEditorSearch objSearch, Map<String, Object> parameters) {
+    public long findCountByFilter(String entityName, String criteria, String textSearchType, String textSearchExpression, Map<String, Object> parameters) {
         checkNavigate(entityName);
         PersistenceUnit pu = UPA.getPersistenceUnit();
         String qq = "Select count(1) from " + entityName + " o ";
@@ -580,8 +607,12 @@ class CorePluginBodyDAOManager extends CorePluginBody {
         if (criteria != null) {
             filterExpression = new UserExpression(criteria);
         }
-        if (objSearch != null) {
-            String c = objSearch.createPreProcessingExpression(entityName, parameters, "os");
+        VrEditorSearch u = null;
+        if (!StringUtils.isBlank(textSearchType)) {
+            u = getEditorSearch(textSearchType);
+        }
+        if (u != null) {
+            String c = u.createPreProcessingExpression(entityName, parameters, "os");
             if (c != null) {
                 if (filterExpression == null) {
                     filterExpression = new UserExpression(c);
@@ -663,7 +694,7 @@ class CorePluginBodyDAOManager extends CorePluginBody {
         return findDocumentsByFilter(entityName, _listFilter, null, textSearch, parameters);
     }
 
-    public List<Document> findDocumentsByFilter(String entityName, String criteria, VrEditorSearch objSearch, String textSearch, Map<String, Object> parameters) {
+    public List<Document> findDocumentsByFilter(String entityName, String criteria, String searchType, String textSearch, Map<String, Object> parameters) {
         checkFindMany(entityName);
         PersistenceUnit pu = UPA.getPersistenceUnit();
         Entity entity = pu.getEntity(entityName);
@@ -675,14 +706,13 @@ class CorePluginBodyDAOManager extends CorePluginBody {
         if (!org.apache.commons.lang.StringUtils.isBlank(criteria)) {
             filterExpression = new UserExpression(criteria);
         }
-        if (objSearch != null) {
-            String c = objSearch.createPreProcessingExpression(entityName, parameters, "os");
-            if (c != null) {
-                if (filterExpression == null) {
-                    filterExpression = new UserExpression(c);
-                } else {
-                    filterExpression = new And(filterExpression, new UserExpression(c));
-                }
+        VrEditorSearch searchFactory = getEditorSearch(searchType);
+        String c = searchFactory.createPreProcessingExpression(entityName, parameters, "os");
+        if (c != null) {
+            if (filterExpression == null) {
+                filterExpression = new UserExpression(c);
+            } else {
+                filterExpression = new And(filterExpression, new UserExpression(c));
             }
         }
         if (filterExpression != null) {
@@ -700,55 +730,55 @@ class CorePluginBodyDAOManager extends CorePluginBody {
         }
         q.setTop(Convert.toInt(appPropertyValue, IntegerParserConfig.LENIENT_F));
         List<Document> list = q.getDocumentList();
-        if (objSearch != null) {
-            list = objSearch.filterDocumentList(list, entityName);
-        }
-        if (!StringUtils.isBlank(textSearch)) {
-
-            list = createSearch(null, entity.getName(), textSearch).filterDocumentList(list, entityName);
-        }
+        list = searchFactory.filterDocumentList(list, entityName, textSearch);
         return list;
     }
 
-    public VrEditorSearchFactory resolveEntityEditorSearchFactory(String entityName) {
-        return VrUPAUtils.resolveCachedEntityPropertyInstance(UPA.getPersistenceUnit().getEntity(entityName), UIConstants.ENTITY_TEXT_SEARCH_FACTORY, VrEditorSearchFactory.class);
-    }
-
-    public String createSearchHelperString(String name, String entityName) {
-        String d = "Tapez ici les mots clés de recherche.";
-        if (StringUtils.isBlank(entityName)) {
-            return d;
-        }
-        PersistenceUnit pu = UPA.getPersistenceUnit();
-        Entity entity = pu.getEntity(entityName);
-        VrEditorSearchFactory g = resolveEntityEditorSearchFactory(entityName);
-        String s = null;
-        if (g != null) {
-            s = g.createHelperString(name, entity);
-        }
-        if (StringUtils.isBlank(s)) {
-            s = d;
-        }
-        return s;
-    }
-
-    public VrEditorSearch createSearch(String name, String entityName, String expression) {
-        if (StringUtils.isBlank(expression)) {
-            return new EntityEditorSimpleSearch(null);
-        }
-        PersistenceUnit pu = UPA.getPersistenceUnit();
-        Entity entity = pu.getEntity(entityName);
-        VrEditorSearchFactory g = resolveEntityEditorSearchFactory(entityName);
-        VrEditorSearch objSearch = null;
-        if (g != null) {
-            objSearch = g.create(name, entity, expression);
-        }
-        if (objSearch == null) {
-            return new EntityEditorSimpleSearch(expression);
-        }
-        return objSearch;
-    }
-
+//    public VrEditorSearchFactory resolveEntityEditorSearchFactory(String entityName, String searchTypeId) {
+//        Map<String, VrEditorSearchFactory> p = resolveEntityEditorSearchFactory(entityName);
+//        if (p == null) {
+//            throw new IllegalArgumentException("Invalid Entity " + entityName);
+//        }
+//        VrEditorSearchFactory u = p.get(searchTypeId);
+//        if (u != null) {
+//            throw new IllegalArgumentException("Invalid searchType " + searchTypeId);
+//        }
+//        return VrUPAUtils.resolveCachedEntityPropertyInstance(UPA.getPersistenceUnit().getEntity(entityName), UIConstants.ENTITY_TEXT_SEARCH_FACTORY, VrEditorSearchFactory.class);
+//    }
+//
+//    public String createSearchHelperString(String name, String entityName, String searchTypeId) {
+//        String d = "Tapez ici les mots clés de recherche.";
+//        if (StringUtils.isBlank(entityName)) {
+//            return d;
+//        }
+//        PersistenceUnit pu = UPA.getPersistenceUnit();
+//        Entity entity = pu.getEntity(entityName);
+//        VrEditorSearchFactory g = getEditorSearchFactory(searchTypeId);
+//        String s = null;
+//        if (g != null) {
+//            s = g.createHelperString(name, entity);
+//        }
+//        if (StringUtils.isBlank(s)) {
+//            s = d;
+//        }
+//        return s;
+//    }
+//    public VrEditorSearch createSearch(String name, String entityName, String expression, String searchTypeId) {
+//        if (StringUtils.isBlank(expression)) {
+//            return new EntityEditorSimpleSearch(null);
+//        }
+//        PersistenceUnit pu = UPA.getPersistenceUnit();
+//        Entity entity = pu.getEntity(entityName);
+//        VrEditorSearchFactory g = getEditorSearchFactory(searchTypeId);
+//        VrEditorSearch objSearch = null;
+//        if (g != null) {
+//            objSearch = g.create(name, entity, expression);
+//        }
+//        if (objSearch == null) {
+//            return new EntityEditorSimpleSearch(expression);
+//        }
+//        return objSearch;
+//    }
     public List<Object> findAll(String entityName) {
         checkFindMany(entityName);
         PersistenceUnit pu = UPA.getPersistenceUnit();
@@ -940,7 +970,7 @@ class CorePluginBodyDAOManager extends CorePluginBody {
                     return (new NamedId(initial, initial));
                 }
             }
-            throw new IllegalArgumentException("Not Supported yet intial value " + initial + " for auto-filter : " + autoFilterData.getEntityName() + "." + autoFilterData.getName());
+            throw new IllegalArgumentException("Not Supported yet initial value " + initial + " for auto-filter : " + autoFilterData.getEntityName() + "." + autoFilterData.getName());
         }
         if (filterType instanceof KeyType) {
             Entity ee = ((KeyType) filterType).getEntity();

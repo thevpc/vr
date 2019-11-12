@@ -16,7 +16,7 @@ import net.vpc.app.vainruling.VrEditorAction;
 /**
  * @author taha.bensalah@gmail.com
  */
-@VrEditorAction(entityType = AcademicInternship.class,
+@VrEditorAction(entityName = "AcademicInternship",
         actionStyle = "fa-envelope-o"
 )
 public class CreateInternshipsAction implements VrEditorActionDialog {
@@ -27,7 +27,7 @@ public class CreateInternshipsAction implements VrEditorActionDialog {
     }
 
     @Override
-    public boolean isEnabled(String actionId, Class entityType, AccessMode mode, Object value) {
+    public boolean isEnabled(String actionId, String entityType, AccessMode mode, Object value) {
         return mode == AccessMode.READ;
     }
 }

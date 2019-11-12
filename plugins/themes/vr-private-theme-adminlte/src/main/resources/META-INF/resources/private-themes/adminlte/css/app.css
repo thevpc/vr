@@ -280,7 +280,7 @@ h1{
 }
 
 .ui-widget, .ui-widget .ui-widget {
-    font-size: 13px;
+    /*font-size: 13px;*/
 }
 
 .legend {
@@ -529,10 +529,6 @@ table.NoPaddingTableClass td {
     background: #f4f4f4;
 }
 
-.ui-datatable tr.ui-datatable-even:hover, .ui-datatable tr.ui-datatable-odd:hover {
-
-    background: var(--vr-color-main12);
-}
 
 .vr-row-not-relevant {
     background-color: var(--vr-color-main04) !important;
@@ -567,12 +563,12 @@ table.NoPaddingTableClass td {
     margin: 10px 0 10px;
 }
 
-button.ui-button > span.ui-icon {
+/*button.ui-button > span.ui-icon {
     text-indent: 0px !important;
     background-image: none;
 
     color: var(--vr-color-main14);
-}
+}*/
 
 .vr-leftmost-menubutton > .ui-button {
     height: 40px;
@@ -759,7 +755,7 @@ button.vr-toolbox-button > span.ui-button-text {
     min-height: 0 !important;
     min-width: 200px !important;
     margin: 1px 1px 1px 1px !important;
-    font-size: 10px !important;
+    /*font-size: 10px !important;*/
     display: block;
     clear: both;
 }
@@ -804,8 +800,7 @@ div.ui-panel.vr-no-border-grid > div.ui-panel-footer.ui-widget-content {
 }
 
 button.vr-tiny-button > span {
-    padding: 2px 2px 2px 2px;
-    !important
+    padding: 2px 2px 2px 2px !important;
 }
 
 button.vr-tiny-button.ui-button-text-only .ui-button-text {
@@ -1061,9 +1056,9 @@ h1{
 .ui-widget, .ui-widget .ui-widget {
     font-family: 'Source Sans Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
-.ui-widget-content {
+/*.ui-widget-content {
     background: #ecf0f5;
-}
+}*/
 .deplist ul li a {
     display: block;
     text-decoration: none;
@@ -1243,7 +1238,7 @@ td.vr-mailbox-name label {
 }
 
 .vr-form-control-right-button60 {
-    width: 60px;
+    width: 60px !important;
     height: 34px;
     /*float: right;*/
 }
@@ -1400,4 +1395,131 @@ span.ui-autocomplete.vr-form-control:focus{
 
 .ui-menu .ui-menuitem-link {
     width: 100%;
+}
+
+.pb-filemng-template {
+    margin-top: 40px;
+    font-family: 'Sansita', sans-serif;
+}
+
+.pb-filemng-navbar {
+    margin-bottom: 0;
+}
+
+.treeview-toggle-btn {
+    margin-left: 15px;
+}
+
+.pb-filemng-template-btn {
+    background-color: Transparent;
+    background-repeat:no-repeat;
+    border: none;
+    cursor:pointer;
+    outline:none;
+    color: gray;
+    padding: 0px 13px 0px 13px;
+}
+
+.pb-filemng-active {
+    border-bottom: 2px solid #6d97db;
+    color: #5f6977;
+}
+
+.pb-filemng-template-btn:hover {
+    color: blue;
+}
+
+.pb-filemng-body-folders > img:hover {
+    cursor: pointer;
+}
+
+.btn-align {
+    margin-top: 7px;
+}
+
+.pb-filemng-template-treeview {
+    border-right: 1px solid gray;
+}
+
+.pb-filemng-folder {
+    color: orange;
+    padding-bottom: 3px;
+}
+
+.pb-filemng-paragraphs {
+    margin-top: -20px;
+    text-align: center;
+}
+.pb-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.img-responsive {
+    margin: 0 auto;
+}
+.file-copied {
+    color: darkcyan;
+}
+.file-cut {
+    color: crimson;
+}
+
+@media screen and (max-width: 767px) {
+
+    .pb-filemng-template-treeview {
+        border-right: none;
+    }
+
+    #options {
+        text-align: center;
+    }
+
+    #options > li {
+        display: inline-block;
+    }
+
+    #pb-filemng-navigation > ul {
+        text-align: center;
+    }
+
+    #pb-filemng-navigation > ul > li {
+        display: inline-block;
+    }
+
+}
+
+.ui-inputfield, .ui-widget-content .ui-inputfield, .ui-widget-header .ui-inputfield{
+    box-shadow: none;
+    padding:initial;
+}
+
+.ui-state-highlight, .ui-widget-content .ui-state-highlight, .ui-widget-header .ui-state-highlight{
+    color:#ffffff;
+}
+
+.ui-datatable .ui-state-highlight {
+    background-image: none;
+    background-color: #91ddfd !important;
+}
+
+.ui-datatable tr.ui-datatable-even:hover, .ui-datatable tr.ui-datatable-odd:hover {
+    /*background: var(--vr-color-main12);*/
+    background: #007fbf;
+}
+
+.ui-dialog {
+    width: auto !important;
+}
+
+img:hover .vr-fs-icon{
+    transform: rotate(10deg);
+}
+.ui-state-disabled, .ui-widget-content .ui-state-disabled, .ui-widget-header .ui-state-disabled{
+    background-color:transparent;
+}
+
+.separatorText{
+    color: #3c8dbc;
 }

@@ -24,7 +24,7 @@ import net.vpc.app.vainruling.plugins.equipments.borrow.model.EquipmentBorrowWor
 @Properties({
     @Property(name = UIConstants.Grid.ROW_STYLE,
             value = "(i.object.deleted or i.object.archived) ?'vr-row-deleted':(i.object.location eq null) ?'vr-row-invalid': ''"),
-    @Property(name = UIConstants.ENTITY_ID_HIERARCHY, value = "brandLine"),
+//    @Property(name = UIConstants.ENTITY_ID_HIERARCHY, value = "brandLine"),
     @Property(name = "ui.auto-filter.department", value = "{expr='this.department',order=1}"),
     @Property(name = "ui.auto-filter.acquisition", value = "{expr='this.acquisition',order=2}"),
     @Property(name = "ui.auto-filter.brandLine", value = "{expr='this.brandLine',order=3}"),

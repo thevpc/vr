@@ -67,8 +67,13 @@ public class AcademicCoursePlan {
     @Properties(
             @Property(name = UIConstants.Form.SPAN, value = "MAX_VALUE")
     )
+    private String otherNames;
+
+    @Properties(
+            @Property(name = UIConstants.Form.SPAN, value = "MAX_VALUE")
+    )
     private String name2;
-    
+
     @Summary
     private AcademicCoursePlan delegate;
 
@@ -188,8 +193,14 @@ public class AcademicCoursePlan {
      */
     private boolean locked;
 
+    @Properties(
+            @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:80px")
+    )
     private String roomConstraintsC;
     @Summary
+    @Properties(
+            @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:80px")
+    )
     private String roomConstraintsTP;
 
     @Properties(
@@ -246,6 +257,7 @@ public class AcademicCoursePlan {
     @Formula(value = "CurrentTimestamp()", formulaType = {FormulaType.PERSIST, FormulaType.UPDATE})
     private Timestamp updateDate;
 
+    @Path("Validation")
     @Properties(
             {
                 @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
@@ -255,6 +267,25 @@ public class AcademicCoursePlan {
     @Field(max = "1024")
     @Summary
     private String validationErrors;
+
+    @Formula(name = "academicCoursePlan_teachers_Formula")
+    @Field(max = "1024")
+    @Summary
+    private String teachersLabel;
+
+    @Properties(
+            @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:40px")
+    )
+    @Formula("(Select count(1) from AcademicCourseAssignment a where a.coursePlanId=this.id)")
+    @Summary
+    private int assignmentsCount;
+
+    @Properties(
+            @Property(name = UIConstants.Grid.COLUMN_STYLE, value = "width:40px")
+    )
+    @Summary
+    @Formula("(Select count(1) from AcademicCourseAssignment a where a.coursePlanId=this.id and a.teacherId!=null)")
+    private int validAssignmentsCount;
 
     public int getId() {
         return id;
@@ -763,5 +794,37 @@ public class AcademicCoursePlan {
     public void setDelegate(AcademicCoursePlan delegate) {
         this.delegate = delegate;
     }
-    
+
+    public String getTeachersLabel() {
+        return teachersLabel;
+    }
+
+    public void setTeachersLabel(String teachersLabel) {
+        this.teachersLabel = teachersLabel;
+    }
+
+    public int getAssignmentsCount() {
+        return assignmentsCount;
+    }
+
+    public void setAssignmentsCount(int assignmentsCount) {
+        this.assignmentsCount = assignmentsCount;
+    }
+
+    public int getValidAssignmentsCount() {
+        return validAssignmentsCount;
+    }
+
+    public void setValidAssignmentsCount(int validAssignmentsCount) {
+        this.validAssignmentsCount = validAssignmentsCount;
+    }
+
+    public String getOtherNames() {
+        return otherNames;
+    }
+
+    public void setOtherNames(String otherNames) {
+        this.otherNames = otherNames;
+    }
+
 }

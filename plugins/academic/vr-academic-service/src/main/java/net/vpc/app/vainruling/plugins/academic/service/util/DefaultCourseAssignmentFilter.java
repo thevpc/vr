@@ -885,58 +885,18 @@ public class DefaultCourseAssignmentFilter implements CourseAssignmentFilter {
                 return false;
             }
         }
-        boolean acceptAssignOrWishOrProposal=false;
-        if(getAcceptAssignments()==null ||  getAcceptAssignments()==a.isAssigned()){
-            acceptAssignOrWishOrProposal=true;
-        }
-        if (this.getAcceptWish()==null || (a.supportsWish() && this.getAcceptWish()==a.isWish())) {
-            acceptAssignOrWishOrProposal=true;
-        }
-        if (this.getAcceptProposals()==null || (a.supportsProposals() && this.getAcceptProposals()==a.isProposal())) {
-            acceptAssignOrWishOrProposal=true;
-        }
-        if(!acceptAssignOrWishOrProposal){
-            return false;
-        }
-//        boolean _assigned = a.isAssigned();
-//        HashSet<String> s = new HashSet<>(c.getIntentsSet());
-//        boolean _intended = s.size() > 0;
-//        boolean accepted = true;
-//        if (((assigned && _assigned) || (nonassigned && !_assigned))
-//                && ((intended && _intended) || (nonintended && !_intended))) {
-//            //ok
-//        } else {
-//            accepted = false;
+//        boolean acceptAssignOrWishOrProposal=false;
+//        if(getAcceptAssignments()==null ||  getAcceptAssignments()==a.isAssigned()){
+//            acceptAssignOrWishOrProposal=true;
 //        }
-//        if (accepted && semesterFilter.size() > 0) {
-//            if (!semesterFilter.contains(c.getAssignment().getCoursePlan().getCourseLevel().getSemester().getId())) {
-//                accepted = false;
-//            }
+//        if (this.getAcceptWish()==null || (a.supportsWish() && this.getAcceptWish()==a.isWish())) {
+//            acceptAssignOrWishOrProposal=true;
 //        }
-//        if (accepted && classFilter.size() > 0) {
-//            if (!classFilter.contains(c.getAssignment().getCoursePlan().getCourseLevel().getAcademicClass().getId())) {
-//                accepted = false;
-//            }
+//        if (this.getAcceptProposals()==null || (a.supportsProposals() && this.getAcceptProposals()==a.isProposal())) {
+//            acceptAssignOrWishOrProposal=true;
 //        }
-//        if (accepted && courseTypeFilter.size() > 0) {
-//            if (!courseTypeFilter.contains(c.getAssignment().getCourseType().getId())) {
-//                accepted = false;
-//            }
-//        }
-//        if (accepted && conflict) {
-//            //show only whith conflicts
-//            if (c.getIntentsSet().isEmpty()) {
-//                accepted = false;
-//            } else if (c.getAssignment().getTeacher() != null) {
-//                accepted = (c.getIntentsSet().size() == 1
-//                        && !c.getAssignment().getTeacher().resolveFullName().equals(c.getIntentsSet().toArray()[0]))
-//                        || c.getIntentsSet().size() > 1;
-//            } else {
-//                accepted = c.getIntentsSet().size() > 1;
-//            }
-//        }
-//        if (accepted) {
-//            others.add(c);
+//        if(!acceptAssignOrWishOrProposal){
+//            return false;
 //        }
         return (true);
     }

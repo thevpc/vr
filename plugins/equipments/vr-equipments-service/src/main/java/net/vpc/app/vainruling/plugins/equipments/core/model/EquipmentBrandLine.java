@@ -13,7 +13,7 @@ import net.vpc.upa.config.*;
  */
 @Entity(listOrder = "this.name")
 @Path("Repository/Equipment")
-@Property(name = UIConstants.ENTITY_ID_HIERARCHY, value = "brand")
+//@Property(name = UIConstants.ENTITY_ID_HIERARCHY, value = "brand")
 public class EquipmentBrandLine {
 
     @Path("Main")

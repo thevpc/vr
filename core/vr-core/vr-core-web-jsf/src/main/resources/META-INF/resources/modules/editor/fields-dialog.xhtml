@@ -9,53 +9,58 @@ and open the template in the editor.
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:p="http://primefaces.org/ui"
       xmlns:ui="http://java.sun.com/jsf/facelets"
-        >
+      >
 
-<h:head>
-    <title><h:outputText value="Sélectionner Propriétés"/></title>
-</h:head>
+    <h:head>
+        <title><h:outputText value="Sélectionner Propriétés"/></title>
+    </h:head>
 
-<h:body>
+    <h:body>
 
-    <ui:composition template="#{vr.privateThemePath}/templates/dialog-template.xhtml">
-        <ui:define name="dialog-title">
-            <h:outputText value="Sélectionner propriétés"/>
-        </ui:define>
-        <ui:define name="dialog-body">
+        <ui:composition template="#{vr.privateThemePath}/templates/dialog-template.xhtml">
+            <ui:define name="dialog-title">
+                <h:outputText value="Sélectionner les colonnes à afficher"/>
+            </ui:define>
+            <ui:define name="dialog-body">
 
-            <h:form id="myform">
+                <h:form id="myform">
 
-                <p:dataTable id="listTable" var="i" value="#{editorCtrl.model.fieldSelection.fields}"
-                             style="margin-top: 20px;"
-                             class="table table-bordered table-hover"
-                             paginatorAlwaysVisible="false"
-                             paginator="true"
-                             paginatorPosition="bottom"
-                             rows="10"
-                             emptyMessage="Aucune propriété"
-                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                             rowsPerPageTemplate="10,20,50,100,200,1000"
-                        >
+                    <p:dataTable id="listTable" var="i" value="#{editorCtrl.model.fieldSelection.fields}"
+                                 style="margin-top: 20px;"
+                                 class="table table-bordered table-hover"
+                                 paginatorAlwaysVisible="false"
+                                 paginator="true"
+                                 paginatorPosition="bottom"
+                                 rows="8"
+                                 emptyMessage="Aucune propriété"
+                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 rowsPerPageTemplate="8,10,20,50,100,200,1000"
+                                 >
 
-                    <p:column headerText="" style="width: 60px;">
-                        <p:selectBooleanCheckbox value="#{i.selected}"/>
-                    </p:column>
-                    <p:column headerText="Propriété">
-                        <p:outputLabel value="#{i.label}"/>
-                    </p:column>
-                </p:dataTable>
-                <p:separator/>
-                <p:commandButton icon="ui-icon-search" actionListener="#{editorCtrl.fireEventClearSelection}"
-                                 value="Reinitialiser" styleClass="btn btn-primary"
-                                 style="position: absolute;right: 10px; margin-top: 10px;"/>
-                <p:commandButton icon="ui-icon-search" actionListener="#{editorCtrl.fireEventSelectionValidated}"
-                                 value="Selectionner" styleClass="btn btn-primary"
-                                 style="position: absolute;right: 150px; margin-top: 10px;"/>
-            </h:form>
+                        <p:column headerText="" style="width: 60px;">
+                            <p:selectBooleanCheckbox value="#{i.selected}"/>
+                        </p:column>
+                        <p:column headerText="Colonne">
+                            <p:outputLabel value="#{i.label}"/>
+                        </p:column>
+                    </p:dataTable>
+                    <p:separator/>
+                    <div class="button-group pull-right ">
+                        <p:commandButton actionListener="#{editorCtrl.fireEventClearSelection}"
+                                         value="Reinitialiser" styleClass="btn btn-primary"
+                                         />
+                        <p:commandButton actionListener="#{editorCtrl.fireEventSelectionValidated}"
+                                         value="Selectionner" styleClass="btn btn-warning"
+                                         />
+                        <p:commandButton actionListener="#{vr.closeDialog()}"
+                                         value="Selectionner" styleClass="btn btn-default"
+                                         />
+                    </div>
+                </h:form>
 
-        </ui:define>
+            </ui:define>
 
-    </ui:composition>
-</h:body>
+        </ui:composition>
+    </h:body>
 
 </html>

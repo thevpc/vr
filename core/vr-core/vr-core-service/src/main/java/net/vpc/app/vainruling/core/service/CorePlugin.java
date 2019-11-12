@@ -11,7 +11,6 @@ import net.vpc.app.vainruling.core.service.cache.CacheService;
 import net.vpc.app.vainruling.core.service.fs.FileInfo;
 import net.vpc.app.vainruling.core.service.model.*;
 import net.vpc.app.vainruling.core.service.editor.AutoFilterData;
-import net.vpc.app.vainruling.VrEditorSearch;
 import net.vpc.app.vainruling.core.service.plugins.*;
 import net.vpc.app.vainruling.core.service.security.UserSession;
 import net.vpc.app.vainruling.core.service.security.UserSessionInfo;
@@ -49,12 +48,12 @@ import net.vpc.app.vainruling.core.service.model.content.ArticlesDispositionStri
 import net.vpc.app.vainruling.core.service.model.strict.AppUserStrict;
 import net.vpc.app.vainruling.VrPollService;
 import net.vpc.app.vainruling.VrEditorMainPhotoProvider;
-import net.vpc.app.vainruling.VrEditorSearchFactory;
 import net.vpc.app.vainruling.VrEntityName;
 import net.vpc.app.vainruling.VrCompletionService;
 import net.vpc.app.vainruling.VrCompletionInfo;
 import net.vpc.app.vainruling.VrInstall;
 import net.vpc.app.vainruling.VrStart;
+import net.vpc.app.vainruling.VrEditorSearch;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -158,20 +157,20 @@ public class CorePlugin {
                         }
                     }
                 }
-                for (VrEditorSearchFactory bean : VrApp.getBeansForType(VrEditorSearchFactory.class)) {
+                for (VrEditorSearch bean : VrApp.getBeansForType(VrEditorSearch.class)) {
                     Class bc = PlatformReflector.getTargetClass(bean);
                     VrEntityName fe = (VrEntityName) bc.getAnnotation(VrEntityName.class);
-                    if (fe == null) {
-                        LOG.log(Level.SEVERE, "EntityObjSearchFactory implementation " + bc.getName() + " must declare @ForEntity annotation. Ignored");
+                    String beanName = VrUtils.getBeanName(bean);
+                    if (fe == null || StringUtils.isBlank(fe.value()) || fe.value().equals("*")) {
+                        bodyDaoManager.addEntityEditorSearch("", beanName);
                     } else {
-                        Entity entity = persistenceUnit.findEntity(fe.value());
-                        if (entity == null) {
-                            LOG.log(Level.SEVERE, "EntityObjSearchFactory implementation " + bc.getName() + " ignored for unknown entity " + persistenceUnit.getName() + "/" + fe.value());
-                        } else {
-                            entity.getProperties().setObject("cache." + UIConstants.ENTITY_TEXT_SEARCH_FACTORY, (VrEditorSearchFactory) bean);
-                            entity.getProperties().setString(UIConstants.ENTITY_TEXT_SEARCH_FACTORY, bc.getName());
-                        }
+                        bodyDaoManager.addEntityEditorSearch(fe.value(), beanName);
+                        Entity entity = persistenceUnit.getEntity(fe.value());
+                        entity.getProperties().setString(UIConstants.ENTITY_TEXT_SEARCH_FACTORY,
+                                VrUtils.stringSetAdd(entity.getProperties().getString(UIConstants.ENTITY_TEXT_SEARCH_FACTORY), beanName, ",")
+                        );
                     }
+
                 }
             }
 
@@ -932,23 +931,27 @@ public class CorePlugin {
         return bodyDaoManager.findAllNamedIds(entityName, criteria, currentInstance);
     }
 
-    public long findCountByFilter(String entityName, String criteria, VrEditorSearch objSearch, Map<String, Object> parameters) {
-        return bodyDaoManager.findCountByFilter(entityName, criteria, objSearch, parameters);
+    public long findCountByFilter(String entityName, String criteria, String textSearchType, String textSearchExpression, Map<String, Object> parameters) {
+        return bodyDaoManager.findCountByFilter(entityName, criteria, textSearchType, textSearchExpression, parameters);
     }
 
 //    public List<Object> findByFilter(String entityName, String criteria, ObjSearch objSearch, Map<String, Object> parameters) {
 //        return bodyDaoManager.findByFilter(entityName, criteria, objSearch, parameters);
 //    }
-    public List<Document> findDocumentsByFilter(String entityName, String criteria, VrEditorSearch objSearch, String textSearch, Map<String, Object> parameters) {
-        return bodyDaoManager.findDocumentsByFilter(entityName, criteria, objSearch, textSearch, parameters);
+    public List<Document> findDocumentsByFilter(String entityName, String criteria, String searchType, String textSearch, Map<String, Object> parameters) {
+        return bodyDaoManager.findDocumentsByFilter(entityName, criteria, searchType, textSearch, parameters);
     }
 
     public List<Document> findDocumentsByAutoFilter(String entityName, Map<String, String> autoFilterValues, String textSearch, String exprFilter) {
         return bodyDaoManager.findDocumentsByAutoFilter(entityName, autoFilterValues, textSearch, exprFilter);
     }
 
-    public String createSearchHelperString(String name, String entityName) {
-        return bodyDaoManager.createSearchHelperString(name, entityName);
+    public VrEditorSearch getEditorSearch(String beanName) {
+        return bodyDaoManager.getEditorSearch(beanName);
+    }
+
+    public List<VrEditorSearch> findEntityEditorSearchs(String entityName) {
+        return bodyDaoManager.findEntityEditorSearchs(entityName);
     }
 
     public List<Object> findAll(String entityName) {
@@ -1556,5 +1559,148 @@ public class CorePlugin {
 
     public void removeProfileParents(String childern, String... parents) {
         bodySecurityManager.removeProfileParent(childern, parents);
+    }
+
+    private Object convertId(Object a, Class to) {
+        if (a == null) {
+            return null;
+        }
+        if (to.isInstance(a)) {
+            return a;
+        }
+        switch (to.getSimpleName()) {
+            case "Integer":
+            case "int": {
+                if (a instanceof Number) {
+                    return ((Number) a).intValue();
+                }
+                if (a instanceof String) {
+                    String s = (String) a;
+                    if (StringUtils.isBlank(s)) {
+                        return null;
+                    }
+                    return Integer.parseInt(s);
+                }
+                break;
+            }
+            case "Long":
+            case "long": {
+                if (a instanceof Number) {
+                    return ((Number) a).longValue();
+                }
+                if (a instanceof String) {
+                    String s = (String) a;
+                    if (StringUtils.isBlank(s)) {
+                        return null;
+                    }
+                    return Long.parseLong(s);
+                }
+                break;
+            }
+            case "String": {
+                if (a instanceof String) {
+                    return a.toString();
+                }
+                break;
+            }
+        }
+        throw new IllegalArgumentException("Unsupported id type " + a.getClass() + ". Expected : " + to.getSimpleName());
+    }
+
+    public Object mergeDocuments(String entityName, Object baseId, List selectedIdStrings) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        Entity e = pu.getEntity(entityName);
+        Set<Object> removeMe = new HashSet<Object>();
+        List<Field> idFields = e.getIdFields();
+        if (idFields.size() != 1) {
+            throw new IllegalArgumentException("Cannot merge Entity " + entityName + ". Unsupported Id " + e.getIdFields());
+        }
+        Class to = idFields.get(0).getDataType().getPlatformType();
+        Object bid = convertId(baseId, to);
+        if (bid == null) {
+            throw new IllegalArgumentException("Cannot merge Entity " + entityName + ". base id is null");
+        }
+        Document v0 = pu.findDocumentById(entityName, bid);
+        if (bid == null) {
+            throw new IllegalArgumentException("Cannot merge Entity " + entityName + ". base id not found" + bid);
+        }
+        Set<Object> goodMergeable = new LinkedHashSet<>();
+        for (Object selectedId : selectedIdStrings) {
+            Object oid = convertId(selectedId, to);
+            if (oid == null) {
+                throw new IllegalArgumentException("Cannot merge Entity " + entityName + ". id to merge null");
+            }
+            if (oid.equals(bid)) {
+                //ignore the case where baseId is specified twice
+                continue;
+            }
+            goodMergeable.add(oid);
+        }
+
+        switch (entityName) {
+            case "AcademicStudent":
+            case "AcademicTeacher": {
+                EntityBuilder b = pu.getEntity("AppUser").getBuilder();
+                List<Integer> usersToMerge = new ArrayList<>();
+                Set<Object> goodMergeable2 = new LinkedHashSet<>();
+                goodMergeable2.add(bid);
+                goodMergeable2.addAll(goodMergeable);
+                for (Object oid : goodMergeable2) {
+                    Document v = pu.findDocumentById(entityName, oid);
+                    if (bid == null) {
+                        throw new IllegalArgumentException("Cannot merge Entity " + entityName + ". to merge not found " + oid);
+                    }
+                    Integer u = (Integer) b.objectToId(v.get("user"));
+                    if (u != null) {
+                        usersToMerge.add(u);
+                    }
+                }
+                if (usersToMerge.size() > 1) {
+                    mergeDocuments("AppUser", usersToMerge.get(0), usersToMerge);
+                }
+                break;
+            }
+        }
+
+        for (Object oid : goodMergeable) {
+            Document v = pu.findDocumentById(entityName, oid);
+            if (bid == null) {
+                throw new IllegalArgumentException("Cannot merge Entity " + entityName + ". to merge not found " + oid);
+            }
+            for (Map.Entry<String, Object> entry : v.entrySet()) {
+                String k = entry.getKey();
+                Field ff = e.getField(k);
+                if (ff.isGeneratedId() || ff.isId()) {
+                    //ignore...
+                } else {
+                    Object uv = ff.getDataType().getDefaultUnspecifiedValue();
+                    if ((v0.get(k) == null || Objects.equals(v0.get(k), uv))
+                            && (entry.getValue() != null && !Objects.equals(entry.getValue(), uv))) {
+                        v0.set(k, entry.getValue());
+                    }
+                }
+            }
+            removeMe.add(e.getBuilder().documentToId(v));
+        }
+        //Object o0 = e.getBuilder().documentToObject(v0);
+        for (Relationship relationship : e.getRelationshipsByTarget()) {
+            Entity se = relationship.getSourceEntity();
+            String f = relationship.getSourceRole().getEntityField().getName();
+            Query q = pu.createQuery("Select a from " + se.getName()
+                    + " a where a." + f + ".id=:id"
+            );
+            for (Object _id : removeMe) {
+                q.setParameter("id", _id);
+                for (Document document : q.getDocumentList()) {
+                    document.set(f, v0);
+                    pu.merge(se.getName(), document);
+                }
+            }
+
+        }
+        for (Object _id : removeMe) {
+            pu.remove(entityName, RemoveOptions.forId(_id));
+        }
+        return bid;
     }
 }

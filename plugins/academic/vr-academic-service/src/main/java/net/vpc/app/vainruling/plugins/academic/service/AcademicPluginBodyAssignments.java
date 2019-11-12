@@ -1098,10 +1098,39 @@ public class AcademicPluginBodyAssignments extends AcademicPluginBody {
         teacherGenerationHelper.generateTeachingLoad(periodId, courseAssignmentFilter, version0, oldVersion, monitor);
     }
 
-    public List<AcademicCourseAssignment> findAcademicCourseAssignmentListByCoursePlanId(int coursePlanId) {
+    public List<AcademicCoursePlan> findCoursePlans(Integer periodId, Integer programId, Integer clazzId, Integer semesterId) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        return pu.createQuery("Select c from AcademicCourseAssignment c where c.coursePlanId=:coursePlanId")
-                .setParameter("coursePlanId", coursePlanId)
+        return pu.createQuery("Select c from AcademicCoursePlan c where  1=1 "
+                + ((periodId != null) ? " and c.periodId=:periodId " : "")
+                + ((programId != null) ? " and c.courseLevel.academicClass.programId=:programId " : "")
+                + ((clazzId != null) ? " and c.courseLevel.academicClassId=:clazzId" : "")
+                + ((semesterId != null) ? " and c.courseLevel.semesterId=:semesterId" : "")
+        )
+                .setParameter("periodId", periodId, periodId != null)
+                .setParameter("programId", programId, programId != null)
+                .setParameter("clazzId", clazzId, clazzId != null)
+                .setParameter("semesterId", semesterId, semesterId != null)
+                .getResultList();
+    }
+
+    public List<AcademicCourseAssignment> findAssignments(Integer periodId, Integer coursePlanId, Integer clazzId, Integer teacherId, Integer programId, Integer semesterId,Integer courseTypeId) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        return pu.createQuery("Select c from AcademicCourseAssignment c where 1=1 "
+                + ((periodId != null) ? " and c.coursePlan.periodId=:periodId " : "")
+                + ((coursePlanId != null) ? " and c.coursePlanId=:coursePlanId " : "")
+                + ((teacherId != null) ? " and c.teacherId=:teacherId " : "")
+                + ((clazzId != null) ? " and ((c.subClassId=null and c.coursePlan.courseLevel.academicClassId=:clazzId) or c.subClassId=:clazzId)" : "")
+                + ((programId != null) ? " and c.coursePlan.courseLevel.academicClass.programId=:programId " : "")
+                + ((semesterId != null) ? " and c.coursePlan.courseLevel.semesterId=:semesterId" : "")
+                + ((courseTypeId != null) ? " and c.courseTypeId=:courseTypeId" : "")
+        )
+                .setParameter("periodId", periodId, periodId != null)
+                .setParameter("coursePlanId", coursePlanId, coursePlanId != null)
+                .setParameter("clazzId", clazzId, clazzId != null)
+                .setParameter("teacherId", teacherId, teacherId != null)
+                .setParameter("semesterId", semesterId, semesterId != null)
+                .setParameter("programId", programId, programId != null)
+                .setParameter("courseTypeId", courseTypeId, courseTypeId != null)
                 .getResultList();
     }
 }

@@ -102,6 +102,11 @@ public class TextSearchFilter {
         tokens = tokenize(expression);
     }
     
+    public static List filterList(List list,String expression,String entityName) {
+        TextSearchFilter textSearch = TextSearchFilter.forEntity(expression, entityName);
+        return textSearch == null ? list : textSearch.filterList(list);
+    }
+    
     public List filterList(List list) {
         List oldList = list;
         if (StringUtils.isBlank(expression)) {

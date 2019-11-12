@@ -26,8 +26,8 @@ and open the template in the editor.
                 <h:form id="listForm">
                     <p:messages id="messages" showDetail="true"/>
 
-                    <div style="row">
-                        <div style="col-md-6">
+                    <div class="row">
+                        <div class="col-md-6">
                             <div class="box box-primary">
                                 <div class="box-header with-border">
                                     <h3 class="box-title">Contact</h3>
@@ -37,35 +37,35 @@ and open the template in the editor.
                                 <div class="box-body">
                                     <div class="form-group">
                                         <p:outputLabel value="CIN"/>
-                                        <p:inputText value="#{subscribeStudentCtrl.model.student.nin}"/>
+                                        <p:inputText value="#{subscribeStudentCtrl.model.student.nin}" styleClass="form-control"/>
                                     </div>                            
                                     <div class="form-group">
                                         <p:outputLabel value="N° Inscription"/>
-                                        <p:inputText value="#{subscribeStudentCtrl.model.student.subscriptionNumber}"/>
+                                        <p:inputText value="#{subscribeStudentCtrl.model.student.subscriptionNumber}" styleClass="form-control"/>
                                     </div>                            
                                     <div class="form-group">
                                         <p:outputLabel value="Prénom"/>
-                                        <p:inputText value="#{subscribeStudentCtrl.model.student.firstName}"/>
+                                        <p:inputText value="#{subscribeStudentCtrl.model.student.firstName}" styleClass="form-control"/>
                                     </div>                            
                                     <div class="form-group">
                                         <p:outputLabel value="Nom"/>
-                                        <p:inputText value="#{subscribeStudentCtrl.model.student.lastName}"/>
+                                        <p:inputText value="#{subscribeStudentCtrl.model.student.lastName}" styleClass="form-control"/>
                                     </div>                            
                                     <div class="form-group">
                                         <p:outputLabel value="Nom (ar)"/>
-                                        <p:inputText value="#{subscribeStudentCtrl.model.student.lastName2}"/>
+                                        <p:inputText value="#{subscribeStudentCtrl.model.student.lastName2}" styleClass="form-control"/>
                                     </div>                            
                                     <div class="form-group">
                                         <p:outputLabel value="Prénom (ar)"/>
-                                        <p:inputText value="#{subscribeStudentCtrl.model.student.firstName2}"/>
+                                        <p:inputText value="#{subscribeStudentCtrl.model.student.firstName2}" styleClass="form-control"/>
                                     </div>                            
                                     <div class="form-group">
                                         <p:outputLabel value="GSM (98 222 333)"/>
-                                        <p:inputText value="#{subscribeStudentCtrl.model.student.phone1}"/>
+                                        <p:inputText value="#{subscribeStudentCtrl.model.student.phone1}" styleClass="form-control"/>
                                     </div>                            
                                     <div class="form-group">
                                         <p:outputLabel value="Email"/>
-                                        <p:inputText value="#{subscribeStudentCtrl.model.student.email}"/>
+                                        <p:inputText value="#{subscribeStudentCtrl.model.student.email}" styleClass="form-control"/>
                                     </div>                            
                                     <div class="form-group">
                                         <p:outputLabel value="Civlité"/>
@@ -78,18 +78,19 @@ and open the template in the editor.
                                     </div>                            
                                     <div class="form-group">
                                         <p:outputLabel value="Genre"/>
-                                        <p:selectOneMenu value="#{subscribeStudentCtrl.model.student.genderId}"styleClass="form-control"
+                                        <p:selectOneMenu value="#{subscribeStudentCtrl.model.student.genderId}" styleClass="form-control"
                                                          filter="true" filterMatchMode="contains"
                                                          >
                                             <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
                                             <f:selectItems value="#{subscribeStudentCtrl.model.genderItems}"/>
                                         </p:selectOneMenu>
                                     </div>                            
-                                <!-- /.box-body -->
+                                    <!-- /.box-body -->
 
+                                </div>
                             </div>
                         </div>
-                        <div style="col-md-6">
+                        <div class="col-md-6">
                             <div class="box box-primary">
                                 <div class="box-header with-border">
                                     <h3 class="box-title">Informations</h3>
@@ -99,7 +100,7 @@ and open the template in the editor.
                                 <div class="box-body">
                                     <div class="form-group">
                                         <p:outputLabel value="Classe"/>
-                                        <p:selectOneMenu value="#{subscribeStudentCtrl.model.student.classId}"styleClass="form-control"
+                                        <p:selectOneMenu value="#{subscribeStudentCtrl.model.student.classId}" styleClass="form-control"
                                                          filter="true" filterMatchMode="contains"
                                                          >
                                             <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
@@ -108,7 +109,7 @@ and open the template in the editor.
                                     </div>                            
                                     <div class="form-group">
                                         <p:outputLabel value="1ere inscription"/>
-                                        <p:selectOneMenu value="#{subscribeStudentCtrl.model.student.startPeriodId}"styleClass="form-control"
+                                        <p:selectOneMenu value="#{subscribeStudentCtrl.model.student.startPeriodId}" styleClass="form-control"
                                                          filter="true" filterMatchMode="contains"
                                                          >
                                             <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
@@ -117,7 +118,7 @@ and open the template in the editor.
                                     </div>                            
                                     <div class="form-group">
                                         <p:outputLabel value="Prépa/License"/>
-                                        <p:selectOneMenu value="#{subscribeStudentCtrl.model.student.preClassPrepId}"styleClass="form-control"
+                                        <p:selectOneMenu value="#{subscribeStudentCtrl.model.student.preClassPrepId}" styleClass="form-control"
                                                          filter="true" filterMatchMode="contains"
                                                          >
                                             <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
@@ -126,15 +127,15 @@ and open the template in the editor.
                                     </div>                            
                                     <div class="form-group">
                                         <p:outputLabel value="Rang Prepa/License"/>
-                                        <p:inputText value="#{subscribeStudentCtrl.model.student.preClassPrepRank}"/>
+                                        <p:inputText value="#{subscribeStudentCtrl.model.student.preClassPrepRank}" styleClass="form-control"/>
                                     </div>                            
                                     <div class="form-group">
                                         <p:outputLabel value="Max Rang Prepa/License"/>
-                                        <p:inputText value="#{subscribeStudentCtrl.model.student.preClassPrepRankMax}"/>
+                                        <p:inputText value="#{subscribeStudentCtrl.model.student.preClassPrepRankMax}" styleClass="form-control"/>
                                     </div>                            
                                     <div class="form-group">
                                         <p:outputLabel value="Bac"/>
-                                        <p:selectOneMenu value="#{subscribeStudentCtrl.model.student.preClassBacId}"styleClass="form-control"
+                                        <p:selectOneMenu value="#{subscribeStudentCtrl.model.student.preClassBacId}" styleClass="form-control"
                                                          filter="true" filterMatchMode="contains"
                                                          >
                                             <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
@@ -143,7 +144,7 @@ and open the template in the editor.
                                     </div>                            
                                     <div class="form-group">
                                         <p:outputLabel value="Moyenne Bac"/>
-                                        <p:inputText value="#{subscribeStudentCtrl.model.student.preClassBacScore}" styleClass="fo"/>
+                                        <p:inputText value="#{subscribeStudentCtrl.model.student.preClassBacScore}"  styleClass="form-control"/>
                                     </div>                            
                                 </div>
                                 <!-- /.box-body -->
@@ -155,7 +156,7 @@ and open the template in the editor.
 
 
 
-                    <div style="row">
+                    <div class="row">
                         <div class="box-footer">
                             <div class="form-group">
                                 <p:commandButton action="#{subscribeStudentCtrl.onImport}" value="Enregistrer"   styleClass="btn btn-primary"

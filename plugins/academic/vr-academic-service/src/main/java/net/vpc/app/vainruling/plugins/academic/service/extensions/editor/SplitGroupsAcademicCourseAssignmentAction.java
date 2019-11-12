@@ -9,7 +9,6 @@ package net.vpc.app.vainruling.plugins.academic.service.extensions.editor;
 import net.vpc.app.vainruling.core.service.editor.ActionDialogResult;
 import net.vpc.app.vainruling.core.service.editor.ActionDialogResultPostProcess;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCourseAssignment;
 import net.vpc.upa.AccessMode;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -20,7 +19,7 @@ import net.vpc.app.vainruling.VrEditorAction;
 /**
  * @author taha.bensalah@gmail.com
  */
-@VrEditorAction(entityType = AcademicCourseAssignment.class,
+@VrEditorAction(entityName = "AcademicCourseAssignment",
         actionStyle = "fa-envelope-o",
         confirm = true
 )
@@ -30,12 +29,12 @@ public class SplitGroupsAcademicCourseAssignmentAction implements VrEditorAction
     AcademicPlugin academic;
 
     @Override
-    public boolean isEnabled(String actionId, Class entityType, AccessMode mode, Object value) {
+    public boolean isEnabled(String actionId, String entityType, AccessMode mode, Object value) {
         return mode!=AccessMode.PERSIST;
     }
 
     @Override
-    public ActionDialogResult invoke(String actionId, Class entityType, Object obj, List<String> selectedIdStrings, Object[] args) {
+    public ActionDialogResult invoke(String actionId, String entityType, Object obj, List<String> selectedIdStrings, Object[] args) {
         for (String id : selectedIdStrings) {
             academic.splitGroupCourseAssignment(Integer.parseInt(id));
         }

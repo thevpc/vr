@@ -96,13 +96,11 @@ class CorePluginBodySecurityManager extends CorePluginBody {
     }
 
     public List<AppUserType> findUserTypes() {
-        PersistenceUnit pu = UPA.getPersistenceUnit();
-        return pu.findAll(AppUserType.class);
+        return getContext().getCacheService().getList(AppUserType.class);
     }
 
     public AppUserType findUserType(int id) {
-        PersistenceUnit pu = UPA.getPersistenceUnit();
-        return (AppUserType) pu.findById(AppUserType.class, id);
+        return getContext().getCacheService().getList(AppUserType.class).getByKey(id);
     }
 
     public AppProfile findProfile(int profileId) {

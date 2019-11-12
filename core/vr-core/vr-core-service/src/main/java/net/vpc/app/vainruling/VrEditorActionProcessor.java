@@ -12,7 +12,7 @@ import net.vpc.upa.AccessMode;
  */
 public interface VrEditorActionProcessor {
 
-    default boolean isEnabled(String actionId, Class entityType, AccessMode mode, Object value) {
+    default boolean isEnabled(String actionId, String entityType, AccessMode mode, Object value) {
         return true;
     }
 

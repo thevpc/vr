@@ -333,7 +333,10 @@ public class VrWebHelper {
         if (theme != null) {
             return theme;
         }
-        throw new IllegalArgumentException("Invalid Theme");
+        for (VrTheme theme1 : tfactory.getThemes(VrThemeFace.PRIVATE)) {
+            return theme1;
+        }
+        throw new IllegalArgumentException("Invalid Theme: "+oldValue);
     }
 
     public static VrTheme getUserPublicTheme(String login) {

@@ -49,409 +49,349 @@ and open the template in the editor.
                     </p:confirmDialog>
 
                     <!-- /.row -->
-                    <div>
-                        <p:outputPanel id="buttons">
-                            <p:commandButton title="Actualiser" rendered="#{editorCtrl.isEnabledButton('Refresh')}"
-                                             icon="fa fa-refresh"
-                                             styleClass="ui-ribbon-bigbutton  vr-toolbox-button btn btn-default"
-                                             ajax="true"
-                                             actionListener="#{editorCtrl.onRefreshCurrent}"
-                                             update=" :listForm  :pageTitleForm" alt=""
-                                             value="Actualiser"
-                                             />
-                            <p:splitButton title="Enregistrer" rendered="#{editorCtrl.isEnabledButton('Save')}"
-                                           onclick="processOnSaveCurrent()"
-                                           update=" :listForm  :pageTitleForm" icon="fa fa-save"
-                                           styleClass=" vr-toolbox-split-button "
-                                           value="Enregistrer"
-                                           >
-                                <p:menuitem value="Enregistrer" title ="Enregister"  onclick="processOnSaveCurrent()" ajax="true"
-                                            update=" :listForm  :pageTitleForm" icon="ui-icon-close"/>
-                                <p:menuitem value="Fermer" title ="Enregister et Fermer"  onclick="processOnSaveCurrentAndClose()"
-                                            ajax="true" update=" :listForm  :pageTitleForm"
-                                            icon="ui-icon-arrowrefresh-1-w"/>
-                                <p:menuitem value="Suivant" title ="Enregister et Fermer"  onclick="processOnSaveCurrentAndNext()"
-                                            ajax="true" update=" :listForm  :pageTitleForm"
-                                            icon="ui-icon-arrowrefresh-1-w"/>
-                                <p:menuitem value="Précédent" title ="Enregister et Fermer"  onclick="processOnSaveCurrentAndPrevious()"
-                                            ajax="true" update=" :listForm  :pageTitleForm"
-                                            icon="ui-icon-arrowrefresh-1-w"/>
-                                <p:menuitem value="Copier" title ="Enregister une Copie"  onclick="processOnCloneCurrent()"
-                                            ajax="true" update=" :listForm  :pageTitleForm"
-                                            icon="ui-icon-arrowrefresh-1-w"/>
-                            </p:splitButton>
+                    <h:panelGroup layout="block" id="buttons" styleClass="btn-group">
+                        <p:commandButton title="Actualiser" rendered="#{editorCtrl.isEnabledButton('Refresh')}"
+                                         icon="fa fa-refresh"
+                                         styleClass="btn btn-default"
+                                         ajax="true"
+                                         actionListener="#{editorCtrl.onRefreshCurrent}"
+                                         update=" :listForm  :pageTitleForm" alt=""
+                                         value="Actualiser"
+                                         />
 
-                            <p:commandButton title="Nouveau" rendered="#{editorCtrl.isEnabledButton('New')}" icon="fa fa-plus"
-                                             styleClass="ui-ribbon-bigbutton  vr-toolbox-button btn btn-primary"
-                                             ajax="true"
-                                             actionListener="#{editorCtrl.onNew}"
-                                             update=" :listForm  :pageTitleForm"
-                                             value="Nouveau"
-                                             />
+                        <h:panelGroup layout="block" styleClass="btn-group" rendered="#{editorCtrl.isEnabledButton('Save')}">
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false" style="height: 40px;">
+                                Enregistrer
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><p:commandLink value="Enregistrer" title ="Enregister"  onclick="processOnSaveCurrent()" ajax="true"
+                                                   update=" :listForm  :pageTitleForm" /></li>
 
-                            <p:commandButton title="Supprimer" rendered="#{editorCtrl.isEnabledButton('Remove')}"
-                                             icon="fa fa-trash-o"
-                                             styleClass="ui-ribbon-bigbutton  vr-toolbox-button btn btn-danger"
-                                             ajax="true"
-                                             onclick="PF('confirmationDelete').show();"
-                                             value="Supprimer"
-                                             />
+                                <li><p:commandLink value="Enregisrer + Fermer" title ="Enregisrer puis Fermer"  onclick="processOnSaveCurrentAndClose()"
+                                                   ajax="true" update=" :listForm  :pageTitleForm" /></li>
 
-                            <p:splitButton title="Chercher" rendered="#{editorCtrl.isEnabledButton('Search')}"
-                                           icon="fa fa-search"
-                                           onclick="document.getElementById('listForm:processOnSimpleSearchLink').click();"
-                                           update=" :listForm  :pageTitleForm"
-                                           styleClass=" vr-toolbox-split-button"
-                                           value="Chercher"
-                                           >
-                                <p:menuitem value="Simple Rech." title="Simple Rechercher par mots clés"  icon=""
-                                            onclick="document.getElementById('listForm:processOnSimpleSearchLink').click();"
-                                            ajax="true" update=" :listForm  :pageTitleForm"/>
-                                <p:menuitem value="Annuler Rech." title="Annuler Recherche"  icon="ui-icon-close" onclick="processOnClearSearch()"
-                                            ajax="true" update=" :listForm  :pageTitleForm"/>
-                                <p:separator/>
-                                <p:menuitem value="Propriétés" title="Sélectionner les propriétés à afficher" icon=""
-                                            onclick="document.getElementById('listForm:processOnSimpleFieldSelectionLink').click();"
-                                            ajax="true" update=" :listForm  :pageTitleForm"/>
-                                <p:menuitem value="Reini. Prop." title="Reinitialiser les Propriétés à afficher"  icon="ui-icon-close"
-                                            onclick="processOnClearFieldSelection()" ajax="true"
-                                            update=" :listForm  :pageTitleForm"/>
-                            </p:splitButton>
+                                <li><p:commandLink value="Enregisrer + Suivant" title ="Enregisrer puis passer au Suivant"  onclick="processOnSaveCurrentAndNext()"
+                                                   ajax="true" update=" :listForm  :pageTitleForm" /></li>
 
+                                <li><p:commandLink value="Enregisrer + Précédent" title ="Enregisrer puis passer au Précédent"  onclick="processOnSaveCurrentAndPrevious()"
+                                                   ajax="true" update=" :listForm  :pageTitleForm" /></li>
 
-                            <p:splitButton rendered="#{editorCtrl.isEnabledButton('Advanced')}" title="Avancé"
-                                           icon="fa fa-compass" styleClass=" vr-toolbox-split-button"
-                                           value="Avancé"
-                                           >
-                                <p:menuitem rendered="#{editorCtrl.isEnabledButton('Archive')}" value="Archiver"
-                                            icon="fa fa-archive" onclick="PF('confirmationArchive').show();" ajax="true"/>
-                                <p:separator/>
-                                <p:menuitem rendered="#{editorCtrl.isEnabledButton('ReCalc')}" value="Calc. BD" title="Reclaculer Toutes les entités"
-                                            icon="fa fa-calculator" ajax="true"
-                                            actionListener="#{editorCtrl.onReCalcAll}"
-                                            />
-                                <p:menuitem rendered="#{editorCtrl.isEnabledButton('ReCalc')}" value="Calc. Entité" title="Reclaculer Toutes les lignes"
-                                            icon="fa fa-calculator" ajax="true"
-                                            actionListener="#{editorCtrl.onReCalcEntity}"
-                                            />
-                                <p:menuitem rendered="#{editorCtrl.isEnabledButton('ReCalc')}" value="Calc. Sel." title="Reclaculer les lignés sélectionnées"
-                                            icon="fa fa-calculator" ajax="true"
-                                            actionListener="#{editorCtrl.onReCalcSelection}"
-                                            />
-                                <p:menuitem rendered="#{editorCtrl.isEnabledButton('ReCalc')}" value="Re-Enregister" title="Reenregistrer les lignés sélectionnées"
-                                            icon="fa fa-calculator" ajax="true"
-                                            actionListener="#{editorCtrl.onReSaveSelection}"
-                                            />
-                                <p:separator/>
-                            </p:splitButton>
+                                <li><p:commandLink value="Enregitrer Copie" title ="Enregister une Copie"  onclick="processOnCloneCurrent()"
+                                                   ajax="true" update=" :listForm  :pageTitleForm" /></li>
 
-                            <p:commandButton value="Ann." rendered="#{editorCtrl.isEnabledButton('Assign')}"
-                                             icon="ui-ribbonicon-canc"
-                                             styleClass="ui-ribbon-bigbutton  vr-toolbox-button" ajax="true"
-                                             actionListener="#{editorCtrl.onAssignCurrent}"
-                                             update=" :listForm  :pageTitleForm"/>
-                            <p:commandButton value="Ann." rendered="#{editorCtrl.isEnabledButton('Unassign')}"
-                                             icon="ui-ribbonicon-canc"
-                                             styleClass="ui-ribbon-bigbutton  vr-toolbox-button" ajax="true"
-                                             actionListener="#{editorCtrl.onUnassignCurrent}"
-                                             update=" :listForm  :pageTitleForm"/>
-                            <p:commandButton value="Ann." rendered="#{editorCtrl.isEnabledButton('Done')}"
-                                             icon="ui-ribbonicon-canc"
-                                             styleClass="ui-ribbon-bigbutton  vr-toolbox-button" ajax="true"
-                                             actionListener="#{editorCtrl.onDoneCurrent}"
-                                             update=" :listForm  :pageTitleForm"/>
-                            <p:commandButton value="Ann." rendered="#{editorCtrl.isEnabledButton('Verify')}"
-                                             icon="ui-ribbonicon-canc"
-                                             styleClass="ui-ribbon-bigbutton  vr-toolbox-button" ajax="true"
-                                             actionListener="#{editorCtrl.onVerifyCurrent}"
-                                             update=" :listForm  :pageTitleForm"/>
+                            </ul>
+                        </h:panelGroup>
 
-                            <p:commandButton value="Cop." rendered="#{editorCtrl.isEnabledButton('Copy')}" icon="fa fa-copy"
-                                             styleClass="ui-ribbon-bigbutton  vr-toolbox-button"
-                                             update=" :listForm  :pageTitleForm"/>
-                            <p:commandButton value="Coll." rendered="#{editorCtrl.isEnabledButton('Paste')}" icon="fa fa-paste"
-                                             styleClass="ui-ribbon-bigbutton  vr-toolbox-button"
-                                             update=" :listForm  :pageTitleForm"/>
-                            <p:commandButton value="Coup." rendered="#{editorCtrl.isEnabledButton('Cut')}" icon="fa fa-cut"
-                                             styleClass="ui-ribbon-bigbutton  vr-toolbox-button"
-                                             update=" :listForm  :pageTitleForm"/>
+                        <p:commandButton title="Nouveau" rendered="#{editorCtrl.isEnabledButton('New')}" icon="fa fa-plus"
+                                         styleClass="btn btn-primary"
+                                         ajax="true"
+                                         actionListener="#{editorCtrl.onNew}"
+                                         update=" :listForm  :pageTitleForm"
+                                         value="Nouveau"
+                                         />
 
-                            <p:commandButton value="impr." rendered="#{editorCtrl.isEnabledButton('Print')}" icon="fa fa-print"
-                                             styleClass="ui-ribbon-bigbutton  vr-toolbox-button"
-                                             update=" :listForm  :pageTitleForm"/>
+                        <p:commandButton title="Supprimer" rendered="#{editorCtrl.isEnabledButton('Remove')}"
+                                         icon="fa fa-trash-o"
+                                         styleClass="btn btn-danger"
+                                         ajax="true"
+                                         onclick="PF('confirmationDelete').show();"
+                                         value="Supprimer"
+                                         />
 
-                            <p:commandButton value="imp." rendered="#{editorCtrl.isEnabledButton('Import')}"
-                                             icon="fa fa-cloud-upload"
-                                             styleClass="ui-ribbon-bigbutton  vr-toolbox-button"
-                                             update=" :listForm  :pageTitleForm"/>
-                            <p:commandButton value="csv" rendered="#{editorCtrl.isEnabledButton('ExportCSV')}"
-                                             icon="fa fa-file-text-o"
-                                             styleClass="ui-ribbon-bigbutton  vr-toolbox-button"
-                                             update=" :listForm  :pageTitleForm"/>
-                            <p:commandButton value="xls" rendered="#{editorCtrl.isEnabledButton('ExportXls')}"
-                                             icon="fa fa-file-excel-o"
-                                             styleClass="ui-ribbon-bigbutton  vr-toolbox-button"
-                                             update=" :listForm  :pageTitleForm"/>
-                            <p:commandButton value="pdf" rendered="#{editorCtrl.isEnabledButton('ExportPdf')}"
-                                             icon="fa fa-file-pdf-o"
-                                             styleClass="ui-ribbon-bigbutton  vr-toolbox-button"
-                                             update=" :listForm  :pageTitleForm"/>
-                            <p:commandButton value="Auth." rendered="#{editorCtrl.isEnabledButton('Authorization')}"
-                                             icon="fa fa-user-secret"
-                                             styleClass="ui-ribbon-bigbutton  vr-toolbox-button" type="button"
-                                             update=" :listForm  :pageTitleForm"/>
-                            <p:commandButton value="Trace" rendered="#{editorCtrl.isEnabledButton('Log')}"
-                                             icon="fa fa-backward"
-                                             styleClass="ui-ribbon-bigbutton  vr-toolbox-button" type="button"
+                        <h:panelGroup layout="block" styleClass="btn-group">
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false" style="height: 40px;">
+                                Paramètres
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><p:commandLink value="Colonnes" title="Sélectionner les colonnes à afficher" icon=""
+                                                   onclick="document.getElementById('listForm:processOnSimpleFieldSelectionLink').click();"
+                                                   ajax="true" update=" :listForm  :pageTitleForm" /></li>
+
+                                <li><p:commandLink value="Reini. Colonnes" title="Reinitialiser les Colonnes à afficher"  icon="ui-icon-close"
+                                                   onclick="processOnClearFieldSelection()" ajax="true"
+                                                   update=" :listForm  :pageTitleForm" /></li>
+                                <li class="divider"></li>
+                                <li><p:commandLink rendered="#{editorCtrl.isEnabledButton('Archive')}" value="Archiver"
+                                                   onclick="PF('confirmationArchive').show();" ajax="true" /></li>
+
+                                <li><p:commandLink rendered="#{editorCtrl.isEnabledButton('ReCalc')}" value="Calc. BD" title="Reclaculer Toutes les entités"
+                                                   ajax="true"
+                                                   actionListener="#{editorCtrl.onReCalcAll}" /></li>
+
+                                <li><p:commandLink rendered="#{editorCtrl.isEnabledButton('ReCalc')}" value="Calc. Entité" title="Reclaculer Toutes les lignes"
+                                                   ajax="true"
+                                                   actionListener="#{editorCtrl.onReCalcEntity}" /></li>
+
+                                <li><p:commandLink rendered="#{editorCtrl.isEnabledButton('ReCalc')}" value="Calc. Sel." title="Reclaculer les lignes sélectionnées"
+                                                   ajax="true"
+                                                   actionListener="#{editorCtrl.onReCalcSelection}" /></li>
+
+                                <li><p:commandLink rendered="#{editorCtrl.isEnabledButton('ReCalc')}" value="Re-Enregister" title="Reenregistrer les lignes sélectionnées"
+                                                   ajax="true"
+                                                   actionListener="#{editorCtrl.onReSaveSelection}" /></li>
+
+                            </ul>
+                        </h:panelGroup>
+
+                        <p:commandButton value="Liste" title="Afficher la Liste" rendered="#{editorCtrl.isEnabledButton('List')}"
+                                         icon="fa fa-list-ol"
+                                         styleClass="btn btn-default" ajax="true"
+                                         actionListener="#{editorCtrl.onList}"
+                                         update=" :listForm  :pageTitleForm"/>
+
+                        <p:commandButton title="Precédant" icon="fa fa-angle-left"
+                                         action="#{editorCtrl.onSelectPrevious}"
+                                         rendered="#{editorCtrl.enabledSelectPrevious}"
+                                         ajax="true" styleClass="btn btn-default"
+                                         update=" :listForm  :pageTitleForm"
+                                         />
+
+                        <p:commandButton value="#{editorCtrl.model.current.rowPos+1}/#{editorCtrl.model.list.size()}"
+                                         rendered="#{editorCtrl.enabledNavigate}"
+                                         styleClass="btn btn-default"
+                                         disabled="true"
+                                         />
+
+                        <p:commandButton title="Suivant" icon="fa fa-angle-right"
+                                         action="#{editorCtrl.onSelectNext}"
+                                         rendered="#{editorCtrl.enabledSelectNext}"
+                                         ajax="true" styleClass="btn btn-default"
+                                         update=" :listForm  :pageTitleForm"
+                                         />
+
+                        <h:panelGroup layout="block" styleClass="btn-group" rendered="#{editorCtrl.model.actions.size() gt 0}">
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false" style="height: 40px;">
+                                Actions
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <ui:repeat value="#{editorCtrl.model.actions}" var="aac">
+                                    <li>
+                                        <p:commandLink value="#{aac.value}" rendered="#{(aac.type eq 'invoke') or (aac.type eq 'dialog')}"
+                                                         process=":listForm :listForm:listTable @form"
+                                                         actionListener="#{editorCtrl.openActionDialog(aac.key)}"
+                                                         update=" :listForm   :pageTitleForm"
+                                                         ajax="true"
+                                                         />
+                                        <p:commandLink value="#{aac.value}" rendered="#{(aac.type eq 'goto')}"
+                                                         title="#{aac.description}"
+                                                         process=":listForm:listTable @form"
+                                                         action="#{vr.gotoPage(aac.command[0],aac.command[1])}"
+                                                         ajax="true"
+                                                         />
+
+                                    </li>
+                                </ui:repeat>
+                            </ul>
+                        </h:panelGroup>
+
+                        <!-- some crazy bug in PF cant help make this work (stackoverflow in dynaform) -->
+<!--                        <ui:repeat value="#_{editorCtrl.model.actions}" var="aac">
+                            <p:commandButton value="#_{aac.value}" rendered="#_{(aac.type eq 'invoke') or (aac.type eq 'dialog')}"
+                                             styleClass="btn btn-default"
+                                             process=":listForm :listForm:listTable @form"
+                                             actionListener="#_{editorCtrl.openActionDialog(aac.key)}"
                                              update=" :listForm   :pageTitleForm"/>
-                            <p:commandButton value="Liste" title="Afficher la Liste" rendered="#{editorCtrl.isEnabledButton('List')}"
-                                             icon="fa fa-list-ol"
-                                             styleClass="ui-ribbon-bigbutton  vr-toolbox-button" ajax="true"
-                                             actionListener="#{editorCtrl.onList}"
-                                             update=" :listForm  :pageTitleForm"/>
-
-                            <p:commandButton title="Precédant" icon="fa fa-angle-left"
-                                             action="#{editorCtrl.onSelectPrevious}"
-                                             rendered="#{editorCtrl.enabledSelectPrevious}"
-                                             ajax="true" styleClass="ui-ribbon-bigbutton  vr-toolbox-button"
-                                             update=" :listForm  :pageTitleForm"
+                            <p:commandButton value="#_{aac.value}" rendered="#_{(aac.type eq 'goto')}"
+                                             title="#_{aac.description}"
+                                             styleClass="btn btn-default"
+                                             process=":listForm:listTable @form"
+                                             action="#_{vr.gotoPage(aac.command[0],aac.command[1])}"
                                              />
+                        </ui:repeat>-->
+                        <!-- -->
 
-                            <p:commandButton title="Suivant" icon="fa fa-angle-right"
-                                             action="#{editorCtrl.onSelectNext}"
-                                             rendered="#{editorCtrl.enabledSelectNext}"
-                                             ajax="true" styleClass="ui-ribbon-bigbutton  vr-toolbox-button"
-                                             update=" :listForm  :pageTitleForm"
-                                             />
-
-                            <!--                            <p:commandButton title="Retour" icon="fa fa-backward"
-                                                                         action="# {vr.goBack}"
-                                                                         ajax="false" styleClass="ui-ribbon-bigbutton  vr-toolbox-button"/>-->
-
-
-                            <!--                            <p:commandButton
-                                                            value="#_{editorCtrl.model.actions.get(0).value}"
-                                                            rendered="#_{editorCtrl.model.actions.size() gt 0 aeditorCtrltrl.isEnabledBeditorCtrlbjCtrl.model.actions.get(0).key)}"
-                                                            icon="#_{editorCtrl.model.actions.get(0).icon}"
-                                                            styleClass="ui-ribbon-bigbutton   vr-toolbox-button"
-                                                            ajax="true"
-                                                            actionListener="#_{editorCtrl.openActionDialeditorCtrltrl.model.actions.get(0).key)}"
-                                                            >
-                                                            <p:ajax event="dialogReturn" listener="#_{editorCtrl.onActionDialogClosed}" update=" :listForm   :pageTitleForm" />
-    
-                                                        </p:commandButton>-->
-                            <!--                            <p:commandButton
-                                                            value="# {editorCtrl.model.actions.get(0).value}"
-                                                            rendered="# {editorCtrl.model.actions.size() gt 0 and editorCtrl.isEnabledButton(editorCtrl.model.actions.get(0).key)}"
-                                                            icon="# {editorCtrl.model.actions.get(0).icon}"
-                                                            styleClass="ui-ribbon-bigbutton   vr-toolbox-button"
-                                                            ajax="true"
-                                                            onclick="document.getElementById('listForm:processOpenActionDialog0').click();"
-                                                            >
-                                                        </p:commandButton>
-                            
-                                                        <p:commandButton value="# {editorCtrl.model.actions.get(1).value}"
-                                                                         rendered="# {editorCtrl.model.actions.size() gt 1 and editorCtrl.isEnabledButton(editorCtrl.model.actions.get(1).key)}"
-                                                                         icon="# {editorCtrl.model.actions.get(1).icon}"
-                                                                         styleClass="ui-ribbon-bigbutton   vr-toolbox-button"
-                                                                         ajax="true"
-                                                                         actionListener="# {editorCtrl.openActionDialog(editorCtrl.model.actions.get(1).key)}"
-                                                                         >
-                                                            <p:ajax event="dialogReturn" listener="# {editorCtrl.onActionDialogClosed}"
-                                                                    update=" :listForm   :pageTitleForm"/>
-                                                        </p:commandButton>
-                            
-                                                        <p:commandButton value="# {editorCtrl.model.actions.get(2).value}"
-                                                                         rendered="# {editorCtrl.model.actions.size() gt 2 and editorCtrl.isEnabledButton(editorCtrl.model.actions.get(2).key)}"
-                                                                         icon="# {editorCtrl.model.actions.get(2).icon}"
-                                                                         styleClass="ui-ribbon-bigbutton   vr-toolbox-button"
-                                                                         ajax="true"
-                                                                         actionListener="# {editorCtrl.openActionDialog(editorCtrl.model.actions.get(2).key)}"
-                                                                         >
-                                                            <p:ajax event="dialogReturn" listener="# {editorCtrl.onActionDialogClosed}"
-                                                                    update=" :listForm   :pageTitleForm"/>
-                                                        </p:commandButton>-->
-
-                            <!-- some crazy bug in PF cant help make this work (stackoverflow in dynaform) -->
-                            <ui:repeat value="#{editorCtrl.model.actions}" var="aac">
-                                <p:commandButton value="#{aac.value}" rendered="#{(aac.type eq 'invoke') or (aac.type eq 'dialog')}"
-                                                 styleClass="ui-ribbon-bigbutton  vr-toolbox-button"
-                                                 process=":listForm :listForm:listTable @form"
-                                                 actionListener="#{editorCtrl.openActionDialog(aac.key)}"
-                                                 update=" :listForm   :pageTitleForm"/>
-                                <p:commandButton value="#{aac.value}" rendered="#{(aac.type eq 'goto')}"
-                                                 title="#{aac.description}"
-                                                 styleClass="ui-ribbon-bigbutton  vr-toolbox-button"
-                                                 process=":listForm:listTable @form"
-                                                 action="#{vr.gotoPage(aac.command[0],aac.command[1])}"
-                                                 />
-                            </ui:repeat><!-- -->
-
-                        </p:outputPanel>
-                    </div>
+                    </h:panelGroup>
                     <div>
                         <p:spacer width="10" height="10"/>
                     </div>
-                    <p:panelGrid rendered="#{editorCtrl.isListMode() and (editorCtrl.autoFilters.size() gt 0)}"
-                                 styleClass="vr-no-border-grid">
-                        <ui:repeat value="#{vr.groupListBy(3,editorCtrl.autoFilters)}" var="autoFilterList">
-                            <p:row>
-                                <ui:repeat value="#{autoFilterList}" var="autoFilter">
-                                    <p:column>
-                                        <p:outputLabel value="#{autoFilter.data.label}"
-                                                       styleClass="vr-form-field vr-form-fixed-width-short"
-                                                       autofocus="autofocus"/>
-                                        <!--valueChangeListener="#_{editorCtrl.onAutoFilterChange}"-->
-                                        <!--onchange="document.getElementById('listForm:processOnAutoFilterLink').click();"-->
-                                        <p:selectOneMenu value="#{autoFilter.selectedString}" styleClass="vr-form-field"
-                                                         filter="true" filterMatchMode="contains"
-                                                         >
-                                            <p:ajax listener="#{editorCtrl.onAutoFilterChange}" update=":listForm"/>
-                                            <f:selectItems value="#{autoFilter.values}"/>
-                                        </p:selectOneMenu>
-                                    </p:column>
-                                </ui:repeat>
-                            </p:row>
-                        </ui:repeat>
-                    </p:panelGrid>
-                    <!-- /.row -->
 
-                    <ui:fragment rendered="#{editorCtrl.isListMode()}">
-                        <div style="margin-bottom: 10px;">
-                            <p:inputText
-                                title="#{editorCtrl.model.searchTextHelper}"
-                                value="#{editorCtrl.model.searchText}" placeholder="Chercher ..." styleClass="form-control"
-                                style="width: 100%"
-                                onkeypress="if (event.keyCode == 13) {
-                                        onSearchByText();
-                                        return false;
-                                    }"
-                                />
-                            <p:remoteCommand name="onSearchByText" actionListener="#{editorCtrl.onAutoFilterChange}"
-                                             update=":listForm"/>
-                        </div>
-                    </ui:fragment>
                     <p:growl id="growl" showDetail="true" sticky="true"/>
-                    <p:outputPanel id="editItemList" rendered="#{editorCtrl.isListMode()}">
-                        <div>
-                            <!--<div class="col-lg-6">-->
 
-                            <div class="table-responsive">
-                                <p:dataTable id="listTable" var="i" value="#{editorCtrl.model.list}" 
-                                             class="table table-bordered table-hover"
-                                             paginatorAlwaysVisible="false"
-                                             paginator="true"
-                                             paginatorPosition="bottom"
-                                             rows="100"
-                                             emptyMessage="Aucun résultat"
-                                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                                             rowsPerPageTemplate="20,50,100,200,1000,5000"
-                                             rowStyleClass="#{editorCtrl.rowStyle}"
-                                             selection="#{editorCtrl.model.selectedRows}"
-                                             rowKey="#{i.strId}"
-                                             selectionMode="multiple"
-                                             >
-
-                                    <!--                                    <f:facet name="header">
-                                                                            List
-                                                                            <p:commandButton id="toggler" type="button" value="Columns" style="float:right" icon="ui-icon-calculator" />
-                                                                            <p:columnToggler datasource="cars" trigger="toggler" />
-                                                                        </f:facet>-->
-
-
-                                    <p:column exportable="false" headerText=""
-                                              style="width: #{editorCtrl.customCheckboxSelection?'60':'30'}px;">
-                                        <p:selectBooleanCheckbox
-                                            rendered="#{editorCtrl.customCheckboxSelection and editorCtrl.isEnabledButton('Select')}"
-                                            disabled="#{!(i.selectable)}" value="#{i.selected}">
-                                        </p:selectBooleanCheckbox>
-                                        <p:commandLink
-                                            disabled="#{!(i.read)}"
-                                            ajax="true" actionListener="#{editorCtrl.onSelect(i)}"
-                                            update=":listForm   :pageTitleForm">
-                                            <i class="fa fa-pencil-square-o"
-                                               style="font-size: 17px; color: var(--vr-color-main14);"></i>
-                                            <f:setPropertyActionListener target="#{editorCtrl.model.current}" value="#{i}"/>
-                                        </p:commandLink>
-                                    </p:column>
-
-                                    <p:column exportable="false" headerText="" style="width: 65px;"
-                                              rendered="#{editorCtrl.enabledMainPhoto}">
-                                        <img src="#{vr.url(editorCtrl.getMainIcon(i))}"
-                                             style="width: 40px ; height: 40px; margin-right: 10px;"
-                                             alt="Image"
-                                             onclick="document.getElementById('mainPhotoImg').src = '#{vr.url(editorCtrl.getMainPhoto(i))}';
-                                                     $('#' + PF('photodlg').id).find('.ui-dialog-title')[0].textContent = '#{editorCtrl.getMainName(i)}';
-                                                     PF('photodlg').show();"/>
-                                    </p:column>
-
-                                    <!--                                               filterBy="# {i[column.property]}"
-                                                                                   filterFunction="# {editorCtrl.filterByProperty}"-->
-                                    <p:columns value="#{editorCtrl.columns}"
-                                               var="column" columnIndexVar="colIndex"
-                                               sortBy="#{editorCtrl.getSortLayoutPropertyValue(i.document,column.property)}"
-                                               style="#{editorCtrl.getPropertyColumnStyle(column.property,i)}"
-                                               styleClass="#{editorCtrl.getPropertyColumnStyleClass(column.property,i)}"
-                                               >
-                                        <f:facet name="header">
-                                            <h:outputText value="#{column.header}"/>
-                                        </f:facet>
-                                        <h:outputText rendered="#{column.type eq 'text'}"
-                                                      value="#{editorCtrl.getLayoutPropertyValue(i.document,column.property)}"/>
-                                        <h:graphicImage rendered="#{column.type eq 'image'}"
-                                                        name="#{vr.url(editorCtrl.getLayoutPropertyValue(i.document,column.property))}"
-                                                        style="width: 40px ; height: 40px; margin-right: 10px;"
-                                                        alt="Image"
-                                                        onclick="document.getElementById('mainPhotoImg').src = '#{vr.url(editorCtrl.getMainPhoto(i))}';
-                                                                PF('photodlg').show();"/>
-
-                                        <h:selectBooleanCheckbox rendered="#{column.type eq 'checkbox'}" disabled="true"
-                                                                 value="#{editorCtrl.getLayoutPropertyValue(i.document,column.property)}"/>
-                                    </p:columns>
-                                    <f:facet name="footer">
-                                        <p:outputLabel value="Total #{editorCtrl.model.list.size()}"/>
-
-                                        <div style="float: right;">
-                                            <h:commandLink>
-                                                <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-xls16.png"
-                                                                width="16"/>
-                                                <p:dataExporter type="xls" target="listTable"
-                                                                fileName="#{editorCtrl.preferredExportFileName}"
-                                                                postProcessor="#{vr.postProcessDataExporterXLS}"/>
-                                            </h:commandLink>
-
-                                            <h:commandLink>
-                                                <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-pdf16.png"
-                                                                width="16"/>
-                                                <p:dataExporter type="pdf" target="listTable"
-                                                                fileName="#{editorCtrl.preferredExportFileName}"/>
-                                            </h:commandLink>
-
-                                            <h:commandLink>
-                                                <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-csv16.png"
-                                                                width="16"/>
-                                                <p:dataExporter type="csv" target="listTable"
-                                                                fileName="#{editorCtrl.preferredExportFileName}"/>
-                                            </h:commandLink>
-
-                                            <h:commandLink>
-                                                <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-xml16.png"
-                                                                width="16"/>
-                                                <p:dataExporter type="xml" target="listTable"
-                                                                fileName="#{editorCtrl.preferredExportFileName}"/>
-                                            </h:commandLink>
-                                        </div>
-                                    </f:facet>
-                                </p:dataTable>
-                                <p:contextMenu id="contextMenu4ListTable" for=":listForm:listTable">
-                                    <p:menuitem value="View" icon="ui-icon-search" oncomplete="PF('carDialog').show()"/>
-                                    <p:menuitem value="Delete" icon="ui-icon-close" oncomplete="PF('carDialog').show()"/>
-                                </p:contextMenu>
-                            </div>
-
+                    <h:panelGroup layout="block" styleClass="box box-primary" rendered="#{editorCtrl.isListMode()}">
+                        <div class="box-header with-border">
+                            <h3 class="box-title">Liste</h3>
+                            <h:panelGroup layout="block" rendered="#{(editorCtrl.autoFilters.size() gt 0)}">
+                                <ui:repeat value="#{vr.groupListBy(3,editorCtrl.autoFilters)}" var="autoFilterList">
+                                    <div class="row">
+                                        <ui:repeat value="#{autoFilterList}" var="autoFilter">
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <p:outputLabel value="#{autoFilter.data.label}" autofocus="autofocus"/>
+                                                    <p:selectOneMenu value="#{autoFilter.selectedString}"
+                                                                     filter="true" filterMatchMode="contains"
+                                                                     styleClass="form-control"
+                                                                     >
+                                                        <p:ajax listener="#{editorCtrl.onAutoFilterChange}" update=":listForm"/>
+                                                        <f:selectItems value="#{autoFilter.values}"/>
+                                                    </p:selectOneMenu>
+                                                </div>
+                                            </div>
+                                        </ui:repeat>
+                                    </div>
+                                </ui:repeat>
+                            </h:panelGroup>
                         </div>
-                        <!-- /.row -->
-                    </p:outputPanel>
+                        <!-- /.box-header -->
+                        <!-- form start -->
+                        <div class="box-body">
+                            <p:outputPanel id="editItemList" rendered="#{editorCtrl.isListMode()}">
+                                <div class="input-group input-group" style="margin-bottom: 10px;">
+                                    <div class="input-group-btn">
+                                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false" style="height: 34px;">
+                                            <p:outputLabel id="selectedSearchId" value="#{editorCtrl.selectedSearch.name}" style="font-size: 10px;"/>
+                                            <span class="fa fa-caret-down" style="font-size: 13px;"></span></button>
+                                        <ul class="dropdown-menu">
+                                            <ui:repeat value="#{editorCtrl.model.searchs}" var="s">
+                                                <li> <p:commandLink action="#{editorCtrl.updateSearchType(s.id)}" value="#{s.title}" update=":listForm:selectedSearchId"/>
+                                                </li>
+                                            </ui:repeat>
+                                        </ul>
+                                    </div>
+                                    <!-- /btn-group -->
+                                    <p:inputText
+                                        title="#{editorCtrl.model.searchHelper}"
+                                        value="#{editorCtrl.model.searchText}" placeholder="Chercher..." styleClass="form-control"
+                                        style="width: 100%"
+                                        onkeypress="if (event.keyCode == 13) {
+                                                    onSearchByText();
+                                                    return false;
+                                                }"
+                                        />
+                                    <p:remoteCommand name="onSearchByText" actionListener="#{editorCtrl.onAutoFilterChange}"
+                                                     update=":listForm"/>
+                                </div>
+
+                                <div>
+                                    <!--<div class="col-lg-6">-->
+
+                                    <div class="table-responsive">
+                                        <p:dataTable id="listTable" var="i" value="#{editorCtrl.model.list}" 
+                                                     class="table table-bordered table-hover"
+                                                     paginatorAlwaysVisible="false"
+                                                     paginator="true"
+                                                     paginatorPosition="bottom"
+                                                     rows="100"
+                                                     emptyMessage="Aucun résultat"
+                                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                                     rowsPerPageTemplate="20,50,100,200,1000,5000"
+                                                     rowStyleClass="#{editorCtrl.rowStyle}"
+                                                     selection="#{editorCtrl.model.selectedRows}"
+                                                     rowKey="#{i.strId}"
+                                                     selectionMode="multiple"
+                                                     >
+
+                                            <!--                                    <f:facet name="header">
+                                                                                    List
+                                                                                    <p:commandButton id="toggler" type="button" value="Columns" style="float:right" icon="ui-icon-calculator" />
+                                                                                    <p:columnToggler datasource="cars" trigger="toggler" />
+                                                                                </f:facet>-->
+
+
+                                            <p:column exportable="false" headerText=""
+                                                      style="width: #{editorCtrl.customCheckboxSelection?'60':'30'}px;">
+                                                <p:selectBooleanCheckbox
+                                                    rendered="#{editorCtrl.customCheckboxSelection and editorCtrl.isEnabledButton('Select')}"
+                                                    disabled="#{!(i.selectable)}" value="#{i.selected}">
+                                                </p:selectBooleanCheckbox>
+                                                <p:commandLink
+                                                    disabled="#{!(i.read)}"
+                                                    ajax="true" actionListener="#{editorCtrl.onSelect(i)}"
+                                                    update=":listForm   :pageTitleForm">
+                                                    <i class="fa fa-pencil-square-o"
+                                                       style="font-size: 17px; color: var(--vr-color-main14);"></i>
+                                                    <f:setPropertyActionListener target="#{editorCtrl.model.current}" value="#{i}"/>
+                                                </p:commandLink>
+                                            </p:column>
+
+                                            <p:column exportable="false" headerText="" style="width: 65px;"
+                                                      rendered="#{editorCtrl.enabledMainPhoto}">
+                                                <img src="#{vr.url(editorCtrl.getMainIcon(i))}"
+                                                     style="width: 40px ; height: 40px; margin-right: 10px;"
+                                                     alt="Image"
+                                                     onclick="document.getElementById('mainPhotoImg').src = '#{vr.url(editorCtrl.getMainPhoto(i))}';
+                                                             $('#' + PF('photodlg').id).find('.ui-dialog-title')[0].textContent = '#{editorCtrl.getMainName(i)}';
+                                                             PF('photodlg').show();"/>
+                                            </p:column>
+
+                                            <!--                                               filterBy="# {i[column.property]}"
+                                                                                           filterFunction="# {editorCtrl.filterByProperty}"-->
+                                            <p:columns value="#{editorCtrl.columns}"
+                                                       var="column" columnIndexVar="colIndex"
+                                                       sortBy="#{editorCtrl.getSortLayoutPropertyValue(i.document,column.property)}"
+                                                       style="#{editorCtrl.getPropertyColumnStyle(column.property,i)}"
+                                                       styleClass="#{editorCtrl.getPropertyColumnStyleClass(column.property,i)}"
+                                                       >
+                                                <f:facet name="header">
+                                                    <h:outputText value="#{column.header}"/>
+                                                </f:facet>
+                                                <h:outputText rendered="#{column.type eq 'text'}"
+                                                              value="#{editorCtrl.getLayoutPropertyValue(i.document,column.property)}"/>
+                                                <h:graphicImage rendered="#{column.type eq 'image'}"
+                                                                name="#{vr.url(editorCtrl.getLayoutPropertyValue(i.document,column.property))}"
+                                                                style="width: 40px ; height: 40px; margin-right: 10px;"
+                                                                alt="Image"
+                                                                onclick="document.getElementById('mainPhotoImg').src = '#{vr.url(editorCtrl.getMainPhoto(i))}';
+                                                                        PF('photodlg').show();"/>
+
+                                                <h:selectBooleanCheckbox rendered="#{column.type eq 'checkbox'}" disabled="true"
+                                                                         value="#{editorCtrl.getLayoutPropertyValue(i.document,column.property)}"/>
+                                            </p:columns>
+                                            <f:facet name="footer">
+                                                <p:outputLabel value="Total #{editorCtrl.model.list.size()}"/>
+
+                                                <div style="float: right;">
+                                                    <h:commandLink>
+                                                        <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-xls16.png"
+                                                                        width="16"/>
+                                                        <p:dataExporter type="xls" target="listTable"
+                                                                        fileName="#{editorCtrl.preferredExportFileName}"
+                                                                        postProcessor="#{vr.postProcessDataExporterXLS}"/>
+                                                    </h:commandLink>
+
+                                                    <h:commandLink>
+                                                        <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-pdf16.png"
+                                                                        width="16"/>
+                                                        <p:dataExporter type="pdf" target="listTable"
+                                                                        fileName="#{editorCtrl.preferredExportFileName}"/>
+                                                    </h:commandLink>
+
+                                                    <h:commandLink>
+                                                        <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-csv16.png"
+                                                                        width="16"/>
+                                                        <p:dataExporter type="csv" target="listTable"
+                                                                        fileName="#{editorCtrl.preferredExportFileName}"/>
+                                                    </h:commandLink>
+
+                                                    <h:commandLink>
+                                                        <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-xml16.png"
+                                                                        width="16"/>
+                                                        <p:dataExporter type="xml" target="listTable"
+                                                                        fileName="#{editorCtrl.preferredExportFileName}"/>
+                                                    </h:commandLink>
+                                                </div>
+                                            </f:facet>
+                                        </p:dataTable>
+<!--                                        <p:contextMenu id="contextMenu4ListTable" for=":listForm:listTable">
+                                            <p:menuitem value="View" icon="ui-icon-search" oncomplete="PF('carDialog').show()"/>
+                                            <p:menuitem value="Delete" icon="ui-icon-close" oncomplete="PF('carDialog').show()"/>
+                                        </p:contextMenu>-->
+                                    </div>
+
+                                </div>
+                                <!-- /.row -->
+                            </p:outputPanel>
+                        </div>
+                        <!-- /.box-body -->
+
+                        <div class="box-footer">
+                        </div>
+                    </h:panelGroup>
+
+
+
                     <p:remoteCommand name="processOnDeleteCurrent" process="@form"
                                      update=":listForm   " action="#{editorCtrl.onDeleteCurrent()}"/>
                     <p:remoteCommand name="processOnArchiveCurrent" process="@form"
@@ -494,313 +434,328 @@ and open the template in the editor.
                     <div>
                         <p:spacer width="10" height="10"/>
                     </div>
-                    <p:outputPanel id="editItemDialog" rendered="#{editorCtrl.isNewOrUpdateMode()}">
-                        <!--<p:outputPanel id="editItemDialog" >-->
-                        <!--                        width="570"
-                        height="450"-->
-                        <h:panelGroup id="dynaFormGroup">
-                            <div class="panel-body">
-                                <pe:dynaForm id="dynaForm" value="#{editorCtrl.dynModel}" var="data">
-                                    <pe:dynaFormControl type="text" for="txt" >
-                                        <p:inputText id="txt" value="#{data.value}" required="#{data.required}"
-                                                     disabled="#{data.disabled}" styleClass="form-control"/>
-                                    </pe:dynaFormControl>
-                                    <pe:dynaFormControl type="integer" for="tinteger" >
-                                        <p:inputText id="tinteger" value="#{data.valueInteger}" required="#{data.required}"
-                                                     disabled="#{data.disabled}" styleClass="form-control"/>
-                                    </pe:dynaFormControl>
-                                    <pe:dynaFormControl type="long" for="tlong" >
-                                        <p:inputText id="tlong" value="#{data.valueLong}" required="#{data.required}"
-                                                     disabled="#{data.disabled}" styleClass="form-control"/>
-                                    </pe:dynaFormControl>
-                                    <pe:dynaFormControl type="double" for="tdouble" >
-                                        <p:inputText id="tdouble" value="#{data.valueDouble}" required="#{data.required}"
-                                                     disabled="#{data.disabled}" styleClass="form-control"/>
-                                    </pe:dynaFormControl>
-                                    <pe:dynaFormControl type="float" for="tfloat" >
-                                        <p:inputText id="tfloat" value="#{data.valueFloat}" required="#{data.required}"
-                                                     disabled="#{data.disabled}" styleClass="form-control"/>
-                                    </pe:dynaFormControl>
-                                    <pe:dynaFormControl type="datetime" for="tdatetime" styleClass="calendar" >
-                                        <p:calendar id="tdatetime" value="#{data.value}"
-                                                    required="#{data.required}"
-                                                    showOn="button"
-                                                    disabled="#{data.disabled}"
-                                                    pattern="dd/MM/yyyy HH:mm:ss"
-                                                    mask="true"
-                                                    />
-                                    </pe:dynaFormControl>
 
-                                    <pe:dynaFormControl type="date" for="tdate" styleClass="calendar" >
-                                        <p:calendar id="tdate" value="#{data.value}"
-                                                    required="#{data.required}"
-                                                    showOn="button"
-                                                    disabled="#{data.disabled}"
-                                                    pattern="dd/MM/yyyy"
-                                                    mask="true"
-                                                    />
-                                    </pe:dynaFormControl>
+                    <h:panelGroup layout="block" styleClass="box box-primary"  rendered="#{editorCtrl.isNewOrUpdateMode()}">
+                        <div class="box-header with-border">
+                            <h3 class="box-title">#{editorCtrl.isNewMode()?'Nouveau':'Edition'}</h3>
+                        </div>
+                        <!-- /.box-header -->
+                        <!-- form start -->
+                        <h:panelGroup layout="block" styleClass="box-body" id="editItemDialog">
+                            <!--<p:outputPanel id="editItemDialog" >-->
+                            <!--                        width="570"
+                            height="450"-->
+                            <h:panelGroup id="dynaFormGroup">
+                                <div class="panel-body">
+                                    <pe:dynaForm id="dynaForm" value="#{editorCtrl.dynModel}" var="data">
+                                        <pe:dynaFormControl type="text" for="txt" >
+                                            <p:inputText id="txt" value="#{data.value}" required="#{data.required}"
+                                                         disabled="#{data.disabled}" styleClass="form-control"/>
+                                        </pe:dynaFormControl>
+                                        <pe:dynaFormControl type="integer" for="tinteger" >
+                                            <p:inputText id="tinteger" value="#{data.valueInteger}" required="#{data.required}"
+                                                         disabled="#{data.disabled}" styleClass="form-control"/>
+                                        </pe:dynaFormControl>
+                                        <pe:dynaFormControl type="long" for="tlong" >
+                                            <p:inputText id="tlong" value="#{data.valueLong}" required="#{data.required}"
+                                                         disabled="#{data.disabled}" styleClass="form-control"/>
+                                        </pe:dynaFormControl>
+                                        <pe:dynaFormControl type="double" for="tdouble" >
+                                            <p:inputText id="tdouble" value="#{data.valueDouble}" required="#{data.required}"
+                                                         disabled="#{data.disabled}" styleClass="form-control"/>
+                                        </pe:dynaFormControl>
+                                        <pe:dynaFormControl type="float" for="tfloat" >
+                                            <p:inputText id="tfloat" value="#{data.valueFloat}" required="#{data.required}"
+                                                         disabled="#{data.disabled}" styleClass="form-control"/>
+                                        </pe:dynaFormControl>
+                                        <pe:dynaFormControl type="datetime" for="tdatetime" styleClass="calendar" >
+                                            <p:calendar id="tdatetime" value="#{data.value}"
+                                                        required="#{data.required}"
+                                                        showOn="button"
+                                                        disabled="#{data.disabled}"
+                                                        pattern="dd/MM/yyyy HH:mm:ss"
+                                                        mask="true"
+                                                        />
+                                        </pe:dynaFormControl>
 
-                                    <pe:dynaFormControl type="time" for="ttime" styleClass="calendar" >
-                                        <p:calendar id="ttime" value="#{data.value}"
-                                                    required="#{data.required}"
-                                                    showOn="button"
-                                                    disabled="#{data.disabled}"
-                                                    pattern="HH:mm"
-                                                    timeOnly="true"
-                                                    mask="true"
-                                                    />
-                                    </pe:dynaFormControl>
+                                        <pe:dynaFormControl type="date" for="tdate" styleClass="calendar" >
+                                            <p:calendar id="tdate" value="#{data.value}"
+                                                        required="#{data.required}"
+                                                        showOn="button"
+                                                        disabled="#{data.disabled}"
+                                                        pattern="dd/MM/yyyy"
+                                                        mask="true"
+                                                        />
+                                        </pe:dynaFormControl>
 
-                                    <pe:dynaFormControl type="select" for="tselect" styleClass="select" >
-                                        <p:selectOneMenu id="tselect" value="#{data.selectedItem}"
-                                                         required="#{data.required}"
-                                                         disabled="#{data.disabled}"
-                                                         filter="true" filterMatchMode="contains"
-                                                         >
-                                            <f:selectItems value="#{data.items}"/>
-                                        </p:selectOneMenu>
-                                    </pe:dynaFormControl>
+                                        <pe:dynaFormControl type="time" for="ttime" styleClass="calendar" >
+                                            <p:calendar id="ttime" value="#{data.value}"
+                                                        required="#{data.required}"
+                                                        showOn="button"
+                                                        disabled="#{data.disabled}"
+                                                        pattern="HH:mm"
+                                                        timeOnly="true"
+                                                        mask="true"
+                                                        />
+                                        </pe:dynaFormControl>
 
-                                    <pe:dynaFormControl type="select_onchange" for="tselect_onchange" styleClass="select" >
-                                        <p:selectOneMenu id="tselect_onchange" value="#{data.selectedItem}"
-                                                         required="#{data.required}"
-                                                         disabled="#{data.disabled}"
-                                                         valueChangeListener="#{data.onChange}"
-                                                         filter="true" filterMatchMode="contains"
-
-                                                         >
-                                            <f:selectItems value="#{data.items}"/>
-                                            <f:ajax process="@this"  render="editItemDialog" />
-                                        </p:selectOneMenu>
-                                    </pe:dynaFormControl>
-
-                                    <pe:dynaFormControl type="entity" for="tentity" styleClass="select" >
-                                        <p:panelGrid columns="2" style="border-style: hidden;width: 100%;"
-                                                     columnClasses="multi-component-main,multi-component-action">
-                                            <p:selectOneMenu id="tentity" value="#{data.selectedItem}"
+                                        <pe:dynaFormControl type="select" for="tselect" styleClass="select" >
+                                            <p:selectOneMenu id="tselect" value="#{data.selectedItem}"
                                                              required="#{data.required}"
                                                              disabled="#{data.disabled}"
-                                                             styleClass="full-width"
                                                              filter="true" filterMatchMode="contains"
                                                              >
                                                 <f:selectItems value="#{data.items}"/>
                                             </p:selectOneMenu>
-                                            <p:commandButton
-                                                styleClass="vr-form-dropdown-button"
-                                                ajax="false" value=""
-                                                icon="fa fa-eye vr-form-button-icon-only"
-                                                disabled="#{data.disabledNavigation}"
-                                                action="#{vr.gotoEditor(data.buildActionCommand())}"/>
-                                        </p:panelGrid>
-                                    </pe:dynaFormControl>
-                                    <pe:dynaFormControl type="entity_onchange" for="tentity_onchange" styleClass="select" >
-                                        <p:panelGrid columns="2" style="border-style: hidden"
-                                                     columnClasses="multi-component-main,multi-component-action">
-                                            <p:selectOneMenu id="tentity_onchange" value="#{data.selectedItem}"
+                                        </pe:dynaFormControl>
+
+                                        <pe:dynaFormControl type="select_onchange" for="tselect_onchange" styleClass="select" >
+                                            <p:selectOneMenu id="tselect_onchange" value="#{data.selectedItem}"
                                                              required="#{data.required}"
                                                              disabled="#{data.disabled}"
                                                              valueChangeListener="#{data.onChange}"
-                                                             onchange="submit();"
                                                              filter="true" filterMatchMode="contains"
+
                                                              >
                                                 <f:selectItems value="#{data.items}"/>
+                                                <f:ajax process="@this"  render="editItemDialog" />
                                             </p:selectOneMenu>
-                                            <p:commandButton
-                                                styleClass="vr-form-dropdown-button"
-                                                ajax="false" value=""
-                                                icon="fa fa-eye vr-form-button-icon-only"
-                                                disabled="#{data.disabledNavigation}"
-                                                action="#{vr.gotoEditor(data.buildActionCommand())}"/>
-                                        </p:panelGrid>
-                                    </pe:dynaFormControl>
+                                        </pe:dynaFormControl>
 
-                                    <pe:dynaFormControl type="textarea" for="tarea" >
-                                        <p:inputTextarea id="tarea" value="#{data.value}" required="#{data.required}"
-                                                         autoResize="false" disabled="#{data.disabled}"
-                                                         styleClass="form-control"/>
-                                    </pe:dynaFormControl>
-                                    <pe:dynaFormControl type="richtextarea" for="trichtextarea" >
-                                        <p:textEditor 
-                                            id="trichtextarea" value="#{data.value}" required="#{data.required}"
-                                            readonly="#{data.disabled}"/>
-                                    </pe:dynaFormControl>
+                                        <pe:dynaFormControl type="entity" for="tentity" styleClass="select" >
+                                            <p:panelGrid columns="2" style="border-style: hidden;width: 100%;"
+                                                         columnClasses="multi-component-main,multi-component-action">
+                                                <p:selectOneMenu id="tentity" value="#{data.selectedItem}"
+                                                                 required="#{data.required}"
+                                                                 disabled="#{data.disabled}"
+                                                                 styleClass="full-width"
+                                                                 filter="true" filterMatchMode="contains"
+                                                                 >
+                                                    <f:selectItems value="#{data.items}"/>
+                                                </p:selectOneMenu>
+                                                <p:commandButton
+                                                    styleClass="btn btn-primary"
+                                                    style="width: 40px;height: 30px;"
+                                                    ajax="false" value=""
+                                                    icon="fa fa-eye vr-form-button-icon-only"
+                                                    disabled="#{data.disabledNavigation}"
+                                                    action="#{vr.gotoEditor(data.buildActionCommand())}"/>
+                                            </p:panelGrid>
+                                        </pe:dynaFormControl>
+                                        <pe:dynaFormControl type="entity_onchange" for="tentity_onchange" styleClass="select" >
+                                            <p:panelGrid columns="2" style="border-style: hidden"
+                                                         columnClasses="multi-component-main,multi-component-action">
+                                                <p:selectOneMenu id="tentity_onchange" value="#{data.selectedItem}"
+                                                                 required="#{data.required}"
+                                                                 disabled="#{data.disabled}"
+                                                                 valueChangeListener="#{data.onChange}"
+                                                                 onchange="submit();"
+                                                                 filter="true" filterMatchMode="contains"
+                                                                 >
+                                                    <f:selectItems value="#{data.items}"/>
+                                                </p:selectOneMenu>
+                                                <p:commandButton
+                                                    styleClass="vr-form-dropdown-button"
+                                                    ajax="false" value=""
+                                                    icon="fa fa-eye vr-form-button-icon-only"
+                                                    disabled="#{data.disabledNavigation}"
+                                                    action="#{vr.gotoEditor(data.buildActionCommand())}"/>
+                                            </p:panelGrid>
+                                        </pe:dynaFormControl>
 
-                                    <pe:dynaFormControl type="wikitextarea" for="twikiarea" >
-                                        <p:panelGrid style="border-style: hidden;width: 100%"
-                                                     columnClasses="nopadding,nopadding">
-                                            <p:row>
-                                                <p:column>
-                                                    <p:commandButton value="..."
-                                                                     action="#{editorCtrl.switchWikiTextArea(data)}"
-                                                                     update=":listForm"/>
-                                                    <h:outputLink target="_blank"
-                                                                  value="https://www.mediawiki.org/wiki/Help:Formatting">help?</h:outputLink>
-                                                </p:column>
-                                            </p:row>
-                                            <p:row rendered="#{'Edit'.equals(data.componentState)}">
-                                                <p:column>
-                                                    <p:inputTextarea id="twikiarea"
-                                                                     value="#{data.value}" required="#{data.required}"
-                                                                     autoResize="false" disabled="#{data.disabled}"
-                                                                     styleClass="form-control"/>
-                                                </p:column>
-                                            </p:row>
-                                            <p:row rendered="#{!('Edit'.equals(data.componentState))}">
-                                                <p:column>
-                                                    <p:scrollPanel style="width:100%;height:200px" id="twikiareaRender"
-                                                                   >
-                                                        <p:outputLabel
-                                                            value="#{vr.wiki2Html(data.value)}"
-                                                            escape="false"
-                                                            >
-                                                        </p:outputLabel>
+                                        <pe:dynaFormControl type="textarea" for="tarea" >
+                                            <p:inputTextarea id="tarea" value="#{data.value}" required="#{data.required}"
+                                                             autoResize="false" disabled="#{data.disabled}"
+                                                             styleClass="form-control"/>
+                                        </pe:dynaFormControl>
+                                        <pe:dynaFormControl type="richtextarea" for="trichtextarea" >
+                                            <p:textEditor 
+                                                id="trichtextarea" value="#{data.value}" required="#{data.required}"
+                                                readonly="#{data.disabled}"/>
+                                        </pe:dynaFormControl>
 
-                                                    </p:scrollPanel>
-                                                </p:column>
-                                            </p:row>
-                                        </p:panelGrid>
+                                        <pe:dynaFormControl type="wikitextarea" for="twikiarea" >
+                                            <p:panelGrid style="border-style: hidden;width: 100%"
+                                                         columnClasses="nopadding,nopadding">
+                                                <p:row>
+                                                    <p:column>
+                                                        <p:commandButton value="..."
+                                                                         action="#{editorCtrl.switchWikiTextArea(data)}"
+                                                                         update=":listForm"/>
+                                                        <h:outputLink target="_blank"
+                                                                      value="https://www.mediawiki.org/wiki/Help:Formatting">help?</h:outputLink>
+                                                    </p:column>
+                                                </p:row>
+                                                <p:row rendered="#{'Edit'.equals(data.componentState)}">
+                                                    <p:column>
+                                                        <p:inputTextarea id="twikiarea"
+                                                                         value="#{data.value}" required="#{data.required}"
+                                                                         autoResize="false" disabled="#{data.disabled}"
+                                                                         styleClass="form-control"/>
+                                                    </p:column>
+                                                </p:row>
+                                                <p:row rendered="#{!('Edit'.equals(data.componentState))}">
+                                                    <p:column>
+                                                        <p:scrollPanel style="width:100%;height:200px" id="twikiareaRender"
+                                                                       >
+                                                            <p:outputLabel
+                                                                value="#{vr.wiki2Html(data.value)}"
+                                                                escape="false"
+                                                                >
+                                                            </p:outputLabel>
 
-                                    </pe:dynaFormControl>
+                                                        </p:scrollPanel>
+                                                    </p:column>
+                                                </p:row>
+                                            </p:panelGrid>
 
-                                    <pe:dynaFormControl type="checkbox" for="tcheckbox" >
-                                        <p:selectBooleanCheckbox id="tcheckbox" value="#{data.value}"
-                                                                 required="#{data.required}" disabled="#{data.disabled}"/>
-                                    </pe:dynaFormControl>
+                                        </pe:dynaFormControl>
 
-                                    <pe:dynaFormControl type="rating" for="rat" >
-                                        <p:rating id="rat" value="#{data.value}" required="#{data.required}"
-                                                  disabled="#{data.disabled}"/>
-                                    </pe:dynaFormControl>
+                                        <pe:dynaFormControl type="checkbox" for="tcheckbox" >
+                                            <p:selectBooleanCheckbox id="tcheckbox" value="#{data.value}"
+                                                                     required="#{data.required}" disabled="#{data.disabled}"/>
+                                        </pe:dynaFormControl>
 
-                                    <pe:dynaFormControl type="separator" styleClass="separator ui-state-disabled" >
-                                        <h:panelGrid columns="2" style="width:100%;" columnClasses="separatorText">
-                                            <h3>#{data.value}</h3>
-                                            <p:separator/>
-                                        </h:panelGrid>
-                                    </pe:dynaFormControl>
+                                        <pe:dynaFormControl type="rating" for="rat" >
+                                            <p:rating id="rat" value="#{data.value}" required="#{data.required}"
+                                                      disabled="#{data.disabled}"/>
+                                        </pe:dynaFormControl>
 
-                                    <pe:dynaFormControl type="entityDetail">
-                                        <p:commandButton ajax="false" value="#{data.count}" disabled="#{data.disabled}"
-                                                         action="#{vr.gotoEditor(data.buildActionCommand())}"/>
-                                    </pe:dynaFormControl>
+                                        <pe:dynaFormControl type="separator" styleClass="separator ui-state-disabled" >
+                                            <h:panelGrid columns="2" style="width:100%;" columnClasses="separatorText">
+                                                <h3>#{data.value}</h3>
+                                                <p:separator/>
+                                            </h:panelGrid>
+                                        </pe:dynaFormControl>
 
-
-                                    <!--<pe:dynaFormControl type="profileExpr" for="tprofileexpr" styleClass="select">-->
-                                    <!--<p:panelGrid columns="2" style="border-style: hidden"-->
-                                    <!--columnClasses="nopadding,nopadding">-->
-
-                                    <!--<p:inputText id="tprofileexpr" value="#_{data.value}" required="#_{data.required}"-->
-                                    <!--disabled="#_{data.disabled}" styleClass="form-control"/>-->
-                                    <!--<p:commandButton-->
-                                    <!--style="padding-top: 8px; margin-bottom: 3px; margin-left: 1px; padding-bottom: 8px;"-->
-                                    <!--ajax="true" value=""-->
-                                    <!--icon="fa fa-users"-->
-                                    <!--actionListener="#_{editorCtrl.openPropertyViewDialog(data.componentId,'')}"-->
-                                    <!--&gt;-->
-                                    <!--<p:ajax event="dialogReturn"-->
-                                    <!--listener="#_{editorCtrl.onPropertyViewDialogClosed}"-->
-                                    <!--update="tprofileexpr"/>-->
-
-                                    <!--</p:commandButton>-->
-                                    <!--</p:panelGrid>-->
-                                    <!--</pe:dynaFormControl>-->
-
-                                    <pe:dynaFormControl type="profileExpr" for="tprofileexpr" styleClass="select" >
-                                        <div class="form-group">
-                                            <p:autoComplete id="tprofileexpr"
-                                                            styleClass="vr-form-control vr-form-control-with-button60"
-                                                            placeholder="" value="#{data.value}"
-                                                            completeMethod="#{vr.autoCompleteProfileExpression}"
-                                                            queryDelay="1000"
-                                                            disabled="#{data.disabled}"
-                                                            >
-                                                <p:ajax event="blur" listener="#{vr.updateProfileExpressionUsersCount}"
-                                                        process="@this"
-                                                        update="btnto"/>
-                                            </p:autoComplete>
-                                            <p:commandButton
-                                                id="btnto"
-                                                styleClass="vr-form-control-right-button60"
-                                                ajax="true" value="#{data.hint}"
-                                                icon="fa fa-users"
-                                                actionListener="#{editorCtrl.openPropertyViewDialog(data.componentId,'')}"
-                                                >
-                                                <p:ajax event="dialogReturn"
-                                                        listener="#{editorCtrl.onPropertyViewDialogClosed}"
-                                                        update="tprofileexpr"/>
-                                            </p:commandButton>
-                                        </div>
-                                    </pe:dynaFormControl>
-
-                                    <pe:dynaFormControl type="discipline" for="tdiscipline" styleClass="select" >
-                                        <p:panelGrid columns="2" style="border-style: hidden"
-                                                     columnClasses="nopadding,nopadding">
-
-                                            <p:inputText id="tdiscipline" value="#{data.value}" required="#{data.required}"
-                                                         disabled="#{data.disabled}" styleClass="form-control"/>
-                                            <p:commandButton
-                                                style="padding-top: 8px; margin-bottom: 3px; margin-left: 1px; padding-bottom: 8px;"
-                                                ajax="true" value=""
-                                                icon="fa fa-tags"
-                                                actionListener="#{editorCtrl.openPropertyViewDialog(data.componentId,'')}"
-                                                >
-                                                <p:ajax event="dialogReturn"
-                                                        listener="#{editorCtrl.onPropertyViewDialogClosed}"
-                                                        update="tdiscipline"/>
-
-                                            </p:commandButton>
-                                        </p:panelGrid>
-                                    </pe:dynaFormControl>
-
-                                    <pe:dynaFormControl type="file" for="tfile" styleClass="select" >
-                                        <div class="form-group">
-
-                                            <p:inputText id="tfile" value="#{data.value}" required="#{data.required}"
-                                                         disabled="#{data.disabled}"
-                                                         styleClass="form-control vr-form-control vr-form-control-with-button60"/>
-                                            <p:commandLink
-                                                rendered="#{vr.isFSPath(vr.trim(data.value))}"
-                                                target="_blank"
-                                                value="..."
-                                                styleClass="btn  btn-default vr-form-control-right-button30"
-                                                style="margin-left: 3px;margin-right: 3px;margin-top: 5px;"
-                                                ajax="false"
-                                                >
-                                                <p:fileDownload value="#{vr.downloadPath(vr.trim(data.value))}"/>
-                                            </p:commandLink>
-
-                                            <p:commandButton
-                                                styleClass="vr-form-control-right-button30"
-                                                ajax="true" value=""
-                                                icon="fa fa-folder-open-o"
-                                                title="Mes Documents"
-                                                actionListener="#{editorCtrl.openPropertyViewDialog(data.componentId,'folder')}"
-                                                >
-                                                <p:ajax event="dialogReturn"
-                                                        listener="#{editorCtrl.onPropertyViewDialogClosed}" update="tfile"/>
-
-                                            </p:commandButton>
-                                            <p:commandButton
-                                                styleClass="vr-form-control-right-button30"
-                                                ajax="true" value=""
-                                                icon="fa fa-cloud-upload"
-                                                title="Téléverser"
-                                                actionListener="#{editorCtrl.openPropertyViewDialog(data.componentId,'upload')}"
-                                                >
-                                                <p:ajax event="dialogReturn"
-                                                        listener="#{editorCtrl.onPropertyViewDialogClosed}" update="tfile"/>
-
-                                            </p:commandButton>
-                                        </div>
-                                    </pe:dynaFormControl>
+                                        <pe:dynaFormControl type="entityDetail">
+                                            <p:commandButton ajax="false" value="#{data.count}" styleClass="btn #{data.count gt 0 ? 'btn-primary':'btn-default'}" 
+                                                             disabled="#{data.disabled}"
+                                                             action="#{vr.gotoEditor(data.buildActionCommand())}"/>
+                                        </pe:dynaFormControl>
 
 
-                                </pe:dynaForm>
-                            </div>
+                                        <!--<pe:dynaFormControl type="profileExpr" for="tprofileexpr" styleClass="select">-->
+                                        <!--<p:panelGrid columns="2" style="border-style: hidden"-->
+                                        <!--columnClasses="nopadding,nopadding">-->
+
+                                        <!--<p:inputText id="tprofileexpr" value="#_{data.value}" required="#_{data.required}"-->
+                                        <!--disabled="#_{data.disabled}" styleClass="form-control"/>-->
+                                        <!--<p:commandButton-->
+                                        <!--style="padding-top: 8px; margin-bottom: 3px; margin-left: 1px; padding-bottom: 8px;"-->
+                                        <!--ajax="true" value=""-->
+                                        <!--icon="fa fa-users"-->
+                                        <!--actionListener="#_{editorCtrl.openPropertyViewDialog(data.componentId,'')}"-->
+                                        <!--&gt;-->
+                                        <!--<p:ajax event="dialogReturn"-->
+                                        <!--listener="#_{editorCtrl.onPropertyViewDialogClosed}"-->
+                                        <!--update="tprofileexpr"/>-->
+
+                                        <!--</p:commandButton>-->
+                                        <!--</p:panelGrid>-->
+                                        <!--</pe:dynaFormControl>-->
+
+                                        <pe:dynaFormControl type="profileExpr" for="tprofileexpr" styleClass="select" >
+                                            <div class="form-group">
+                                                <p:autoComplete id="tprofileexpr"
+                                                                styleClass="vr-form-control vr-form-control-with-button60"
+                                                                placeholder="" value="#{data.value}"
+                                                                completeMethod="#{vr.autoCompleteProfileExpression}"
+                                                                queryDelay="1000"
+                                                                disabled="#{data.disabled}"
+                                                                >
+                                                    <p:ajax event="blur" listener="#{vr.updateProfileExpressionUsersCount}"
+                                                            process="@this"
+                                                            update="btnto"/>
+                                                </p:autoComplete>
+                                                <p:commandButton
+                                                    id="btnto"
+                                                    styleClass="vr-form-control-right-button60"
+                                                    ajax="true" value="#{data.hint}"
+                                                    icon="fa fa-users"
+                                                    actionListener="#{editorCtrl.openPropertyViewDialog(data.componentId,'')}"
+                                                    >
+                                                    <p:ajax event="dialogReturn"
+                                                            listener="#{editorCtrl.onPropertyViewDialogClosed}"
+                                                            update="tprofileexpr"/>
+                                                </p:commandButton>
+                                            </div>
+                                        </pe:dynaFormControl>
+
+                                        <pe:dynaFormControl type="discipline" for="tdiscipline" styleClass="select" >
+                                            <p:panelGrid columns="2" style="border-style: hidden"
+                                                         columnClasses="nopadding,nopadding">
+
+                                                <p:inputText id="tdiscipline" value="#{data.value}" required="#{data.required}"
+                                                             disabled="#{data.disabled}" styleClass="form-control"/>
+                                                <p:commandButton
+                                                    style="padding-top: 8px; margin-bottom: 3px; margin-left: 1px; padding-bottom: 8px;"
+                                                    ajax="true" value=""
+                                                    icon="fa fa-tags"
+                                                    actionListener="#{editorCtrl.openPropertyViewDialog(data.componentId,'')}"
+                                                    >
+                                                    <p:ajax event="dialogReturn"
+                                                            listener="#{editorCtrl.onPropertyViewDialogClosed}"
+                                                            update="tdiscipline"/>
+
+                                                </p:commandButton>
+                                            </p:panelGrid>
+                                        </pe:dynaFormControl>
+
+                                        <pe:dynaFormControl type="file" for="tfile" styleClass="select" >
+                                            <div class="form-group">
+
+                                                <p:inputText id="tfile" value="#{data.value}" required="#{data.required}"
+                                                             disabled="#{data.disabled}"
+                                                             styleClass="form-control vr-form-control vr-form-control-with-button60"/>
+                                                <p:commandLink
+                                                    rendered="#{vr.isFSPath(vr.trim(data.value))}"
+                                                    target="_blank"
+                                                    value="..."
+                                                    styleClass="btn  btn-default vr-form-control-right-button30"
+                                                    style="margin-left: 3px;margin-right: 3px;margin-top: 5px;"
+                                                    ajax="false"
+                                                    >
+                                                    <p:fileDownload value="#{vr.downloadPath(vr.trim(data.value))}"/>
+                                                </p:commandLink>
+
+                                                <p:commandButton
+                                                    styleClass="vr-form-control-right-button30"
+                                                    ajax="true" value=""
+                                                    icon="fa fa-folder-open-o"
+                                                    title="Mes Documents"
+                                                    actionListener="#{editorCtrl.openPropertyViewDialog(data.componentId,'folder')}"
+                                                    >
+                                                    <p:ajax event="dialogReturn"
+                                                            listener="#{editorCtrl.onPropertyViewDialogClosed}" update="tfile"/>
+
+                                                </p:commandButton>
+                                                <p:commandButton
+                                                    styleClass="vr-form-control-right-button30"
+                                                    ajax="true" value=""
+                                                    icon="fa fa-cloud-upload"
+                                                    title="Téléverser"
+                                                    actionListener="#{editorCtrl.openPropertyViewDialog(data.componentId,'upload')}"
+                                                    >
+                                                    <p:ajax event="dialogReturn"
+                                                            listener="#{editorCtrl.onPropertyViewDialogClosed}" update="tfile"/>
+
+                                                </p:commandButton>
+                                            </div>
+                                        </pe:dynaFormControl>
+
+
+                                    </pe:dynaForm>
+                                </div>
+                            </h:panelGroup>
                         </h:panelGroup>
 
-                    </p:outputPanel>
+                    </h:panelGroup>
+                    <!-- /.box-body -->
+
+                    <div class="box-footer">
+                    </div>
+
                     <p:remoteCommand name="processOnSaveCurrentAndClose" process="@form"
                                      update=":listForm   "
                                      action="#{editorCtrl.onSaveCurrentAndClose()}"/>

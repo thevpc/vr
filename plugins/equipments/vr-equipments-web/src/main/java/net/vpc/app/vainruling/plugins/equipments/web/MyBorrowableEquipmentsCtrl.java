@@ -201,7 +201,7 @@ public class MyBorrowableEquipmentsCtrl {
         private List<EquipmentForResponsibleInfo> equipments;
         private List<SelectItem> equipmentTypes;
         private List<SelectItem> departments;
-        private String searchTextHelper = "Tapez ici les mots clés de recherche.";
+        private String searchHelper = "Tapez ici les mots clés de recherche.";
         private String searchText;
         private Integer filterEquipmentType;
         private Integer filterDepartment;
@@ -345,12 +345,12 @@ public class MyBorrowableEquipmentsCtrl {
             this.superUserOperator = superUserOperator;
         }
 
-        public String getSearchTextHelper() {
-            return searchTextHelper;
+        public String getSearchHelper() {
+            return searchHelper;
         }
 
-        public void setSearchTextHelper(String searchTextHelper) {
-            this.searchTextHelper = searchTextHelper;
+        public void setSearchHelper(String searchHelper) {
+            this.searchHelper = searchHelper;
         }
 
         public String getSearchText() {

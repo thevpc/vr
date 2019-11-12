@@ -10,6 +10,7 @@ public final class EditorConfig {
     public Map<String, String> values;
     public String[] disabledFields;
     public String[] selectedFields;
+    public String searchType;
     public String searchExpr;
     public boolean ignoreAutoFilter;
 }

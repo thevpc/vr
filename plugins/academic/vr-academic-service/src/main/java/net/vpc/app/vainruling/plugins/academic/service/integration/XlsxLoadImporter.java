@@ -1237,7 +1237,7 @@ public class XlsxLoadImporter {
                     int x = nbrGroupsC;
                     if (valueC > 0) {
                         nbrGroupsC = x;
-                    }else{
+                    } else {
                         nbrGroupsC = 0;
                     }
                     if (valueTD > 0) {
@@ -1283,9 +1283,10 @@ public class XlsxLoadImporter {
                     coursePlan = new AcademicCoursePlan();
                     coursePlan.setName(courseName);
                     coursePlan.setCourseLevel(courseLevel);
+                    coursePlan.setPeriod(period);
+
                     coursePlan.setCourseGroup(courseGroup);
                     coursePlan.setDiscipline(discipline);
-                    coursePlan.setPeriod(period);
                     coursePlan.setValueC(valueC);
                     coursePlan.setValueTD(valueTD);
                     coursePlan.setValueTP(valueTP);
@@ -1300,6 +1301,32 @@ public class XlsxLoadImporter {
                     coursePlan.setEcts(ects);
                     if (!simulate) {
                         core.save(null, coursePlan);
+                    }
+                } else {
+                    boolean updated = false;
+                    if (courseGroup != null && coursePlan.getCourseGroup() == null) {
+                        coursePlan.setCourseGroup(courseGroup);
+                        updated = true;
+                    }
+                    if (responsible != null && coursePlan.getResponsible() == null) {
+                        coursePlan.setResponsible(responsible);
+                        updated = true;
+                    }
+                    if (delegatedCoursePlan != null && coursePlan.getDelegate() == null) {
+                        coursePlan.setDelegate(delegatedCoursePlan);
+                        updated = true;
+                    }
+                    if (!StringUtils.isBlank(discipline) && StringUtils.isBlank(coursePlan.getDiscipline())) {
+                        coursePlan.setDiscipline(discipline);
+                        updated = true;
+                    }
+                    if (credits > 0) {
+                        coursePlan.setCredits(credits);
+                        updated = true;
+                    }
+                    if (ects > 0) {
+                        coursePlan.setEcts(ects);
+                        updated = true;
                     }
                 }
                 count++;

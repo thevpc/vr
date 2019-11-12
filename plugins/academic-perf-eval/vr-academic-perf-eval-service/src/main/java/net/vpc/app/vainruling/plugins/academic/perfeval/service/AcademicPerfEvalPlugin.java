@@ -13,15 +13,12 @@ import net.vpc.app.vainruling.plugins.academic.perfeval.model.AcademicFeedbackSe
 import net.vpc.app.vainruling.plugins.academic.perfeval.model.AcademicFeedbackGroup;
 import net.vpc.app.vainruling.plugins.academic.perfeval.model.AcademicFeedback;
 import net.vpc.app.vainruling.plugins.academic.perfeval.model.AcademicFeedbackQuestion;
-import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.TraceService;
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.model.AppPeriod;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.dto.*;
 import net.vpc.app.vainruling.plugins.academic.perfeval.service.servicemodel.FeedbacksStats;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.vpc.app.vainruling.plugins.academic.service.AcademicPluginSecurity;
-import net.vpc.app.vainruling.plugins.academic.model.config.AcademicSemester;
 import net.vpc.app.vainruling.plugins.academic.model.config.AcademicStudent;
 import net.vpc.app.vainruling.plugins.academic.model.config.AcademicStudentStage;
 import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
@@ -34,6 +31,7 @@ import net.vpc.upa.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import net.vpc.app.vainruling.core.service.ProfileRightBuilder;
@@ -438,15 +436,59 @@ public class AcademicPerfEvalPlugin {
             }
             classIdsString.append(classes[i]);
         }
-        return UPA.getPersistenceUnit().createQuery("Select a from AcademicCourseAssignment a where a.coursePlan.periodId=:periodId "
-                + (semesterId < 0 ? "" : " and a.coursePlan.courseLevel.semesterId=:semesterId ")
-                + (classIdsString.length() == 0 ? "" : " and (a.subClassId in (" + classIdsString + ") or (a.subClassId = null and a.coursePlan.courseLevel.academicClassId in (" + classIdsString + "))) ")
-                + " and a.teacher.allowCourseFeedback=true "
-                + " and a.coursePlan.allowCourseFeedback=true "
-        )
-                .setParameter("semesterId", semesterId, semesterId >= 0)
-                .setParameter("periodId", periodId)
-                .getResultList();
+//        List<AcademicCourseAssignment> ok = UPA.getPersistenceUnit().createQuery("Select a from AcademicCourseAssignment a where a.coursePlan.periodId=:periodId "
+//                + (semesterId < 0 ? "" : " and a.coursePlan.courseLevel.semesterId=:semesterId ")
+//                + (classIdsString.length() == 0 ? "" : " and (a.subClassId in (" + classIdsString + ") or (a.subClassId = null and a.coursePlan.courseLevel.academicClassId in (" + classIdsString + "))) ")
+//                + " and a.teacher.allowCourseFeedback=true "
+//                        + " and a.coursePlan.allowCourseFeedback=true "
+//        )
+//                .setParameter("semesterId", semesterId, semesterId >= 0)
+//                .setParameter("periodId", periodId)
+//                .getResultList();
+
+        List<Object[]> ok = new ArrayList<>(
+                UPA.getPersistenceUnit().createQuery("Select "
+                        + " a "
+                        + ", a.teacher.allowCourseFeedback teacherOk "
+                        + ", a.coursePlan.allowCourseFeedback coursePlanOk "
+                        + ", a.enableCourseFeedback assignementOk "
+                        + "from AcademicCourseAssignment a where a.coursePlan.periodId=:periodId "
+                        + (semesterId < 0 ? "" : " and a.coursePlan.courseLevel.semesterId=:semesterId ")
+                        + (classIdsString.length() == 0 ? "" : " and (a.subClassId in (" + classIdsString + ") or (a.subClassId = null and a.coursePlan.courseLevel.academicClassId in (" + classIdsString + "))) ")
+                )
+                        .setParameter("semesterId", semesterId, semesterId >= 0)
+                        .setParameter("periodId", periodId)
+                        .getResultList()
+        );
+        List<AcademicCourseAssignment> result = new ArrayList<AcademicCourseAssignment>();
+        for (Object[] obj : ok) {
+            AcademicCourseAssignment a = (AcademicCourseAssignment) obj[0];
+            Boolean teacherOk = (Boolean) obj[1];
+            Boolean coursePlanOk = (Boolean) obj[2];
+            Boolean assignementOk = (Boolean) obj[3];
+            boolean evaluatable = true;
+            if (assignementOk == null || !assignementOk) {
+                evaluatable = false;
+                log.log(Level.SEVERE, "Not Evaluable CourseAssignment : DisabledOnAssignment : [{0}#{1}]", new Object[]{a.getId(), a.getFullName()});
+            }
+            if (coursePlanOk == null || !coursePlanOk) {
+                evaluatable = false;
+                log.log(Level.SEVERE, "Not Evaluable CourseAssignment : DisabledOnCoursePan : [{0}#{1}] : [{2}#{3}]", new Object[]{a.getCoursePlan().getId(), a.getCoursePlan().getFullName(), a.getId(), a.getFullName()});
+            }
+            if (evaluatable) {
+                if (a.getTeacher() == null) {
+                    evaluatable = false;
+                    log.log(Level.SEVERE, "Not Evaluable CourseAssignment : MissingTeacher : [{0}#{1}]", new Object[]{a.getId(), a.getFullName()});
+                } else if (teacherOk == null || !teacherOk) {
+                    evaluatable = false;
+                    log.log(Level.SEVERE, "Not Evaluable CourseAssignment : DisabledOnTeacher : [{0}#{1}] : [{2}#{3}]", new Object[]{a.getTeacher().getId(), a.getTeacher().getUser().getFullName(), a.getId(), a.getFullName()});
+                }
+            }
+            if (evaluatable) {
+                result.add(a);
+            }
+        }
+        return result;
     }
 
     public List<AcademicFeedbackModelGroupBinding> findModelGroupBindingByGroup(int groupId) {
@@ -621,6 +663,7 @@ public class AcademicPerfEvalPlugin {
                     java.util.logging.Level.INFO
             );
         } catch (Exception ex) {
+            log.log(Level.SEVERE, "generateStudentsFeedbackForm failed : " + ex.toString(), ex);
             Map<String, Object> traceParams2 = MapUtils.map("model", modelNames, "filter", studentProfileFilter, "error", ex.getMessage());
             traceService.trace("Academic.generate-students-feedback-form", "error", traceParams2,
                     "/Education/Evaluation",

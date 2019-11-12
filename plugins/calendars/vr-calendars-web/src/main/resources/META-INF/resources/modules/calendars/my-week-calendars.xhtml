@@ -10,55 +10,50 @@ and open the template in the editor.
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://java.sun.com/jsf/core"
+
       >
 
     <h:head>
     </h:head>
 
     <h:body>
-
-
-        <!--@elvariable id="myWeekCalendarsCtrl" type="net.vpc.app.vainruling.plugins.calendars.web.MyPlanningListCtrl"-->
-        <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.jsf.Vr"-->
         <ui:composition template="#{vr.privateTemplatePath}">
             <ui:define name="content">
-                <!--                <h:form id="buttonsForm">
-    
-                                     /.row
-                                    <div >
-                                        <p:outputLabel id="buttons">
-                                            <p:commandButton value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton " ajax="true" actionListener="# {myPlanningCtrl.onRefresh}"  update=":listForm"/>
-                                        </p:outputLabel>
-                                    </div>
-    
-                                </h:form>-->
                 <h:form id="listForm">
-
-                    <div >
-                        <p:selectOneMenu value="#{myWeekCalendarsCtrl.model.selectionIndex}">
-                            <p:ajax listener="#{myWeekCalendarsCtrl.onGroupChanged}" update=":listForm"/>
-                            <f:selectItem itemLabel="Selectionner..." itemValue=""/>
-                            <f:selectItems value="#{myWeekCalendarsCtrl.model.groups}"/>
-                        </p:selectOneMenu>
-                        <!--<p:commandButton value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton " ajax="true" actionListener="# {teacherCourseLoadCtrl.onRefresh}"  update=":listForm"/>-->
+                    <div class="box box-default">
+                        <div class="box-body">
+                            <div class="form-group">
+                                <p:outputLabel value="Emploi"/>
+                                <p:selectOneMenu value="#{myWeekCalendarsCtrl.model.selectionIndex}"
+                                                 filter="true" filterMatchMode="contains"
+                                                 styleClass="form-control"
+                                                 >
+                                    <p:ajax listener="#{myWeekCalendarsCtrl.onGroupChanged}" update=":listForm"/>
+                                    <f:selectItem itemLabel="Selectionner..." itemValue=""/>
+                                    <f:selectItems value="#{myWeekCalendarsCtrl.model.groups}"/>
+                                </p:selectOneMenu>
+                            </div>
+                        </div>
                     </div>
-
-                    <div >
-                        <div class="table-responsive">
-                            <p:outputLabel value="Aucun Emploi du temps n'a pu etre resolu" rendered="#{
-                                           myWeekCalendarsCtrl.model.selectionIndex ne null
-                                               and
-                                               (myWeekCalendarsCtrl.model.planning eq null 
-                                               or (myWeekCalendarsCtrl.model.planning.size()) eq 0
-                                               )
-                            }"/>
-                            <p:panelGrid
-                                style="width: 100%"
-                                rendered="#{myWeekCalendarsCtrl.model.planning ne null and (myWeekCalendarsCtrl.model.planning.size()) gt 0}">
+                    <h:panelGroup layout="block" styleClass="callout callout-danger" rendered="#{myWeekCalendarsCtrl.missingPlanning}">
+                        <div class="">
+                            <h4>Emploi non disponible!</h4>
+                            <p>aucun emploi n'a pu être résolu pour la salle #{myWeekCalendarsCtrl.selectedLabel}</p>
+                        </div>                        
+                    </h:panelGroup>                    
+                    <h:panelGroup layout="block" styleClass="box box-primary" rendered="#{myWeekCalendarsCtrl.validPlanning}">
+                        <div class="box-header with-border">
+                            <h3 class="box-title">
+                                <p:outputLabel value="#{vr.strcat('Emploi ',myWeekCalendarsCtrl.selectedLabel)}"/>
+                            </h3>
+                        </div>
+                        <!-- /.box-header -->
+                        <!-- form start -->
+                        <h:panelGroup layout="block" styleClass="box-body">
+                            <p:panelGrid rendered="#{myWeekCalendarsCtrl.validPlanning}">
                                 <p:row>
                                     <p:column styleClass="ui-widget-header"><p:outputLabel value=""/></p:column>
-                                    <p:column styleClass="ui-widget-header"><p:outputLabel
-                                            value="#{myWeekCalendarsCtrl.model.planning[0].dayName}"/></p:column>
+                                    <p:column styleClass="ui-widget-header"><p:outputLabel value="#{myWeekCalendarsCtrl.model.planning[0].dayName}"/></p:column>
                                     <p:column styleClass="ui-widget-header"><p:outputLabel value="Mardi"/></p:column>
                                     <p:column styleClass="ui-widget-header"><p:outputLabel value="Mercredi"/></p:column>
                                     <p:column styleClass="ui-widget-header"><p:outputLabel value="Jeudi"/></p:column>
@@ -93,18 +88,10 @@ and open the template in the editor.
                                     </p:row>
                                 </ui:repeat>
                             </p:panelGrid>
-                        </div>
-                    </div>
-
+                        </h:panelGroup>
+                    </h:panelGroup>
                 </h:form>
-
-
             </ui:define>
-
-
         </ui:composition>
-
-
     </h:body>
-
 </html>

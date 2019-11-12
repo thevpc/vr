@@ -500,8 +500,12 @@ public class AcademicPlugin {
         return assignments.findAcademicCourseAssignmentListGroupByByTeacherId(periodId);
     }
 
-    public List<AcademicCourseAssignment> findAcademicCourseAssignmentListByCoursePlanId(int coursePlanId) {
-        return assignments.findAcademicCourseAssignmentListByCoursePlanId(coursePlanId);
+    public List<AcademicCourseAssignment> findAssignments(Integer periodId, Integer coursePlanId, Integer clazzId, Integer teacherId, Integer programId, Integer semesterId, Integer courseTypeId) {
+        return assignments.findAssignments(periodId, coursePlanId, clazzId, teacherId, programId, semesterId, courseTypeId);
+    }
+
+    public List<AcademicCoursePlan> findCoursePlans(Integer periodId, Integer programId, Integer clazzId, Integer semesterId) {
+        return assignments.findCoursePlans(periodId, programId, clazzId, semesterId);
     }
 
     public Map<Integer, List<AcademicCourseIntent>> getAcademicCourseIntentByAssignmentId(int periodId) {
@@ -1123,7 +1127,7 @@ public class AcademicPlugin {
             return;
         }
         AcademicPlugin t = VrApp.getBean(AcademicPlugin.class);
-        List<AcademicCourseAssignment> assignments = t.findAcademicCourseAssignmentListByCoursePlanId(d.getId());
+        List<AcademicCourseAssignment> assignments = t.findAssignments(null, d.getId(), null, null, null, null,null);
 //        Set<String> errors = new TreeSet<String>();
         boolean saveMe = false;
         if (d.getValueC() < 0) {

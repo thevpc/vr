@@ -43,7 +43,6 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
 import net.vpc.common.strings.StringConverter;
-import net.vpc.common.util.IntegerParserConfig;
 import net.vpc.upa.Action;
 import net.vpc.upa.Entity;
 import net.vpc.upa.PersistenceUnit;
@@ -542,7 +541,7 @@ public class VrUtils {
 
     public static String getBeanName(Class cls) {
         String s = cls.getSimpleName();
-        return Character.toUpperCase(s.charAt(0)) + s.substring(1);
+        return Character.toLowerCase(s.charAt(0)) + s.substring(1);
     }
 
     public static String validateContactName(String name) {
@@ -1368,7 +1367,9 @@ public class VrUtils {
         if (name == null) {
             name = "";
         }
-        return StringUtils.normalizeString(name.trim().toLowerCase());
+        String s = StringUtils.normalizeString(name.trim().toLowerCase());
+        s=s.replaceAll("\\s{2,}", " ");
+        return s;
     }
 
     public static Set<String> parseNormalizedOtherNames(String otherNames) {
@@ -1474,5 +1475,61 @@ public class VrUtils {
             }
         }
         return words;
+    }
+
+    public static String stringListAdd(String old, String newVal, String sep) {
+        if (old == null) {
+            old = "";
+        }
+        List<String> li = new ArrayList<>();
+        for (String object : StringUtils.split(old, sep)) {
+            li.add(object);
+        }
+        if (!StringUtils.isBlank(newVal)) {
+            li.add(newVal);
+        }
+        return String.join(String.valueOf(sep.charAt(0)), li);
+    }
+
+    public static String stringSetAdd(String old, String newVal, String sep) {
+        if (old == null) {
+            old = "";
+        }
+        Set<String> li = new TreeSet<>();
+        for (String object : StringUtils.split(old, sep)) {
+            li.add(object);
+        }
+        if (!StringUtils.isBlank(newVal)) {
+            li.add(newVal);
+        }
+        return String.join(String.valueOf(sep.charAt(0)), li);
+    }
+
+    public static String stringListRemove(String old, String newVal, String sep) {
+        if (old == null) {
+            old = "";
+        }
+        List<String> li = new ArrayList<>();
+        for (String object : StringUtils.split(old, sep)) {
+            li.add(object);
+        }
+        if (!StringUtils.isBlank(newVal)) {
+            li.remove(newVal);
+        }
+        return String.join(String.valueOf(sep.charAt(0)), li);
+    }
+
+    public static String stringSetRemove(String old, String newVal, String sep) {
+        if (old == null) {
+            old = "";
+        }
+        Set<String> li = new TreeSet<>();
+        for (String object : StringUtils.split(old, sep)) {
+            li.add(object);
+        }
+        if (!StringUtils.isBlank(newVal)) {
+            li.remove(newVal);
+        }
+        return String.join(String.valueOf(sep.charAt(0)), li);
     }
 }

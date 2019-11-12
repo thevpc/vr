@@ -6,7 +6,6 @@
 package net.vpc.app.vainruling.core.web.jsf.ctrl;
 
 import net.vpc.app.vainruling.core.service.editor.EditorFieldSelection;
-import net.vpc.app.vainruling.VrEditorSearch;
 import net.vpc.upa.AccessMode;
 
 import java.util.ArrayList;
@@ -163,18 +162,9 @@ public abstract class AbstractObjectCtrl<T> extends BasePageCtrl {
         private AccessMode mode = AccessMode.READ;
         private T current;
         private String cmd;
-        private VrEditorSearch search;
         private EditorFieldSelection fieldSelection;
         private List<T> list = new ArrayList<>();
         private List<T> selectedRows = new ArrayList<>();
-
-        public VrEditorSearch getSearch() {
-            return search;
-        }
-
-        public void setSearch(VrEditorSearch search) {
-            this.search = search;
-        }
 
         public EditorFieldSelection getFieldSelection() {
             return fieldSelection;

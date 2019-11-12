@@ -6,7 +6,6 @@
 package net.vpc.app.vainruling.plugins.academic.teachereval.web.extensions.editor;
 
 import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.plugins.academic.perfeval.model.AcademicFeedbackSession;
 import net.vpc.common.util.Convert;
 import net.vpc.common.util.IntegerParserConfig;
 import net.vpc.upa.AccessMode;
@@ -19,7 +18,7 @@ import net.vpc.app.vainruling.VrEditorAction;
 /**
  * @author taha.bensalah@gmail.com
  */
-@VrEditorAction(entityType = AcademicFeedbackSession.class,
+@VrEditorAction(entityName = "AcademicFeedbackSession",
         actionStyle = "fa-envelope-o"
 )
 public class GenerateFeedbackAction implements VrEditorActionDialog {
@@ -35,7 +34,7 @@ public class GenerateFeedbackAction implements VrEditorActionDialog {
     }
 
     @Override
-    public boolean isEnabled(String actionId, Class entityType, AccessMode mode, Object value) {
+    public boolean isEnabled(String actionId, String entityType, AccessMode mode, Object value) {
         return value != null;
     }
 

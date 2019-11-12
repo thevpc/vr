@@ -20,14 +20,14 @@ import net.vpc.app.vainruling.VrEditorAction;
 /**
  * @author taha.bensalah@gmail.com
  */
-@VrEditorAction(entityType = AcademicCoursePlan.class,
+@VrEditorAction(entityName = "AcademicCoursePlan",
         actionStyle = "fa-envelope-o",
         confirm = true
 )
 public class FixValidationCoursePlanAction implements VrEditorActionInvoke {
 
     @Override
-    public ActionDialogResult invoke(String actionId, Class entityType, Object obj, List<String> selectedIdStrings, Object[] args) {
+    public ActionDialogResult invoke(String actionId, String entityType, Object obj, List<String> selectedIdStrings, Object[] args) {
         AcademicPlugin aca = VrApp.getBean(AcademicPlugin.class);
         ListValueMap<String, AcademicCoursePlan> all = new ListValueMap<>();
         for (int i = 0; i < selectedIdStrings.size(); i++) {

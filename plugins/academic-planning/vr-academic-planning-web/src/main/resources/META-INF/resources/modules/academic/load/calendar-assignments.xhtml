@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+
+      >
+
+    <h:head>
+    </h:head>
+
+    <h:body>
+        <ui:composition template="#{vr.privateTemplatePath}">
+            <ui:define name="content">
+                <h:form id="listForm">
+                    <div class="box box-default">
+                        <div class="box-body">
+                            <div class="form-group col-md-4">
+                                <p:outputLabel value="Période"/>
+                                <p:selectOneMenu value="#{calendarAssignmentsMappingCtrl.model.selectedPeriod}"
+                                                 filter="true" filterMatchMode="contains"
+                                                 styleClass="form-control"
+                                                 >
+                                    <p:ajax listener="#{calendarAssignmentsMappingCtrl.refresh}" update=":listForm"/>
+                                    <f:selectItems value="#{calendarAssignmentsMappingCtrl.model.periods}"/>
+                                </p:selectOneMenu>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <p:outputLabel value="Semestre"/>
+                                <p:selectOneMenu value="#{calendarAssignmentsMappingCtrl.model.selectedSemester}"
+                                                 filter="true" filterMatchMode="contains"
+                                                 styleClass="form-control"
+                                                 >
+                                    <p:ajax listener="#{calendarAssignmentsMappingCtrl.refresh}" update=":listForm"/>
+                                    <f:selectItems value="#{calendarAssignmentsMappingCtrl.model.semesters}"/>
+                                </p:selectOneMenu>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <p:outputLabel value="Classe"/>
+                                <p:selectOneMenu value="#{calendarAssignmentsMappingCtrl.model.selectedClass}"
+                                                 filter="true" filterMatchMode="contains"
+                                                 styleClass="form-control"
+                                                 >
+                                    <p:ajax listener="#{calendarAssignmentsMappingCtrl.refresh}" update=":listForm"/>
+                                    <f:selectItems value="#{calendarAssignmentsMappingCtrl.model.classes}"/>
+                                </p:selectOneMenu>
+                            </div>
+                        </div>
+                        <div class="box-footer">
+                            <div class="form-group col-md-4">
+                                <p:commandButton action="#{calendarAssignmentsMappingCtrl.refresh}" value="Actualiser" update=":listForm:errorPanel :listForm:resultPanel" styleClass="btn btn-primary"/>
+                            </div>
+                        </div>
+                    </div>
+                    <h:panelGroup id="errorPanel" layout="block" styleClass="callout callout-danger" rendered="#{calendarAssignmentsMappingCtrl.missingResult}">
+                        <div class="">
+                            <h4>Emploi non disponible!</h4>
+                            <p>aucun emploi n'a pu être résolu</p>
+                        </div>                        
+                    </h:panelGroup>
+                    <h:panelGroup id="resultPanel" layout="block" styleClass="box box-primary" rendered="#{!calendarAssignmentsMappingCtrl.missingResult}">
+                        <div class="box-header with-border">
+                            <h3 class="box-title">
+                                <p:outputLabel value="#{vr.strcat('Planification')}"/>
+                            </h3>
+                        </div>
+                        <h:panelGroup layout="block" styleClass="box-body">
+                            <p:dataTable id="listTable" var="i" value="#{calendarAssignmentsMappingCtrl.model.mapping.elements}"
+                                         style="margin-top: 20px;"
+                                         class="table table-bordered table-hover"
+                                         paginatorAlwaysVisible="false"
+                                         paginator="true"
+                                         paginatorPosition="bottom"
+                                         rows="100"
+                                         emptyMessage="Aucune Affectation"
+                                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                         rowsPerPageTemplate="10,20,50,100,200,500,1000"
+                                         >
+
+                                <p:column headerText="Classe" style="width:80px">
+                                    <p:outputLabel value="#{i.academicClass.name}"
+                                                   styleClass="#{i.academicClass.missingEntity ?'label label-danger':i.academicClass.missingPlanning?'label label-warning':''}"
+                                                   />
+                                </p:column>
+                                <p:column headerText="Module">
+                                    <p:outputLabel value="#{i.coursePlan.name}-#{i.courseType.name}"
+                                                   styleClass="#{i.coursePlan.missingEntity ?'label label-danger':i.coursePlan.missingPlanning?'label label-warning':''}"
+                                                   />
+                                </p:column>
+                                <p:column headerText="Enseignant">
+                                    <p:outputLabel 
+                                        value="#{i.teacher.name}"
+                                        styleClass="#{i.teacher.missingEntity ?'label label-danger':i.teacher.missingPlanning?'label label-warning':''}"
+                                        />
+                                </p:column>
+                                <p:column headerText="C" style="width:50px">
+                                    <p:outputLabel value="#{i.c}" rendered="#{i.c ne 0}"/>
+                                </p:column>
+                                <p:column headerText="TD" style="width:50px">
+                                    <p:outputLabel value="#{i.td}" rendered="#{i.td ne 0}"/>
+                                </p:column>
+                                <p:column headerText="TP" style="width:50px">
+                                    <p:outputLabel value="#{i.tp}" rendered="#{i.tp ne 0}"/>
+                                </p:column>
+                                <p:column headerText="W" style="width:50px">
+                                    <p:outputLabel value="#{i.w}" rendered="#{i.w ne 0}"/>
+                                </p:column>
+                                <p:column headerText="Observations">
+                                    <p:repeat value="#{i.labels}" var="z">
+                                        <p:outputLabel rendered="#{calendarAssignmentsMappingCtrl.isSimpleLabel(z)}"
+                                                       styleClass="label label-#{z.severity}"
+                                                       value="#{z.message}" 
+                                                       style="margin-left: 5px;"
+                                                       />
+                                        <p:commandLink
+                                            rendered="#{calendarAssignmentsMappingCtrl.isLinkToEditor(z)}"
+                                            action="#{vr.gotoPageObjItem(z.actionType,z.actionParameters[0])}"
+                                            styleClass="btn btn-#{z.severity}"
+                                            value="#{z.message}"
+                                            style="margin-left: 5px;"
+                                            />
+                                        <p:commandButton rendered="#{calendarAssignmentsMappingCtrl.isAssignButton(z)}"
+                                                         action="#{calendarAssignmentsMappingCtrl.assignCurrent(i)}"
+                                                         styleClass="btn btn-#{z.severity}"
+                                                         value="Assign"
+                                                         update=":listForm:resultPanel"
+                                                         style="margin-left: 5px;"
+                                                         />
+                                    </p:repeat>
+
+                                </p:column>
+                            </p:dataTable>
+                        </h:panelGroup>
+                    </h:panelGroup>
+                </h:form>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

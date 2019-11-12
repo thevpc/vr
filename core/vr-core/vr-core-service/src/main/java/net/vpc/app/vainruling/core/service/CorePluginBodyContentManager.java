@@ -38,7 +38,6 @@ import net.vpc.app.vainruling.core.service.model.content.AppArticleStrict;
 import net.vpc.app.vainruling.core.service.model.content.AppArticleProperty;
 import net.vpc.app.vainruling.core.service.model.content.FullArticle;
 import net.vpc.app.vainruling.core.service.util.AppVersion;
-import net.vpc.common.io.PathInfo;
 import net.vpc.common.util.MutableDate;
 
 class CorePluginBodyContentManager extends CorePluginBody {
@@ -359,18 +358,16 @@ class CorePluginBodyContentManager extends CorePluginBody {
     }
 
     public List<FullArticle> findFullArticlesByDisposition(Integer userId, int dispositionGroupId, boolean includeNoDept, final String disposition) {
+        AppUser u = null;
         if (userId == null) {
-            AppUser u = getContext().getCorePlugin().getCurrentUser();
-            if (u == null) {
-                return findFullArticlesByUserAndDisposition(null, dispositionGroupId, includeNoDept, disposition);
-            }
-            return findFullArticlesByUserAndDisposition(u.getId(), dispositionGroupId, includeNoDept, disposition);
+            u = getContext().getCorePlugin().getCurrentUser();
+        } else {
+            u = getContext().getCorePlugin().findUser(userId);
         }
-        AppUser u = getContext().getCorePlugin().findUser(userId);
         if (u == null) {
-            return new ArrayList<>();
+            return findFullArticlesByUserAndDisposition(null, dispositionGroupId, includeNoDept, disposition);
         }
-        return findFullArticlesByUserAndDisposition(userId, dispositionGroupId, includeNoDept, disposition);
+        return findFullArticlesByUserAndDisposition(u.getId(), dispositionGroupId, includeNoDept, disposition);
     }
 
     public List<FullArticle> findFullArticlesByAnonymousDisposition(int dispositionGroupId, boolean includeNoDept, final String disposition) {

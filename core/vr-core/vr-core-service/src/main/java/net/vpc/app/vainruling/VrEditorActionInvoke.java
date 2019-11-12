@@ -9,5 +9,5 @@ public interface VrEditorActionInvoke extends VrEditorActionProcessor {
         return null;
     }
 
-    ActionDialogResult invoke(String actionId, Class entityType, Object obj, List<String> selectedIdStrings, Object[] args);
+    ActionDialogResult invoke(String actionId, String entityType, Object obj, List<String> selectedIdStrings, Object[] args);
 }

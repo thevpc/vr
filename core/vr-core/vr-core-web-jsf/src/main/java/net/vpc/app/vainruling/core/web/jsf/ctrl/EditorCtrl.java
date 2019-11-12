@@ -11,8 +11,6 @@ import net.vpc.app.vainruling.core.service.editor.DefaultEditorFieldSelection;
 import net.vpc.app.vainruling.core.service.editor.AutoFilterData;
 import net.vpc.app.vainruling.core.service.editor.AutoFilter;
 import net.vpc.app.vainruling.core.service.editor.EditorFieldSelection;
-import net.vpc.app.vainruling.VrEditorSearch;
-import net.vpc.app.vainruling.core.service.editor.EntityEditorSimpleSearch;
 import net.vpc.app.vainruling.core.service.editor.EditorRow;
 import net.vpc.app.vainruling.core.service.editor.ActionDialogResult;
 import net.vpc.app.vainruling.core.service.editor.ActionDialogAdapter;
@@ -66,6 +64,7 @@ import net.vpc.app.vainruling.VrPageInfoResolver;
 import net.vpc.app.vainruling.VrPage;
 import net.vpc.app.vainruling.VrPathItem;
 import net.vpc.app.vainruling.VrOnPageLoad;
+import net.vpc.app.vainruling.VrEditorSearch;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -259,7 +258,7 @@ public class EditorCtrl extends AbstractObjectCtrl<EditorRow> implements VrPageI
 
                     ActionDialogAdapter e = actionDialogManager.findAction(buttonId);
                     if (e != null) {
-                        return e.isEnabled(getEntity().getEntityType(), getModel().getMode(), null);
+                        return e.isEnabled(getEntity().getName(), getModel().getMode(), null);
                     }
                     break;
                 }
@@ -276,7 +275,7 @@ public class EditorCtrl extends AbstractObjectCtrl<EditorRow> implements VrPageI
                     }
                     ActionDialogAdapter e = actionDialogManager.findAction(buttonId);
                     if (e != null) {
-                        return e.isEnabled(getEntity().getEntityType(), getModel().getMode(), getModel().getCurrentDocument());
+                        return e.isEnabled(getEntity().getName(), getModel().getMode(), getModel().getCurrentDocument());
                     }
                     break;
                 }
@@ -324,7 +323,7 @@ public class EditorCtrl extends AbstractObjectCtrl<EditorRow> implements VrPageI
                     }
                     ActionDialogAdapter e = actionDialogManager.findAction(buttonId);
                     if (e != null) {
-                        return e.isEnabled(getEntity().getEntityType(), getModel().getMode(), getModel().getCurrentDocument());
+                        return e.isEnabled(getEntity().getName(), getModel().getMode(), getModel().getCurrentDocument());
                     }
                     break;
                 }
@@ -372,14 +371,21 @@ public class EditorCtrl extends AbstractObjectCtrl<EditorRow> implements VrPageI
         return getModel().getEntityName();
     }
 
+    public VrEditorSearch getSelectedSearch() {
+        return core.getEditorSearch(getModel().getSearchType());
+    }
+
     public void setEntityName(String entityName) {
         enabledButtons.clear();
 //        try {
         UPA.getPersistenceUnit().getEntity(entityName);
         getModel().setEntityName(entityName);
-        getModel().setSearchTextHelper(core.createSearchHelperString(null, entityName));
+        VrEditorSearch y = core.getEditorSearch(getModel().getSearchType());
+        getModel().setSearchHelper(y.createHelperString(null, entityName));
         getModel().setList(new ArrayList<EditorRow>());
         getModel().setCurrent(delegated_newInstance());
+        getModel().getSearchs().clear();
+        getModel().getSearchs().addAll(core.findEntityEditorSearchs(entityName));
 //        } catch (RuntimeException ex) {
 //            log.log(Level.SEVERE, "Error", ex);
 //        }
@@ -643,8 +649,8 @@ public class EditorCtrl extends AbstractObjectCtrl<EditorRow> implements VrPageI
     @VrOnPageLoad
     public void onPageLoad(String cmd) {
         getAutoFilters().clear();
-        getModel().setSearch(null);
         getModel().setSearchText(null);
+        getModel().setSearchType(null);
         reloadPage(cmd, false);
     }
 
@@ -674,11 +680,13 @@ public class EditorCtrl extends AbstractObjectCtrl<EditorRow> implements VrPageI
     @Override
     public void reloadPage(String cmd, boolean enableCustomization) {
         enabledButtons.clear();
-        VrEditorSearch oldSearch = getModel().getSearch();
+        String oldSearchText = getModel().getSearchText();
+        String oldSearchType = getModel().getSearchType();
         EditorFieldSelection oldFieldSelection = getModel().getFieldSelection();
         Set<String> oldDisabledFields = getModel().getDisabledFields();
         String oldEntityName = getModel().getEntityName();
-        getModel().setSearch(null);
+        getModel().setSearchText(null);
+        getModel().setSearchType(null);
         getModel().setFieldSelection(null);
         try {
             EditorConfig cfg = VrUtils.parseJSONObject(cmd, EditorConfig.class);
@@ -689,14 +697,16 @@ public class EditorCtrl extends AbstractObjectCtrl<EditorRow> implements VrPageI
             getModel().setCmd(cmd);
             setEntityName(cfg.entity);
             if (oldEntityName == null || !oldEntityName.equals(cfg.entity)) {
-                oldSearch = null;
+                oldSearchText = null;
+                oldSearchType = null;
                 oldFieldSelection = null;
                 oldDisabledFields = null;
             }
             if (enableCustomization) {
                 getModel().setDisabledFields(oldDisabledFields);
                 getModel().setFieldSelection(oldFieldSelection);
-                getModel().setSearch(oldSearch);
+                getModel().setSearchType(oldSearchType);
+                getModel().setSearchText(oldSearchText);
             } else {
                 getModel().setDisabledFields(new HashSet<String>());
 
@@ -712,8 +722,9 @@ public class EditorCtrl extends AbstractObjectCtrl<EditorRow> implements VrPageI
                 } else {
                     getModel().setFieldSelection(new DefaultEditorFieldSelection());
                 }
-                if (cfg.searchExpr != null) {
-                    getModel().setSearch(new EntityEditorSimpleSearch(cfg.searchExpr));
+                if (cfg.searchExpr != null || cfg.searchType != null) {
+                    getModel().setSearchType(cfg.searchType);
+                    getModel().setSearchText(cfg.searchExpr);
                 }
             }
             if (cfg.id == null || cfg.id.trim().length() == 0) {
@@ -785,7 +796,7 @@ public class EditorCtrl extends AbstractObjectCtrl<EditorRow> implements VrPageI
             }
             autoFilterIndex++;
         }
-        List<Document> found = core.findDocumentsByFilter(getEntityName(), _listFilter, getModel().getSearch(), getModel().getSearchText(), parameters);
+        List<Document> found = core.findDocumentsByFilter(getEntityName(), _listFilter, getModel().getSearchType(), getModel().getSearchText(), parameters);
         List<EditorRow> filteredObjects = new ArrayList<>();
         Entity entity = getEntity();
         UPASecurityManager sm = entity.getPersistenceUnit().getSecurityManager();
@@ -1004,7 +1015,7 @@ public class EditorCtrl extends AbstractObjectCtrl<EditorRow> implements VrPageI
     public void currentModelToView() {
         List<EditorActionConfig> act = new ArrayList<>();
         for (ActionDialogAdapter a : actionDialogManager.findActionsByEntity(getModel().getEntityName())) {
-            if (a.isEnabled(getEntity().getEntityType(), getModel().getMode(), getModel().getCurrentDocument())) {
+            if (a.isEnabled(getEntity().getName(), getModel().getMode(), getModel().getCurrentDocument())) {
                 act.add(new EditorActionConfig(
                         a.isDialog() ? "dialog"
                         : a.isInvoke() ? "invoke"
@@ -1439,6 +1450,10 @@ public class EditorCtrl extends AbstractObjectCtrl<EditorRow> implements VrPageI
         return autoFilterData.getDefaultSelectedValue();
     }
 
+    public void updateSearchType(String s) {
+        getModel().setSearchType(core.getEditorSearch(s).getId());
+    }
+
     public void onAutoFilterChange() {
         onRefresh();
     }
@@ -1460,6 +1475,11 @@ public class EditorCtrl extends AbstractObjectCtrl<EditorRow> implements VrPageI
         }
     }
 
+    public boolean isEnabledNavigate() {
+        EditorRow objRow = getModel().getCurrent();
+        return objRow != null && objRow.getRowPos()>=0 && getModel().getList().size() > 0;
+    }
+    
     public boolean isEnabledSelectPrevious() {
         EditorRow objRow = getModel().getCurrent();
         return objRow != null && objRow.getRowPos() > 0 && getModel().getList().size() > 0;
@@ -1540,11 +1560,9 @@ public class EditorCtrl extends AbstractObjectCtrl<EditorRow> implements VrPageI
                 }
                 cfg.selectedFields = all.toArray(new String[all.size()]);
             }
-            if (getModel().getSearch() != null) {
-                if (getModel().getSearch() instanceof EntityEditorSimpleSearch) {
-                    cfg.searchExpr = ((EntityEditorSimpleSearch) getModel().getSearch()).getExpression();
-                }
-            }
+
+            cfg.searchExpr = getModel().getSearchText();
+            cfg.searchType = getModel().getSearchType();
 
             //will no more add to history the same entity editor (for the same entity name)
             VrPageHistoryItem pi = menu.peekHistory();
@@ -1575,7 +1593,6 @@ public class EditorCtrl extends AbstractObjectCtrl<EditorRow> implements VrPageI
 //        updateView();
 //        fireEventSearchClosed();
 //    }
-
     public void fireEventClearSelection() {
         onClearFieldSelection();
         DialogBuilder.closeCurrent();
@@ -1587,7 +1604,7 @@ public class EditorCtrl extends AbstractObjectCtrl<EditorRow> implements VrPageI
         }
         updateView();
         DialogBuilder.closeCurrent();
-        
+
     }
 
     public void fireEventSearchClosed() {
@@ -1601,14 +1618,6 @@ public class EditorCtrl extends AbstractObjectCtrl<EditorRow> implements VrPageI
     }
 
     public void onSimpleSearch() {
-        VrEditorSearch oldSearch = getModel().getSearch();
-        EntityEditorSimpleSearch newSearch = null;
-        if (oldSearch instanceof EntityEditorSimpleSearch) {
-            newSearch = (EntityEditorSimpleSearch) oldSearch;
-        } else {
-            newSearch = new EntityEditorSimpleSearch();
-        }
-        getModel().setSearch(newSearch);
         new DialogBuilder("/modules/editor/search-dialog")
                 .setResizable(true)
                 .setDraggable(true)
@@ -1636,7 +1645,8 @@ public class EditorCtrl extends AbstractObjectCtrl<EditorRow> implements VrPageI
     }
 
     public void onClearSearch() {
-        getModel().setSearch(null);
+        getModel().setSearchType(null);
+        getModel().setSearchText(null);
         onRefresh();
     }
 
@@ -1716,7 +1726,7 @@ public class EditorCtrl extends AbstractObjectCtrl<EditorRow> implements VrPageI
                 Object c = getModel().getCurrentDocument();
                 ActionDialogAdapter act = actionDialogManager.findAction(actionKey);
                 if (act != null) {
-                    ActionDialogResult rr = act.invoke(getEntity().getEntityType(), c, getSelectedIdStrings(), args);
+                    ActionDialogResult rr = act.invoke(getEntity().getName(), c, getSelectedIdStrings(), args);
                     applyActionDialogResult(rr);
                 }
             } catch (RuntimeException ex) {
@@ -1841,7 +1851,7 @@ public class EditorCtrl extends AbstractObjectCtrl<EditorRow> implements VrPageI
                         }
                         currentViewToModel();
                         Object c = getModel().getCurrentDocument();
-                        ActionDialogResult rr = ed.invoke(getEntity().getEntityType(), c, getSelectedIdStrings(), args);
+                        ActionDialogResult rr = ed.invoke(getEntity().getName(), c, getSelectedIdStrings(), args);
                         applyActionDialogResult(rr);
                         DialogBuilder.closeCurrent();
                     } catch (RuntimeException ex) {
@@ -2042,24 +2052,44 @@ public class EditorCtrl extends AbstractObjectCtrl<EditorRow> implements VrPageI
         private String confirmMessage;
         private String actionId;
         private String entityName;
-        private String searchTextHelper = "Tapez ici les mots clés de recherche.";
+        private String searchHelper = "Tapez ici les mots clés de recherche.";
         private String operationMessage;
         private List<EditorActionConfig> actions = new ArrayList<EditorActionConfig>();
+        private List<VrEditorSearch> searchs = new ArrayList<>();
         private EditorConfig config;
         private Set<String> disabledFields = new HashSet<String>();
         private String searchText;
+        private String searchType;
         private PActionParam[] params = new PActionParam[0];
 
         public PModel() {
             setCurrent(null);
         }
 
-        public String getSearchTextHelper() {
-            return searchTextHelper;
+        public List<VrEditorSearch> getSearchs() {
+            return searchs;
         }
 
-        public void setSearchTextHelper(String searchTextHelper) {
-            this.searchTextHelper = searchTextHelper;
+        public void setSearchs(List<VrEditorSearch> searchs) {
+            this.searchs = searchs;
+        }
+
+        public String getSearchType() {
+            return searchType;
+        }
+
+        public void setSearchType(String searchType) {
+            this.searchType = searchType;
+            VrEditorSearch y = core.getEditorSearch(getModel().getSearchType());
+            setSearchHelper(y.createHelperString(null, entityName));
+        }
+
+        public String getSearchHelper() {
+            return searchHelper;
+        }
+
+        public void setSearchHelper(String searchHelper) {
+            this.searchHelper = searchHelper;
         }
 
         public void setParams(ActionParam[] p) {

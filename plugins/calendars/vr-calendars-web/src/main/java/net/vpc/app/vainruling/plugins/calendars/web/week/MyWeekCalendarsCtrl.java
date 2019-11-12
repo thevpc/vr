@@ -9,7 +9,6 @@ import net.vpc.app.vainruling.core.service.CorePlugin;
 import net.vpc.app.vainruling.core.service.model.AppUser;
 import net.vpc.app.vainruling.plugins.calendars.service.CalendarsPlugin;
 import net.vpc.app.vainruling.plugins.calendars.service.CalendarsPluginSecurity;
-import net.vpc.app.vainruling.plugins.calendars.service.dto.CalendarDay;
 import net.vpc.app.vainruling.plugins.calendars.service.dto.WeekCalendar;
 import net.vpc.common.jsf.FacesUtils;
 import net.vpc.common.strings.StringUtils;
@@ -81,6 +80,21 @@ public class MyWeekCalendarsCtrl extends AbstractWeekCalendarCtrl {
     @VrOnPageLoad
     public void onRefresh(String cmd) {
         onRefresh();
+    }
+
+    public boolean isValidPlanning() {
+        return getModel().getPlanning() != null && (model.getPlanning().size()) > 0;
+    }
+
+    public boolean isMissingPlanning() {
+        return getModel().getSelectionIndex()!= null
+                && (getModel().getPlanning() == null
+                || (getModel().getPlanning().size()) == 0);
+    }
+
+    public String getSelectedLabel() {
+        WeekCalendar w = getModel().getCalendar();
+        return w==null?null:w.getPlanningName();
     }
 
     public ModelExt getModel() {

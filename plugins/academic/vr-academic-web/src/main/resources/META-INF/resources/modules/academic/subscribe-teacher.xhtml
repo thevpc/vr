@@ -1,9 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-To change this license header, choose License Headers in Project Properties.
-
-and open the template in the editor.
--->
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://java.sun.com/jsf/html"
@@ -25,8 +20,8 @@ and open the template in the editor.
             <ui:define name="content">
                 <h:form id="listForm">
                     <p:messages id="messages" showDetail="true"/>
-                    <div style="row">
-                        <div style="col-md-6">
+                    <div class="row">
+                        <div class="col-md-6">
                             <div class="box box-primary">
                                 <div class="box-header with-border">
                                     <h3 class="box-title">Contact</h3>
@@ -84,7 +79,7 @@ and open the template in the editor.
 
                             </div>
                         </div>
-                        <div style="col-md-6">
+                        <div class="col-md-6">
                             <div class="box box-primary">
                                 <div class="box-header with-border">
                                     <h3 class="box-title">Informations</h3>
@@ -159,7 +154,7 @@ and open the template in the editor.
                             </div>
                         </div>
                     </div>
-                    <div style="row">
+                    <div class="row">
                         <div class="box-footer">
                             <div class="form-group">
                                 <p:commandButton action="#{subscribeTeacherCtrl.onImport}" value="Enregistrer" styleClass="btn btn-primary"
