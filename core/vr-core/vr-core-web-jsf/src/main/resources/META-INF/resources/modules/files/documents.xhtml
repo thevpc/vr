@@ -32,7 +32,7 @@ and open the template in the editor.
                         <p:commandButton value="Non" onclick="PF('confirmationDelete').hide()" type="button"/>
                     </p:confirmDialog>
 
-                    <div style="margin-bottom: 10px;">
+                    <div style="margin-bottom: 10px;" class="button-group">
                         <p:commandButton rendered="#{documentsCtrl.isEnabledButton('Refresh')}"
                                          title="Actualiser" icon="fa fa-refresh"
                                          styleClass="ui-ribbon-bigbutton  vr-toolbox-button-fixed-height btn btn-default" ajax="true"
@@ -175,7 +175,7 @@ and open the template in the editor.
                                 <ui:repeat value="#{documentsCtrl.model.files}" var="i">
                                     <div class="col-xs-6 col-sm-6 col-md-3 pb-filemng-body-folders">
                                         <p:commandLink actionListener="#{documentsCtrl.updateCurrent(i.file)}" update=":listForm" title="#{i.name}" rendered="#{i.file.directory}">
-                                            <img class="img-responsive" src="#{vr.privateThemePath}/images/icons/#{i.iconCss}.png" style="width: 64px"/>
+                                            <img class="img-responsive vr-fs-icon" src="#{vr.privateThemePath}/images/icons/#{i.iconCss}.png" style="width: 64px"/>
                                         </p:commandLink>
                                         <p:commandLink rendered="#{!i.file.directory}"
                                                        disabled="#{!documentsCtrl.isEnabledButton('Download',i)}"
