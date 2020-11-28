@@ -149,28 +149,28 @@ and open the template in the editor.
                                                                             <ul class="dropdown-menu" role="menu">
                                                                                 <ui:fragment rendered="#{vr.cmsTextService.isEnabledAction('delete',a)}">
                                                                                     <li>
-                                                                                        <p:commandLink actionListener="#{vr.cmsTextService.onAction('delete',a)}" update=":itemForm" process="@this">
+                                                                                        <p:commandLink action="#{vr.cmsTextService.runAction('delete',a)}" update=":itemForm" ajax="true">
                                                                                             <i class="fa fa-trash"></i> Supprimer
                                                                                         </p:commandLink>
                                                                                     </li>
                                                                                 </ui:fragment>
                                                                                 <ui:fragment rendered="#{vr.cmsTextService.isEnabledAction('archive',a)}">
                                                                                     <li>
-                                                                                        <p:commandLink actionListener="#{vr.cmsTextService.onAction('archive',a)}" update=":itemForm" process="@this">
+                                                                                        <p:commandLink action="#{vr.cmsTextService.runAction('archive',a)}" update=":itemForm" process="@this"  ajax="true">
                                                                                             <i class="fa fa-archive"></i> Archiver
                                                                                         </p:commandLink>
                                                                                     </li>
                                                                                 </ui:fragment>
                                                                                 <ui:fragment rendered="#{vr.cmsTextService.isEnabledAction('important',a)}">
                                                                                     <li>
-                                                                                        <p:commandLink actionListener="#{vr.cmsTextService.onAction('important',a)}" update=":itemForm" process="@this">
+                                                                                        <p:commandLink action="#{vr.cmsTextService.runAction('important',a)}" update=":itemForm" process="@this" ajax="true">
                                                                                             <i class="fa #{a.article.important ? 'fa-bookmark':'fa-bookmark-o'}" style="#{a.article.important ? 'color: #dd4b39;':''}"></i> Important
                                                                                         </p:commandLink>
                                                                                     </li>
                                                                                 </ui:fragment>
                                                                                 <ui:fragment rendered="#{vr.cmsTextService.isEnabledAction('edit',a)}">
                                                                                     <li>
-                                                                                        <p:commandLink action="#{vr.cmsTextService.onAction('edit',a)}" update=":itemForm" process="@this">
+                                                                                        <p:commandLink action="#{vr.cmsTextService.runAction('edit',a)}" update=":itemForm" process="@this" ajax="false">
                                                                                             <i class="fa fa-wrench"></i> Editer
                                                                                         </p:commandLink>
                                                                                     </li>
@@ -279,28 +279,28 @@ and open the template in the editor.
                                                                                 <ul class="dropdown-menu" role="menu">
                                                                                     <ui:fragment rendered="#{vr.cmsTextService.isEnabledAction('delete',a)}">
                                                                                         <li>
-                                                                                            <p:commandLink actionListener="#{vr.cmsTextService.onAction('delete',a)}" update=":itemForm" process="@this">
+                                                                                            <p:commandLink actionListener="#{vr.cmsTextService.runAction('delete',a)}" update=":itemForm" process="@this"  ajax="true">
                                                                                                 <i class="fa fa-trash"></i> Supprimer
                                                                                             </p:commandLink>
                                                                                         </li>
                                                                                     </ui:fragment>
                                                                                     <ui:fragment rendered="#{vr.cmsTextService.isEnabledAction('archive',a)}">
                                                                                         <li>
-                                                                                            <p:commandLink actionListener="#{vr.cmsTextService.onAction('archive',a)}" update=":itemForm" process="@this">
+                                                                                            <p:commandLink actionListener="#{vr.cmsTextService.runAction('archive',a)}" update=":itemForm" process="@this"  ajax="true">
                                                                                                 <i class="fa fa-archive"></i> Archiver
                                                                                             </p:commandLink>
                                                                                         </li>
                                                                                     </ui:fragment>
                                                                                     <ui:fragment rendered="#{vr.cmsTextService.isEnabledAction('important',a)}">
                                                                                         <li>
-                                                                                            <p:commandLink actionListener="#{vr.cmsTextService.onAction('important',a)}" update=":itemForm" process="@this">
+                                                                                            <p:commandLink actionListener="#{vr.cmsTextService.runAction('important',a)}" update=":itemForm" process="@this"  ajax="true">
                                                                                                 <i class="fa #{a.article.important ? 'fa-bookmark':'fa-bookmark-o'}" style="#{a.article.important ? 'color: #dd4b39;':''}"></i> Important
                                                                                             </p:commandLink>
                                                                                         </li>
                                                                                     </ui:fragment>
                                                                                     <ui:fragment rendered="#{vr.cmsTextService.isEnabledAction('edit',a)}">
                                                                                         <li>
-                                                                                            <p:commandLink action="#{vr.cmsTextService.onAction('edit',a)}" update=":itemForm" process="@this">
+                                                                                            <p:commandLink action="#{vr.cmsTextService.runAction('edit',a)}" update=":itemForm" process="@this" ajax="false">
                                                                                                 <i class="fa fa-wrench"></i> Editer
                                                                                             </p:commandLink>
                                                                                         </li>
@@ -415,28 +415,28 @@ and open the template in the editor.
                                                                                 <ul class="dropdown-menu" role="menu">
                                                                                     <ui:fragment rendered="#{vr.cmsTextService.isEnabledAction('delete',a)}">
                                                                                         <li>
-                                                                                            <p:commandLink actionListener="#{vr.cmsTextService.onAction('delete',a)}" update=":itemForm" process="@this">
+                                                                                            <p:commandLink actionListener="#{vr.cmsTextService.runAction('delete',a)}" update=":itemForm" process="@this">
                                                                                                 <i class="fa fa-trash"></i> Supprimer
                                                                                             </p:commandLink>
                                                                                         </li>
                                                                                     </ui:fragment>
                                                                                     <ui:fragment rendered="#{vr.cmsTextService.isEnabledAction('archive',a)}">
                                                                                         <li>
-                                                                                            <p:commandLink actionListener="#{vr.cmsTextService.onAction('archive',a)}" update=":itemForm" process="@this">
+                                                                                            <p:commandLink actionListener="#{vr.cmsTextService.runAction('archive',a)}" update=":itemForm" process="@this">
                                                                                                 <i class="fa fa-archive"></i> Archiver
                                                                                             </p:commandLink>
                                                                                         </li>
                                                                                     </ui:fragment>
                                                                                     <ui:fragment rendered="#{vr.cmsTextService.isEnabledAction('important',a)}">
                                                                                         <li>
-                                                                                            <p:commandLink actionListener="#{vr.cmsTextService.onAction('important',a)}" update=":itemForm" process="@this">
+                                                                                            <p:commandLink actionListener="#{vr.cmsTextService.runAction('important',a)}" update=":itemForm" process="@this">
                                                                                                 <i class="fa #{a.article.important ? 'fa-bookmark':'fa-bookmark-o'}" style="#{a.article.important ? 'color: #dd4b39;':''}"></i> Important
                                                                                             </p:commandLink>
                                                                                         </li>
                                                                                     </ui:fragment>
                                                                                     <ui:fragment rendered="#{vr.cmsTextService.isEnabledAction('edit',a)}">
                                                                                         <li>
-                                                                                            <p:commandLink action="#{vr.cmsTextService.onAction('edit',a)}" update=":itemForm" process="@this">
+                                                                                            <p:commandLink action="#{vr.cmsTextService.runAction('edit',a)}" update=":itemForm" process="@this">
                                                                                                 <i class="fa fa-wrench"></i> Editer
                                                                                             </p:commandLink>
                                                                                         </li>
@@ -700,7 +700,8 @@ and open the template in the editor.
                                     <strong>Groupes</strong><a class="pull-right">#{vr.currentToken.profileCodes.size()}</a>
                                     <p style="line-height: 18pt;">
                                         <ui:repeat value="#{vr.currentToken.profileCodes.toArray()}" var="prCode">
-                                            <span class="label label-#{vr.hashToArr(prCode,'danger','success','info','warning','primary','default')}" title="#{corePlugin.findProfileByCode(prCode).name}">#{prCode}</span>
+                                            <span class="label label-#{vr.hashToArr(prCode,'danger','success','info','warning','primary','default')}" 
+                                                  title="#{prCode}">#{corePlugin.findProfileByCode(prCode).name}</span>
                                         </ui:repeat>
                                     </p>
                                 </div>

@@ -2,15 +2,15 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>net.vpc.app.vain-ruling.plugins.academic-report</groupId>
+    <groupId>net.thevpc.app.vain-ruling.plugins.academic-report</groupId>
     <artifactId>vr-academic-report-service</artifactId>
-    <name>net.vpc.app.vain-ruling.plugins.academic-report.vr-academic-report-service</name>
+    <name>net.thevpc.app.vain-ruling.plugins.academic-report.vr-academic-report-service</name>
     <version>1.13.16</version>
     <packaging>jar</packaging>
     <url>https://github.com/thevpc/vr/wiki</url>
 
     <parent>
-        <groupId>net.vpc.app.vain-ruling.core</groupId>
+        <groupId>net.thevpc.app.vain-ruling.core</groupId>
         <artifactId>vr-plugin</artifactId>
         <version>1.0</version>
         <relativePath/>
@@ -25,12 +25,12 @@
 
     <dependencies>
         <dependency>
-            <groupId>net.vpc.app.vain-ruling.core</groupId>
+            <groupId>net.thevpc.app.vain-ruling.core</groupId>
             <artifactId>vr-core-service</artifactId>
             <version>${version.vr-core-service}</version>
         </dependency>
         <dependency>
-            <groupId>net.vpc.app.vain-ruling.plugins.academic</groupId>
+            <groupId>net.thevpc.app.vain-ruling.plugins.academic</groupId>
             <artifactId>vr-academic-service</artifactId>
             <version>1.13.16</version>
         </dependency>

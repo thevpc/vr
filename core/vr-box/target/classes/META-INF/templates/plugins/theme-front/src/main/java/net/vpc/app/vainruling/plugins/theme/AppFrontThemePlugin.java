@@ -1,15 +1,15 @@
 package ${{packageName(ProjectGroup)}}.theme;
 
-import net.vpc.app.vainruling.core.service.CorePlugin;
-import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.model.AppProperty;
-import net.vpc.app.vainruling.core.service.plugins.VrPlugin;
-import net.vpc.app.vainruling.core.service.util.VrUtils;
-import net.vpc.app.vainruling.core.web.jsf.ctrl.LoginCtrl;
-import net.vpc.common.strings.StringUtils;
-import net.vpc.upa.Action;
-import net.vpc.upa.UPA;
-import net.vpc.upa.VoidAction;
+import net.thevpc.app.vainruling.core.service.CorePlugin;
+import net.thevpc.app.vainruling.core.service.VrApp;
+import net.thevpc.app.vainruling.core.service.model.AppProperty;
+import net.thevpc.app.vainruling.core.service.plugins.VrPlugin;
+import net.thevpc.app.vainruling.core.service.util.VrUtils;
+import net.thevpc.app.vainruling.core.web.jsf.ctrl.LoginCtrl;
+import net.thevpc.common.strings.StringUtils;
+import net.thevpc.upa.Action;
+import net.thevpc.upa.UPA;
+import net.thevpc.upa.VoidAction;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.text.ParseException;

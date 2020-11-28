@@ -1,7 +1,7 @@
 package ${{packageName(ProjectGroup)}}.theme;
 
-import net.vpc.app.vainruling.core.service.CorePlugin;
-import net.vpc.app.vainruling.core.service.plugins.VrPlugin;
+import net.thevpc.app.vainruling.core.service.CorePlugin;
+import net.thevpc.app.vainruling.core.service.plugins.VrPlugin;
 
 @VrPlugin
 public class ${{className(ProjectName)}}BAckTheme {

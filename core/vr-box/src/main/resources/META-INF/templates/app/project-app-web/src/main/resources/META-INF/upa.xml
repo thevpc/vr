@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <upa xmlns="http://github.com/thevpc/upa/upa-1.0.xsd" version="1.0">
-    <scan types="net.vpc.app.**"/>
+    <scan types="net.thevpc.app.**"/>
     <scan types="${{packageName(ProjectGroup)}}.**"/>
     <include>
         <file path="${user.home}/workspace/${{ProjectName}}/config/upa.xml" failSafe="true"/>

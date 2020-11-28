@@ -1,12 +1,12 @@
 package enisoinfotest;
 
-import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.plugins.inbox.service.MailboxPlugin;
-import net.vpc.common.gomail.GoMail;
-import net.vpc.common.gomail.GoMailBodyPosition;
-import net.vpc.common.gomail.GoMailDataSourceFactory;
-import net.vpc.common.gomail.GoMailFormat;
-import net.vpc.common.gomail.modules.GoMailModuleProcessor;
+import net.thevpc.app.vainruling.core.service.VrApp;
+import net.thevpc.app.vainruling.plugins.inbox.service.MailboxPlugin;
+import net.thevpc.gomail.GoMail;
+import net.thevpc.gomail.GoMailBodyPosition;
+import net.thevpc.gomail.GoMailDataSourceFactory;
+import net.thevpc.gomail.GoMailFormat;
+import net.thevpc.gomail.modules.GoMailModuleProcessor;
 import org.springframework.stereotype.Service;
 
 import java.io.File;

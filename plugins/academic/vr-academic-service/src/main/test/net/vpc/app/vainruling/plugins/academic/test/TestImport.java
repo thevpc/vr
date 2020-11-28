@@ -1,16 +1,16 @@
-//package net.vpc.app.vainruling.plugins.academic.internship.test;
+//package net.thevpc.app.vainruling.plugins.academic.internship.test;
 //
-//import net.vpc.app.vainruling.core.service.TraceService;
-//import net.vpc.app.vainruling.core.service.VrApp;
-//import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-//import net.vpc.common.util.Chronometer;
+//import net.thevpc.app.vainruling.core.service.TraceService;
+//import net.thevpc.app.vainruling.core.service.VrApp;
+//import net.thevpc.app.vainruling.plugins.academic.service.AcademicPlugin;
+//import net.thevpc.common.util.Chronometer;
 //
 ///**
 // * this is not a unit test
 // */
 //public class Ex2 {
 //    public static void main(String[] args) {
-//        Chronometer ch = new Chronometer();
+//        Chronometer ch = Chronometer.start();
 //        VrApp.runStandalone("taha.bensalah", "myâssword");
 //        TraceService trace = TraceService.get();
 //        AcademicPlugin aca = VrApp.getBean(AcademicPlugin.class);

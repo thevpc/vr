@@ -4,13 +4,13 @@ package enisoinfotest;/*
  * and open the template in the editor.
  */
 
-import net.vpc.app.vainruling.core.service.TraceService;
-import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.common.util.Chronometer;
-import net.vpc.upa.*;
-import net.vpc.upa.bulk.ImportPersistenceUnitListener;
-import net.vpc.upa.exceptions.UPAException;
-import net.vpc.upa.filters.EntityFilter;
+import net.thevpc.app.vainruling.core.service.TraceService;
+import net.thevpc.app.vainruling.core.service.VrApp;
+import net.thevpc.common.util.Chronometer;
+import net.thevpc.upa.*;
+import net.thevpc.upa.bulk.ImportPersistenceUnitListener;
+import net.thevpc.upa.exceptions.UPAException;
+import net.thevpc.upa.filters.EntityFilter;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -71,7 +71,7 @@ public class BiPU {
 
     public void go() {
         VrApp.runStandalone("admin", "admin");
-//        net.vpc.common.util.LogUtils.configure(Level.SEVERE, "net.vpc");
+//        net.thevpc.common.util.LogUtils.configure(Level.SEVERE, "net.vpc");
         final PersistenceUnit source = UPA.getPersistenceUnit("main");
         final PersistenceUnit target = UPA.getPersistenceUnit("mysql");
         target.beginStructureModification();
@@ -89,7 +89,7 @@ public class BiPU {
         final EntityFilter filter = null;//filterOne
         final boolean clear = false;
 
-        Chronometer chronometer = new Chronometer();
+        Chronometer chronometer = Chronometer.start();
         source.invokePrivileged(new VoidAction() {
             @Override
             public void run() {

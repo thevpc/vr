@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <upa xmlns="http://github.com/thevpc/upa/upa-1.0.xsd"  version="1.0">
-    <scan types="net.vpc.app.**"/>
+    <scan types="net.thevpc.app.**"/>
     <include>
         <file path="${user.home}/workspace/eniso.info/config/upa.xml" failSafe="true"/>
         <!-- this is a fallback if no config is loadable -->

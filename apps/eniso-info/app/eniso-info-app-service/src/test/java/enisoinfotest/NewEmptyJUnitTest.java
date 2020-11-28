@@ -4,11 +4,11 @@ package enisoinfotest;/*
  * and open the template in the editor.
  */
 
-import net.vpc.app.vainruling.core.service.TraceService;
-import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.app.vainruling.plugins.academic.service.stat.DeviationConfig;
-import net.vpc.common.util.Chronometer;
+import net.thevpc.app.vainruling.core.service.TraceService;
+import net.thevpc.app.vainruling.core.service.VrApp;
+import net.thevpc.app.vainruling.plugins.academic.service.AcademicPlugin;
+import net.thevpc.app.vainruling.plugins.academic.service.stat.DeviationConfig;
+import net.thevpc.common.util.Chronometer;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -46,11 +46,11 @@ public class NewEmptyJUnitTest {
     //
     @Test
     public void hello() {
-//        Chronometer ch = new Chronometer();
+//        Chronometer ch = Chronometer.start();
 //        VrApp.runStandalone("taha.bensalah", "myâssword");
 //        TraceService trace = TraceService.get();
 //        AcademicPlugin aca = VrApp.getBean(AcademicPlugin.class);
-//        Chronometer c = new Chronometer();
+//        Chronometer c = Chronometer.start();
 //        for (int i = 0; i < 20000; i++) {
 //            c.start();
 //            //List<TeacherPeriodStat> a = aca.evalTeacherStatList(11, null, null, true, new DeviationConfig(), new StatCache(), true);

@@ -11,7 +11,7 @@
     </application>
     <factory>
         <exception-handler-factory>
-            net.vpc.app.vainruling.core.web.jsf.ex.CustomExceptionHandlerFactory
+            net.thevpc.app.vainruling.core.web.jsf.ex.CustomExceptionHandlerFactory
         </exception-handler-factory>
     </factory>
 </faces-config>

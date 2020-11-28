@@ -1,10 +1,10 @@
 package enisoinfotest;
 
-import net.vpc.app.vainruling.core.service.TraceService;
-import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.common.util.Chronometer;
-import net.vpc.common.vfs.VFS;
+import net.thevpc.app.vainruling.core.service.TraceService;
+import net.thevpc.app.vainruling.core.service.VrApp;
+import net.thevpc.app.vainruling.plugins.academic.service.AcademicPlugin;
+import net.thevpc.common.util.Chronometer;
+import net.thevpc.common.vfs.VFS;
 
 import java.io.IOException;
 
@@ -13,7 +13,7 @@ import java.io.IOException;
  */
 public class TestImport {
     public static void main(String[] args) {
-        Chronometer ch = new Chronometer();
+        Chronometer ch = Chronometer.start();
         VrApp.runStandalone("taha.bensalah", "mypassword");
         TraceService trace = TraceService.get();
         AcademicPlugin aca = VrApp.getBean(AcademicPlugin.class);

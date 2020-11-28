@@ -1,9 +1,9 @@
 package ${{packageName(ProjectGroup)}}.${{packageName(ModuleName)}}.service;
 
-import net.vpc.app.vainruling.core.service.CorePlugin;
-import net.vpc.app.vainruling.VrPlugin;
-import net.vpc.app.vainruling.VrInstall;
-import net.vpc.app.vainruling.VrStart;
+import net.thevpc.app.vainruling.core.service.CorePlugin;
+import net.thevpc.app.vainruling.VrPlugin;
+import net.thevpc.app.vainruling.VrInstall;
+import net.thevpc.app.vainruling.VrStart;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.util.logging.Logger;
 

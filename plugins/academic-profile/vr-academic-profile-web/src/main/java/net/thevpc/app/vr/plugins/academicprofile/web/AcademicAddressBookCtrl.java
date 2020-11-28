@@ -1,0 +1,388 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ *
+ * and open the template in the editor.
+ */
+package net.thevpc.app.vr.plugins.academicprofile.web;
+
+import net.thevpc.app.vainruling.VrOnPageLoad;
+import net.thevpc.app.vainruling.core.service.CorePlugin;
+import net.thevpc.app.vainruling.core.service.util.VrUtils;
+import net.thevpc.app.vainruling.plugins.academic.service.AcademicPlugin;
+import net.thevpc.app.vr.plugins.academicprofile.model.AcademicTeacherCV;
+import net.thevpc.app.vr.plugins.academicprofile.service.AcademicProfilePlugin;
+import net.thevpc.app.vainruling.core.service.VrApp;
+import net.thevpc.app.vainruling.core.service.model.AppPeriod;
+import net.thevpc.app.vainruling.plugins.academic.model.config.AcademicFormerStudent;
+import net.thevpc.app.vainruling.plugins.academic.model.config.AcademicStudent;
+import net.thevpc.app.vainruling.plugins.academic.model.config.AcademicStudentStage;
+import net.thevpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
+import net.thevpc.common.strings.StringUtils;
+import net.thevpc.upa.Action;
+import net.thevpc.upa.UPA;
+import net.thevpc.upa.filters.ObjectFilter;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+/**
+ * @author taha.bensalah@gmail.com
+ */
+/*@VrController(
+        breadcrumb = {
+                @UPathItem(title = "Education", css = "fa-dashboard", ctrl = "")}
+//        , css = "fa-table"
+//        , title = "Address Book"
+)*/
+public class AcademicAddressBookCtrl {
+    @Autowired
+    AcademicPlugin ap;
+    @Autowired
+    AcademicProfilePlugin apr;
+
+    private Model model = new Model();
+
+    public String getValidString(String en, String fr, String ar) {
+        return VrUtils.getValidString(getValidLocaleCode(), en, fr, ar);
+    }
+
+    public String getValidLocaleCode() {
+        String loc = getModel().getLocale();
+        if (loc == null) {
+            loc = "en";
+        }
+        if (loc.contains("ar")) {
+            return "ar";
+        }
+        if (loc.contains("fr")) {
+            return "fr";
+        }
+        return "en";
+    }
+
+    @VrOnPageLoad
+    public String onPageLoad() {
+        onUpdatePermanentList();
+        return "ignore-me";
+    }
+
+    public void onUpdatePermanentList() {
+        List<Contact> teachers = loadList(new ObjectFilter<Object>() {
+            @Override
+            public boolean accept(Object obj) {
+                if (obj instanceof AcademicTeacher) {
+                    AcademicTeacher t = (AcademicTeacher) obj;
+                    if (t.getSituation() == null) {
+                        return false;
+                    }
+                    if (t.getUser().getDepartment() == null) {
+                        return false;
+                    }
+                    return "II".equals(t.getUser().getDepartment().getCode()) && "Permanent".equals(t.getSituation().getName());
+                }
+                return false;
+            }
+        }, "teachers");
+        Collections.shuffle(teachers);
+        getModel().setPermanentList(teachers);
+    }
+
+    public void onSearch() {
+        String query = getModel().getQuery();
+        if (query == null) {
+            query = "";
+        }
+        query = query.trim();
+        final String fquery = query;
+        String qt = getModel().getQueryType();
+        getModel().setLastQuery(getModel().getQuery());
+        getModel().setLastQueryType(getModel().getQueryType());
+        getModel().setList(loadList(new ObjectFilter<Object>() {
+            @Override
+            public boolean accept(Object obj) {
+                if (fquery.length() == 0) {
+                    return true;
+                }
+                if (obj instanceof AcademicTeacher) {
+                    AcademicTeacher t = (AcademicTeacher) obj;
+                    return t.resolveFullName().toLowerCase().contains(fquery.toLowerCase());
+                }
+                if (obj instanceof AcademicStudent) {
+                    AcademicStudent t = (AcademicStudent) obj;
+                    return t.resolveFullName().toLowerCase().contains(fquery.toLowerCase());
+                }
+                if (obj instanceof AcademicFormerStudent) {
+                    AcademicFormerStudent t = (AcademicFormerStudent) obj;
+                    return t.getStudent().resolveFullName().toLowerCase().contains(fquery.toLowerCase());
+                }
+                return false;
+            }
+        }, qt));
+    }
+
+    public List<Contact> loadList(ObjectFilter<Object> query, String qt) {
+        List<Contact> cc = new ArrayList<>();
+        if (!StringUtils.isBlank(qt)) {
+            if (true) //q.length() > 0
+            {
+                if (qt.equals("teachers")) {
+                    CorePlugin core = VrApp.getBean(CorePlugin.class);
+                    AppPeriod mainPeriod = core.getCurrentPeriod();
+
+                    List<AcademicTeacher> teachers =  UPA.getPersistenceUnit().invokePrivileged(new Action<List<AcademicTeacher>>() {
+                        @Override
+                        public List<AcademicTeacher> run() {
+                            return ap.findEnabledTeachers(mainPeriod.getId());
+                        }
+                    });
+
+                    for (AcademicTeacher t : teachers) {
+                        if (query.accept(t)) {
+                            Contact ct = new Contact();
+                            ct.setName(t.resolveFullName());
+                            if (t.getUser().getDepartment() != null) {
+                                ct.getTitles().add("Dept. " + getValidString(t.getUser().getDepartment().getName(), t.getUser().getDepartment().getName2(), t.getUser().getDepartment().getName3()));
+                            }
+                            ct.getTitles().add((t.getDegree() == null ? "?" : getValidString(t.getDegree().getName(), t.getDegree().getName2(), t.getDegree().getName3())) + ", "
+                                    + (t.getSituation() == null ? "?" : getValidString(t.getSituation().getName(), t.getSituation().getName2(), t.getSituation().getName3())));
+
+                            String disc = ap.formatDisciplinesForLocale(t.getDiscipline(), getValidLocaleCode());
+
+                            if (!StringUtils.isBlank(disc)) {
+                                ct.getTitles().add(disc);
+                            }
+
+                            AcademicTeacherCV cv = apr.findOrCreateAcademicTeacherCV(t.getId());
+                            String t1 = getValidString(cv.getTitle1(), cv.getTitle2(), cv.getTitle3());
+                            if (!StringUtils.isBlank(t1)) {
+                                ct.getTitles().add(t1);
+                            }
+                            if (!StringUtils.isBlank(t.getUser().getEmail())) {
+                                ct.getTitles().add(t.getUser().getEmail());
+                            }
+                            ct.setUrlCommand("teacherCurriculum");
+                            ct.setUrlArgs("{teacherId:'" + t.getId() + "'}");
+                            ct.setPhoto(findTeacherPhoto(t.getId()));
+                            cc.add(ct);
+                        }
+                    }
+                } else if (qt.endsWith("students")) {
+                    List<AcademicStudent> listStudents=UPA.getPersistenceUnit().invokePrivileged(new Action<List<AcademicStudent>>() {
+                        @Override
+                        public List<AcademicStudent> run() {
+                            return VrApp.getBean(AcademicPlugin.class).findStudents();
+                        }
+                    });
+
+                    for (AcademicStudent t : listStudents) {
+                        if (query.accept(t)) {
+                            Contact ct = new Contact();
+                            ct.setName(t.resolveFullName());
+                            if (t.getFirstSubscription() != null) {
+                                ct.getTitles().add(getValidString(
+                                        "sub. " + t.getFirstSubscription().getName(),
+                                        "inscr. " + t.getFirstSubscription().getName(),
+                                        null
+                                ));
+                            }
+                            if (t.getLastClass1() != null) {
+                                ct.getTitles().add(
+                                        getValidString(t.getLastClass1().getName(), t.getLastClass1().getName2(), null)
+                                );
+                            }
+                            if (t.getLastClass2() != null) {
+                                ct.getTitles().add(
+                                        getValidString(t.getLastClass2().getName(),
+                                                t.getLastClass2().getName2(),
+                                                null
+                                        ));
+                            }
+                            if (t.getLastClass3() != null) {
+                                ct.getTitles().add(
+                                        getValidString(
+                                                t.getLastClass3().getName(), t.getLastClass3().getName2(), null
+                                        ));
+                            }
+                            if (!StringUtils.isBlank(t.getUser().getEmail())) {
+                                ct.getTitles().add(t.getUser().getEmail());
+                            }
+                            ct.setUrlCommand("");
+                            cc.add(ct);
+                        }
+                    }
+                } else if (qt.endsWith("graduated")) {
+                    for (AcademicFormerStudent t : VrApp.getBean(AcademicPlugin.class).findGraduatedStudents()) {
+                        if (query.accept(t)) {
+                            Contact ct = new Contact();
+                            ct.setName(t.getStudent().resolveFullName());
+                            if (t.getStudent().getStage() == AcademicStudentStage.GRADUATED) {
+                                ct.getTitles().add("Graduated on " + t.getGraduationDate());
+                            } else {
+                                ct.getTitles().add("Eliminated");
+                            }
+                            if (t.getStudent().getFirstSubscription() != null) {
+                                ct.getTitles().add("sub. " + t.getStudent().resolveFullName());
+                            }
+//                            if (t.getLastClass1() != null) {
+//                                ct.getTitles().add(t.getLastClass1().getName());
+//                            }
+//                            if (t.getLastClass2() != null) {
+//                                ct.getTitles().add(t.getLastClass2().getName());
+//                            }
+//                            if (t.getLastClass3() != null) {
+//                                ct.getTitles().add(t.getLastClass3().getName());
+//                            }
+                            if (t.getLastJobPosition() != null) {
+                                ct.getTitles().add(t.getLastJobPosition());
+                            }
+                            if (t.getLastJobCompany() != null) {
+                                ct.getTitles().add("@ " + t.getLastJobCompany().getName());
+                            }
+                            if (!StringUtils.isBlank(t.getStudent().getUser().getEmail())) {
+                                ct.getTitles().add(t.getStudent().getUser().getEmail());
+                            }
+                            ct.setUrlCommand("");
+                            cc.add(ct);
+                        }
+                    }
+                }
+            }
+        }
+        return cc;
+    }
+
+    public String findTeacherPhoto(int id) {
+        AcademicPlugin ap = VrApp.getBean(AcademicPlugin.class);
+        AcademicTeacher t = ap.findTeacher(id);
+        return CorePlugin.get().getUserPhoto(t.getUser()==null?-1:t.getUser().getId());
+    }
+
+    public Model getModel() {
+        return model;
+    }
+
+    public static class Contact {
+
+        private String name;
+        private String urlCommand;
+        private String urlArgs;
+        private String photo;
+        private List<String> titles = new ArrayList<>();
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getUrlCommand() {
+            return urlCommand;
+        }
+
+        public void setUrlCommand(String urlCommand) {
+            this.urlCommand = urlCommand;
+        }
+
+        public String getUrlArgs() {
+            return urlArgs;
+        }
+
+        public void setUrlArgs(String urlArgs) {
+            this.urlArgs = urlArgs;
+        }
+
+        public List<String> getTitles() {
+            return titles;
+        }
+
+        public String getPhoto() {
+            return photo;
+        }
+
+        public void setPhoto(String photo) {
+            this.photo = photo;
+        }
+
+    }
+
+    public class Model {
+
+        private String locale;
+        private String lastQuery;
+        private String lastQueryType;
+        private String query;
+        private String queryType = "teachers";
+        private List<Contact> list = new ArrayList<>();
+        private List<Contact> permanentList = new ArrayList<>();
+
+        public String getLastQuery() {
+            return lastQuery;
+        }
+
+        public void setLastQuery(String lastQuery) {
+            this.lastQuery = lastQuery;
+        }
+
+        public String getQuery() {
+            return query;
+        }
+
+        public void setQuery(String query) {
+            this.query = query;
+        }
+
+        public String getQueryType() {
+            return queryType;
+        }
+
+        public void setQueryType(String queryType) {
+            this.queryType = queryType;
+        }
+
+        public String getLocale() {
+            return locale;
+        }
+
+        public void setLocale(String locale) {
+            this.locale = locale;
+        }
+
+        public List<Contact> getList() {
+//            synchronized (this) {
+//                if (list == null || lastQuery == null || lastQueryType == null
+//                        || !Objects.equals(lastQuery, query)
+//                        || !Objects.equals(lastQueryType, queryType)) {
+//                    onSearch();
+//                    //rebuild
+//                }
+//            }
+            return list;
+        }
+
+        public void setList(List<Contact> list) {
+            this.list = list;
+        }
+
+        public List<Contact> getPermanentList() {
+            return permanentList;
+        }
+
+        public void setPermanentList(List<Contact> permanentList) {
+            this.permanentList = permanentList;
+        }
+
+        public String getLastQueryType() {
+            return lastQueryType;
+        }
+
+        public void setLastQueryType(String lastQueryType) {
+            this.lastQueryType = lastQueryType;
+        }
+
+    }
+
+}

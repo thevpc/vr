@@ -10,6 +10,6 @@ config.company=ENISo
 config.country=Tunisie
 config.industry=Education
 
-version = 1.2.10
-build-date = 2019-10-22
-build-number = 174
+version = 1.2.11
+build-date = 2020-08-27
+build-number = 175

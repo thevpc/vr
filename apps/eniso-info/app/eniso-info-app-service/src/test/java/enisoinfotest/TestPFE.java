@@ -1,4 +1,4 @@
-//package net.vpc.app.vainruling.core.service;
+//package net.thevpc.app.vainruling.core.service;
 //
 //import java.util.ArrayList;
 //import java.util.HashSet;

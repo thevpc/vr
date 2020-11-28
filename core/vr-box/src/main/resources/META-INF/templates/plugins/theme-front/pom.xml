@@ -10,7 +10,7 @@
     <url>https://github.com/thevpc/vr/wiki</url>
 
     <parent>
-        <groupId>net.vpc.app.vain-ruling.core</groupId>
+        <groupId>net.thevpc.app.vain-ruling.core</groupId>
         <artifactId>vr-plugin</artifactId>
         <version>1.0</version>
         <relativePath/>
@@ -56,7 +56,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>net.vpc.app.vain-ruling.core</groupId>
+            <groupId>net.thevpc.app.vain-ruling.core</groupId>
             <artifactId>vr-core-web-jsf</artifactId>
             <version>${version.vr}</version>
         </dependency>

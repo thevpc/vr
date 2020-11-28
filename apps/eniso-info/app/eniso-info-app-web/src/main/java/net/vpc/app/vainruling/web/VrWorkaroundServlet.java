@@ -3,7 +3,7 @@
  *
  * and open the template in the editor.
  */
-package net.vpc.app.vainruling.web;
+package net.thevpc.app.vainruling.web;
 
 
 import javax.servlet.ServletException;

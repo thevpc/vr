@@ -20,8 +20,8 @@ and open the template in the editor.
     <h:body>
 
 
-        <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.jsf.Vr"-->
-        <!--@elvariable id="teacherStatFeedbackCtrl" type="net.vpc.app.vainruling.plugins.academic.teachereval.web.TeacherStatFeedbackCtrl"-->
+        <!--@elvariable id="vr" type="net.thevpc.app.vainruling.core.web.jsf.Vr"-->
+        <!--@elvariable id="teacherStatFeedbackCtrl" type="net.thevpc.app.vainruling.plugins.academic.teachereval.web.TeacherStatFeedbackCtrl"-->
         <ui:composition template="#{vr.privateTemplatePath}">
             <ui:define name="content">
                 <h:form id="listForm">
@@ -133,8 +133,8 @@ and open the template in the editor.
                                     <p:outputLabel value="#{i.toDate}" />
                                 </p:column>
                                 <p:column headerText="Action" style="vertical-align: top">
-                                    <p:outputLabel value="#{vr.str(i.request.finalStatus)}" styleClass="label label-#{borrowHelper.getStyle(i.request.finalStatus)}"/>
-                                    <p:commandButton value="rendre" action="#{myBorrowEquipmentsTrackingCtrl.onReturnSelectedEquipment(i)}" update=":listForm"/>
+                                    <p:outputLabel value="#{vr.str(i.status)}" styleClass="label label-#{borrowHelper.getStyle(i.status)}"/>
+                                    <p:commandButton value="rendre" action="#{myBorrowEquipmentsTrackingCtrl.onReturnSelectedEquipment(i)}" update=":listForm" style="margin-top: 10px;"/>
                                 </p:column>
                                 <f:facet name="footer">
                                     <p:outputLabel value="Total #{myBorrowEquipmentsTrackingCtrl.model.equipments.size()}"/>

@@ -12,5 +12,5 @@
 
 <context:component-scan base-package="net.vpc" />
 <mvc:annotation-driven />
-<!--<bean class="net.vpc.app.vainruling.core.web.CoreWS"/>-->
+<!--<bean class="net.thevpc.app.vainruling.core.web.CoreWS"/>-->
 </beans>

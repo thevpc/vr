@@ -119,12 +119,12 @@ You first have to compile :
 ### 3.2 Generate plugin skeleton
 In the command line, under **apps/eniso-info/plugins** directory type the following :
 ```sh
-mvn archetype:generate -DarchetypeGroupId=net.vpc.app.vain-ruling.core -DarchetypeArtifactId=vr-sample-plugin-archetype
+mvn archetype:generate -DarchetypeGroupId=net.thevpc.app.vain-ruling.core -DarchetypeArtifactId=vr-sample-plugin-archetype
 ```
 You should have maven command (mvn) in your PATH env. If not, you should use the full path of maven. For instance if maven 
 is installed under **/path/to/maven** then the command should become
 ```sh
-/path/to/maven/bin/mvn archetype:generate -DarchetypeGroupId=net.vpc.app.vain-ruling.core -DarchetypeArtifactId=vr-sample-plugin-archetype
+/path/to/maven/bin/mvn archetype:generate -DarchetypeGroupId=net.thevpc.app.vain-ruling.core -DarchetypeArtifactId=vr-sample-plugin-archetype
 ```
 
 You will be asked for your project groupId (you may type : mycompany), your artifactId (you may type : myplugin), and your version (you may type 1.0).

@@ -20,8 +20,8 @@ and open the template in the editor.
     <h:body>
 
 
-        <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.jsf.Vr"-->
-        <!--@elvariable id="teacherStatFeedbackCtrl" type="net.vpc.app.vainruling.plugins.academic.teachereval.web.TeacherStatFeedbackCtrl"-->
+        <!--@elvariable id="vr" type="net.thevpc.app.vainruling.core.web.jsf.Vr"-->
+        <!--@elvariable id="teacherStatFeedbackCtrl" type="net.thevpc.app.vainruling.plugins.academic.teachereval.web.TeacherStatFeedbackCtrl"-->
         <ui:composition template="#{vr.privateTemplatePath}">
             <ui:define name="content">
                 <h:form id="listForm">
@@ -36,25 +36,25 @@ and open the template in the editor.
                         </div>
                         <div class="box-body">
                             <!-- text input -->
-                            <div class="form-group">
+                            <div class="form-group col-md-4">
                                 <p:outputLabel value="Quantité"/>
                                 <p:inputText 
                                     style="margin-left: 5px;margin-top: 5px"
                                     value="#{myBorrowableEquipmentsCtrl.model.quantity}" class="form-control" />
                             </div>
-                            <div class="form-group">
+                            <div class="form-group col-md-4">
                                 <p:outputLabel value="De la date"/>
                                 <p:calendar  style="margin-left: 5px;margin-top: 5px" inputStyleClass="form-control"
                                              value="#{myBorrowableEquipmentsCtrl.model.fromDate}" />
                             </div>
-                            <div class="form-group">
+                            <div class="form-group col-md-4">
                                 <p:outputLabel value="A la date"/>
                                 <p:calendar  style="margin-left: 5px;margin-top: 5px" inputStyleClass="form-control"
                                              value="#{myBorrowableEquipmentsCtrl.model.toDate}" />
                             </div>
-                            <h:panelGroup layout="block" class="form-group" rendered="#{myBorrowableEquipmentsCtrl.model.requireVisaUser}">
-                                <p:outputLabel value="Confirmer avec"/>
-                                <p:selectOneMenu  
+                            <p:outputPanel id="requireVisaUserBloc" layout="block" class="form-group col-md-4">
+                                <p:outputLabel value="Confirmer avec" rendered="#{myBorrowableEquipmentsCtrl.model.requireVisaUser}"/>
+                                <p:selectOneMenu rendered="#{myBorrowableEquipmentsCtrl.model.requireVisaUser}"
                                     style="margin-left: 5px;margin-top: 5px"
                                     class="form-control vr-form-control"
                                     value="#{myBorrowableEquipmentsCtrl.model.visaUser}"
@@ -62,8 +62,8 @@ and open the template in the editor.
                                     >
                                     <f:selectItems value="#{myBorrowableEquipmentsCtrl.model.visaUsers}"/>
                                 </p:selectOneMenu>
-                            </h:panelGroup>
-                            <h:panelGroup layout="block" class="form-group" rendered="#{myBorrowableEquipmentsCtrl.model.delegatedBorrow}">
+                            </p:outputPanel>
+                            <p:outputPanel layout="block" class="form-group col-md-4" rendered="#{myBorrowableEquipmentsCtrl.model.delegatedBorrow}">
                                 <p:outputLabel value="Réserver pour"/>
                                 <p:selectOneMenu  style="margin-left: 5px;margin-top: 5px"
                                                   class="form-control vr-form-control"
@@ -72,7 +72,7 @@ and open the template in the editor.
                                                   >
                                     <f:selectItems value="#{myBorrowableEquipmentsCtrl.model.borrowUsers}"/>
                                 </p:selectOneMenu>
-                            </h:panelGroup>
+                            </p:outputPanel>
                         </div>
                         <div class="box-footer">
                             <p:commandButton action="#{myBorrowableEquipmentsCtrl.onAddRequest(false)}" update="@form" value="Launcer une réservation" styleClass="btn btn-primary btn-flat"/>
@@ -86,7 +86,7 @@ and open the template in the editor.
                         </div>
                         <div class="box-body">
                             <!-- text input -->
-                            <div class="form-group">
+                            <div class="form-group col-md-6">
                                 <p:outputLabel value="Filter par Type"/>
                                 <p:selectOneMenu class="form-control vr-form-control"
                                                  value="#{myBorrowableEquipmentsCtrl.model.filterEquipmentType}"
@@ -98,7 +98,7 @@ and open the template in the editor.
                                             update="listForm"/>
                                 </p:selectOneMenu>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group col-md-6">
                                 <p:outputLabel value="Filter par Département"/>
                                 <p:selectOneMenu class="form-control vr-form-control"
                                                  value="#{myBorrowableEquipmentsCtrl.model.filterDepartment}"
@@ -135,7 +135,7 @@ and open the template in the editor.
                                          selectionMode="single" selection="#{myBorrowableEquipmentsCtrl.model.selectedEquipment}" rowKey="#{i.id}"
                                          >
                                 <f:facet name="header">Equipements disponibles</f:facet>
-                                <p:ajax event="rowSelect" listener="#{myBorrowableEquipmentsCtrl.onRowSelect}" update=":listForm:selectedEquipmentString" />
+                                <p:ajax event="rowSelect" listener="#{myBorrowableEquipmentsCtrl.onRowSelect}" update=":listForm:selectedEquipmentString :listForm:requireVisaUserBloc" />
                                 <p:column exportable="false" headerText="" style="width: 65px;">
                                     <img src="#{vr.getIconUrl(i.photo,null)}"
                                          style="width: 40px ; height: 40px; margin-right: 10px;"

@@ -11,200 +11,205 @@ and open the template in the editor.
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://java.sun.com/jsf/core"
 
->
+      >
 
-<h:head>
+    <h:head>
 
-</h:head>
+    </h:head>
 
-<h:body>
+    <h:body>
 
 
-    <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.jsf.Vr"-->
-    <!--@elvariable id="teacherStatFeedbackCtrl" type="net.vpc.app.vainruling.plugins.academic.teachereval.web.TeacherStatFeedbackCtrl"-->
-    <ui:composition template="#{vr.privateTemplatePath}">
-        <ui:define name="content">
-            <!--                <h:form id="buttonsForm">
-
-                                 /.row
-                                <div >
-                                    <p:outputLabel id="buttons">
-                                        <p:commandButton value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton " ajax="true" actionListener="# {myPlanningCtrl.onRefresh}"  update=":listForm"/>
-                                    </p:outputLabel>
-                                </div>
-
-                            </h:form>-->
-            <h:form id="listForm">
-                <div class="row">
-                    <p:outputLabel value="Période"
-                                   style="margin-left: 10px;margin-right: 10px;vertical-align: middle;padding-bottom: 10px;"/>
-                    <p:selectOneMenu
+        <!--@elvariable id="vr" type="net.thevpc.app.vainruling.core.web.jsf.Vr"-->
+        <!--@elvariable id="teacherStatFeedbackCtrl" type="net.thevpc.app.vainruling.plugins.academic.teachereval.web.TeacherStatFeedbackCtrl"-->
+        <ui:composition template="#{vr.privateTemplatePath}">
+            <ui:define name="content">
+                <!--                <h:form id="buttonsForm">
+    
+                                     /.row
+                                    <div >
+                                        <p:outputLabel id="buttons">
+                                            <p:commandButton value="Rafr." icon="ui-ribbonicon-refresh" styleClass="ui-ribbon-bigbutton " ajax="true" actionListener="# {myPlanningCtrl.onRefresh}"  update=":listForm"/>
+                                        </p:outputLabel>
+                                    </div>
+    
+                                </h:form>-->
+                <h:form id="listForm">
+                    <div class="row">
+                        <p:outputLabel value="Période"
+                                       style="margin-left: 10px;margin-right: 10px;vertical-align: middle;padding-bottom: 10px;"/>
+                        <p:selectOneMenu
                             value="#{teacherStatFeedbackCtrl.model.selectedPeriod}"
                             filter="true" filterMatchMode="contains"
-                    >
-                        <p:ajax listener="#{teacherStatFeedbackCtrl.onChangePeriod}" update=":listForm"/>
-                        <f:selectItem itemLabel="Selectionner Periode..." itemValue=""/>
-                        <f:selectItems value="#{teacherStatFeedbackCtrl.model.periods}"/>
-                    </p:selectOneMenu>
+                            >
+                            <p:ajax listener="#{teacherStatFeedbackCtrl.onChangePeriod}" update=":listForm"/>
+                            <f:selectItem itemLabel="Selectionner Periode..." itemValue=""/>
+                            <f:selectItems value="#{teacherStatFeedbackCtrl.model.periods}"/>
+                        </p:selectOneMenu>
 
 
-                    <p:outputLabel rendered="#{teacherStatFeedbackCtrl.model.filterTeachersEnabled and not vr.isEmpty(teacherStatFeedbackCtrl.model.selectedPeriod)}"
-                                   value="Enseignant"
-                                   style="margin-left: 10px;margin-right: 10px;vertical-align: middle;padding-bottom: 10px;"/>
-                    <!--rendered="# {teacherStatFeedbackCtrl.model.filterTeachersEnabled and not vr.isEmpty(teacherStatFeedbackCtrl.model.selectedPeriod)}"-->
-                    <p:selectOneMenu id="teachersList"
-                                     rendered="#{teacherStatFeedbackCtrl.model.filterTeachersEnabled and not vr.isEmpty(teacherStatFeedbackCtrl.model.selectedPeriod)}"
-                                     value="#{teacherStatFeedbackCtrl.model.selectedTeacher}"
-                                     filter="true" filterMatchMode="contains"
-                    >
-                        <p:ajax listener="#{teacherStatFeedbackCtrl.onReloadFeedbacks}" update=":listForm"/>
-                        <f:selectItem itemLabel="Selectionner Enseignant..." itemValue=""/>
-                        <f:selectItems value="#{teacherStatFeedbackCtrl.model.teachersList}"/>
-                    </p:selectOneMenu>
+                        <p:outputLabel rendered="#{teacherStatFeedbackCtrl.model.filterTeachersEnabled and not vr.isEmpty(teacherStatFeedbackCtrl.model.selectedPeriod)}"
+                                       value="Enseignant"
+                                       style="margin-left: 10px;margin-right: 10px;vertical-align: middle;padding-bottom: 10px;"/>
+                        <!--rendered="# {teacherStatFeedbackCtrl.model.filterTeachersEnabled and not vr.isEmpty(teacherStatFeedbackCtrl.model.selectedPeriod)}"-->
+                        <p:selectOneMenu id="teachersList"
+                                         rendered="#{teacherStatFeedbackCtrl.model.filterTeachersEnabled and not vr.isEmpty(teacherStatFeedbackCtrl.model.selectedPeriod)}"
+                                         value="#{teacherStatFeedbackCtrl.model.selectedTeacher}"
+                                         filter="true" filterMatchMode="contains"
+                                         >
+                            <p:ajax listener="#{teacherStatFeedbackCtrl.onReloadFeedbacks}" update=":listForm"/>
+                            <f:selectItem itemLabel="Selectionner Enseignant..." itemValue=""/>
+                            <f:selectItems value="#{teacherStatFeedbackCtrl.model.teachersList}"/>
+                        </p:selectOneMenu>
 
-                    <p:outputLabel value="Filtrer par "
-                                   style="margin-left: 10px;margin-right: 10px;vertical-align: middle;padding-bottom: 10px;"
-                                   rendered="#{not vr.isEmpty(teacherStatFeedbackCtrl.model.selectedPeriod)}"
-                    />
-                    <p:selectOneMenu
+                        <p:outputLabel value="Filtrer par "
+                                       style="margin-left: 10px;margin-right: 10px;vertical-align: middle;padding-bottom: 10px;"
+                                       rendered="#{not vr.isEmpty(teacherStatFeedbackCtrl.model.selectedPeriod)}"
+                                       />
+                        <p:selectOneMenu
                             value="#{teacherStatFeedbackCtrl.model.selectedFilterType}"
                             rendered="#{not vr.isEmpty(teacherStatFeedbackCtrl.model.selectedPeriod)}"
                             filter="true" filterMatchMode="contains"
-                    >
-                        <p:ajax listener="#{teacherStatFeedbackCtrl.onReloadFilterByType}" update=":listForm"/>
-                        <f:selectItem itemLabel="selectionner..." itemValue=""/>
-                        <f:selectItems value="#{teacherStatFeedbackCtrl.model.filterTypesList}"/>
-                    </p:selectOneMenu>
+                            >
+                            <p:ajax listener="#{teacherStatFeedbackCtrl.onReloadFilterByType}" update=":listForm"/>
+                            <f:selectItem itemLabel="selectionner..." itemValue=""/>
+                            <f:selectItems value="#{teacherStatFeedbackCtrl.model.filterTypesList}"/>
+                        </p:selectOneMenu>
 
-                    <p:selectOneMenu value="#{teacherStatFeedbackCtrl.model.selectedFilter}"
-                                     rendered="#{not vr.isEmpty(teacherStatFeedbackCtrl.model.selectedPeriod)}"
-                                     filter="true" filterMatchMode="contains"
-                    >
-                        <p:ajax listener="#{teacherStatFeedbackCtrl.onFilterChange}" update=":listForm"/>
-                        <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
-                        <f:selectItems value="#{teacherStatFeedbackCtrl.model.filterList}"/>
-                    </p:selectOneMenu>
+                        <p:selectOneMenu value="#{teacherStatFeedbackCtrl.model.selectedFilter}"
+                                         rendered="#{not vr.isEmpty(teacherStatFeedbackCtrl.model.selectedPeriod)}"
+                                         filter="true" filterMatchMode="contains"
+                                         >
+                            <p:ajax listener="#{teacherStatFeedbackCtrl.onFilterChange}" update=":listForm"/>
+                            <f:selectItem itemLabel="Selectionner ..." itemValue=""/>
+                            <f:selectItems value="#{teacherStatFeedbackCtrl.model.filterList}"/>
+                        </p:selectOneMenu>
 
-                </div>
-                <p:tabView>
-                    <p:tab title="Statistiques">
-                        <ui:fragment rendered="#{not empty teacherStatFeedbackCtrl.model.statData.groupedQuestionsList}">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <p:outputLabel value="Carte Evaluation #{teacherStatFeedbackCtrl.searchTitle}"/>
-                                    <p:chart type="bar"
-                                             rendered="#{teacherStatFeedbackCtrl.model.statData.globalChart ne null}"
-                                             model="#{teacherStatFeedbackCtrl.model.statData.globalChart}"
-                                             style="height:300px;width: 400px"/>
-                                    <p:outputLabel
+                    </div>
+                    <div class="row">
+                        <div class="form-group" style="margin-left: 10px;">
+                            <p:commandButton value="Rafraichir" styleClass="btn btn-primary" action="#{teacherStatFeedbackCtrl.onFilterChange()}" update=":listForm:theTabView"/>
+                        </div>
+                    </div>
+                    <p:tabView id="theTabView">
+                        <p:tab title="Statistiques">
+                            <ui:fragment rendered="#{not empty teacherStatFeedbackCtrl.model.statData.groupedQuestionsList}">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p:outputLabel value="Carte Evaluation #{teacherStatFeedbackCtrl.searchTitle}"/>
+                                        <p:chart type="#{teacherStatFeedbackCtrl.model.statData.globalChartType}"
+                                                 rendered="#{teacherStatFeedbackCtrl.model.statData.globalChart ne null}"
+                                                 model="#{teacherStatFeedbackCtrl.model.statData.globalChart}"
+                                                 style="height:300px;width: 400px"/>
+                                        <p:outputLabel
                                             rendered="#{teacherStatFeedbackCtrl.model.statData.globalChart eq null}"
                                             value="Aucune donnée"/>
-                                </div>
-                                <div class="col-md-3">
-                                    <p:outputLabel value="Score"/>
-                                    <p:outputLabel
+                                    </div>
+                                    <div class="col-md-3">
+                                        <p:outputLabel value="Score"/>
+                                        <p:outputLabel
                                             value="#{teacherStatFeedbackCtrl.model.statData.globalValues.score.value}"
                                             styleClass="form-control"/>
-                                    <p:outputLabel value="Population"/>
-                                    <p:outputLabel
+                                        <p:outputLabel value="Population"/>
+                                        <p:outputLabel
                                             value="#{teacherStatFeedbackCtrl.model.statData.globalValues.score.population}"
                                             styleClass="form-control"/>
-                                    <p:outputLabel
+                                        <p:outputLabel
                                             value="Complétude : #{teacherStatFeedbackCtrl.model.statData.countResponseCompletion}%"/>
-                                    <div class="vr-progress-container"
-                                         style="width: 100%;position: relative;height: 26px;">
+                                        <div class="vr-progress-container"
+                                             style="width: 100%;position: relative;height: 26px;">
+                                            <div class="invalid"
+                                                 style="height: 22px; position: absolute; width:#{teacherStatFeedbackCtrl.model.statData.countResponseCompletion}%">
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <p:outputLabel value="Formulaires"/>
+                                        <p:outputLabel value="#{teacherStatFeedbackCtrl.model.statData.countFeedbacks}"
+                                                       styleClass="form-control"/>
+                                        <p:outputLabel value="Reponses"/>
+                                        <p:outputLabel
+                                            value="#{teacherStatFeedbackCtrl.model.statData.globalValues.score.coverage}"
+                                            styleClass="form-control"/>
+                                    </div>
+                                </div>
+                            </ui:fragment>
+                            <div class="table-responsive">
+                                <p:dataTable value="#{teacherStatFeedbackCtrl.model.statData.groupedQuestionsList}" var="g"
+                                             style="margin-top: 20px;"
+                                             rendered="#{teacherStatFeedbackCtrl.model.statData.groupedQuestionsList.size() gt 0}"
+                                             emptyMessage="Aucune categorie"
+                                             >
+                                    <p:column headerText="Categorie" width="30%">
+                                        <p:outputLabel value="#{g.title}"/>
+                                    </p:column>
+                                    <p:column headerText="Score" width="10%">
+                                        <p:outputLabel value="#{g.values.score.value}"/>
+                                    </p:column>
+                                    <p:column headerText="Population" width="10%">
+                                        <p:outputLabel value="#{g.values.score.population}"/>
+                                    </p:column>
+                                    <p:column headerText="">
+                                        <p:chart class="vr-no-legend" type="#{g.chartType}" rendered="#{g.chart ne null}"
+                                                 model="#{g.chart}" style="height:100px;width: 400px"/>
+                                        <p:outputLabel rendered="#{g.chart eq null}" value="Aucune donnée"/>
+                                    </p:column>
+                                </p:dataTable>
+                            </div>
+                        </p:tab>
+                        <p:tab title="Statistiques Par Question">
+                            <ui:repeat var="r" value="#{teacherStatFeedbackCtrl.model.statData.groupedQuestionsList}">
+                                <div>
+                                    <div class="table-responsive">
+                                        <p:dataTable value="#{r.questions}" var="i" style="margin-top: 20px;">
+                                            <p:column headerText="#{r.title}" width="30%">
+                                                <p:outputLabel value="#{i.question.name}"/>
+                                            </p:column>
+                                            <p:column headerText="Score" width="10%">
+                                                <p:outputLabel value="#{i.values.score.value}"/>
+                                            </p:column>
+                                            <p:column headerText="Population" width="10%">
+                                                <p:outputLabel value="#{i.values.score.population}"/>
+                                            </p:column>
+                                            <p:column headerText="">
+                                                <p:chart class="vr-no-legend" type="#{i.chartType}" rendered="#{i.chart ne null}"
+                                                         model="#{i.chart}" style="height:100px;width: 400px"/>
+                                                <p:outputLabel rendered="#{i.chart eq null}" value="Aucune donnée"/>
+                                            </p:column>
+                                        </p:dataTable>
+                                    </div>
+                                </div>
+                            </ui:repeat>
+                        </p:tab>
+                        <p:tab title="Progression Elèves" rendered="#{teacherStatFeedbackCtrl.model.showStudentProgress}">
+                            <p:dataTable value="#{teacherStatFeedbackCtrl.model.statData.studentinfos}" var="s"
+                                         style="margin-top: 20px;">
+                                <p:column headerText="Elève" width="30%">
+                                    <p:outputLabel value="#{s.student.user.fullTitle}"/>
+                                </p:column>
+                                <p:column headerText="Reponses" width="70%">
+                                    <div class="vr-progress-container" style="width: 100%;position: relative;height: 16px;">
                                         <div class="invalid"
-                                             style="height: 22px; position: absolute; width:#{teacherStatFeedbackCtrl.model.statData.countResponseCompletion}%">
+                                             style="position: absolute; width:#{vr.frame(vr.abs(s.answersPercent),0,100)}%">
+
+                                        </div>
+                                        <div class="valid"
+                                             style="position: absolute; width:#{vr.frame(vr.abs(s.validatedPercent),0,100)}%">
 
                                         </div>
                                     </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <p:outputLabel value="Formulaires"/>
-                                    <p:outputLabel value="#{teacherStatFeedbackCtrl.model.statData.countFeedbacks}"
-                                                   styleClass="form-control"/>
-                                    <p:outputLabel value="Reponses"/>
-                                    <p:outputLabel
-                                            value="#{teacherStatFeedbackCtrl.model.statData.globalValues.score.coverage}"
-                                            styleClass="form-control"/>
-                                </div>
-                            </div>
-                        </ui:fragment>
-                        <div class="table-responsive">
-                            <p:dataTable value="#{teacherStatFeedbackCtrl.model.statData.groupedQuestionsList}" var="g"
-                                         style="margin-top: 20px;"
-                                         rendered="#{teacherStatFeedbackCtrl.model.statData.groupedQuestionsList.size() gt 0}"
-                                         emptyMessage="Aucune categorie"
-                            >
-                                <p:column headerText="Categorie" width="30%">
-                                    <p:outputLabel value="#{g.title}"/>
-                                </p:column>
-                                <p:column headerText="Score" width="10%">
-                                    <p:outputLabel value="#{g.values.score.value}"/>
-                                </p:column>
-                                <p:column headerText="Population" width="10%">
-                                    <p:outputLabel value="#{g.values.score.population}"/>
-                                </p:column>
-                                <p:column headerText="">
-                                    <p:chart class="vr-no-legend" type="bar" rendered="#{g.chart ne null}"
-                                             model="#{g.chart}" style="height:100px;width: 400px"/>
-                                    <p:outputLabel rendered="#{g.chart eq null}" value="Aucune donnée"/>
                                 </p:column>
                             </p:dataTable>
-                        </div>
-                    </p:tab>
-                    <p:tab title="Statistiques Par Question">
-                        <ui:repeat var="r" value="#{teacherStatFeedbackCtrl.model.statData.groupedQuestionsList}">
-                            <div>
-                                <div class="table-responsive">
-                                    <p:dataTable value="#{r.questions}" var="i" style="margin-top: 20px;">
-                                        <p:column headerText="#{r.title}" width="30%">
-                                            <p:outputLabel value="#{i.question.name}"/>
-                                        </p:column>
-                                        <p:column headerText="Score" width="10%">
-                                            <p:outputLabel value="#{i.values.score.value}"/>
-                                        </p:column>
-                                        <p:column headerText="Score" width="10%">
-                                            <p:outputLabel value="#{i.values.score.population}"/>
-                                        </p:column>
-                                        <p:column headerText="">
-                                            <p:chart class="vr-no-legend" type="bar" rendered="#{i.chart ne null}"
-                                                     model="#{i.chart}" style="height:100px;width: 400px"/>
-                                            <p:outputLabel rendered="#{i.chart eq null}" value="Aucune donnée"/>
-                                        </p:column>
-                                    </p:dataTable>
-                                </div>
-                            </div>
-                        </ui:repeat>
-                    </p:tab>
-                    <p:tab title="Progression Elèves" rendered="#{vr.currentToken.admin}">
-                        <p:dataTable value="#{teacherStatFeedbackCtrl.model.statData.studentinfos}" var="s"
-                                     style="margin-top: 20px;">
-                            <p:column headerText="Elève" width="30%">
-                                <p:outputLabel value="#{s.student.user.fullTitle}"/>
-                            </p:column>
-                            <p:column headerText="Reponses" width="70%">
-                                <div class="vr-progress-container" style="width: 100%;position: relative;height: 16px;">
-                                    <div class="invalid"
-                                         style="position: absolute; width:#{vr.frame(vr.abs(s.answersPercent),0,100)}%">
-
-                                    </div>
-                                    <div class="valid"
-                                         style="position: absolute; width:#{vr.frame(vr.abs(s.validatedPercent),0,100)}%">
-
-                                    </div>
-                                </div>
-                            </p:column>
-                        </p:dataTable>
-                    </p:tab>
-                </p:tabView>
-            </h:form>
-        </ui:define>
+                        </p:tab>
+                    </p:tabView>
+                </h:form>
+            </ui:define>
 
 
-    </ui:composition>
+        </ui:composition>
 
 
-</h:body>
+    </h:body>
 
 </html>

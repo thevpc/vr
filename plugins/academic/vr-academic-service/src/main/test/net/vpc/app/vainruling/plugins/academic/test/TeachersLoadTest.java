@@ -3,15 +3,15 @@
  *
  * and open the template in the editor.
  */
-package net.vpc.app.vainruling.plugins.academic.test;
+package net.thevpc.app.vainruling.plugins.academic.test;
 
-import net.vpc.app.vainruling.core.service.CorePlugin;
-import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.app.vainruling.plugins.academic.service.util.CourseAssignmentFilter;
-import net.vpc.app.vainruling.plugins.academic.service.integration.XlsxLoadImporter;
-import net.vpc.upa.Action;
-import net.vpc.upa.UPA;
+import net.thevpc.app.vainruling.core.service.CorePlugin;
+import net.thevpc.app.vainruling.core.service.VrApp;
+import net.thevpc.app.vainruling.plugins.academic.service.AcademicPlugin;
+import net.thevpc.app.vainruling.plugins.academic.service.util.CourseAssignmentFilter;
+import net.thevpc.app.vainruling.plugins.academic.service.integration.XlsxLoadImporter;
+import net.thevpc.upa.Action;
+import net.thevpc.upa.UPA;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -98,7 +98,7 @@ public class TeachersLoadTest {
 
             AcademicPlugin s = VrApp.getBean(AcademicPlugin.class);
             s.generateTeachingLoad(-1, CourseAssignmentFilter.NO_INTENTS, null,null,null);
-//            net.vpc.vfs.VirtualFileSystem fs = core.getRootFileSystem();
+//            net.thevpc.vfs.VirtualFileSystem fs = core.getRootFileSystem();
 //            fs = new NativeVFS();
 //            VFS.copy(fs.get(dataFolder), fs.get(outputFolder), new VFileFilter() {
 //

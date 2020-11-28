@@ -1,9 +1,9 @@
-//package net.vpc.app.vainruling.service.test;
+//package net.thevpc.app.vainruling.service.test;
 //
 //import junit.framework.TestCase;
-//import net.vpc.app.vainruling.core.service.util.DiffHtmlStyle;
-//import net.vpc.app.vainruling.core.service.util.GoogleDiffMatchPatch;
-//import net.vpc.app.vainruling.core.service.util.VrUtils;
+//import net.thevpc.app.vainruling.core.service.util.DiffHtmlStyle;
+//import net.thevpc.app.vainruling.core.service.util.GoogleDiffMatchPatch;
+//import net.thevpc.app.vainruling.core.service.util.VrUtils;
 //import org.junit.Assert;
 //import org.junit.Before;
 //import org.junit.Test;

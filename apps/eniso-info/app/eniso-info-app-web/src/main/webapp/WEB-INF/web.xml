@@ -39,12 +39,12 @@
 
     <context-param>
         <param-name>upa.web.context-switch</param-name>
-        <param-value>net.vpc.app.vainruling.core.web.util.VrWebContextSwitch</param-value>
+        <param-value>net.thevpc.app.vainruling.core.web.util.VrWebContextSwitch</param-value>
     </context-param>
 
     <filter>
         <filter-name>TokenFilter</filter-name>
-        <filter-class>net.vpc.app.vainruling.core.web.srv.TokenManagerFilter</filter-class>
+        <filter-class>net.thevpc.app.vainruling.core.web.srv.TokenManagerFilter</filter-class>
     </filter>
     <filter-mapping>
         <filter-name>TokenFilter</filter-name>
@@ -53,7 +53,7 @@
 
 
     <listener>
-        <listener-class>net.vpc.upa.web.UPAServletContextListener</listener-class>
+        <listener-class>net.thevpc.upa.web.UPAServletContextListener</listener-class>
     </listener>
 
 
@@ -74,7 +74,7 @@
 
     <filter>
         <filter-name>security</filter-name>
-        <filter-class>net.vpc.app.vainruling.core.web.srv.VrWebSecurityFilter</filter-class>
+        <filter-class>net.thevpc.app.vainruling.core.web.srv.VrWebSecurityFilter</filter-class>
     </filter>
     <filter-mapping>
         <filter-name>security</filter-name>

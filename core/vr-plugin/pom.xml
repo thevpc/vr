@@ -2,11 +2,11 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>net.vpc.app.vain-ruling.core</groupId>
+    <groupId>net.thevpc.app.vain-ruling.core</groupId>
     <artifactId>vr-plugin</artifactId>
     <version>1.0</version>
     <packaging>pom</packaging>
-    <name>net.vpc.app.vain-ruling.core.vr-plugin</name>
+    <name>net.thevpc.app.vain-ruling.core.vr-plugin</name>
     <url>https://github.com/thevpc/vr/wiki</url>
 
     <organization>
@@ -91,9 +91,9 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>net.vpc.common.maven</groupId>
+                <groupId>net.thevpc.maven</groupId>
                 <artifactId>writer-maven-plugin</artifactId>
-                <version>1.0.3</version>
+                <version>1.1.0</version>
                 <configuration>
                     <outputFile>${project.build.outputDirectory}/META-INF/vr-plugin.properties</outputFile>
                     <text>

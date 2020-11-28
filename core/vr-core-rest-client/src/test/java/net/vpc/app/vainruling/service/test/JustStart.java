@@ -1,11 +1,11 @@
-//package net.vpc.app.vainruling.service.test;
+//package net.thevpc.app.vainruling.service.test;
 //
-//import net.vpc.app.vainruling.core.service.VrApp;
-//import net.vpc.common.util.Chronometer;
+//import net.thevpc.app.vainruling.core.service.VrApp;
+//import net.thevpc.common.util.Chronometer;
 //
 //public class JustStart {
 //    public static void main(String[] args) {
-//        Chronometer ch = new Chronometer();
+//        Chronometer ch = Chronometer.start();
 //        VrApp.runStandalone();
 //    }
 //}

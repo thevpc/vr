@@ -113,6 +113,13 @@ and open the template in the editor.
                                     <p:outputLabel value="#{i.w}" rendered="#{i.w ne 0}"/>
                                 </p:column>
                                 <p:column headerText="Observations">
+                                    <p:commandLink
+                                        rendered="#{i.assignment ne null}"
+                                        action="#{vr.gotoPageObjItem('AcademicCourseAssignment',vr.str(i.assignment.id))}"
+                                        styleClass="btn btn-success"
+                                        value="goto"
+                                        style="margin-left: 5px;"
+                                        />
                                     <p:repeat value="#{i.labels}" var="z">
                                         <p:outputLabel rendered="#{calendarAssignmentsMappingCtrl.isSimpleLabel(z)}"
                                                        styleClass="label label-#{z.severity}"

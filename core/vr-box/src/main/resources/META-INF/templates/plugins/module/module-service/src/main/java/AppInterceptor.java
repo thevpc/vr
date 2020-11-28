@@ -1,6 +1,6 @@
 package ${{packageName(ProjectGroup)}}.${{packageName(ModuleName)}}.service;
 
-import net.vpc.upa.config.*;
+import net.thevpc.upa.config.*;
 import java.util.logging.Logger;
 
 /**

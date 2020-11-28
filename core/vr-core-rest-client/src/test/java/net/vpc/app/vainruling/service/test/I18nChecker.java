@@ -3,11 +3,11 @@
 // *
 // * and open the template in the editor.
 // */
-//package net.vpc.app.vainruling.service.test;
+//package net.thevpc.app.vainruling.service.test;
 //
-//import net.vpc.app.vainruling.core.service.VrApp;
-//import net.vpc.app.vainruling.core.service.util.I18n;
-//import net.vpc.upa.*;
+//import net.thevpc.app.vainruling.core.service.VrApp;
+//import net.thevpc.app.vainruling.core.service.util.I18n;
+//import net.thevpc.upa.*;
 //
 //
 ///**
@@ -25,7 +25,7 @@
 //
 //    private static int checkI18n() {
 //        int count = 0;
-//        for (net.vpc.upa.Package p : UPA.getPersistenceUnit().getPackages()) {
+//        for (net.thevpc.upa.Package p : UPA.getPersistenceUnit().getPackages()) {
 //            count += checkUPAObject(p);
 //        }
 //        for (Entity entity : UPA.getPersistenceUnit().getEntities()) {

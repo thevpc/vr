@@ -23,8 +23,8 @@ and open the template in the editor.
     </h:head>
 
     <h:body>
-        <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.jsf.Vr"-->
-        <!--@elvariable id="editorCtrl" type="net.vpc.app.vainruling.core.web.jsf.ctrl.EditorCtrl"-->
+        <!--@elvariable id="vr" type="net.thevpc.app.vainruling.core.web.jsf.Vr"-->
+        <!--@elvariable id="editorCtrl" type="net.thevpc.app.vainruling.core.web.jsf.ctrl.EditorCtrl"-->
 
 
         <ui:composition template="#{vr.privateTemplatePath}">
@@ -65,20 +65,45 @@ and open the template in the editor.
                                 <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu">
-                                <li><p:commandLink value="Enregistrer" title ="Enregister"  onclick="processOnSaveCurrent()" ajax="true"
-                                                   update=" :listForm  :pageTitleForm" /></li>
+                                <li><p:commandLink 
+                                        value="#{editorCtrl.bulkUpdateMode ?'Tout Mettre à jour': editorCtrl.updateMode ? 'Mettre à jour':'Enregistrer'}" 
+                                        title ="#{editorCtrl.bulkUpdateMode ?'Tout Mettre à jour': editorCtrl.updateMode ? 'Mettre à jour':'Enregistrer'}"
+                                        onclick="processOnSaveCurrent()" ajax="true"
+                                        update=" :listForm  :pageTitleForm" >
+                                        <span class="fa fa-save"></span>
 
-                                <li><p:commandLink value="Enregisrer + Fermer" title ="Enregisrer puis Fermer"  onclick="processOnSaveCurrentAndClose()"
-                                                   ajax="true" update=" :listForm  :pageTitleForm" /></li>
+                                    </p:commandLink></li>
 
-                                <li><p:commandLink value="Enregisrer + Suivant" title ="Enregisrer puis passer au Suivant"  onclick="processOnSaveCurrentAndNext()"
-                                                   ajax="true" update=" :listForm  :pageTitleForm" /></li>
+                                <ui:fragment rendered="#{editorCtrl.updateMode}">
+                                    <li><p:commandLink value="Enregisrer + Fermer" title ="Enregisrer puis Fermer"  onclick="processOnSaveCurrentAndClose()"
+                                                       ajax="true" update=" :listForm  :pageTitleForm" >
+                                            <span class="fa fa-window-close"></span>
 
-                                <li><p:commandLink value="Enregisrer + Précédent" title ="Enregisrer puis passer au Précédent"  onclick="processOnSaveCurrentAndPrevious()"
-                                                   ajax="true" update=" :listForm  :pageTitleForm" /></li>
+                                        </p:commandLink></li>
+                                </ui:fragment>
+                                <ui:fragment rendered="#{editorCtrl.updateMode}">
+                                    <li><p:commandLink value="Enregisrer + Suivant" title ="Enregisrer puis passer au Suivant"  onclick="processOnSaveCurrentAndNext()"
+                                                       ajax="true" update=" :listForm  :pageTitleForm" >
+                                            <span class="fa fa-angle-right"></span>
 
-                                <li><p:commandLink value="Enregitrer Copie" title ="Enregister une Copie"  onclick="processOnCloneCurrent()"
-                                                   ajax="true" update=" :listForm  :pageTitleForm" /></li>
+                                        </p:commandLink></li>
+                                </ui:fragment>
+
+                                <ui:fragment rendered="#{editorCtrl.updateMode}">
+                                    <li><p:commandLink value="Enregisrer + Précédent" title ="Enregisrer puis passer au Précédent"  onclick="processOnSaveCurrentAndPrevious()"
+                                                       ajax="true" update=" :listForm  :pageTitleForm" >
+                                            <span class="fa fa-angle-left"></span>
+
+                                        </p:commandLink></li>
+                                </ui:fragment>
+
+                                <ui:fragment rendered="#{editorCtrl.updateMode}">
+                                    <li><p:commandLink value="Enregitrer Copie" title ="Enregister une Copie"  onclick="processOnCloneCurrent()"
+                                                       ajax="true" update=" :listForm  :pageTitleForm" >
+                                            <span class="fa fa-clone"></span>
+
+                                        </p:commandLink></li>
+                                </ui:fragment>
 
                             </ul>
                         </h:panelGroup>
@@ -90,7 +115,6 @@ and open the template in the editor.
                                          update=" :listForm  :pageTitleForm"
                                          value="Nouveau"
                                          />
-
                         <p:commandButton title="Supprimer" rendered="#{editorCtrl.isEnabledButton('Remove')}"
                                          icon="fa fa-trash-o"
                                          styleClass="btn btn-danger"
@@ -99,39 +123,88 @@ and open the template in the editor.
                                          value="Supprimer"
                                          />
 
-                        <h:panelGroup layout="block" styleClass="btn-group">
+                        <h:panelGroup layout="block" styleClass="btn-group" rendered="#{editorCtrl.isEnabledButton('DisplayGroup')}">
                             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false" style="height: 40px;">
-                                Paramètres
+                                Affichage
                                 <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu">
-                                <li><p:commandLink value="Colonnes" title="Sélectionner les colonnes à afficher" icon=""
-                                                   onclick="document.getElementById('listForm:processOnSimpleFieldSelectionLink').click();"
-                                                   ajax="true" update=" :listForm  :pageTitleForm" /></li>
+                                <ui:fragment rendered="#{editorCtrl.listMode}">
+                                    <li><p:commandLink value="Colonnes" title="Sélectionner les colonnes à afficher" icon=""
+                                                       onclick="document.getElementById('listForm:processOnSimpleFieldSelectionLink').click();"
+                                                       ajax="true" update=" :listForm  :pageTitleForm" >
+                                            <span class="fa fa-tasks"></span>
 
-                                <li><p:commandLink value="Reini. Colonnes" title="Reinitialiser les Colonnes à afficher"  icon="ui-icon-close"
-                                                   onclick="processOnClearFieldSelection()" ajax="true"
-                                                   update=" :listForm  :pageTitleForm" /></li>
-                                <li class="divider"></li>
-                                <li><p:commandLink rendered="#{editorCtrl.isEnabledButton('Archive')}" value="Archiver"
-                                                   onclick="PF('confirmationArchive').show();" ajax="true" /></li>
+                                        </p:commandLink>
+                                    </li>
 
-                                <li><p:commandLink rendered="#{editorCtrl.isEnabledButton('ReCalc')}" value="Calc. BD" title="Reclaculer Toutes les entités"
-                                                   ajax="true"
-                                                   actionListener="#{editorCtrl.onReCalcAll}" /></li>
+                                    <li><p:commandLink value="Reini. Colonnes" title="Reinitialiser les Colonnes à afficher"  icon="ui-icon-close"
+                                                       onclick="processOnClearFieldSelection()" ajax="true"
+                                                       update=" :listForm  :pageTitleForm" >
+                                            <span class="fa fa-tasks"></span>
 
-                                <li><p:commandLink rendered="#{editorCtrl.isEnabledButton('ReCalc')}" value="Calc. Entité" title="Reclaculer Toutes les lignes"
-                                                   ajax="true"
-                                                   actionListener="#{editorCtrl.onReCalcEntity}" /></li>
+                                        </p:commandLink>
+                                    </li>
+                                    <li class="divider"></li>
+                                </ui:fragment>
+                            </ul>
+                        </h:panelGroup>
 
-                                <li><p:commandLink rendered="#{editorCtrl.isEnabledButton('ReCalc')}" value="Calc. Sel." title="Reclaculer les lignes sélectionnées"
-                                                   ajax="true"
-                                                   actionListener="#{editorCtrl.onReCalcSelection}" /></li>
+                        <h:panelGroup layout="block" styleClass="btn-group"  rendered="#{editorCtrl.isEnabledButton('AdminGroup')}">
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false" style="height: 40px;">
+                                Administration
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <ui:fragment rendered="#{editorCtrl.isEnabledButton('BulkUpdate')}">
+                                    <li><p:commandLink rendered="#{editorCtrl.isEnabledButton('BulkUpdate')}" value="Mise à jour par lot"
+                                                       title="Mise à jour par lot"
+                                                       ajax="true"
+                                                       actionListener="#{editorCtrl.onBulkUpdate}"
+                                                       update=" :listForm  :pageTitleForm"
+                                                       >
+                                            <span class="fa fa-file-industry"></span>
 
-                                <li><p:commandLink rendered="#{editorCtrl.isEnabledButton('ReCalc')}" value="Re-Enregister" title="Reenregistrer les lignes sélectionnées"
-                                                   ajax="true"
-                                                   actionListener="#{editorCtrl.onReSaveSelection}" /></li>
+                                        </p:commandLink>
+                                    </li>
+                                </ui:fragment>
+                                <ui:fragment rendered="#{editorCtrl.updateMode or editorCtrl.listMode}">
+                                    <li><p:commandLink rendered="#{editorCtrl.isEnabledButton('Archive')}" value="Archiver"
+                                                       onclick="PF('confirmationArchive').show();" ajax="true" >
+                                            <span class="fa fa-file-archive"></span>
 
+                                        </p:commandLink>
+                                    </li>
+                                    <li><p:commandLink rendered="#{editorCtrl.isEnabledButton('ReCalc')}" value="Calculer Sélection" title="Reclaculer les lignes sélectionnées"
+                                                       ajax="true"
+                                                       actionListener="#{editorCtrl.onReCalcSelection}" >
+                                            <span class="fa fa-function"></span>
+
+                                        </p:commandLink></li>
+                                    <li><p:commandLink rendered="#{editorCtrl.isEnabledButton('ReCalc')}" value="Enregister Sélection" title="Reenregistrer les lignes sélectionnées"
+                                                       ajax="true"
+                                                       actionListener="#{editorCtrl.onReSaveSelection}" >
+                                            <span class="fa fa-save"></span>
+
+                                        </p:commandLink></li>
+                                    <li class="divider"></li>
+                                </ui:fragment>
+                                <ui:fragment rendered="#{editorCtrl.listMode}">
+                                    <li><p:commandLink rendered="#{editorCtrl.isEnabledButton('ReCalc')}" value="Calculer BD" title="Reclaculer Toutes les entités"
+                                                       ajax="true"
+                                                       actionListener="#{editorCtrl.onReCalcAll}" >
+                                            <span class="fa fa-function"></span>
+
+                                        </p:commandLink></li>
+
+                                    <li><p:commandLink rendered="#{editorCtrl.isEnabledButton('ReCalc')}" value="Calculer Entité" title="Reclaculer Toutes les lignes"
+                                                       ajax="true"
+                                                       actionListener="#{editorCtrl.onReCalcEntity}" >
+                                            <span class="fa fa-function"></span>
+
+                                        </p:commandLink></li>
+
+                                </ui:fragment>
                             </ul>
                         </h:panelGroup>
 
@@ -148,7 +221,7 @@ and open the template in the editor.
                                          update=" :listForm  :pageTitleForm"
                                          />
 
-                        <p:commandButton value="#{editorCtrl.model.current.rowPos+1}/#{editorCtrl.model.list.size()}"
+                        <p:commandButton value="#{editorCtrl.navigateLabel}"
                                          rendered="#{editorCtrl.enabledNavigate}"
                                          styleClass="btn btn-default"
                                          disabled="true"
@@ -170,17 +243,19 @@ and open the template in the editor.
                                 <ui:repeat value="#{editorCtrl.model.actions}" var="aac">
                                     <li>
                                         <p:commandLink value="#{aac.value}" rendered="#{(aac.type eq 'invoke') or (aac.type eq 'dialog')}"
-                                                         process=":listForm :listForm:listTable @form"
-                                                         actionListener="#{editorCtrl.openActionDialog(aac.key)}"
-                                                         update=" :listForm   :pageTitleForm"
-                                                         ajax="true"
-                                                         />
+                                                       process=":listForm :listForm:listTable @form"
+                                                       actionListener="#{editorCtrl.openActionDialog(aac.key)}"
+                                                       update=" :listForm   :pageTitleForm"
+                                                       ajax="true"
+                                                       >
+                                            <span class="fa fa-#{aac.icon}"></span>
+                                        </p:commandLink>
                                         <p:commandLink value="#{aac.value}" rendered="#{(aac.type eq 'goto')}"
-                                                         title="#{aac.description}"
-                                                         process=":listForm:listTable @form"
-                                                         action="#{vr.gotoPage(aac.command[0],aac.command[1])}"
-                                                         ajax="true"
-                                                         />
+                                                       title="#{aac.description}"
+                                                       process=":listForm:listTable @form"
+                                                       action="#{vr.gotoPage(aac.command[0],aac.command[1])}"
+                                                       ajax="true"
+                                                       />
 
                                     </li>
                                 </ui:repeat>
@@ -188,19 +263,19 @@ and open the template in the editor.
                         </h:panelGroup>
 
                         <!-- some crazy bug in PF cant help make this work (stackoverflow in dynaform) -->
-<!--                        <ui:repeat value="#_{editorCtrl.model.actions}" var="aac">
-                            <p:commandButton value="#_{aac.value}" rendered="#_{(aac.type eq 'invoke') or (aac.type eq 'dialog')}"
-                                             styleClass="btn btn-default"
-                                             process=":listForm :listForm:listTable @form"
-                                             actionListener="#_{editorCtrl.openActionDialog(aac.key)}"
-                                             update=" :listForm   :pageTitleForm"/>
-                            <p:commandButton value="#_{aac.value}" rendered="#_{(aac.type eq 'goto')}"
-                                             title="#_{aac.description}"
-                                             styleClass="btn btn-default"
-                                             process=":listForm:listTable @form"
-                                             action="#_{vr.gotoPage(aac.command[0],aac.command[1])}"
-                                             />
-                        </ui:repeat>-->
+                        <!--                        <ui:repeat value="#_{editorCtrl.model.actions}" var="aac">
+                                                    <p:commandButton value="#_{aac.value}" rendered="#_{(aac.type eq 'invoke') or (aac.type eq 'dialog')}"
+                                                                     styleClass="btn btn-default"
+                                                                     process=":listForm :listForm:listTable @form"
+                                                                     actionListener="#_{editorCtrl.openActionDialog(aac.key)}"
+                                                                     update=" :listForm   :pageTitleForm"/>
+                                                    <p:commandButton value="#_{aac.value}" rendered="#_{(aac.type eq 'goto')}"
+                                                                     title="#_{aac.description}"
+                                                                     styleClass="btn btn-default"
+                                                                     process=":listForm:listTable @form"
+                                                                     action="#_{vr.gotoPage(aac.command[0],aac.command[1])}"
+                                                                     />
+                                                </ui:repeat>-->
                         <!-- -->
 
                     </h:panelGroup>
@@ -374,10 +449,10 @@ and open the template in the editor.
                                                 </div>
                                             </f:facet>
                                         </p:dataTable>
-<!--                                        <p:contextMenu id="contextMenu4ListTable" for=":listForm:listTable">
-                                            <p:menuitem value="View" icon="ui-icon-search" oncomplete="PF('carDialog').show()"/>
-                                            <p:menuitem value="Delete" icon="ui-icon-close" oncomplete="PF('carDialog').show()"/>
-                                        </p:contextMenu>-->
+                                        <!--                                        <p:contextMenu id="contextMenu4ListTable" for=":listForm:listTable">
+                                                                                    <p:menuitem value="View" icon="ui-icon-search" oncomplete="PF('carDialog').show()"/>
+                                                                                    <p:menuitem value="Delete" icon="ui-icon-close" oncomplete="PF('carDialog').show()"/>
+                                                                                </p:contextMenu>-->
                                     </div>
 
                                 </div>
@@ -626,6 +701,13 @@ and open the template in the editor.
                                                 <h3>#{data.value}</h3>
                                                 <p:separator/>
                                             </h:panelGrid>
+                                        </pe:dynaFormControl>
+                                        <pe:dynaFormControl type="label"  >
+                                            <p:selectBooleanCheckbox value="#{data.bulkSelected}" itemLabel="#{data.value}" 
+                                                                     rendered="#{editorCtrl.bulkUpdateMode}"
+                                                                     disabled="#{data.disabled}"
+                                                                     />
+                                            <p:outputLabel value="#{data.value}" rendered="#{!editorCtrl.bulkUpdateMode}"/>
                                         </pe:dynaFormControl>
 
                                         <pe:dynaFormControl type="entityDetail">

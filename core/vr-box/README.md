@@ -14,7 +14,7 @@ nuts install -y vr-box
 You should see something like
 
 ```
-net.vpc.app.nuts.toolbox:vr-box#1.13.16.0 installed successfully. Set as default.
+net.thevpc.nuts.toolbox:vr-box#1.13.16.0 installed successfully. Set as default.
 ```
 
 ## Requirements

@@ -10,7 +10,7 @@
     <url>https://github.com/thevpc/vr/wiki</url>
 
     <parent>
-        <groupId>net.vpc.app.vain-ruling.core</groupId>
+        <groupId>net.thevpc.app.vain-ruling.core</groupId>
         <artifactId>vr-plugin</artifactId>
         <version>1.0</version>
     </parent>
@@ -21,62 +21,62 @@
 
     <dependencies>
         <dependency>
-            <groupId>net.vpc.app.vain-ruling.core</groupId>
+            <groupId>net.thevpc.app.vain-ruling.core</groupId>
             <artifactId>vr-core-model</artifactId>
             <version>${version.vr}</version>
         </dependency>
         <!--        <dependency>
-            <groupId>net.vpc.app.vain-ruling.plugins.equipments</groupId>
+            <groupId>net.thevpc.app.vain-ruling.plugins.equipments</groupId>
             <artifactId>vr-equipments-model</artifactId>
             <version>${version.vr}</version>
         </dependency>
         <dependency>
-            <groupId>net.vpc.app.vain-ruling.plugins.tasks</groupId>
+            <groupId>net.thevpc.app.vain-ruling.plugins.tasks</groupId>
             <artifactId>vr-tasks-model</artifactId>
             <version>${version.vr}</version>
         </dependency>
         <dependency>
-            <groupId>net.vpc.app.vain-ruling.plugins.academic</groupId>
+            <groupId>net.thevpc.app.vain-ruling.plugins.academic</groupId>
             <artifactId>vr-academic-model</artifactId>
             <version>${version.vr}</version>
         </dependency>
         <dependency>
-            <groupId>net.vpc.app.vain-ruling.plugins.mailbox</groupId>
+            <groupId>net.thevpc.app.vain-ruling.plugins.mailbox</groupId>
             <artifactId>vr-mailbox-model</artifactId>
             <version>${version.vr}</version>
         </dependency>
         <dependency>
-            <groupId>net.vpc.app.vain-ruling.plugins.academic-project-based-learning</groupId>
+            <groupId>net.thevpc.app.vain-ruling.plugins.academic-project-based-learning</groupId>
             <artifactId>vr-academic-project-based-learning-model</artifactId>
             <version>${version.vr}</version>
         </dependency>
         <dependency>
-            <groupId>net.vpc.app.vain-ruling.plugins.forum</groupId>
+            <groupId>net.thevpc.app.vain-ruling.plugins.forum</groupId>
             <artifactId>vr-forum-model</artifactId>
             <version>${version.vr}</version>
         </dependency>
         <dependency>
-            <groupId>net.vpc.app.vain-ruling.plugins.academic-report</groupId>
+            <groupId>net.thevpc.app.vain-ruling.plugins.academic-report</groupId>
             <artifactId>vr-academic-report-model</artifactId>
             <version>${version.vr}</version>
         </dependency>
         <dependency>
-            <groupId>net.vpc.app.vain-ruling.plugins.academic-perf-eval</groupId>
+            <groupId>net.thevpc.app.vain-ruling.plugins.academic-perf-eval</groupId>
             <artifactId>vr-academic-perf-eval-model</artifactId>
             <version>${version.vr}</version>
         </dependency>
         <dependency>
-            <groupId>net.vpc.app.vain-ruling.plugins.academic-planning</groupId>
+            <groupId>net.thevpc.app.vain-ruling.plugins.academic-planning</groupId>
             <artifactId>vr-academic-planning-model</artifactId>
             <version>${version.vr}</version>
         </dependency>
         <dependency>
-            <groupId>net.vpc.app.vain-ruling.plugins.dev-toolbox</groupId>
+            <groupId>net.thevpc.app.vain-ruling.plugins.dev-toolbox</groupId>
             <artifactId>vr-dev-toolbox-model</artifactId>
             <version>${version.vr}</version>
         </dependency>
         <dependency>
-            <groupId>net.vpc.app.vain-ruling.plugins.academic-profile</groupId>
+            <groupId>net.thevpc.app.vain-ruling.plugins.academic-profile</groupId>
             <artifactId>vr-academic-profile-model</artifactId>
             <version>${version.vr}</version>
         </dependency>-->

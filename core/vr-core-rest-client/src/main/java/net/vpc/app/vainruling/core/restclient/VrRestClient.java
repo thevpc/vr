@@ -1,4 +1,4 @@
-package net.vpc.app.vainruling.core.restclient;
+package net.thevpc.app.vainruling.core.restclient;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;

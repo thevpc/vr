@@ -1,4 +1,4 @@
-package net.vpc.app.vr.nb.vr.nb.integration.ide;
+package net.thevpc.app.vr.nb.vr.nb.integration.ide;
 
 import java.util.logging.Level;
 import junit.framework.Test;

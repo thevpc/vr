@@ -3,9 +3,9 @@ package ${{packageName(ProjectGroup)}}.${{packageName(ModuleName)}}.web;
 import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import net.vpc.app.vainruling.core.service.CorePlugin;
-import net.vpc.app.vainruling.VrOnPageLoad;
-import net.vpc.app.vainruling.VrPage;
+import net.thevpc.app.vainruling.core.service.CorePlugin;
+import net.thevpc.app.vainruling.VrOnPageLoad;
+import net.thevpc.app.vainruling.VrPage;
 import ${{packageName(ProjectGroup)}}.${{packageName(ModuleName)}}.service.*;
 
 /**

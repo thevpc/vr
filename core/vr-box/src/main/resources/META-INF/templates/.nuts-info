@@ -1,1 +1,1 @@
-net.vpc.app.nuts.toolbox.worky.noscan=true 
+{'net.thevpc.nuts.toolbox.worky.scan':false}

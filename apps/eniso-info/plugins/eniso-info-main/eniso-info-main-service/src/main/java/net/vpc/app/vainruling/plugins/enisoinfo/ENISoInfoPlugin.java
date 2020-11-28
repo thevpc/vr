@@ -1,4 +1,4 @@
-package net.vpc.app.vainruling.plugins.enisoinfo;
+package net.thevpc.app.vainruling.plugins.enisoinfo;
 
 import java.util.HashSet;
 import java.util.List;
@@ -6,27 +6,27 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.vpc.app.vainruling.core.service.CorePlugin;
-import net.vpc.app.vainruling.core.service.model.AppContact;
-import net.vpc.app.vainruling.core.service.model.AppDepartment;
-import net.vpc.app.vainruling.core.service.model.AppProfile;
-import net.vpc.app.vainruling.core.service.model.AppUser;
-import net.vpc.app.vainruling.core.service.model.content.AppArticleDisposition;
-import net.vpc.app.vainruling.VrPlugin;
-import net.vpc.app.vainruling.core.service.util.Arg;
-import net.vpc.app.vainruling.core.service.util.I18n;
-import net.vpc.app.vainruling.plugins.academic.model.config.AcademicStudent;
-import net.vpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
-import net.vpc.common.strings.StringUtils;
-import net.vpc.upa.Document;
-import net.vpc.upa.EntityUsage;
-import net.vpc.upa.PersistenceUnit;
-import net.vpc.upa.RemoveOptions;
-import net.vpc.upa.UPA;
-import net.vpc.upa.persistence.UConnection;
-import net.vpc.upa.types.I18NString;
-import net.vpc.app.vainruling.VrInstall;
-import net.vpc.app.vainruling.VrStart;
+import net.thevpc.app.vainruling.core.service.CorePlugin;
+import net.thevpc.app.vainruling.core.service.model.AppContact;
+import net.thevpc.app.vainruling.core.service.model.AppDepartment;
+import net.thevpc.app.vainruling.core.service.model.AppProfile;
+import net.thevpc.app.vainruling.core.service.model.AppUser;
+import net.thevpc.app.vainruling.core.service.model.content.AppArticleDisposition;
+import net.thevpc.app.vainruling.VrPlugin;
+import net.thevpc.app.vainruling.core.service.util.Arg;
+import net.thevpc.app.vainruling.core.service.util.I18n;
+import net.thevpc.app.vainruling.plugins.academic.model.config.AcademicStudent;
+import net.thevpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
+import net.thevpc.common.strings.StringUtils;
+import net.thevpc.upa.Document;
+import net.thevpc.upa.EntityUsage;
+import net.thevpc.upa.PersistenceUnit;
+import net.thevpc.upa.RemoveOptions;
+import net.thevpc.upa.UPA;
+import net.thevpc.upa.persistence.UConnection;
+import net.thevpc.upa.types.I18NString;
+import net.thevpc.app.vainruling.VrInstall;
+import net.thevpc.app.vainruling.VrStart;
 
 @VrPlugin
 public class ENISoInfoPlugin {

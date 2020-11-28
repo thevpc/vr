@@ -1,35 +1,35 @@
 FIX ME
 
-03-Oct-2019 05:22:23.073 FINE [catalina-nuts-exec-6] net.vpc.upa.impl.persistence.DefaultPersistenceStore.createConnection Connection created com.mysql.jdbc.JDBC4Connection@516ae7be : jdbc:mysql://localhost/enisoinfodb?zeroDateTimeBehavior=convertToNull&useUnicode=yes&characterEncoding=UTF-8
-03-Oct-2019 05:22:23.092 FINE [catalina-nuts-exec-6] net.vpc.upa.impl.persistence.AbstractUConnection.<init> Active Connections 1/1
-03-Oct-2019 05:22:23.093 FINE [catalina-nuts-exec-6] net.vpc.upa.impl.persistence.AbstractUConnection.close Active Connections 0/1
-03-Oct-2019 05:22:32.759 INFO [catalina-nuts-exec-6] net.vpc.upa.impl.util.PlatformLenientType.getValidType Lenient Type org.apache.commons.dbcp2.BasicDataSource loaded successfully
-03-Oct-2019 05:22:32.905 FINE [catalina-nuts-exec-6] net.vpc.upa.impl.persistence.DefaultPersistenceStore.createConnection Connection created 946852060, URL=jdbc:mysql://localhost/enisoinfodb?zeroDateTimeBehavior=convertToNull&useUnicode=yes&characterEncoding=UTF-8, UserName=enisoinfouser@localhost, MySQL Connector Java : jdbc:mysql://localhost/enisoinfodb?zeroDateTimeBehavior=convertToNull&useUnicode=yes&characterEncoding=UTF-8
-03-Oct-2019 05:22:32.907 FINE [catalina-nuts-exec-6] net.vpc.upa.impl.persistence.AbstractUConnection.<init> Active Connections 1/1
-03-Oct-2019 05:22:32.967 FINE [catalina-nuts-exec-6] net.vpc.upa.impl.persistence.DefaultTransaction.beginImpl Transaction Begin  169CD319
-03-Oct-2019 05:22:44.033 CONFIG [catalina-nuts-exec-6] net.vpc.upa.impl.persistence.AbstractPersistenceStore.getFieldPersistenceState Field Persistence State DIRTY        AcademicTeacherCV.viewsCounter 
+03-Oct-2019 05:22:23.073 FINE [catalina-nuts-exec-6] net.thevpc.upa.impl.persistence.DefaultPersistenceStore.createConnection Connection created com.mysql.jdbc.JDBC4Connection@516ae7be : jdbc:mysql://localhost/enisoinfodb?zeroDateTimeBehavior=convertToNull&useUnicode=yes&characterEncoding=UTF-8
+03-Oct-2019 05:22:23.092 FINE [catalina-nuts-exec-6] net.thevpc.upa.impl.persistence.AbstractUConnection.<init> Active Connections 1/1
+03-Oct-2019 05:22:23.093 FINE [catalina-nuts-exec-6] net.thevpc.upa.impl.persistence.AbstractUConnection.close Active Connections 0/1
+03-Oct-2019 05:22:32.759 INFO [catalina-nuts-exec-6] net.thevpc.upa.impl.util.PlatformLenientType.getValidType Lenient Type org.apache.commons.dbcp2.BasicDataSource loaded successfully
+03-Oct-2019 05:22:32.905 FINE [catalina-nuts-exec-6] net.thevpc.upa.impl.persistence.DefaultPersistenceStore.createConnection Connection created 946852060, URL=jdbc:mysql://localhost/enisoinfodb?zeroDateTimeBehavior=convertToNull&useUnicode=yes&characterEncoding=UTF-8, UserName=enisoinfouser@localhost, MySQL Connector Java : jdbc:mysql://localhost/enisoinfodb?zeroDateTimeBehavior=convertToNull&useUnicode=yes&characterEncoding=UTF-8
+03-Oct-2019 05:22:32.907 FINE [catalina-nuts-exec-6] net.thevpc.upa.impl.persistence.AbstractUConnection.<init> Active Connections 1/1
+03-Oct-2019 05:22:32.967 FINE [catalina-nuts-exec-6] net.thevpc.upa.impl.persistence.DefaultTransaction.beginImpl Transaction Begin  169CD319
+03-Oct-2019 05:22:44.033 CONFIG [catalina-nuts-exec-6] net.thevpc.upa.impl.persistence.AbstractPersistenceStore.getFieldPersistenceState Field Persistence State DIRTY        AcademicTeacherCV.viewsCounter
 	 Found    ColumnDef{columnName=VIEWS_COUNTER, tableName=ACADEMIC_TEACHER_CV, columnTypeName=DECIMAL, size=10, scale=0, nullable=true, autoIncrement=false, defaultDefinition=null, columnType=3, schemaName=null, catalogName=enisoinfodb}
 	 Expected ColumnDef{columnName=VIEWS_COUNTER, tableName=ACADEMIC_TEACHER_CV, columnTypeName=NUMERIC, size=-1, scale=-1, nullable=false, autoIncrement=false, defaultDefinition=0, columnType=-1, schemaName=null, catalogName=null}
-03-Oct-2019 05:22:44.034 FINE [catalina-nuts-exec-6] net.vpc.upa.impl.persistence.commit.PrimitiveFieldStructureCommitAction.persist [.main] Commit AcademicTeacherCV.viewsCounter / COLUMN : found DIRTY, persist
-03-Oct-2019 05:22:44.181 FINE [catalina-nuts-exec-6] net.vpc.upa.impl.persistence.AbstractUConnection.executeNonQuery [.main][ACADEMIC_TEACHER_CV] executeNonQuery Alter Table ACADEMIC_TEACHER_CV Modify VIEWS_COUNTER NUMERIC ;; time = 133
-03-Oct-2019 05:22:57.564 CONFIG [catalina-nuts-exec-6] net.vpc.upa.impl.persistence.AbstractPersistenceStore.getFieldPersistenceState Field Persistence State DIRTY        AppUser.connexionCount 
+03-Oct-2019 05:22:44.034 FINE [catalina-nuts-exec-6] net.thevpc.upa.impl.persistence.commit.PrimitiveFieldStructureCommitAction.persist [.main] Commit AcademicTeacherCV.viewsCounter / COLUMN : found DIRTY, persist
+03-Oct-2019 05:22:44.181 FINE [catalina-nuts-exec-6] net.thevpc.upa.impl.persistence.AbstractUConnection.executeNonQuery [.main][ACADEMIC_TEACHER_CV] executeNonQuery Alter Table ACADEMIC_TEACHER_CV Modify VIEWS_COUNTER NUMERIC ;; time = 133
+03-Oct-2019 05:22:57.564 CONFIG [catalina-nuts-exec-6] net.thevpc.upa.impl.persistence.AbstractPersistenceStore.getFieldPersistenceState Field Persistence State DIRTY        AppUser.connexionCount
 	 Found    ColumnDef{columnName=CONNEXION_COUNT, tableName=APP_USER, columnTypeName=DECIMAL, size=10, scale=0, nullable=true, autoIncrement=false, defaultDefinition=null, columnType=3, schemaName=null, catalogName=enisoinfodb}
 	 Expected ColumnDef{columnName=CONNEXION_COUNT, tableName=APP_USER, columnTypeName=NUMERIC, size=-1, scale=-1, nullable=false, autoIncrement=false, defaultDefinition=0, columnType=-1, schemaName=null, catalogName=null}
-03-Oct-2019 05:22:57.564 FINE [catalina-nuts-exec-6] net.vpc.upa.impl.persistence.commit.PrimitiveFieldStructureCommitAction.persist [.main] Commit AppUser.connexionCount / COLUMN : found DIRTY, persist
-03-Oct-2019 05:22:57.582 FINE [catalina-nuts-exec-6] net.vpc.upa.impl.persistence.AbstractUConnection.executeNonQuery [.main][APP_USER] executeNonQuery Alter Table APP_USER Modify CONNEXION_COUNT NUMERIC ;; time = 2
-03-Oct-2019 05:23:02.441 CONFIG [catalina-nuts-exec-6] net.vpc.upa.impl.persistence.AbstractPersistenceStore.getFieldPersistenceState Field Persistence State DIRTY        AcademicStudentCV.viewsCounter 
+03-Oct-2019 05:22:57.564 FINE [catalina-nuts-exec-6] net.thevpc.upa.impl.persistence.commit.PrimitiveFieldStructureCommitAction.persist [.main] Commit AppUser.connexionCount / COLUMN : found DIRTY, persist
+03-Oct-2019 05:22:57.582 FINE [catalina-nuts-exec-6] net.thevpc.upa.impl.persistence.AbstractUConnection.executeNonQuery [.main][APP_USER] executeNonQuery Alter Table APP_USER Modify CONNEXION_COUNT NUMERIC ;; time = 2
+03-Oct-2019 05:23:02.441 CONFIG [catalina-nuts-exec-6] net.thevpc.upa.impl.persistence.AbstractPersistenceStore.getFieldPersistenceState Field Persistence State DIRTY        AcademicStudentCV.viewsCounter
 	 Found    ColumnDef{columnName=VIEWS_COUNTER, tableName=ACADEMIC_STUDENT_CV, columnTypeName=DECIMAL, size=10, scale=0, nullable=true, autoIncrement=false, defaultDefinition=null, columnType=3, schemaName=null, catalogName=enisoinfodb}
 	 Expected ColumnDef{columnName=VIEWS_COUNTER, tableName=ACADEMIC_STUDENT_CV, columnTypeName=NUMERIC, size=-1, scale=-1, nullable=false, autoIncrement=false, defaultDefinition=0, columnType=-1, schemaName=null, catalogName=null}
-03-Oct-2019 05:23:02.442 FINE [catalina-nuts-exec-6] net.vpc.upa.impl.persistence.commit.PrimitiveFieldStructureCommitAction.persist [.main] Commit AcademicStudentCV.viewsCounter / COLUMN : found DIRTY, persist
-03-Oct-2019 05:23:02.465 FINE [catalina-nuts-exec-6] net.vpc.upa.impl.persistence.AbstractUConnection.executeNonQuery [.main][ACADEMIC_STUDENT_CV] executeNonQuery Alter Table ACADEMIC_STUDENT_CV Modify VIEWS_COUNTER NUMERIC ;; time = 8
-03-Oct-2019 05:23:09.818 FINE [catalina-nuts-exec-6] net.vpc.upa.impl.persistence.DefaultTransaction.commitImpl Transaction Commit 169CD319
-03-Oct-2019 05:23:09.819 FINE [catalina-nuts-exec-6] net.vpc.upa.impl.persistence.AbstractUConnection.close Active Connections 0/1
-03-Oct-2019 05:23:09.826 FINE [catalina-nuts-exec-6] net.vpc.upa.impl.context.DefaultSession.close Session [Session24FB48AF] : Closed
-03-Oct-2019 05:23:09.826 FINE [catalina-nuts-exec-6] net.vpc.upa.UPA.getContext UPA Context Loaded in 109,780 ms
-03-Oct-2019 05:23:09.832 FINE [catalina-nuts-exec-6] net.vpc.upa.impl.DefaultPersistenceGroup.setCurrentSession Session Changed [Session1F46AB4D] for PersistenceGroup []
-03-Oct-2019 05:23:09.852 FINE [catalina-nuts-exec-6] net.vpc.upa.impl.persistence.DefaultPersistenceStore.createConnection Connection created 87904185, URL=jdbc:mysql://localhost/enisoinfodb?zeroDateTimeBehavior=convertToNull&useUnicode=yes&characterEncoding=UTF-8, UserName=enisoinfouser@localhost, MySQL Connector Java : jdbc:mysql://localhost/enisoinfodb?zeroDateTimeBehavior=convertToNull&useUnicode=yes&characterEncoding=UTF-8
-03-Oct-2019 05:23:09.854 FINE [catalina-nuts-exec-6] net.vpc.upa.impl.persistence.AbstractUConnection.<init> Active Connections 1/1
-03-Oct-2019 05:23:09.855 FINE [catalina-nuts-exec-6] net.vpc.upa.impl.persistence.DefaultTransaction.beginImpl Transaction Begin  7E2458E5
+03-Oct-2019 05:23:02.442 FINE [catalina-nuts-exec-6] net.thevpc.upa.impl.persistence.commit.PrimitiveFieldStructureCommitAction.persist [.main] Commit AcademicStudentCV.viewsCounter / COLUMN : found DIRTY, persist
+03-Oct-2019 05:23:02.465 FINE [catalina-nuts-exec-6] net.thevpc.upa.impl.persistence.AbstractUConnection.executeNonQuery [.main][ACADEMIC_STUDENT_CV] executeNonQuery Alter Table ACADEMIC_STUDENT_CV Modify VIEWS_COUNTER NUMERIC ;; time = 8
+03-Oct-2019 05:23:09.818 FINE [catalina-nuts-exec-6] net.thevpc.upa.impl.persistence.DefaultTransaction.commitImpl Transaction Commit 169CD319
+03-Oct-2019 05:23:09.819 FINE [catalina-nuts-exec-6] net.thevpc.upa.impl.persistence.AbstractUConnection.close Active Connections 0/1
+03-Oct-2019 05:23:09.826 FINE [catalina-nuts-exec-6] net.thevpc.upa.impl.context.DefaultSession.close Session [Session24FB48AF] : Closed
+03-Oct-2019 05:23:09.826 FINE [catalina-nuts-exec-6] net.thevpc.upa.UPA.getContext UPA Context Loaded in 109,780 ms
+03-Oct-2019 05:23:09.832 FINE [catalina-nuts-exec-6] net.thevpc.upa.impl.DefaultPersistenceGroup.setCurrentSession Session Changed [Session1F46AB4D] for PersistenceGroup []
+03-Oct-2019 05:23:09.852 FINE [catalina-nuts-exec-6] net.thevpc.upa.impl.persistence.DefaultPersistenceStore.createConnection Connection created 87904185, URL=jdbc:mysql://localhost/enisoinfodb?zeroDateTimeBehavior=convertToNull&useUnicode=yes&characterEncoding=UTF-8, UserName=enisoinfouser@localhost, MySQL Connector Java : jdbc:mysql://localhost/enisoinfodb?zeroDateTimeBehavior=convertToNull&useUnicode=yes&characterEncoding=UTF-8
+03-Oct-2019 05:23:09.854 FINE [catalina-nuts-exec-6] net.thevpc.upa.impl.persistence.AbstractUConnection.<init> Active Connections 1/1
+03-Oct-2019 05:23:09.855 FINE [catalina-nuts-exec-6] net.thevpc.upa.impl.persistence.DefaultTransaction.beginImpl Transaction Begin  7E2458E5
 2019-10-03 05:23:09,845 -- DEBUG -- org.springframework.beans.factory.support.DefaultListableBeanFactory -- Returning cached instance of singleton bean 'traceService'
 2019-10-03 05:23:09,867 -- DEBUG -- org.springframework.beans.factory.support.DefaultListableBeanFactory -- Returning cached instance of singleton bean 'corePlugin'
 

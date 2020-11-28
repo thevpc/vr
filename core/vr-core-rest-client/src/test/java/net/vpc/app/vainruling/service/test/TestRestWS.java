@@ -1,7 +1,7 @@
-//package net.vpc.app.vainruling.service.test;
+//package net.thevpc.app.vainruling.service.test;
 //
 //
-//import net.vpc.upa.exceptions.IllegalArgumentException;
+//import net.thevpc.upa.exceptions.IllegalArgumentException;
 //import org.apache.http.HttpResponse;
 //import org.apache.http.client.ClientProtocolException;
 //import org.apache.http.client.CookieStore;

@@ -18,8 +18,8 @@ and open the template in the editor.
 
     <h:body>
 
-        <!--@elvariable id="globalStatCtrl" type="net.vpc.app.vainruling.plugins.academic.web.load.GlobalStatCtrl"-->
-        <!--@elvariable id="vr" type="net.vpc.app.vainruling.core.web.jsf.Vr"-->
+        <!--@elvariable id="globalStatCtrl" type="net.thevpc.app.vainruling.plugins.academic.web.load.GlobalStatCtrl"-->
+        <!--@elvariable id="vr" type="net.thevpc.app.vainruling.core.web.jsf.Vr"-->
 
         <ui:composition template="#{vr.privateTemplatePath}">
             <ui:define name="content">
@@ -295,6 +295,136 @@ and open the template in the editor.
                                             <p:outputLabel value="#{item.discipline.name}"/>
                                         </p:column>
                                         <p:columns value="#{globalStatCtrl.globalStatSituations}" var="sit"
+                                                   headerText="#{sit.name}">
+                                            <p:outputLabel
+                                                value="#{vr.valOrPercentString(globalStatCtrl.percent,item.stat.getAssignment(null,sit,null).teachersCount,globalStatCtrl.model.stat.teachersCount)}"/>
+                                        </p:columns>
+                                    </p:dataTable>
+                                </div>
+                            </div>
+                            <div >
+                                <div class="table-responsive">
+                                    <p:column styleClass="ui-widget-header_" colspan="6"><h1><p:outputLabel
+                                                value="Enseignants par Noyau Pédagogique"/></h1></p:column>
+                                    <p:dataTable id="tbl3" value="#{globalStatCtrl.globalStatByCourseCores}"
+                                                 var="item"
+                                                 paginatorAlwaysVisible="true"
+                                                 paginator="true"
+                                                 paginatorPosition="bottom"
+                                                 rows="10"
+                                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+                                                 rowsPerPageTemplate="10,20,50,100,200,1000"
+                                                 emptyMessage=""
+                                                 >
+                                        <f:facet name="footer">
+                                            <p:outputLabel value="Total #{globalStatCtrl.globalStatByCourseCores.size()}"/>
+                                            <div style="float: right;">
+                                                <h:commandLink>
+                                                    <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-xls16.png"
+                                                                    width="16"/>
+                                                    <p:dataExporter type="xls" target="tbl3"
+                                                                    fileName="#{corePlugin.getPreferredFileName('teaches-count-a')}" postProcessor="#{vr.postProcessDataExporterXLS}"/>
+                                                </h:commandLink>
+
+                                                <h:commandLink>
+                                                    <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-pdf16.png"
+                                                                    width="16"/>
+                                                    <p:dataExporter type="pdf" target="tbl3"
+                                                                    fileName="#{corePlugin.getPreferredFileName('teaches-count-a')}"/>
+                                                </h:commandLink>
+
+                                                <h:commandLink>
+                                                    <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-csv16.png"
+                                                                    width="16"/>
+                                                    <p:dataExporter type="csv" target="tbl3"
+                                                                    fileName="#{corePlugin.getPreferredFileName('teaches-count-a')}"/>
+                                                </h:commandLink>
+
+                                                <h:commandLink>
+                                                    <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-xml16.png"
+                                                                    width="16"/>
+                                                    <p:dataExporter type="xml" target="tbl3"
+                                                                    fileName="#{corePlugin.getPreferredFileName('teaches-count-a')}"/>
+                                                </h:commandLink>
+                                            </div>
+                                        </f:facet>
+                                        <p:column headerText="Noyau">
+                                            <p:outputLabel value="#{item.courseCore.name}"/>
+                                        </p:column>
+                                        <p:column headerText="Total Enseignants">
+                                            <p:outputLabel
+                                                value="#{vr.valOrPercentString(globalStatCtrl.percent,item.stat.teachersCount,globalStatCtrl.model.stat.teachersCount)}"/>
+                                        </p:column>
+                                        <p:column headerText="Congés">
+                                            <p:outputLabel
+                                                value="#{vr.valOrPercentString(globalStatCtrl.percent,item.stat.teachersLeaveStat.teachersCount,globalStatCtrl.model.stat.teachersCount)}"/>
+                                        </p:column>
+                                        <p:column headerText="Permanents">
+                                            <p:outputLabel
+                                                value="#{vr.valOrPercentString(globalStatCtrl.percent,item.stat.teachersPermanentStat.teachersCount,globalStatCtrl.model.stat.teachersCount)}"/>
+                                        </p:column>
+                                        <p:column headerText="Contractuel">
+                                            <p:outputLabel
+                                                value="#{vr.valOrPercentString(globalStatCtrl.percent,item.stat.teachersContractualStat.teachersCount,globalStatCtrl.model.stat.teachersCount)}"/>
+                                        </p:column>
+                                        <p:column headerText="Vacataires">
+                                            <p:outputLabel
+                                                value="#{vr.valOrPercentString(globalStatCtrl.percent,item.stat.teachersTemporaryStat.teachersCount,globalStatCtrl.model.stat.teachersCount)}"/>
+                                        </p:column>
+                                    </p:dataTable>
+                                </div>
+                            </div>
+                            <div >
+                                <div class="table-responsive">
+                                    <p:column styleClass="ui-widget-header_" colspan="6"><h1><p:outputLabel
+                                                value="Enseignants par Noyau et Situation"/></h1></p:column>
+                                    <p:dataTable id="tbl4" value="#{globalStatCtrl.globalStatByCourseCores}"
+                                                 var="item"
+                                                 paginatorAlwaysVisible="true"
+                                                 paginator="true"
+                                                 paginatorPosition="bottom"
+                                                 rows="10"
+                                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+                                                 rowsPerPageTemplate="10,20,50,100,200,1000"
+                                                 emptyMessage=""
+                                                 >
+                                        <f:facet name="footer">
+                                            <p:outputLabel value="Total #{globalStatCtrl.globalStatByCourseCores.size()}"/>
+                                            <div style="float: right;">
+                                                <h:commandLink>
+                                                    <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-xls16.png"
+                                                                    width="16"/>
+                                                    <p:dataExporter type="xls" target="tbl4"
+                                                                    fileName="#{corePlugin.getPreferredFileName('teaches-count-b')}" postProcessor="#{vr.postProcessDataExporterXLS}"/>
+                                                </h:commandLink>
+
+                                                <h:commandLink>
+                                                    <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-pdf16.png"
+                                                                    width="16"/>
+                                                    <p:dataExporter type="pdf" target="tbl4"
+                                                                    fileName="#{corePlugin.getPreferredFileName('teaches-count-b')}"/>
+                                                </h:commandLink>
+
+                                                <h:commandLink>
+                                                    <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-csv16.png"
+                                                                    width="16"/>
+                                                    <p:dataExporter type="csv" target="tbl4"
+                                                                    fileName="#{corePlugin.getPreferredFileName('teaches-count-b')}"/>
+                                                </h:commandLink>
+
+                                                <h:commandLink>
+                                                    <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-xml16.png"
+                                                                    width="16"/>
+                                                    <p:dataExporter type="xml" target="tbl4"
+                                                                    fileName="#{corePlugin.getPreferredFileName('teaches-count-b')}"/>
+                                                </h:commandLink>
+                                            </div>
+                                        </f:facet>
+
+                                        <p:column headerText="Noyaux">
+                                            <p:outputLabel value="#{item.courseCore.name}"/>
+                                        </p:column>
+                                        <p:columns value="#{globalStatCtrl.globalStatSituationsAndCourseCore}" var="sit"
                                                    headerText="#{sit.name}">
                                             <p:outputLabel
                                                 value="#{vr.valOrPercentString(globalStatCtrl.percent,item.stat.getAssignment(null,sit,null).teachersCount,globalStatCtrl.model.stat.teachersCount)}"/>

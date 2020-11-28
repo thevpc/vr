@@ -1,14 +1,14 @@
 package enisoinfotest;
 
-import net.vpc.app.vainruling.core.service.CorePlugin;
-import net.vpc.app.vainruling.core.service.TraceService;
-import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.model.AppUser;
-import net.vpc.app.vainruling.plugins.academic.service.AcademicPlugin;
-import net.vpc.common.io.IOUtils;
-import net.vpc.common.strings.StringUtils;
-import net.vpc.common.util.Chronometer;
-import net.vpc.common.vfs.VFS;
+import net.thevpc.app.vainruling.core.service.CorePlugin;
+import net.thevpc.app.vainruling.core.service.TraceService;
+import net.thevpc.app.vainruling.core.service.VrApp;
+import net.thevpc.app.vainruling.core.service.model.AppUser;
+import net.thevpc.app.vainruling.plugins.academic.service.AcademicPlugin;
+import net.thevpc.common.io.IOUtils;
+import net.thevpc.common.strings.StringUtils;
+import net.thevpc.common.util.Chronometer;
+import net.thevpc.common.vfs.VFS;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,7 +20,7 @@ import java.util.List;
  */
 public class FindEmails {
     public static void main(String[] args) {
-        Chronometer ch = new Chronometer();
+        Chronometer ch = Chronometer.start();
         VrApp.runStandalone("test", "test");
         try {
             StringBuilder emails=new StringBuilder();

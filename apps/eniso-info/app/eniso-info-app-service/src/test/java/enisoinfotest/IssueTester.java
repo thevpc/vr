@@ -1,20 +1,20 @@
 package enisoinfotest;
 
-import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCourseAssignment;
-import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCourseLevel;
-import net.vpc.app.vainruling.plugins.academic.model.current.AcademicProgram;
-import net.vpc.app.vainruling.plugins.academic.model.current.AcademicCoursePlan;
-import net.vpc.app.vainruling.plugins.academic.model.current.AcademicClass;
-import net.vpc.app.vainruling.core.service.CorePlugin;
-import net.vpc.app.vainruling.core.service.VrApp;
-import net.vpc.app.vainruling.core.service.model.AppContact;
-import net.vpc.app.vainruling.core.service.model.AppDepartment;
-import net.vpc.app.vainruling.core.service.model.AppPeriod;
-import net.vpc.upa.Entity;
-import net.vpc.upa.NamedId;
-import net.vpc.upa.PersistenceUnit;
-import net.vpc.upa.UPA;
-import net.vpc.upa.impl.UPAImplDefaults;
+import net.thevpc.app.vainruling.plugins.academic.model.current.AcademicCourseAssignment;
+import net.thevpc.app.vainruling.plugins.academic.model.current.AcademicCourseLevel;
+import net.thevpc.app.vainruling.plugins.academic.model.current.AcademicProgram;
+import net.thevpc.app.vainruling.plugins.academic.model.current.AcademicCoursePlan;
+import net.thevpc.app.vainruling.plugins.academic.model.current.AcademicClass;
+import net.thevpc.app.vainruling.core.service.CorePlugin;
+import net.thevpc.app.vainruling.core.service.VrApp;
+import net.thevpc.app.vainruling.core.service.model.AppContact;
+import net.thevpc.app.vainruling.core.service.model.AppDepartment;
+import net.thevpc.app.vainruling.core.service.model.AppPeriod;
+import net.thevpc.upa.Entity;
+import net.thevpc.upa.NamedId;
+import net.thevpc.upa.PersistenceUnit;
+import net.thevpc.upa.UPA;
+import net.thevpc.upa.impl.UPAImplDefaults;
 
 import java.lang.reflect.Field;
 import java.util.List;
