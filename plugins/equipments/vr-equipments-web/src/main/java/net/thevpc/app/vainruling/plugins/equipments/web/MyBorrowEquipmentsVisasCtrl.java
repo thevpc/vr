@@ -86,13 +86,13 @@ public class MyBorrowEquipmentsVisasCtrl {
             return false;
         }
         switch (info.getRequest().getVisaUserStatus()) {
-            case EquipmentBorrowVisaStatus.ACCEPTED:
+            case ACCEPTED:
                 return !accept;
-            case EquipmentBorrowVisaStatus.REJECTED:
+            case REJECTED:
                 return accept;
-            case EquipmentBorrowVisaStatus.PENDING:
+            case PENDING:
                 return true;
-            case EquipmentBorrowVisaStatus.IGNORED:
+            case IGNORED:
                 return false;
         }
         return false;
@@ -110,13 +110,13 @@ public class MyBorrowEquipmentsVisasCtrl {
             return false;
         }
         switch (info.getRequest().getOperatorUserStatus()) {
-            case EquipmentBorrowVisaStatus.ACCEPTED:
+            case ACCEPTED:
                 return !accept;
-            case EquipmentBorrowVisaStatus.REJECTED:
+            case REJECTED:
                 return accept;
-            case EquipmentBorrowVisaStatus.PENDING:
+            case PENDING:
                 return true;
-            case EquipmentBorrowVisaStatus.IGNORED:
+            case IGNORED:
                 return false;
         }
         return false;
@@ -134,13 +134,13 @@ public class MyBorrowEquipmentsVisasCtrl {
             return false;
         }
         switch (info.getRequest().getSuperOperatorUserStatus()) {
-            case EquipmentBorrowVisaStatus.ACCEPTED:
+            case ACCEPTED:
                 return !accept;
-            case EquipmentBorrowVisaStatus.REJECTED:
+            case REJECTED:
                 return accept;
-            case EquipmentBorrowVisaStatus.PENDING:
+            case PENDING:
                 return true;
-            case EquipmentBorrowVisaStatus.IGNORED:
+            case IGNORED:
                 return false;
         }
         return false;
@@ -177,13 +177,13 @@ public class MyBorrowEquipmentsVisasCtrl {
             return false;
         }
         switch (info.getRequest().getFinalStatus()) {
-            case EquipmentBorrowRequestStatus.PENDING:
-            case EquipmentBorrowRequestStatus.ACCEPTED:
-            case EquipmentBorrowRequestStatus.BORROWED: {
+            case PENDING:
+            case ACCEPTED:
+            case BORROWED: {
                 return false;
             }
-            case EquipmentBorrowRequestStatus.REJECTED:
-            case EquipmentBorrowRequestStatus.RETURNED: {
+            case REJECTED:
+            case RETURNED: {
                 return true;
             }
             default: {

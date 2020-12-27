@@ -5,6 +5,7 @@
  */
 package net.thevpc.app.vainruling.plugins.inbox.service;
 
+import java.io.BufferedReader;
 import net.thevpc.app.vainruling.VrEditorPropertiesProvider;
 import net.thevpc.app.vainruling.VrInstall;
 import net.thevpc.app.vainruling.VrPlugin;
@@ -44,6 +45,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.StringReader;
 import java.util.*;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -920,9 +922,14 @@ public class MailboxPlugin {
 
     public void prepareToEach(GoMail m, String recipientProfiles, String filterExpression, boolean preferLogin) {
         m.namedDataSources().put("all", createUsersEmailDatasource(recipientProfiles));
+//        m.repeatDatasource(GoMailModuleSerializer.deserializeDataSource(
+//                "all "
+//                + (StringUtils.isBlank(filterExpression) ? "" : " where " + filterExpression)
+//        )
+//        );
         m.repeatDatasource(GoMailModuleSerializer.deserializeDataSource(
-                "all "
-                + (StringUtils.isBlank(filterExpression) ? "" : " where " + filterExpression)
+                "all",
+                new BufferedReader(new StringReader((StringUtils.isBlank(filterExpression) ? "" : " where " + filterExpression)))
         )
         );
         String mailAddr = preferLogin ? "login" : "email";

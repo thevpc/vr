@@ -233,7 +233,15 @@ public class XlsxLoadImporter {
                 getClass().getSimpleName(), Level.INFO);
     }
 
-    private boolean isXlsxImportFile(VFile file, String name) {
+    private boolean isXlsxImportFile(VFile file, String name, ImportOptions importOptions) {
+        if(importOptions!=null){
+            if(importOptions.getFileTypeName()!=null && importOptions.getFileTypeName().length()>0){
+                if(importOptions.getFileTypeName().equals(name)){
+                    return true;
+                }
+                    return false;
+            }
+        }
         return (file.getName().equals(name + ".xlsx") || file.getName().endsWith("." + name + ".xlsx"));
     }
 
@@ -257,19 +265,19 @@ public class XlsxLoadImporter {
                 return all;
             }
 
-            if (isXlsxImportFile(file, "departments")) {
+            if (isXlsxImportFile(file, "departments",importOptions)) {
                 return Arrays.asList(new ImportFile(file, 1));
             }
-            if (isXlsxImportFile(file, "teacher-degrees")) {
+            if (isXlsxImportFile(file, "teacher-degrees",importOptions)) {
                 return Arrays.asList(new ImportFile(file, 2));
             }
-            if (isXlsxImportFile(file, "teachers")) {
+            if (isXlsxImportFile(file, "teachers",importOptions)) {
                 return Arrays.asList(new ImportFile(file, 3));
             }
-            if (isXlsxImportFile(file, "students")) {
+            if (isXlsxImportFile(file, "students",importOptions)) {
                 return Arrays.asList(new ImportFile(file, 4));
             }
-            if (isXlsxImportFile(file, "course-assignments")) {
+            if (isXlsxImportFile(file, "course-assignments",importOptions)) {
                 return Arrays.asList(new ImportFile(file, 5));
             }
         }
@@ -302,10 +310,10 @@ public class XlsxLoadImporter {
             return count;
         }
 
-        if (isXlsxImportFile(file, "departments")) {
+        if (isXlsxImportFile(file, "departments",importOptions)) {
             importDepartments(file);
         }
-        if (isXlsxImportFile(file, "load-conversion-table")) {
+        if (isXlsxImportFile(file, "load-conversion-table",importOptions)) {
             if (file.length() > 0) {
                 count++;
                 importLoadConversionTable(file);
@@ -315,7 +323,7 @@ public class XlsxLoadImporter {
                 XlsxLoadImporter.this.importLoadConversionTable();
             }
         }
-        if (isXlsxImportFile(file, "load-degrees")) {
+        if (isXlsxImportFile(file, "load-degrees",importOptions)) {
             if (file.length() > 0) {
                 count++;
                 importTeacherDegrees(file);
@@ -325,19 +333,19 @@ public class XlsxLoadImporter {
                 XlsxLoadImporter.this.importTeacherDegrees();
             }
         }
-        if (isXlsxImportFile(file, "teachers")) {
+        if (isXlsxImportFile(file, "teachers",importOptions)) {
             count++;
             importTeachers(periodId, file);
         }
-        if (isXlsxImportFile(file, "students")) {
+        if (isXlsxImportFile(file, "students",importOptions)) {
             count++;
             importStudents(periodId, file);
         }
-        if (isXlsxImportFile(file, "course-assignments")) {
+        if (isXlsxImportFile(file, "course-assignments",importOptions)) {
             count++;
             importCourseAssignments(periodId, file, importOptions);
         }
-        if (isXlsxImportFile(file, "course-plans")) {
+        if (isXlsxImportFile(file, "course-plans",importOptions)) {
             count++;
             importCoursePlans(periodId, file, importOptions);
         }

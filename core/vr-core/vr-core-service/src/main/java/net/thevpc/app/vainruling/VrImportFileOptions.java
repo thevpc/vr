@@ -13,10 +13,21 @@ package net.thevpc.app.vainruling;
 public class VrImportFileOptions implements Cloneable {
 
     private int maxDepth = -1;
+    private String fileTypeName;
 
     public int getMaxDepth() {
         return maxDepth;
     }
+
+    public String getFileTypeName() {
+        return fileTypeName;
+    }
+
+    public VrImportFileOptions setFileTypeName(String fileTypeName) {
+        this.fileTypeName = fileTypeName;
+        return this;
+    }
+    
 
     public VrImportFileOptions setMaxDepth(int maxDepth) {
         this.maxDepth = maxDepth;

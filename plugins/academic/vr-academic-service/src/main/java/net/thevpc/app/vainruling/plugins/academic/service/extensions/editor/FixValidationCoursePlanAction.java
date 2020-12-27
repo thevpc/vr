@@ -15,6 +15,7 @@ import net.thevpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.thevpc.common.util.Convert;
 
 import java.util.List;
+import net.thevpc.common.util.Collections2;
 import net.thevpc.common.util.ListValueMap;
 
 /**
@@ -29,7 +30,7 @@ public class FixValidationCoursePlanAction implements VrEditorActionInvoke {
     @Override
     public ActionDialogResult invoke(String actionId, String entityType, Object obj, List<String> selectedIdStrings, Object[] args) {
         AcademicPlugin aca = VrApp.getBean(AcademicPlugin.class);
-        ListValueMap<String, AcademicCoursePlan> all = new ListValueMap<>();
+        ListValueMap<String, AcademicCoursePlan> all = Collections2.arrayListValueHashMap();
         for (int i = 0; i < selectedIdStrings.size(); i++) {
             aca.academicCoursePlan_validationErrors_Formula_fix(Convert.toInt(selectedIdStrings.get(i)));
         }

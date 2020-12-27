@@ -17,7 +17,6 @@ import net.thevpc.app.vainruling.core.service.model.AppUser;
 import net.thevpc.app.vainruling.core.service.security.UserSessionInfo;
 import net.thevpc.app.vainruling.core.service.security.UserToken;
 import net.thevpc.common.strings.StringUtils;
-import net.thevpc.common.util.Chronometer;
 import net.thevpc.common.util.DatePart;
 import net.thevpc.upa.Action;
 import net.thevpc.upa.UPA;
@@ -26,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 import net.thevpc.app.vainruling.VrPage;
+import net.thevpc.common.util.TimeDuration;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -260,7 +260,7 @@ public class ActiveSessionsCtrl implements VrPollService {
         if(t==null){
             return null;
         }
-        return Chronometer.formatPeriodMilli(System.currentTimeMillis() - t.getTime(), DatePart.SECOND);
+        return TimeDuration.formatPeriodMilli(System.currentTimeMillis() - t.getTime(), DatePart.SECOND);
     }
 
     public static class TypeStat implements Comparable<TypeStat> {

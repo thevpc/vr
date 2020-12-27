@@ -50,6 +50,7 @@ import net.thevpc.app.vainruling.plugins.calendars.service.CalendarsUtils;
 import net.thevpc.app.vainruling.plugins.calendars.service.dto.CalendarActivity;
 import net.thevpc.app.vainruling.plugins.calendars.service.dto.CalendarDay;
 import net.thevpc.app.vainruling.plugins.calendars.service.dto.CalendarHour;
+import net.thevpc.common.util.Collections2;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -79,16 +80,16 @@ public class AcademicPlanningPlugin {
 
     public Set<Integer> retainTeachersWithPublicCalendars(Set<Integer> teacherIds) {
         Set<Integer> validTeachers = new HashSet<>();
-        ListValueMap<String, Integer> teacherNames = new ListValueMap<>();
+        ListValueMap<String, Integer> teacherNames = Collections2.arrayListValueHashMap();
         for (Integer teacherId : teacherIds) {
             //
             AcademicTeacher teacher = academicPlugin.findTeacher(teacherId);
 
             String teacherName = teacher == null ? "" : teacher.resolveFullName();
-            teacherNames.put(VrUtils.normalizeName(teacherName), teacherId);
+            teacherNames.add(VrUtils.normalizeName(teacherName), teacherId);
             if (teacher != null) {
                 for (String s : splitOtherNames(teacher.getOtherNames())) {
-                    teacherNames.put(VrUtils.normalizeName(s), teacherId);
+                    teacherNames.add(VrUtils.normalizeName(s), teacherId);
                 }
             }
         }
@@ -116,7 +117,7 @@ public class AcademicPlanningPlugin {
                         String tn = eElement.getAttribute("name");
                         String uniformName = VrUtils.normalizeName(tn);
                         if (teacherNames.containsKey(uniformName)) {
-                            validTeachers.addAll(teacherNames.get(uniformName));
+                            validTeachers.addAll(teacherNames.getValues(uniformName));
                         }
                     }
                 }
@@ -182,16 +183,16 @@ public class AcademicPlanningPlugin {
 
     public Set<Integer> retainStudentsWithPublicCalendars(Set<Integer> studentIds) {
         Set<Integer> all = new HashSet<>();
-        SetValueMap<String, Integer> nameMapping = new SetValueMap<>();
+        SetValueMap<String, Integer> nameMapping = Collections2.setValueMap();
         for (Integer studentId : studentIds) {
             AcademicStudent student = academicPlugin.findStudent(studentId);
             AcademicPlugin ap = VrApp.getBean(AcademicPlugin.class);
             List<AcademicClass> allCls = ap.findClassDownHierarchyList(new AcademicClass[]{student.getLastClass1(), student.getLastClass2(), student.getLastClass3()}, null);
             for (AcademicClass ac : allCls) {
                 String n2 = VrUtils.normalizeName(ac.getName());
-                nameMapping.put(n2, studentId);
+                nameMapping.add(n2, studentId);
                 for (String s : splitOtherNames(ac.getOtherNames())) {
-                    nameMapping.put(s, studentId);
+                    nameMapping.add(s, studentId);
                 }
             }
         }
@@ -220,7 +221,7 @@ public class AcademicPlanningPlugin {
                         String tn = eElement.getAttribute("name");
                         String uniformName = VrUtils.normalizeName(tn);
                         if (nameMapping.containsKey(uniformName)) {
-                            all.addAll(nameMapping.get(uniformName));
+                            all.addAll(nameMapping.getValues(uniformName));
                         }
                     }
                 }

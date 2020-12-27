@@ -179,12 +179,12 @@ public class VrBoxProject extends DefaultProjectTemplate {
             loadConfigProperties(loadPropertiesFrom);
         }
         if (projectName != null) {
-            final NutsId pn = getWorkspace().id().parseRequired(projectName);
-            if (pn.getGroup() != null) {
-                setConfigValue("ProjectGroup", pn.getGroup());
+            final NutsId pn = getWorkspace().id().parser().setLenient(false).parse(projectName);
+            if (pn.getGroupId()!= null) {
+                setConfigValue("ProjectGroup", pn.getGroupId());
             }
-            if (pn.getName() != null) {
-                setConfigValue("ProjectName", pn.getName());
+            if (pn.getArtifactId()!= null) {
+                setConfigValue("ProjectName", pn.getArtifactId());
             }
             if (pn.getVersion().getValue() != null) {
                 setConfigValue("ProjectVersion", pn.getVersion().getValue());
@@ -206,8 +206,8 @@ public class VrBoxProject extends DefaultProjectTemplate {
         println("Looking for latest VR version...");
         boolean newVersion = false;
         try {
-            NutsId v = getWorkspace().search().id("net.thevpc.app.vain-ruling.core:vr-core-service")
-                    .latest().getResultIds().required();
+            NutsId v = getWorkspace().search().addId("net.thevpc.app.vain-ruling.core:vr-core-service")
+                    .setLatest(true).getResultIds().required();
             if (v != null) {
                 println("Detected VR version ==%s==", v.getVersion());
                 getConfigProperty("FwkCoreVersion").setDefaultValue(v.getVersion().getValue());

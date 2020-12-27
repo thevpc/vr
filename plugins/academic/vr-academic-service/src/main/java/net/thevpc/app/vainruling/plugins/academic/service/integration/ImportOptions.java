@@ -13,7 +13,19 @@ package net.thevpc.app.vainruling.plugins.academic.service.integration;
 public class ImportOptions implements Cloneable {
 
     private int maxDepth = -1;
+    
+    private String fileTypeName;
 
+    public String getFileTypeName() {
+        return fileTypeName;
+    }
+
+    public ImportOptions setContentTypeName(String contentTypeName) {
+        this.fileTypeName = contentTypeName;
+        return this;
+    }
+
+    
     public int getMaxDepth() {
         return maxDepth;
     }

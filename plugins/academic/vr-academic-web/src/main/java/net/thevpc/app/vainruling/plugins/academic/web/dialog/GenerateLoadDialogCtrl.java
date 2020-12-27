@@ -30,8 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.thevpc.common.mon.ProgressMessage;
-import net.thevpc.common.mon.ProgressMonitorTracker;
+import net.thevpc.common.mon.DefaultProgressMonitor;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -141,9 +140,10 @@ public class GenerateLoadDialogCtrl {
                     }
                     setVersion(periodId, version);
                     getModel().setGenerationProgress(0);
-                    p.generateTeachingLoad(periodId, CourseAssignmentFilter.NO_INTENTS, version, getModel().getOldVersion(), new ProgressMonitorTracker() {
+                    p.generateTeachingLoad(periodId, CourseAssignmentFilter.NO_INTENTS, version, getModel().getOldVersion(), 
+                            new DefaultProgressMonitor(){
                         @Override
-                        protected void onProgress(double progress, ProgressMessage message) {
+                        protected void setProgressImpl(double progress) {
                             getModel().setGenerationProgress(progress*100);
                         }
 

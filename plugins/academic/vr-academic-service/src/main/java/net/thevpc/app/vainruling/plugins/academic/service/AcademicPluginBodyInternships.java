@@ -38,6 +38,7 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 import net.thevpc.app.vainruling.core.service.ProfileRightBuilder;
 import net.thevpc.app.vainruling.plugins.academic.service.util.AcademicUtils;
+import net.thevpc.common.util.Collections2;
 import net.thevpc.common.util.MapUtils;
 
 public class AcademicPluginBodyInternships extends AcademicPluginBody {
@@ -135,7 +136,7 @@ public class AcademicPluginBodyInternships extends AcademicPluginBody {
         circle1.put(id_country, 0);
         circle1.put(id_International, 0);
         circle1.put(id_Unknown, 0);
-        ListValueMap<String, AcademicInternship> circle1_internships = new ListValueMap<>();
+        ListValueMap<String, AcademicInternship> circle1_internships = Collections2.arrayListValueHashMap();
 
         for (AcademicInternship ii : internships) {
             AppCompany c = ii.getCompany();
@@ -244,7 +245,7 @@ public class AcademicPluginBodyInternships extends AcademicPluginBody {
                     old = 0;
                 }
                 circle1.put(best_id, old + 1);
-                circle1_internships.put(best_id, ii);
+                circle1_internships.add(best_id, ii);
             }
         }
         return VrUtils.buildNamedValueCountList(circle1, (ListValueMap) circle1_internships);
@@ -255,7 +256,7 @@ public class AcademicPluginBodyInternships extends AcademicPluginBody {
         CorePlugin cp = VrApp.getBean(CorePlugin.class);
         AppCompany currentCompany = cp.getCurrentConfig().getMainCompany();
         LocationInfo currentLocation = VrUtils.resolveLocation(currentCompany);
-        ListValueMap<String, AcademicInternship> circle2_internships = new ListValueMap<>();
+        ListValueMap<String, AcademicInternship> circle2_internships = Collections2.arrayListValueHashMap();
 
         for (AcademicInternship ii : internships) {
             AppCompany c = ii.getCompany();
@@ -266,10 +267,10 @@ public class AcademicPluginBodyInternships extends AcademicPluginBody {
                 v2 = 1;
 //                        circle1.put(gouvernorateName, 0);
                 circle2.put(gouvernorateName, v2);
-                circle2_internships.put(gouvernorateName, ii);
+                circle2_internships.add(gouvernorateName, ii);
             } else {
                 circle2.put(gouvernorateName, v2.intValue() + 1);
-                circle2_internships.put(gouvernorateName, ii);
+                circle2_internships.add(gouvernorateName, ii);
             }
         }
         return VrUtils.buildNamedValueCountList(circle2, (ListValueMap) circle2_internships);
@@ -278,7 +279,7 @@ public class AcademicPluginBodyInternships extends AcademicPluginBody {
     public List<NamedValueCount> statEvalInternshipDiscipline(List<AcademicInternship> internships) {
         Map<String, Number> circle1 = new LinkedHashMap<String, Number>();
 
-        ListValueMap<String, AcademicInternship> circle1_internships = new ListValueMap<>();
+        ListValueMap<String, AcademicInternship> circle1_internships = Collections2.arrayListValueHashMap();
 
         AcademicPlugin academicPlugin = VrApp.getBean(AcademicPlugin.class);
         for (AcademicInternship ii : internships) {
@@ -292,7 +293,7 @@ public class AcademicPluginBodyInternships extends AcademicPluginBody {
                     y = y.intValue() + 1;
                 }
                 circle1.put(s0, y);
-                circle1_internships.put(s0, ii);
+                circle1_internships.add(s0, ii);
             }
         }
         return VrUtils.buildNamedValueCountList(circle1, (ListValueMap) circle1_internships);
@@ -301,7 +302,7 @@ public class AcademicPluginBodyInternships extends AcademicPluginBody {
     public List<NamedValueCount> statEvalInternshipTechnologies(List<AcademicInternship> internships) {
         Map<String, Number> circle2 = new LinkedHashMap<String, Number>();
 
-        ListValueMap<String, AcademicInternship> circle2_internships = new ListValueMap<>();
+        ListValueMap<String, AcademicInternship> circle2_internships = Collections2.arrayListValueHashMap();
 
         AcademicPlugin academicPlugin = VrApp.getBean(AcademicPlugin.class);
         for (AcademicInternship ii : internships) {
@@ -315,7 +316,7 @@ public class AcademicPluginBodyInternships extends AcademicPluginBody {
                     y = y.intValue() + 1;
                 }
                 circle2.put(s0, y);
-                circle2_internships.put(s0, ii);
+                circle2_internships.add(s0, ii);
             }
         }
         return VrUtils.buildNamedValueCountList(circle2, (ListValueMap) circle2_internships);
@@ -323,7 +324,7 @@ public class AcademicPluginBodyInternships extends AcademicPluginBody {
 
     public List<NamedValueCount> statEvalInternshipVariant(List<AcademicInternship> internships) {
         Map<String, Number> circle1 = new LinkedHashMap<String, Number>();
-        ListValueMap<String, AcademicInternship> circle1_internships = new ListValueMap<>();
+        ListValueMap<String, AcademicInternship> circle1_internships = Collections2.arrayListValueHashMap();
 
         for (AcademicInternship ii : internships) {
             AcademicInternshipVariant v = ii.getInternshipVariant();
@@ -335,14 +336,14 @@ public class AcademicPluginBodyInternships extends AcademicPluginBody {
                 y = y.intValue() + 1;
             }
             circle1.put(s0, y);
-            circle1_internships.put(s0, ii);
+            circle1_internships.add(s0, ii);
         }
         return VrUtils.buildNamedValueCountList(circle1, (ListValueMap) circle1_internships);
     }
 
     public List<NamedValueCount> statEvalInternshipPeriod(List<AcademicInternship> internships) {
         Map<String, Number> circle2 = new LinkedHashMap<String, Number>();
-        ListValueMap<String, AcademicInternship> circle2_internships = new ListValueMap<>();
+        ListValueMap<String, AcademicInternship> circle2_internships = Collections2.arrayListValueHashMap();
 
         for (AcademicInternship ii : internships) {
             AcademicInternshipDuration v2 = ii.getDuration();
@@ -354,7 +355,7 @@ public class AcademicPluginBodyInternships extends AcademicPluginBody {
                 y = y.intValue() + 1;
             }
             circle2.put(s0, y);
-            circle2_internships.put(s0, ii);
+            circle2_internships.add(s0, ii);
         }
         return VrUtils.buildNamedValueCountList(circle2, (ListValueMap) circle2_internships);
     }

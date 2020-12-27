@@ -19,7 +19,7 @@ public interface VrImportFileAction {
 
     String getFileNameDescription();
 
-    boolean isAcceptFileName(String name);
+    boolean isAcceptFileName(String name,VrImportFileOptions options);
 
     long importFile(VrImportFileActionContext context) throws IOException;
 }

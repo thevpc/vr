@@ -8,13 +8,13 @@ package net.thevpc.app.vainruling.core.web.jsf.ctrl;
 import net.thevpc.app.vainruling.core.service.VrApp;
 import net.thevpc.app.vainruling.core.service.content.NotificationText;
 import net.thevpc.app.vainruling.core.web.jsf.Vr;
-import net.thevpc.common.util.Chronometer;
 import net.thevpc.common.util.DatePart;
 import org.springframework.context.annotation.Scope;
 
 import java.util.Calendar;
 import java.util.Date;
 import net.thevpc.app.vainruling.VrPage;
+import net.thevpc.common.util.TimeDuration;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -65,7 +65,7 @@ public class AppGlobalCtrl extends BasePageCtrl {
             if (p <= 60000) {
                 return "Arrêt imminent...";
             }
-            return "Arrêt dans " + Chronometer.formatPeriodMilli(p, DatePart.MINUTE);
+            return "Arrêt dans " + TimeDuration.formatPeriodMilli(p, DatePart.MINUTE);
         }
         return getModel().getHeadMessageText();
     }

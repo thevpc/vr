@@ -52,28 +52,28 @@ public class CorePluginSSE {
             if (d <= 0) {
                 d = 3;
             }
-            return _importFileAsFolder(file, d);
+            return _importFileAsFolder(file, o,d);
         }
-        return _importFileAsFile(file);
+        return _importFileAsFile(file,o);
     }
 
-    private long _importFileAsFolder(VFile file, int depth) throws IOException {
+    private long _importFileAsFolder(VFile file,VrImportFileOptions options, int depth) throws IOException {
         long count = 0;
         for (VFile listFile : file.listFiles()) {
             if (file.isDirectory()) {
                 if (depth > 0) {
-                    count += _importFileAsFolder(listFile, depth - 1);
+                    count += _importFileAsFolder(listFile, options,depth - 1);
                 }
             } else {
-                count += _importFileAsFile(file);
+                count += _importFileAsFile(file,options);
             }
         }
         return count;
     }
 
-    private long _importFileAsFile(VFile file) throws IOException {
+    private long _importFileAsFile(VFile file,VrImportFileOptions options) throws IOException {
         for (VrImportFileAction a : VrApp.getBeansForType(VrImportFileAction.class)) {
-            if (a.isAcceptFileName(file.getName())) {
+            if (a.isAcceptFileName(file.getName(),options)) {
                 return a.importFile(new DefaultVrImportFileActionContext(file));
             }
         }

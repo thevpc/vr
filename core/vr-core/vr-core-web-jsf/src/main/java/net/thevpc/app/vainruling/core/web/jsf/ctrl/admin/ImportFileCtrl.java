@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.faces.model.SelectItem;
 
 import net.thevpc.app.vainruling.core.service.CorePluginSSE;
 import net.thevpc.app.vainruling.VrPage;
@@ -47,6 +48,10 @@ public class ImportFileCtrl {
     public void init() {
         String icon = "/images/icons/file-xls16.png";
         getModel().getTemplates().clear();
+        getModel().getTemplateTypes().clear();
+        getModel().getTemplateTypes().add(
+                        FacesUtils.createSelectItem("", "detectd-by-name")
+                );
         for (VrImportFileAction a : VrApp.getBeansForType(VrImportFileAction.class)) {
             String n = a.getName();
             getModel().getTemplates().add(new FileTemplate(
@@ -55,6 +60,11 @@ public class ImportFileCtrl {
                     a.getExampleFilePath()
             ));
             getModel().getTemplates().sort((FileTemplate o1, FileTemplate o2) -> StringUtils.trim(o1.getName()).compareTo(o2.getName()));
+            for (FileTemplate template : getModel().getTemplates()) {
+                getModel().getTemplateTypes().add(
+                        FacesUtils.createSelectItem(a.getName(), I18n.get().get("VrImportFileAction." + n))
+                );
+            }
         }
     }
 
@@ -68,7 +78,11 @@ public class ImportFileCtrl {
             public void run() {
                 try {
                     try {
-                        long count = CorePluginSSE.get().importFile(VrJsf.createTempFile(event), new VrImportFileOptions().setMaxDepth(3));
+                        final String selectedTemplateType = getModel().getSelectedTemplateType();
+                        long count = CorePluginSSE.get().importFile(VrJsf.createTempFile(event), new VrImportFileOptions()
+                                .setMaxDepth(3)
+                                .setFileTypeName(selectedTemplateType)
+                        );
                         if (count > 0) {
                             FacesUtils.addInfoMessage(event.getFile().getFileName() + " successfully imported.");
                         } else {
@@ -88,7 +102,18 @@ public class ImportFileCtrl {
     public static class Model {
 
         private List<FileTemplate> templates = new ArrayList<>();
+        private List<SelectItem> templateTypes = new ArrayList<>();
+        private String selectedTemplateType;
 
+        public String getSelectedTemplateType() {
+            return selectedTemplateType;
+        }
+
+        public void setSelectedTemplateType(String selectedTemplateType) {
+            this.selectedTemplateType = selectedTemplateType;
+        }
+
+        
         public List<FileTemplate> getTemplates() {
             return templates;
         }
@@ -96,6 +121,15 @@ public class ImportFileCtrl {
         public void setTemplates(List<FileTemplate> templates) {
             this.templates = templates;
         }
+
+        public List<SelectItem> getTemplateTypes() {
+            return templateTypes;
+        }
+
+        public void setTemplateTypes(List<SelectItem> templateTypes) {
+            this.templateTypes = templateTypes;
+        }
+        
 
     }
 

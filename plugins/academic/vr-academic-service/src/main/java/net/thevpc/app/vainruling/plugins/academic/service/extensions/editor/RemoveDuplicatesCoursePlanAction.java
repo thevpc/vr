@@ -18,6 +18,7 @@ import net.thevpc.upa.UPA;
 
 import java.util.List;
 import net.thevpc.app.vainruling.VrAccessMode;
+import net.thevpc.common.util.Collections2;
 import net.thevpc.common.util.ListValueMap;
 import net.thevpc.upa.Entity;
 import net.thevpc.upa.EntityUsage;
@@ -40,15 +41,15 @@ public class RemoveDuplicatesCoursePlanAction implements VrEditorActionInvoke {
     public ActionDialogResult invoke(String actionId, String entityType, Object obj, List<String> selectedIdStrings, Object[] args) {
         AcademicPlugin aca = VrApp.getBean(AcademicPlugin.class);
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        ListValueMap<String, AcademicCoursePlan> all = new ListValueMap<>();
+        ListValueMap<String, AcademicCoursePlan> all = Collections2.arrayListValueHashMap();
         for (int i = 0; i < selectedIdStrings.size(); i++) {
             AcademicCoursePlan coursePlan = aca.findCoursePlan(Convert.toInt(selectedIdStrings.get(i)));
             if (coursePlan != null) {
-                all.put(coursePlan.getPeriod().getName() + "-" + coursePlan.getFullName(), coursePlan);
+                all.add(coursePlan.getPeriod().getName() + "-" + coursePlan.getFullName(), coursePlan);
             }
         }
         for (String k : all.keySet()) {
-            List<AcademicCoursePlan> values = all.get(k);
+            List<AcademicCoursePlan> values = all.getValues(k);
             if (values.size() > 1) {
                 Entity acp = UPA.getPersistenceUnit().getEntity(AcademicCoursePlan.class);
                 for (AcademicCoursePlan academicCoursePlan : values.toArray(new AcademicCoursePlan[values.size()])) {

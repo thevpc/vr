@@ -11,10 +11,12 @@ import java.util.TreeSet;
 
 import net.thevpc.app.vainruling.VrImportFileAction;
 import net.thevpc.app.vainruling.VrImportFileActionContext;
+import net.thevpc.app.vainruling.VrImportFileOptions;
 import net.thevpc.app.vainruling.core.service.CorePlugin;
 import net.thevpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.thevpc.app.vainruling.core.service.VrApp;
 import net.thevpc.app.vainruling.core.service.model.AppConfig;
+import net.thevpc.app.vainruling.plugins.academic.service.integration.ImportOptions;
 
 /**
  *
@@ -53,7 +55,15 @@ public class AbstractAcademicImportAction implements VrImportFileAction {
     }
 
     @Override
-    public boolean isAcceptFileName(String name) {
+    public boolean isAcceptFileName(String name,VrImportFileOptions importFileOptions) {
+        if(importFileOptions!=null){
+            if(importFileOptions.getFileTypeName().equals(name)){
+                return true;
+            }
+            if(importFileOptions.getFileTypeName()!=null && importFileOptions.getFileTypeName().length()>0){
+                return false;
+            }
+        }
         for (String format : formats) {
             if (format.startsWith("*")) {
                 if (name.endsWith(format.substring(1))) {
@@ -76,7 +86,7 @@ public class AbstractAcademicImportAction implements VrImportFileAction {
         AppConfig appConfig = core.getCurrentConfig();
         if (appConfig != null && appConfig.getMainPeriod() != null) {
             int periodId = appConfig.getMainPeriod().getId();
-            count = a.importFile(periodId, context.getFilePath(), null);
+            count = a.importFile(periodId, context.getFilePath(), new ImportOptions().setContentTypeName(name));
         }
         return count;
     }
