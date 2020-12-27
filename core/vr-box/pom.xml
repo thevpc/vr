@@ -162,7 +162,7 @@
     
     <dependencies>
         <dependency>
-            <groupId>net.thevpc.nuts</groupId>
+            <groupId>net.thevpc.nuts.lib</groupId>
             <artifactId>nlib-template</artifactId>
             <version>0.8.1.0</version>
         </dependency>
