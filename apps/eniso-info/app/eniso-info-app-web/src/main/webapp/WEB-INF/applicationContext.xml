@@ -12,7 +12,7 @@ http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
 
     <context:annotation-config/>
     <aop:aspectj-autoproxy proxy-target-class="true"/>
-    <context:component-scan base-package="net.vpc"/>
+    <context:component-scan base-package="net.thevpc"/>
     <!--    <tx:annotation-driven transaction-manager="txManager" />
     <bean id="txManager" class="org.springframework.orm.jpa.JpaTransactionManager">
         <property name="entityManagerFactory" ref="entityManagerFactory" />

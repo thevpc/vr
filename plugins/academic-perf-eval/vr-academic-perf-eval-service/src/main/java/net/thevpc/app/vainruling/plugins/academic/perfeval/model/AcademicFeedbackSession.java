@@ -15,6 +15,7 @@ public class AcademicFeedbackSession {
     @Sequence
     private int id;
     @Main
+    @Formula("concat(coalesce(this.period.name,'?'),'-',coalesce(this.semester.code,'?'))")
     private String name;
     @Summary
     private AppPeriod period;

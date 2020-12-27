@@ -57,11 +57,11 @@ public class AbstractAcademicImportAction implements VrImportFileAction {
     @Override
     public boolean isAcceptFileName(String name,VrImportFileOptions importFileOptions) {
         if(importFileOptions!=null){
-            if(importFileOptions.getFileTypeName().equals(name)){
-                return true;
-            }
             if(importFileOptions.getFileTypeName()!=null && importFileOptions.getFileTypeName().length()>0){
-                return false;
+                if(importFileOptions.getFileTypeName().equals(getName())){
+                    return true;
+                }
+                    return false;
             }
         }
         for (String format : formats) {

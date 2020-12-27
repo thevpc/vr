@@ -24,8 +24,10 @@ import javax.faces.model.SelectItem;
 import net.thevpc.app.vainruling.core.service.CorePluginSSE;
 import net.thevpc.app.vainruling.VrPage;
 import net.thevpc.app.vainruling.core.service.VrApp;
+import net.thevpc.app.vainruling.core.service.model.AppProfile;
 import net.thevpc.app.vainruling.core.service.util.I18n;
 import net.thevpc.app.vainruling.core.web.jsf.VrJsf;
+import net.thevpc.app.vainruling.core.web.jsf.ctrl.actions.UpdateProfileUsersActionCtrl;
 import net.thevpc.common.strings.StringUtils;
 
 /**
@@ -50,8 +52,8 @@ public class ImportFileCtrl {
         getModel().getTemplates().clear();
         getModel().getTemplateTypes().clear();
         getModel().getTemplateTypes().add(
-                        FacesUtils.createSelectItem("", "detectd-by-name")
-                );
+                FacesUtils.createSelectItem("", "Détecter selon le nom du fichier")
+        );
         for (VrImportFileAction a : VrApp.getBeansForType(VrImportFileAction.class)) {
             String n = a.getName();
             getModel().getTemplates().add(new FileTemplate(
@@ -59,13 +61,17 @@ public class ImportFileCtrl {
                     I18n.get().get("VrImportFileAction." + n + ".description"), icon,
                     a.getExampleFilePath()
             ));
-            getModel().getTemplates().sort((FileTemplate o1, FileTemplate o2) -> StringUtils.trim(o1.getName()).compareTo(o2.getName()));
-            for (FileTemplate template : getModel().getTemplates()) {
-                getModel().getTemplateTypes().add(
-                        FacesUtils.createSelectItem(a.getName(), I18n.get().get("VrImportFileAction." + n))
-                );
-            }
         }
+        getModel().getTemplates().sort((FileTemplate o1, FileTemplate o2) -> StringUtils.trim(o1.getName()).compareTo(o2.getName()));
+        for (VrImportFileAction a : VrApp.getBeansForType(VrImportFileAction.class)) {
+            getModel().getTemplateTypes().add(
+                    FacesUtils.createSelectItem(a.getName(), I18n.get().get("VrImportFileAction." + a.getName()))
+            );
+        }
+    }
+    
+    public void onChange() {
+
     }
 
     public Model getModel() {
@@ -113,7 +119,6 @@ public class ImportFileCtrl {
             this.selectedTemplateType = selectedTemplateType;
         }
 
-        
         public List<FileTemplate> getTemplates() {
             return templates;
         }
@@ -129,7 +134,6 @@ public class ImportFileCtrl {
         public void setTemplateTypes(List<SelectItem> templateTypes) {
             this.templateTypes = templateTypes;
         }
-        
 
     }
 

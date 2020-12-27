@@ -22,17 +22,18 @@ and open the template in the editor.
             <ui:define name="content">
                 <h:form id="itemForm" enctype="multipart/form-data">
                     <p:growl id="growl" showDetail="true" sticky="true"/>
+                    <p:outputLabel value="Type de fichier à importer"/>
+                    <p:selectOneMenu id="fileTemplateType" class="form-control vr-form-control"
+                                                     value="#{importFileCtrl.model.selectedTemplateType}">
+                        <f:selectItems value="#{importFileCtrl.model.templateTypes}"/>
+                        <p:ajax listener="#{importFileCtrl.onChange}"   update=":itemForm:fileTemplateType"/>
+                    </p:selectOneMenu>
                     <p:fileUpload fileUploadListener="#{importFileCtrl.handleFileUpload}"
                                   label="Importer un fichier"
                                   mode="advanced"
                                   update="growl"
                                   auto="true" sizeLimit="100000000" allowTypes="/(\.|\/)(xlsx)$/"/>
                     <p:separator/>
-                    <p:selectOneMenu class="form-control vr-form-control"
-                                                     id="company"
-                                                     value="#{importFileCtrl.model.selectedTemplateType}">
-                        <f:selectItems value="#{importFileCtrl.model.templateTypes}"/>
-                    </p:selectOneMenu>
 
                     <p:dataGrid var="temp" value="#{importFileCtrl.model.templates}" columns="3" layout="grid"
                                 rows="12" paginator="true" id="cars"
