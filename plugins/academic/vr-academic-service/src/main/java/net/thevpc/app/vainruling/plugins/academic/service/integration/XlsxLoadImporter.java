@@ -62,7 +62,7 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import net.thevpc.common.util.MapUtils;
+import net.thevpc.common.collections.MapUtils;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -234,12 +234,12 @@ public class XlsxLoadImporter {
     }
 
     private boolean isXlsxImportFile(VFile file, String name, ImportOptions importOptions) {
-        if(importOptions!=null){
-            if(importOptions.getFileTypeName()!=null && importOptions.getFileTypeName().length()>0){
-                if(importOptions.getFileTypeName().equals(name)){
+        if (importOptions != null) {
+            if (importOptions.getFileTypeName() != null && importOptions.getFileTypeName().length() > 0) {
+                if (importOptions.getFileTypeName().equals(name)) {
                     return true;
                 }
-                    return false;
+                return false;
             }
         }
         return (file.getName().equals(name + ".xlsx") || file.getName().endsWith("." + name + ".xlsx"));
@@ -265,19 +265,19 @@ public class XlsxLoadImporter {
                 return all;
             }
 
-            if (isXlsxImportFile(file, "departments",importOptions)) {
+            if (isXlsxImportFile(file, "departments", importOptions)) {
                 return Arrays.asList(new ImportFile(file, 1));
             }
-            if (isXlsxImportFile(file, "teacher-degrees",importOptions)) {
+            if (isXlsxImportFile(file, "teacher-degrees", importOptions)) {
                 return Arrays.asList(new ImportFile(file, 2));
             }
-            if (isXlsxImportFile(file, "teachers",importOptions)) {
+            if (isXlsxImportFile(file, "teachers", importOptions)) {
                 return Arrays.asList(new ImportFile(file, 3));
             }
-            if (isXlsxImportFile(file, "students",importOptions)) {
+            if (isXlsxImportFile(file, "students", importOptions)) {
                 return Arrays.asList(new ImportFile(file, 4));
             }
-            if (isXlsxImportFile(file, "course-assignments",importOptions)) {
+            if (isXlsxImportFile(file, "course-assignments", importOptions)) {
                 return Arrays.asList(new ImportFile(file, 5));
             }
         }
@@ -290,7 +290,7 @@ public class XlsxLoadImporter {
         }
         int count = 0;
         TraceService trace = TraceService.get();
-        Chronometer ch=Chronometer.start();
+        Chronometer ch = Chronometer.start();
         if (!file.exists()) {
             return count;
         }
@@ -310,10 +310,10 @@ public class XlsxLoadImporter {
             return count;
         }
 
-        if (isXlsxImportFile(file, "departments",importOptions)) {
+        if (isXlsxImportFile(file, "departments", importOptions)) {
             importDepartments(file);
         }
-        if (isXlsxImportFile(file, "load-conversion-table",importOptions)) {
+        if (isXlsxImportFile(file, "load-conversion-table", importOptions)) {
             if (file.length() > 0) {
                 count++;
                 importLoadConversionTable(file);
@@ -323,7 +323,7 @@ public class XlsxLoadImporter {
                 XlsxLoadImporter.this.importLoadConversionTable();
             }
         }
-        if (isXlsxImportFile(file, "load-degrees",importOptions)) {
+        if (isXlsxImportFile(file, "load-degrees", importOptions)) {
             if (file.length() > 0) {
                 count++;
                 importTeacherDegrees(file);
@@ -333,19 +333,19 @@ public class XlsxLoadImporter {
                 XlsxLoadImporter.this.importTeacherDegrees();
             }
         }
-        if (isXlsxImportFile(file, "teachers",importOptions)) {
+        if (isXlsxImportFile(file, "teachers", importOptions)) {
             count++;
             importTeachers(periodId, file);
         }
-        if (isXlsxImportFile(file, "students",importOptions)) {
+        if (isXlsxImportFile(file, "students", importOptions)) {
             count++;
             importStudents(periodId, file);
         }
-        if (isXlsxImportFile(file, "course-assignments",importOptions)) {
+        if (isXlsxImportFile(file, "course-assignments", importOptions)) {
             count++;
             importCourseAssignments(periodId, file, importOptions);
         }
-        if (isXlsxImportFile(file, "course-plans",importOptions)) {
+        if (isXlsxImportFile(file, "course-plans", importOptions)) {
             count++;
             importCoursePlans(periodId, file, importOptions);
         }
@@ -673,9 +673,32 @@ public class XlsxLoadImporter {
             }
         }
 
-        AppGender gender = ctx.getGenders().resolveGender(a.getGenderId(), a.getGenderName(), true);
-        AppCivility civility = ctx.getCivilities().resolveCivility(a.getCivilityId(), a.getCivilityName(), gender, true);
-
+        AppGender gender = ctx.getGenders().resolveGender(a.getGenderId(), a.getGenderName(), false);
+        AppCivility civility = ctx.getCivilities().resolveCivility(a.getCivilityId(), a.getCivilityName(), gender, false);
+        if (gender == null && civility == null) {
+            gender = ctx.getGenders().resolveGender(a.getGenderId(), a.getGenderName(), true);
+        } else if (gender == null) {
+            //deduce gender by civility
+            switch (String.valueOf(civility.getName()).toLowerCase()) {
+                case "mlle":
+                case "mlle.":
+                case "ml":
+                case "mle":
+                case "mle.":
+                case "mme.":
+                case "mme": {
+                    gender = ctx.getGenders().resolveGender(null, "F", true);
+                    break;
+                }
+                default: {
+                    gender = ctx.getGenders().resolveGender(null, "M", true);
+                    break;
+                }
+            }
+        } else if (civility == null) {
+            //deduce civility by gender
+            civility = ctx.getCivilities().resolveCivility(null, "Mlle", gender, true);
+        }
         AcademicBac bac = null;
         if (a.getPreClassBacId() != null) {
             bac = service.findAcademicBac(a.getPreClassBacId());

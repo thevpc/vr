@@ -16,8 +16,8 @@ import net.thevpc.app.vainruling.plugins.academic.model.config.AcademicStudent;
 import net.thevpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
 import net.thevpc.app.vainruling.plugins.calendars.service.dto.WeekCalendar;
 import net.thevpc.common.strings.StringUtils;
-import net.thevpc.common.util.ListValueMap;
-import net.thevpc.common.util.SetValueMap;
+import net.thevpc.common.collections.ListValueMap;
+import net.thevpc.common.collections.SetValueMap;
 import net.thevpc.common.vfs.VFile;
 import net.thevpc.common.vfs.VFileFilter;
 import net.thevpc.upa.Action;
@@ -50,7 +50,7 @@ import net.thevpc.app.vainruling.plugins.calendars.service.CalendarsUtils;
 import net.thevpc.app.vainruling.plugins.calendars.service.dto.CalendarActivity;
 import net.thevpc.app.vainruling.plugins.calendars.service.dto.CalendarDay;
 import net.thevpc.app.vainruling.plugins.calendars.service.dto.CalendarHour;
-import net.thevpc.common.util.Collections2;
+import net.thevpc.common.collections.Collections2;
 
 /**
  * @author taha.bensalah@gmail.com

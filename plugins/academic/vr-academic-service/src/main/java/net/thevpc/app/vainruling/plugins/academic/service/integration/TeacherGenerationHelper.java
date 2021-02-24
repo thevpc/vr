@@ -28,7 +28,7 @@ import net.thevpc.common.mon.ProgressMonitors;
 import net.thevpc.common.strings.StringConverterMap;
 import net.thevpc.common.strings.StringUtils;
 import net.thevpc.common.util.Chronometer;
-import net.thevpc.common.util.KeyValueList;
+import net.thevpc.common.collections.KeyValueList;
 import net.thevpc.common.vfs.VFS;
 import net.thevpc.common.vfs.VFile;
 import net.thevpc.common.vfs.VirtualFileSystem;
@@ -55,7 +55,7 @@ import net.thevpc.common.mon.ProgressMonitor;
 import net.thevpc.common.mon.ProgressMonitorFactory;
 import net.thevpc.common.mon.VoidMonitoredAction;
 
-import net.thevpc.common.util.MapUtils;
+import net.thevpc.common.collections.MapUtils;
 
 /**
  * Created by vpc on 6/25/16.

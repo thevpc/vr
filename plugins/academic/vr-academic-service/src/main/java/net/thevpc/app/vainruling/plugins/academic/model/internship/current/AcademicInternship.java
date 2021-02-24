@@ -17,6 +17,7 @@ import net.thevpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
 import net.thevpc.upa.config.*;
 
 import java.sql.Timestamp;
+import net.thevpc.upa.RelationshipType;
 //import net.thevpc.upa.types.DateTime;
 
 /**
@@ -29,7 +30,6 @@ import java.sql.Timestamp;
                 @Property(name = "ui.auto-filter.period", value = "{expr='this.board.period',order=1}"),
                 @Property(name = "ui.auto-filter.department", value = "{expr='this.board.department',order=2}"),
                 @Property(name = "ui.auto-filter.program", value = "{expr='this.board.program',order=3}"),
-                @Property(name = "ui.auto-filter.academicClass", value = "{expr='this.board.academicClass',order=4}"),
                 @Property(name = "ui.auto-filter.internshipType", value = "{expr='this.board.internshipType',order=5}"),
                 @Property(name = "ui.auto-filter.internshipStatus", value = "{expr='this.internshipStatus',order=6}"),
                 @Property(name = "ui.auto-filter.sessionType", value = "{expr='this.sessionType',order=7}"),
@@ -46,6 +46,7 @@ public class AcademicInternship {
     @Summary
     private AcademicInternshipGroup mainGroup;
 
+//    @ManyToOne(relationType = RelationshipType.COMPOSITION)
     @Summary
     private AcademicInternshipBoard board;
 

@@ -39,7 +39,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import net.thevpc.common.util.MapUtils;
+import net.thevpc.common.collections.MapUtils;
 
 /**
  * @author taha.bensalah@gmail.com

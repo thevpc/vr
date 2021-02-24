@@ -15,6 +15,7 @@ import net.thevpc.upa.UserFieldModifier;
 import net.thevpc.upa.config.*;
 
 import java.sql.Timestamp;
+import net.thevpc.upa.types.DateTime;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -23,12 +24,12 @@ import java.sql.Timestamp;
 @Path("Contact")
 @Properties(
         {
-             @Property(name = UIConstants.Grid.ROW_STYLE, value = "(i.object.deleted) ?'vr-row-deleted':''"),
-                @Property(name = "cache.navigationDepth", valueType = "int", value = "5"),
-                @Property(name = "ui.auto-filter.department", value = "{expr='this.user.department',order=1}"),
-                @Property(name = "ui.auto-filter.officialDiscipline", value = "{expr='this.officialDiscipline',order=2}"),
-                @Property(name = "ui.auto-filter.degree", value = "{expr='this.degree',order=3}"),
-                @Property(name = "ui.auto-filter.situation", value = "{expr='this.situation',order=3}")
+            @Property(name = UIConstants.Grid.ROW_STYLE, value = "(i.object.deleted) ?'vr-row-deleted':''"),
+            @Property(name = "cache.navigationDepth", valueType = "int", value = "5"),
+            @Property(name = "ui.auto-filter.department", value = "{expr='this.user.department',order=1}"),
+            @Property(name = "ui.auto-filter.officialDiscipline", value = "{expr='this.officialDiscipline',order=2}"),
+            @Property(name = "ui.auto-filter.degree", value = "{expr='this.degree',order=3}"),
+            @Property(name = "ui.auto-filter.situation", value = "{expr='this.situation',order=3}")
         }
 )
 public class AcademicTeacher {
@@ -62,12 +63,14 @@ public class AcademicTeacher {
     @Property(name = UIConstants.Form.CONTROL, value = UIConstants.Control.TEXTAREA)
     private String privateObservations;
 
+    @Formula(value = "(Select u.lastConnexionDate from AppUser u where u.id=this.userId)", formulaType = FormulaType.LIVE)
+    private DateTime lastConnexionDate;
+
     @Path("Trace")
 //    @Properties(
 //            @Property(name = UIConstants.Form.SEPARATOR, value = "Trace"))
     @Formula(value = "CurrentTimestamp()", formulaType = FormulaType.PERSIST)
     @Field(excludeModifiers = UserFieldModifier.UPDATE)
-
     private Timestamp creationDate;
     @Formula(value = "CurrentTimestamp()", formulaType = {FormulaType.PERSIST, FormulaType.UPDATE})
 
@@ -233,25 +236,28 @@ public class AcademicTeacher {
 //        AppUser c = getUser();
 //        return c==null?null: c.getContact();
 //    }
-
-    public String resolveFullName(){
+    public String resolveFullName() {
         AppUser c = getUser();
-        String n=null;
-        if(c!=null){
-            n=c.getFullName();
+        String n = null;
+        if (c != null) {
+            n = c.getFullName();
         }
-        return n==null?String.valueOf(getId()): n;
+        return n == null ? String.valueOf(getId()) : n;
     }
 
-    public String resolveFullTitle(){
+    public String resolveFullTitle() {
         AppUser c = getUser();
-        return c==null?String.valueOf(getId()): c.getFullTitle();
+        return c == null ? String.valueOf(getId()) : c.getFullTitle();
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         AcademicTeacher that = (AcademicTeacher) o;
 
@@ -262,4 +268,13 @@ public class AcademicTeacher {
     public int hashCode() {
         return id;
     }
+
+    public DateTime getLastConnexionDate() {
+        return lastConnexionDate;
+    }
+
+    public void setLastConnexionDate(DateTime lastConnexionDate) {
+        this.lastConnexionDate = lastConnexionDate;
+    }
+    
 }

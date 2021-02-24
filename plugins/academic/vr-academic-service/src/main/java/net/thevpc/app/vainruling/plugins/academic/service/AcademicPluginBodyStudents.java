@@ -41,7 +41,7 @@ public class AcademicPluginBodyStudents extends AcademicPluginBody {
         core = CorePlugin.get();
         academic = getContext().getPlugin();
         trace = TraceService.get();
-        core.findOrCreate(new AppUserType("Student","Student"));
+        core.findOrCreate(new AppUserType("Student", "Student"));
 
         AppProfile studentProfile = core.findOrCreateCustomProfile("Student", "UserType");
         core.addProfileRight(studentProfile.getId(), CorePluginSecurity.RIGHT_CUSTOM_FILE_SYSTEM_MY_FILE_SYSTEM);
@@ -76,14 +76,13 @@ public class AcademicPluginBodyStudents extends AcademicPluginBody {
 //                .setParameter("contactId", contactId)
 //                .getFirstResultOrNull();
 //    }
-
     public List<AcademicStudent> findStudents(Integer department, AcademicStudentStage stage) {
         CorePluginSecurity.requireRight(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_STUDENTS);
         PersistenceUnit pu = UPA.getPersistenceUnit();
         return pu.createQuery("Select a from AcademicStudent a where a.stage=:stage "
-                    +(department==null?"":"and a.user.departmentId=:department")
+                + (department == null ? "" : "and a.user.departmentId=:department")
         )
-                .setParameter("department", department,department!=null)
+                .setParameter("department", department, department != null)
                 .setParameter("stage", stage)
                 .getResultList();
     }
@@ -295,16 +294,15 @@ public class AcademicPluginBodyStudents extends AcademicPluginBody {
     public boolean addUserForStudent(AcademicStudent academicStudent) {
         CorePluginSecurity.requireRight(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_CONFIG_WRITE);
         AppUserType teacherType = VrApp.getBean(CorePlugin.class).findUserType("Student");
-        CreateUserInfo ui=new CreateUserInfo()
+        CreateUserInfo ui = new CreateUserInfo()
                 .setUserId(academicStudent.getUser().getId())
                 .setFirstName(academicStudent.getUser().getFirstName())
                 .setLastName(academicStudent.getUser().getLastName())
                 .setUserTypeId(teacherType.getId())
                 .setDepartmentId(academicStudent.getUser().getDepartment().getId())
                 .setAttachToExistingUser(false)
-                .setDefaultProfiles( new String[]{"Student"})
-                .setPasswordStrategy(VrPasswordStrategyNin.INSTANCE)
-                ;
+                .setDefaultProfiles(new String[]{"Student"})
+                .setPasswordStrategy(VrPasswordStrategyNin.INSTANCE);
         AppUser u = core.addUser(ui);
         academicStudent.setUser(u);
         UPA.getPersistenceUnit().merge(academicStudent);
@@ -349,123 +347,127 @@ public class AcademicPluginBodyStudents extends AcademicPluginBody {
     public void validateAcademicData_Student(int studentId, int periodId) {
         CorePluginSecurity.requireRight(AcademicPluginSecurity.RIGHT_CUSTOM_EDUCATION_CONFIG_WRITE);
         PersistenceUnit pu = UPA.getPersistenceUnit();
-        AcademicStudent s = findStudent(studentId);
-        Map<Integer, AcademicClass> academicClasses = academic.findAcademicClassesMap();
-        AppUser u = s.getUser();
-        AppDepartment d = null;
-        Set<String> managedProfileTypes = new HashSet<>(Arrays.asList("Department", "StatusType", "AcademicClass", "AcademicProgram"));
-        if (d == null && u != null) {
-            d = u.getDepartment();
-        }
+        pu.invokePrivileged(()
+                -> {
+            AcademicStudent s = findStudent(studentId);
+            Map<Integer, AcademicClass> academicClasses = academic.findAcademicClassesMap();
+            AppUser u = s.getUser();
+            AppDepartment d = null;
+            Set<String> managedProfileTypes = new HashSet<>(Arrays.asList("Department", "StatusType", "AcademicClass", "AcademicProgram"));
+            if (d == null && u != null) {
+                d = u.getDepartment();
+            }
 //        if (s.getDepartment() == null && d != null) {
 //            s.setDepartment(d);
 //            UPA.getPersistenceUnit().merge(s);
 //        }
-        if (u != null) {
+            if (u != null) {
 //            if (u.getDepartment() == null && d != null) {
 //                u.setDepartment(d);
 //                UPA.getPersistenceUnit().merge(u);
 //            }
-            HashSet<Integer> goodProfiles = new HashSet<>();
+                HashSet<Integer> goodProfiles = new HashSet<>();
 
-            {
-                if (d != null) {
-                    AppProfile p = core.findOrCreateCustomProfile(d.getCode(), "Department");
-                    goodProfiles.add(p.getId());
+                {
+                    if (d != null) {
+                        AppProfile p = core.findOrCreateCustomProfile(d.getCode(), "Department");
+                        goodProfiles.add(p.getId());
+                    }
                 }
-            }
-            {
-                if (s.getStage() != null) {
-                    if (s.getStage() == AcademicStudentStage.ATTENDING) {
-                        AppProfile p = core.findOrCreateCustomProfile("Student", "UserType");
-                        goodProfiles.add(p.getId());
-                    } else if (s.getStage() == AcademicStudentStage.GAP_YEAR) {
-                        AppProfile p = core.findOrCreateCustomProfile("GapYearStudent", "StatusType");
-                        goodProfiles.add(p.getId());
-                    } else {
-                        AppProfile p = core.findOrCreateCustomProfile("FormerStudent", "StatusType");
-                        goodProfiles.add(p.getId());
-                        if (s.getStage() == AcademicStudentStage.GRADUATED) {
-                            p = core.findOrCreateCustomProfile("Graduated", "StatusType");
+                {
+                    if (s.getStage() != null) {
+                        if (s.getStage() == AcademicStudentStage.ATTENDING) {
+                            AppProfile p = core.findOrCreateCustomProfile("Student", "UserType");
                             goodProfiles.add(p.getId());
+                        } else if (s.getStage() == AcademicStudentStage.GAP_YEAR) {
+                            AppProfile p = core.findOrCreateCustomProfile("GapYearStudent", "StatusType");
+                            goodProfiles.add(p.getId());
+                        } else {
+                            AppProfile p = core.findOrCreateCustomProfile("FormerStudent", "StatusType");
+                            goodProfiles.add(p.getId());
+                            if (s.getStage() == AcademicStudentStage.GRADUATED) {
+                                p = core.findOrCreateCustomProfile("Graduated", "StatusType");
+                                goodProfiles.add(p.getId());
 
+                            }
                         }
                     }
                 }
-            }
 
-            for (AcademicClass ac : academic.findAcademicUpHierarchyList(new AcademicClass[]{s.getLastClass1(), s.getLastClass2(), s.getLastClass3()}, academicClasses)) {
-                if (ac != null) {
-                    //ignore inherited profiles in suffix
-                    AppProfile p = core.findOrCreateCustomProfile(ac.getName(), "AcademicClass");
-                    goodProfiles.add(p.getId());
-
-                    AcademicProgram pr = ac.getProgram();
-                    if (pr != null) {
-                        p = core.findOrCreateCustomProfile(pr.getName(), "AcademicProgram");
+                for (AcademicClass ac : academic.findAcademicUpHierarchyList(new AcademicClass[]{s.getLastClass1(), s.getLastClass2(), s.getLastClass3()}, academicClasses)) {
+                    if (ac != null) {
+                        //ignore inherited profiles in suffix
+                        AppProfile p = core.findOrCreateCustomProfile(ac.getName(), "AcademicClass");
                         goodProfiles.add(p.getId());
+
+                        AcademicProgram pr = ac.getProgram();
+                        if (pr != null) {
+                            p = core.findOrCreateCustomProfile(pr.getName(), "AcademicProgram");
+                            goodProfiles.add(p.getId());
+                        }
+                    }
+                }
+                StringBuilder goodSuffix = new StringBuilder();
+                TreeSet<String> classNames = new TreeSet<>();
+                List<AcademicClass> clsArr = new ArrayList<>();
+                clsArr.addAll(Arrays.asList(s.getLastClass1(), s.getLastClass2(), s.getLastClass3()));
+                if (s.getStage() == AcademicStudentStage.GRADUATED || s.getStage() == AcademicStudentStage.ELIMINATED) {
+                    AcademicFormerStudent formerStudent = findFormerStudent(s.getId());
+                    if (formerStudent != null) {
+                        clsArr.addAll(Arrays.asList(formerStudent.getLastClass1(), formerStudent.getLastClass2(), formerStudent.getLastClass3()));
+                    }
+                }
+
+                for (AcademicClass ac : clsArr) {
+                    if (ac != null) {
+                        String n = core.validateProfileName(ac.getName());
+                        classNames.add(n);
+                    }
+                }
+
+                for (String cn : classNames) {
+                    if (goodSuffix.length() > 0) {
+                        goodSuffix.append("/");
+                    }
+                    goodSuffix.append(cn);
+                }
+
+                if (s.getStage() != null) {
+                    if (s.getStage() == AcademicStudentStage.ATTENDING) {
+                        //
+                    } else if (s.getStage() == AcademicStudentStage.GAP_YEAR) {
+                        goodSuffix.insert(0, "G.Y. " + (s.getLastSubscription() == null ? "" : s.getLastSubscription().getName()) + " ");
+                    } else if (s.getStage() == AcademicStudentStage.GRADUATED) {
+                        goodSuffix.insert(0, "Grad. " + (s.getLastSubscription() == null ? "" : s.getLastSubscription().getName()) + " ");
+                    } else if (s.getStage() == AcademicStudentStage.ELIMINATED) {
+                        goodSuffix.insert(0, "Elim. " + (s.getLastSubscription() == null ? "" : s.getLastSubscription().getName()) + " ");
+                    } else {
+                        //
+                    }
+                }
+
+                u.setPositionSuffix(goodSuffix.toString());
+
+                u.setPositionTitle1("Student " + goodSuffix);
+                pu.merge(u);
+
+                if (u != null) {
+                    List<AppProfile> oldProfiles = core.findProfilesByUser(u.getId());
+                    for (AppProfile p : oldProfiles) {
+                        if (goodProfiles.contains(p.getId())) {
+                            goodProfiles.remove(p.getId());
+                            //ok
+                        } else if (p.isCustom() && (p.getCustomType() != null && managedProfileTypes.contains(p.getCustomType()))) {
+                            core.removeUserProfile(u.getId(), p.getId());
+                        }
+                    }
+                    for (Integer toAdd : goodProfiles) {
+                        core.addUserProfile(u.getId(), toAdd);
                     }
                 }
             }
-            StringBuilder goodSuffix = new StringBuilder();
-            TreeSet<String> classNames = new TreeSet<>();
-            List<AcademicClass> clsArr = new ArrayList<>();
-            clsArr.addAll(Arrays.asList(s.getLastClass1(), s.getLastClass2(), s.getLastClass3()));
-            if (s.getStage() == AcademicStudentStage.GRADUATED || s.getStage() == AcademicStudentStage.ELIMINATED) {
-                AcademicFormerStudent formerStudent = findFormerStudent(s.getId());
-                if (formerStudent != null) {
-                    clsArr.addAll(Arrays.asList(formerStudent.getLastClass1(), formerStudent.getLastClass2(), formerStudent.getLastClass3()));
-                }
-            }
+        });
 
-            for (AcademicClass ac : clsArr) {
-                if (ac != null) {
-                    String n = core.validateProfileName(ac.getName());
-                    classNames.add(n);
-                }
-            }
-
-            for (String cn : classNames) {
-                if (goodSuffix.length() > 0) {
-                    goodSuffix.append("/");
-                }
-                goodSuffix.append(cn);
-            }
-
-            if (s.getStage() != null) {
-                if (s.getStage() == AcademicStudentStage.ATTENDING) {
-                    //
-                } else if (s.getStage() == AcademicStudentStage.GAP_YEAR) {
-                    goodSuffix.insert(0, "G.Y. " + (s.getLastSubscription() == null ? "" : s.getLastSubscription().getName()) + " ");
-                } else if (s.getStage() == AcademicStudentStage.GRADUATED) {
-                    goodSuffix.insert(0, "Grad. " + (s.getLastSubscription() == null ? "" : s.getLastSubscription().getName()) + " ");
-                } else if (s.getStage() == AcademicStudentStage.ELIMINATED) {
-                    goodSuffix.insert(0, "Elim. " + (s.getLastSubscription() == null ? "" : s.getLastSubscription().getName()) + " ");
-                } else {
-                    //
-                }
-            }
-
-            u.setPositionSuffix(goodSuffix.toString());
-
-            u.setPositionTitle1("Student " + goodSuffix);
-            pu.merge(u);
-
-            if (u != null) {
-                List<AppProfile> oldProfiles = core.findProfilesByUser(u.getId());
-                for (AppProfile p : oldProfiles) {
-                    if (goodProfiles.contains(p.getId())) {
-                        goodProfiles.remove(p.getId());
-                        //ok
-                    } else if (p.isCustom() && (p.getCustomType() != null && managedProfileTypes.contains(p.getCustomType()))) {
-                        core.removeUserProfile(u.getId(), p.getId());
-                    }
-                }
-                for (Integer toAdd : goodProfiles) {
-                    core.addUserProfile(u.getId(), toAdd);
-                }
-            }
-        }
     }
 
     public List<AcademicClass> findStudentClasses(int studentId, boolean down, boolean up) {

@@ -46,11 +46,10 @@ import net.thevpc.app.vainruling.core.service.model.content.AppArticleDispositio
 import net.thevpc.app.vainruling.core.service.model.content.AppArticleDispositionBundle;
 import net.thevpc.app.vainruling.core.service.model.content.AppArticleFile;
 import net.thevpc.app.vainruling.core.service.model.content.AppArticle;
-import net.thevpc.app.vainruling.core.service.model.content.FullArticle;
 import net.thevpc.common.util.MutableDate;
 import net.thevpc.upa.types.DataType;
 import org.springframework.context.annotation.DependsOn;
-import net.thevpc.app.vainruling.core.service.model.content.AppArticleStrict;
+import net.thevpc.app.vainruling.core.service.model.content.DefaultVrContentText;
 import net.thevpc.app.vainruling.core.service.model.content.ArticlesDispositionStrict;
 import net.thevpc.app.vainruling.core.service.model.strict.AppUserStrict;
 import net.thevpc.app.vainruling.VrPollService;
@@ -58,6 +57,8 @@ import net.thevpc.app.vainruling.VrEditorMainPhotoProvider;
 import net.thevpc.app.vainruling.VrCompletionService;
 import net.thevpc.app.vainruling.VrCompletionInfo;
 import net.thevpc.app.vainruling.VrInstall;
+import net.thevpc.app.vainruling.core.service.model.content.VrContentTextConfig;
+import net.thevpc.app.vainruling.core.service.content.VrContentText;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -100,7 +101,12 @@ public class CorePlugin {
     private final CorePluginBodyDAOManager bodyDaoManager = new CorePluginBodyDAOManager();
     private final CorePluginBodyContentManager bodyContentManager = new CorePluginBodyContentManager();
     private final CorePluginBodyConfig bodyConfig = new CorePluginBodyConfig();
-    private final CorePluginBody[] bodies = new CorePluginBody[]{bodyFileSystem, bodyConfig, bodySecurityAuth, bodySecurityManager, bodyDaoManager, bodyContentManager};
+    private final CorePluginBodyLogManager logConfig = new CorePluginBodyLogManager();
+    private final CorePluginBody[] bodies = new CorePluginBody[]{
+        bodyFileSystem, bodyConfig, bodySecurityAuth, bodySecurityManager,
+        bodyDaoManager, bodyContentManager,
+        logConfig
+    };
     private CorePluginBodyContext bodyContext;
     private boolean started = false;
 
@@ -561,12 +567,12 @@ public class CorePlugin {
 
     public String getCurrentUserLoginOrAnonymous() {
         String s = getCurrentUserLogin();
-        if(s==null|| s.isEmpty()){
+        if (s == null || s.isEmpty()) {
             return "<anonymous>";
         }
         return s;
     }
-    
+
     public String getCurrentUserLogin() {
         return bodySecurityAuth.getCurrentUserLogin();
     }
@@ -813,8 +819,8 @@ public class CorePlugin {
         return bodyContentManager.findArticleFiles(articleIds);
     }
 
-    public FullArticle findFullArticle(int id) {
-        return bodyContentManager.findFullArticle(id);
+    public VrContentText findFullArticle(int id, VrContentTextConfig config) {
+        return bodyContentManager.findFullArticle(id, config);
     }
 
     public void markArticleVisited(int articleId) {
@@ -829,24 +835,24 @@ public class CorePlugin {
 //    public List<FullArticle> findFullArticlesByCategory(String disposition) {
 //        return bodyContentManager.findFullArticlesByCategory(disposition);
 //    }
-    public List<FullArticle> findFullArticlesByDisposition(String group, String disposition) {
-        return bodyContentManager.findFullArticlesByDisposition(null, group, disposition);
+    public List<VrContentText> findFullArticlesByDisposition(String group, String disposition, VrContentTextConfig config) {
+        return bodyContentManager.findFullArticlesByDisposition(null, group, disposition, config);
     }
 
-    public List<FullArticle> findFullArticlesByDisposition(Integer userId, String group, String disposition) {
-        return bodyContentManager.findFullArticlesByDisposition(userId, group, disposition);
+    public List<VrContentText> findFullArticlesByDisposition(Integer userId, String group, String disposition, VrContentTextConfig config) {
+        return bodyContentManager.findFullArticlesByDisposition(userId, group, disposition, config);
     }
 
-    public List<FullArticle> findFullArticlesByDisposition(int dispositionGroupId, boolean includeNoDept, final String disposition) {
-        return bodyContentManager.findFullArticlesByDisposition(null, dispositionGroupId, includeNoDept, disposition);
+    public List<VrContentText> findFullArticlesByDisposition(int dispositionGroupId, boolean includeNoDept, final String disposition, VrContentTextConfig config) {
+        return bodyContentManager.findFullArticlesByDisposition(null, dispositionGroupId, includeNoDept, disposition, config);
     }
 
-    public List<FullArticle> findFullArticlesByDisposition(Integer userId, int dispositionGroupId, boolean includeNoDept, final String disposition) {
-        return bodyContentManager.findFullArticlesByDisposition(userId, dispositionGroupId, includeNoDept, disposition);
+    public List<VrContentText> findFullArticlesByDisposition(Integer userId, Integer dispositionGroupId, boolean includeNoDept, final String disposition, VrContentTextConfig config) {
+        return bodyContentManager.findFullArticlesByDisposition(userId, dispositionGroupId, includeNoDept, disposition, config);
     }
 
-    public List<FullArticle> findFullArticlesByAnonymousDisposition(int dispositionGroupId, boolean includeNoDept, final String disposition) {
-        return bodyContentManager.findFullArticlesByAnonymousDisposition(dispositionGroupId, includeNoDept, disposition);
+    public List<VrContentText> findFullArticlesByAnonymousDisposition(Integer dispositionGroupId, boolean includeNoDept, final String disposition, VrContentTextConfig config) {
+        return bodyContentManager.findFullArticlesByAnonymousDisposition(dispositionGroupId, includeNoDept, disposition, config);
     }
 
     public String getRSS(String rss) {
@@ -943,6 +949,14 @@ public class CorePlugin {
         return bodyDaoManager.findAllNamedIds(entityName, criteria, currentInstance);
     }
 
+    public List<NamedId> findAllNamedIds(String entityName, String criteria, String textSearchType, String textSearchExpression, Map<String, Object> parameters) {
+        return bodyDaoManager.findAllNamedIds(entityName, criteria, textSearchType, textSearchExpression, parameters);
+    }
+
+    public List<Document> findAllDocuments(String entityName, String[] fields, String criteria, String textSearchType, String textSearchExpression, Map<String, Object> parameters) {
+        return bodyDaoManager.findAllDocuments(entityName, fields, criteria, textSearchType, textSearchExpression, parameters);
+    }
+
     public long findCountByFilter(String entityName, String criteria, String textSearchType, String textSearchExpression, Map<String, Object> parameters) {
         return bodyDaoManager.findCountByFilter(entityName, criteria, textSearchType, textSearchExpression, parameters);
     }
@@ -1004,32 +1018,31 @@ public class CorePlugin {
         return new ArrayList<>(cats);
     }
 
-    public List<FullArticle> findAllCompletionFullArticles(int monitorUserId, String disposition, String category, String objectType, Object objectId, Level minLevel) {
-        List<FullArticle> list = new ArrayList<>();
+    public List<VrContentText> findAllCompletionFullArticles(int monitorUserId, String disposition, String category, String objectType, Object objectId, Level minLevel) {
+        List<VrContentText> list = new ArrayList<>();
         int id = 1;
         ArticlesDispositionStrict dispo = new ArticlesDispositionStrict();
         dispo.setName(disposition);
         dispo.setEnabled(true);
         List<VrCompletionInfo> allCompletions = findAllCompletions(monitorUserId, category, objectType, objectId, minLevel);
         for (VrCompletionInfo c : allCompletions) {
-            FullArticle aa = convert(c, dispo);
-            aa.getArticle().setId(id);
+            DefaultVrContentText aa = (DefaultVrContentText) convert(c, dispo);
+            aa.setId(id);
             list.add(aa);
             id++;
         }
         return list;
     }
 
-    public FullArticle convert(VrCompletionInfo x, ArticlesDispositionStrict dispo) {
-        AppArticleStrict a = new AppArticleStrict();
+    public VrContentText convert(VrCompletionInfo x, ArticlesDispositionStrict dispo) {
+        DefaultVrContentText a = new DefaultVrContentText();
         a.setContent(x.getContent());
-        a.setSubject(x.getMessage());
-        a.setDisposition(dispo);
+        a.setTitle(x.getMessage());
+        a.setCategories(dispo == null ? new String[0] : new String[]{dispo.getName()});
         AppUserStrict sender = new AppUserStrict();
         sender.setFullName("Système");
-        a.setSender(sender);
-        FullArticle fa = new FullArticle(a, new ArrayList<>());
-        return fa;
+        a.setUser(sender);
+        return a;
     }
 
     public List<VrCompletionInfo> findAllCompletions(int monitorUserId, String category, String objectType, Object objectId, Level minLevel) {
@@ -1571,6 +1584,26 @@ public class CorePlugin {
 
     public void removeProfileParents(String childern, String... parents) {
         bodySecurityManager.removeProfileParent(childern, parents);
+    }
+
+    public String getServerLog() {
+        CorePluginSecurity.requireAdmin();
+        return logConfig.getServerLog();
+    }
+
+    public Object parseEntityId(String entityName, String id) {
+        Entity entity = UPA.getPersistenceUnit().getEntity(entityName);
+        List<Field> idFields = entity.getIdFields();
+        if (idFields.size() == 1) {
+            Field f = idFields.get(0);
+            if (f.getDataType() instanceof ManyToOneRelationship) {
+                ManyToOneRelationship m = (ManyToOneRelationship) f.getDataType();
+                return parseEntityId(m.getTargetEntity().getName(), id);
+            }
+            return convertId(id, f.getDataType().getPlatformType());
+        } else {
+            throw new IllegalArgumentException("unsupported parseEntityId");
+        }
     }
 
     private Object convertId(Object a, Class to) {

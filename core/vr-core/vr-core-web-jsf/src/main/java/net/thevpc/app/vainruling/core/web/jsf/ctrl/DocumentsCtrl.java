@@ -46,7 +46,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.thevpc.common.util.MapUtils;
+import net.thevpc.common.collections.MapUtils;
 import net.thevpc.app.vainruling.VrPageInfoResolver;
 import net.thevpc.app.vainruling.VrPage;
 import net.thevpc.app.vainruling.VrOnPageLoad;

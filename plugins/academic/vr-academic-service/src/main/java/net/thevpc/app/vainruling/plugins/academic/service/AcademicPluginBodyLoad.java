@@ -28,6 +28,7 @@ import net.thevpc.app.vainruling.plugins.academic.service.util.*;
 import net.thevpc.app.vainruling.plugins.academic.service.stat.*;
 import net.thevpc.common.mon.ProgressMonitors;
 import net.thevpc.common.util.*;
+import net.thevpc.common.collections.*;
 import net.thevpc.upa.PersistenceUnit;
 import net.thevpc.upa.UPA;
 

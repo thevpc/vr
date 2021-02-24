@@ -9,7 +9,6 @@ import net.thevpc.app.vainruling.VrOnPageLoad;
 import net.thevpc.app.vainruling.VrPathItem;
 import net.thevpc.app.vainruling.core.service.CorePlugin;
 import net.thevpc.app.vainruling.plugins.academic.model.internship.current.AcademicInternship;
-import net.thevpc.app.vainruling.plugins.academic.model.internship.current.AcademicInternshipGroup;
 import net.thevpc.app.vainruling.plugins.academic.model.internship.current.AcademicInternshipSessionType;
 import net.thevpc.app.vainruling.plugins.academic.model.internship.planning.PlanningActivity;
 import net.thevpc.app.vainruling.plugins.academic.model.internship.planning.PlanningActivityTable;
@@ -38,6 +37,7 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.logging.Level;
 import net.thevpc.app.vainruling.VrPage;
+import net.thevpc.app.vainruling.plugins.academic.model.internship.current.AcademicInternshipBoard;
 
 /**
  * internships for teachers
@@ -81,13 +81,13 @@ public class InternshipsPlanningCtrl {
         getModel().setGenerationStartDate("2016-06-27");
         getModel().setGenerationStartTime("08:30");
         getModel().setGenerationRoomPerDay(8);
-        getModel().setSelectedGroup(null);
-        reloadInternshipGroups();
+        getModel().setSelectedBoard(null);
+        reloadInternshipBoards();
         reloadInternshipSessionTypes();
         reloadActivityTable();
     }
 
-    public void onGroupChanged() {
+    public void onBoardChanged() {
         reloadActivityTable();
     }
 
@@ -97,14 +97,14 @@ public class InternshipsPlanningCtrl {
 
     private StreamedContent createStreamedContent(ByteArrayOutputStream byteArrayOutputStream,String contentType,String extension){
         InputStream stream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
-        AcademicInternshipGroup g = UPA.getPersistenceUnit().findById(AcademicInternshipGroup.class, Integer.parseInt(getModel().getSelectedGroup()));
-        String groupName = g.getName();
-        groupName = groupName.replace(" ", "-");
+        AcademicInternshipBoard g = UPA.getPersistenceUnit().findById(AcademicInternshipBoard.class, Integer.parseInt(getModel().getSelectedBoard()));
+        String boardName = g.getName();
+        boardName = boardName.replace(" ", "-");
         String selectedSessionType = getModel().getSelectedSessionType();
         if (!StringUtils.isBlank(selectedSessionType)) {
             selectedSessionType = "-" + selectedSessionType.replace(" ", "-");
         }
-        return new DefaultStreamedContent(stream, contentType, "planning-" + groupName + selectedSessionType + "."+extension);
+        return new DefaultStreamedContent(stream, contentType, "planning-" + boardName + selectedSessionType + "."+extension);
     }
 
     public StreamedContent downloadCsv() {
@@ -516,9 +516,9 @@ public class InternshipsPlanningCtrl {
 
     public void reloadActivityTable() {
         List<AcademicInternship> internshipsList = new ArrayList<>();
-        int groupId = Convert.toInt(getModel().getSelectedGroup(), IntegerParserConfig.LENIENT_F);
-        if (groupId > 0) {
-            internshipsList = academicPlugin.findInternships(-1, groupId, -1, -1, -1, true);
+        int boardId = Convert.toInt(getModel().getSelectedBoard(), IntegerParserConfig.LENIENT_F);
+        if (boardId > 0) {
+            internshipsList = academicPlugin.findInternships(-1, boardId, -1, -1, true);
         }
         setInternshipsList(internshipsList);
         reinitializeActivityTableFromModel();
@@ -690,17 +690,18 @@ public class InternshipsPlanningCtrl {
         }
     }
 
-    public void reloadInternshipGroups() {
-        List<SelectItem> internshipGroupsItems = new ArrayList<>();
+    public void reloadInternshipBoards() {
+        List<SelectItem> internshipBoardsItems = new ArrayList<>();
         AcademicTeacher tt = academicPlugin.getCurrentTeacher();
         if (tt != null) {
-            List<AcademicInternshipGroup> internshipGroups = academicPlugin.findEnabledInternshipGroupsByDepartment(tt.getUser().getDepartment().getId());
-            for (AcademicInternshipGroup t : internshipGroups) {
+            List<AcademicInternshipBoard> internshipBoards = academicPlugin.findEnabledInternshipBoardsByDepartment(
+                    -1,tt.getUser().getDepartment().getId(),true);
+            for (AcademicInternshipBoard t : internshipBoards) {
                 String n = t.getName();
-                internshipGroupsItems.add(FacesUtils.createSelectItem(String.valueOf(t.getId()), n,""));
+                internshipBoardsItems.add(FacesUtils.createSelectItem(String.valueOf(t.getId()), n,""));
             }
         }
-        getModel().setGroups(internshipGroupsItems);
+        getModel().setBoards(internshipBoardsItems);
     }
 
     public void reloadInternshipSessionTypes() {
@@ -724,8 +725,8 @@ public class InternshipsPlanningCtrl {
     public static class Model {
         private PlanningActivityTable table;
         private List<String> teachers;
-        private List<SelectItem> groups = new ArrayList<SelectItem>();
-        private String selectedGroup;
+        private List<SelectItem> boards = new ArrayList<SelectItem>();
+        private String selectedBoard;
         private List<SelectItem> sessionTypes = new ArrayList<SelectItem>();
         private String selectedSessionType;
         private List<AcademicInternship> internshipsList;
@@ -747,12 +748,12 @@ public class InternshipsPlanningCtrl {
         private boolean showVisibleColumnsOnly = true;
         private boolean showVisibleRowsOnly = true;
 
-        public List<SelectItem> getGroups() {
-            return groups;
+        public List<SelectItem> getBoards() {
+            return boards;
         }
 
-        public void setGroups(List<SelectItem> groups) {
-            this.groups = groups;
+        public void setBoards(List<SelectItem> boards) {
+            this.boards = boards;
         }
 
         public boolean isManager() {
@@ -915,12 +916,12 @@ public class InternshipsPlanningCtrl {
             this.showVisibleRowsOnly = showVisibleRowsOnly;
         }
 
-        public String getSelectedGroup() {
-            return selectedGroup;
+        public String getSelectedBoard() {
+            return selectedBoard;
         }
 
-        public void setSelectedGroup(String selectedGroup) {
-            this.selectedGroup = selectedGroup;
+        public void setSelectedBoard(String selectedBoard) {
+            this.selectedBoard = selectedBoard;
         }
 
         public List<SelectItem> getSessionTypes() {

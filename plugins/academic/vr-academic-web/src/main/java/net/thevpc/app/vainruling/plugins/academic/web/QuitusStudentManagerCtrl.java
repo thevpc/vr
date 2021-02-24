@@ -14,13 +14,13 @@ import javax.faces.bean.ManagedBean;
 import net.thevpc.app.vainruling.VrOnPageLoad;
 import net.thevpc.app.vainruling.core.service.CorePlugin;
 import net.thevpc.app.vainruling.core.web.jsf.ctrl.BasePageCtrl;
-import net.thevpc.app.vainruling.core.service.content.ContentText;
 import net.thevpc.app.vainruling.core.service.model.AppUser;
 import org.springframework.context.annotation.Scope;
 import net.thevpc.app.vainruling.VrPage;
 import net.thevpc.upa.Action;
 import net.thevpc.upa.UPA;
 import net.thevpc.upa.VoidAction;
+import net.thevpc.app.vainruling.core.service.content.VrContentText;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -69,11 +69,11 @@ public class QuitusStudentManagerCtrl extends BasePageCtrl {
             getModel().setContents(new ArrayList<>());
         } else {
             final CorePlugin core = CorePlugin.get();
-            List<ContentText> contents = UPA.getPersistenceUnit().invokePrivileged(new Action<List<ContentText>>() {
+            List<VrContentText> contents = UPA.getPersistenceUnit().invokePrivileged(new Action<List<VrContentText>>() {
                 @Override
-                public List<ContentText> run() {
+                public List<VrContentText> run() {
                     List<?> fa = core.findAllCompletionFullArticles(u.getId(), "Hot", null, null, null, Level.WARNING);
-                    return (List<ContentText>) fa;
+                    return (List<VrContentText>) fa;
                 }
             });
             getModel().setContents(contents);
@@ -84,7 +84,7 @@ public class QuitusStudentManagerCtrl extends BasePageCtrl {
 
         private AppUser user;
         private List<AppUser> users;
-        private List<ContentText> contents;
+        private List<VrContentText> contents;
 
         public List<AppUser> getUsers() {
             return users;
@@ -102,11 +102,11 @@ public class QuitusStudentManagerCtrl extends BasePageCtrl {
             this.user = user;
         }
 
-        public List<ContentText> getContents() {
+        public List<VrContentText> getContents() {
             return contents;
         }
 
-        public void setContents(List<ContentText> contents) {
+        public void setContents(List<VrContentText> contents) {
             this.contents = contents;
         }
 

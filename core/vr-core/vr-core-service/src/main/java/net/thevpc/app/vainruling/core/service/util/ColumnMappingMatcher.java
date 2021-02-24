@@ -8,6 +8,7 @@ package net.thevpc.app.vainruling.core.service.util;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 import net.thevpc.common.util.Convert;
 
 /**
@@ -32,11 +33,17 @@ public class ColumnMappingMatcher {
                     declaredField.setAccessible(true);
                     boolean ok = false;
                     for (String y : cm.value()) {
-                        y = VrUtils.normalizeName(y);
-                        if (m.get(y) != null) {
-                            declaredField.set(o, m.get(y));
-                            ok = true;
-                            found++;
+                        y = VrUtils.normalizeName(y).trim();
+                        final Pattern yp = Pattern.compile(y);
+                        for (String s : m.keySet()) {
+                            if (yp.matcher(s).matches()) {
+                                declaredField.set(o, m.get(s));
+                                ok = true;
+                                found++;
+                                break;
+                            }
+                        }
+                        if (ok) {
                             break;
                         }
                     }

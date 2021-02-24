@@ -1,23 +1,28 @@
 package net.thevpc.app.vainruling.plugins.tasks.web;
 
-import net.thevpc.app.vainruling.core.service.content.ContentPath;
-import net.thevpc.app.vainruling.core.service.content.ContentText;
 import net.thevpc.app.vainruling.core.service.model.strict.AppUserStrict;
 import net.thevpc.app.vainruling.plugins.tasks.service.model.Todo;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import net.thevpc.app.vainruling.core.service.CorePlugin;
+import net.thevpc.app.vainruling.core.service.model.AppUser;
+import net.thevpc.app.vainruling.core.service.model.content.DefaultVrContentText;
 
 /**
  * Created by vpc on 9/11/16.
  */
-public class TodoText implements ContentText {
+public class TodoText extends DefaultVrContentText {
 
     private Todo todo;
 
     public TodoText(Todo todo) {
         this.todo = todo;
+        setTitle(todo.getName());
+        setContent(todo.getMessage());
+        AppUser user = todo.getResponsible();
+        AppUserStrict u = new AppUserStrict(user);
+        u.setIconPath(CorePlugin.get().getUserIcon(user == null ? -1 : user.getId()));
+        setUser(u);
+        setRecipients(todo.getResponsible() == null ? null : todo.getResponsible().getFullName());
     }
 
     @Override
@@ -28,95 +33,4 @@ public class TodoText implements ContentText {
     public int getProgress() {
         return todo.getProgress();
     }
-
-    @Override
-    public String getCategory() {
-        return null;
-    }
-
-    @Override
-    public String getDecoration() {
-        return null;
-    }
-
-    @Override
-    public String getSubject() {
-        return todo.getName();
-    }
-
-    @Override
-    public String getSubTitle() {
-        return null;
-    }
-
-    @Override
-    public String getContent() {
-        return todo.getMessage();
-    }
-
-    @Override
-    public String getImageURL() {
-        return null;
-    }
-
-    @Override
-    public AppUserStrict getUser() {
-        return new AppUserStrict(todo.getResponsible());
-    }
-
-    @Override
-    public List<ContentPath> getAttachments() {
-        return Collections.EMPTY_LIST;
-    }
-
-    @Override
-    public List<ContentPath> getImageAttachments() {
-        return Collections.EMPTY_LIST;
-    }
-
-    @Override
-    public List<ContentPath> getNonImageAttachments() {
-        return Collections.EMPTY_LIST;
-    }
-
-    @Override
-    public String getLinkClassStyle() {
-        return null;
-    }
-
-    @Override
-    public boolean isImportant() {
-        return false;
-    }
-
-    @Override
-    public boolean isNoSubject() {
-        return false;
-    }
-
-    @Override
-    public String getLinkText() {
-        return null;
-    }
-
-    @Override
-    public String getLinkURL() {
-        return null;
-    }
-
-    @Override
-    public Date getPublishTime() {
-        return null;
-    }
-
-    @Override
-    public int getVisitCount() {
-        return 0;
-    }
-
-    @Override
-    public String getRecipients() {
-        return todo.getResponsible() == null ? null : todo.getResponsible().getFullName();
-    }
-
 }

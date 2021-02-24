@@ -21,6 +21,7 @@ import net.thevpc.app.vainruling.plugins.academic.model.current.AcademicClass;
 import net.thevpc.app.vainruling.plugins.academic.model.current.AcademicPreClass;
 import net.thevpc.app.vainruling.plugins.academic.model.current.AcademicPreClassChoice;
 import net.thevpc.app.vainruling.plugins.academic.model.current.AcademicPreClassType;
+import net.thevpc.upa.types.DateTime;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -101,7 +102,8 @@ public class AcademicStudent {
 
     private Timestamp updateDate;
 
-    @Field(defaultValue = "false")
+    @Formula(value = "(Select u.lastConnexionDate from AppUser u where u.id=this.userId)", formulaType = FormulaType.LIVE)
+    private DateTime lastConnexionDate;
 
     private boolean deleted;
 
@@ -470,9 +472,18 @@ public class AcademicStudent {
     public void setBaccalaureateGovernorate(AppGovernorate baccalaureateGovernorate) {
         this.baccalaureateGovernorate = baccalaureateGovernorate;
     }
+    
 
 //    public AppContact resolveContact(){
 //        AppUser c = getUser();
 //        return c==null?null: c.getContact();
 //    }
+
+    public DateTime getLastConnexionDate() {
+        return lastConnexionDate;
+    }
+
+    public void setLastConnexionDate(DateTime lastConnexionDate) {
+        this.lastConnexionDate = lastConnexionDate;
+    }
 }

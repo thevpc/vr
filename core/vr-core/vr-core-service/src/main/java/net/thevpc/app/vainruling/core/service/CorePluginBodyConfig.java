@@ -4,10 +4,9 @@ import net.thevpc.app.vainruling.core.service.cache.EntityCache;
 import net.thevpc.app.vainruling.core.service.model.*;
 import net.thevpc.app.vainruling.core.service.security.UserToken;
 import net.thevpc.app.vainruling.core.service.util.VrUtils;
-import net.thevpc.app.vainruling.core.service.model.*;
 import net.thevpc.common.strings.StringUtils;
 import net.thevpc.common.util.CustomTextFormatter;
-import net.thevpc.common.util.KeyValueList;
+import net.thevpc.common.collections.KeyValueList;
 import net.thevpc.common.vfs.VFile;
 import net.thevpc.upa.Action;
 import net.thevpc.upa.PersistenceUnit;
@@ -383,7 +382,7 @@ class CorePluginBodyConfig extends CorePluginBody {
         return UPA.getContext().invokePrivileged(new Action<String>() {
             @Override
             public String run() {
-                AppUser t = getContext().getCorePlugin().findUser(id);
+                AppUser t = id<0?null:getContext().getCorePlugin().findUser(id);
                 boolean female = false;
                 if (t != null) {
                     AppGender g = t.getGender();

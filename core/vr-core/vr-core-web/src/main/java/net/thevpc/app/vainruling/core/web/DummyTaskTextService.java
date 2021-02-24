@@ -1,10 +1,10 @@
 package net.thevpc.app.vainruling.core.web;
 
 import net.thevpc.app.vainruling.VrTaskTextService;
-import net.thevpc.app.vainruling.core.service.content.ContentText;
 
 import java.util.Collections;
 import java.util.List;
+import net.thevpc.app.vainruling.core.service.content.VrContentText;
 
 public class DummyTaskTextService implements VrTaskTextService {
 
@@ -24,12 +24,12 @@ public class DummyTaskTextService implements VrTaskTextService {
     }
 
     @Override
-    public List<ContentText> getContentTextList(String id) {
+    public List<VrContentText> getContentTextList(String id) {
         return Collections.emptyList();
     }
 
     @Override
-    public List<ContentText> getContentTextListHead(String id, int max) {
+    public List<VrContentText> getContentTextListHead(String id, int max) {
         return Collections.emptyList();
     }
 }

@@ -41,10 +41,10 @@ public class AppGlobalCtrl extends BasePageCtrl {
 
         NotificationText notificationText = new NotificationText();
         notificationText.setId(10001);
-        notificationText.setSubject("Arrêt dans moins de 4 minutes...");
+        notificationText.setTitle("Arrêt dans moins de 4 minutes...");
         notificationText.setContent("Arrêt dans moins de 4 minutes...");
         notificationText.setDecoration("severe");
-        notificationText.setLinkClassStyle("fire-extinguisher text-red");
+//        notificationText.setLinkClassStyle("fire-extinguisher text-red");
         VrApp.getBean(Vr.class).getNotificationTextService().publish(notificationText);
     }
 

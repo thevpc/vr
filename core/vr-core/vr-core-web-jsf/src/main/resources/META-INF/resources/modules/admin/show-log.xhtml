@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      >
+
+    <h:head>
+    </h:head>
+
+    <h:body>
+
+
+        <ui:composition template="#{vr.privateTemplatePath}">
+            <ui:define name="content">
+                <h:form id="itemForm" enctype="multipart/form-data">
+                    <p:growl id="growl" showDetail="true" sticky="true"/>
+                    <p:outputLabel value="Server Log"/>
+                    <p:commandButton action="#{showLogCtrl.refresh()}" update=":itemForm" value="Refresh" styleClass="ui-button-secondary"/>
+                    <p:separator/>
+                    <p:inputTextarea rows="100" cols="100" disabled="true" value="#{showLogCtrl.serverLog}" style="width:100%">
+                    </p:inputTextarea>
+                </h:form>
+            </ui:define>
+
+
+
+        </ui:composition>
+
+
+    </h:body>
+
+</html>

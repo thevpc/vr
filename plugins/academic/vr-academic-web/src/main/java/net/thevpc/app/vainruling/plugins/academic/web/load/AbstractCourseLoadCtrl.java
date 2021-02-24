@@ -19,7 +19,6 @@ import net.thevpc.app.vainruling.plugins.academic.model.current.AcademicCourseAs
 import net.thevpc.app.vainruling.plugins.academic.service.dto.TeacherPeriodStatExt;
 import net.thevpc.app.vainruling.plugins.academic.service.dto.TeacherSemesterStatExt;
 import net.thevpc.app.vainruling.core.service.VrApp;
-import net.thevpc.app.vainruling.core.service.util.*;
 import net.thevpc.app.vainruling.core.service.editor.EditorConfig;
 import net.thevpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
 import net.thevpc.common.jsf.FacesUtils;
@@ -100,17 +99,21 @@ public abstract class AbstractCourseLoadCtrl {
     public abstract AcademicTeacher getCurrentTeacher();
 
     public void onRefreshFiltersChanged() {
-        onRefresh();
+        getModel().setFilterChanged(true);
+//        onRefresh();
     }
 
     @VrOnPageLoad
     public void onRefresh(String cmd) {
         try {
+            Chronometer ch=Chronometer.start("CourseLoad");
             CorePlugin core = VrApp.getBean(CorePlugin.class);
 //        List<AppPeriod> navigatablePeriods = core.findNavigatablePeriods();
 //        AppPeriod mainPeriod = core.getCurrentPeriod();
             onInit();
             onChangePeriod();
+            ch.stop();
+            System.out.println(ch);
         } catch (Exception ex) {
             LOG.log(Level.SEVERE, "Error", ex);
             FacesUtils.addErrorMessage(ex);
@@ -218,6 +221,7 @@ public abstract class AbstractCourseLoadCtrl {
     public void onRefresh() {
         try {
             Chronometer chronometer = Chronometer.start();
+            getModel().setFilterChanged(false);
             final int teacherDepartment = getTeacherDepartment();
             int periodId = getTeacherFilter().getPeriodId();
             AcademicPlugin a = VrApp.getBean(AcademicPlugin.class);
@@ -902,6 +906,15 @@ public abstract class AbstractCourseLoadCtrl {
         List<SelectItem> filterSelectItems = new ArrayList<>();
         List<SelectItem> otherFilterSelectItems = new ArrayList<>();
         String othersTextFilter;
+        boolean filterChanged;
+
+        public boolean isFilterChanged() {
+            return filterChanged;
+        }
+
+        public void setFilterChanged(boolean filterChanged) {
+            this.filterChanged = filterChanged;
+        }
 
         AcademicTeacher currentTeacher;
 
@@ -1018,6 +1031,9 @@ public abstract class AbstractCourseLoadCtrl {
 
         public List<AcademicCourseAssignmentInfoByVisitor> getOthers() {
             return result.getOthers();
+        }
+        public List<AcademicCourseAssignmentInfoByVisitor> getOthersVisible() {
+            return result.getVisibleOthers();
         }
 
         public TeacherPeriodStatExt getStat() {

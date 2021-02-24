@@ -13,7 +13,6 @@ import net.thevpc.app.vainruling.core.service.util.VrUtils;
 import net.thevpc.app.vainruling.core.web.jsf.ctrl.AbstractObjectCtrl;
 import net.thevpc.app.vainruling.VrPageInfo;
 import net.thevpc.app.vainruling.core.service.VrApp;
-import net.thevpc.app.vainruling.core.service.content.ContentText;
 import net.thevpc.app.vainruling.core.service.model.AppUser;
 
 import net.thevpc.app.vainruling.VrBreadcrumbItem;
@@ -44,6 +43,7 @@ import net.thevpc.app.vainruling.VrOnPageLoad;
 import net.thevpc.app.vainruling.VrMenuProvider;
 import net.thevpc.app.vainruling.core.web.jsf.Vr;
 import org.apache.commons.lang.StringEscapeUtils;
+import net.thevpc.app.vainruling.core.service.content.VrContentText;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -543,12 +543,12 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VrMenuProvider
     }
 
     @Override
-    public List<ContentText> getContentTextList(String id) {
+    public List<VrContentText> getContentTextList(String id) {
         return (List) getModel().getTodoText();
     }
 
-    public List<ContentText> getContentTextListHead(String id, int max) {
-        List<ContentText> list = getContentTextList(id);
+    public List<VrContentText> getContentTextListHead(String id, int max) {
+        List<VrContentText> list = getContentTextList(id);
         if (list.size() > max) {
             return list.subList(0, max);
         }
@@ -557,7 +557,7 @@ public class TodoCtrl extends AbstractObjectCtrl<Todo> implements VrMenuProvider
 
     @Override
     public int getActiveCount() {
-        List<ContentText> contentTextList = getContentTextList(null);
+        List<VrContentText> contentTextList = getContentTextList(null);
         return contentTextList == null ? 0 : contentTextList.size();
     }
 }

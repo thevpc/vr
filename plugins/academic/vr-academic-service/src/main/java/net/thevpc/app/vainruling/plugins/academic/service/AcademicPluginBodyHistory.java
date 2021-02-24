@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
-import net.thevpc.common.util.MapUtils;
+import net.thevpc.common.collections.MapUtils;
 
 public class AcademicPluginBodyHistory extends AcademicPluginBody {
 

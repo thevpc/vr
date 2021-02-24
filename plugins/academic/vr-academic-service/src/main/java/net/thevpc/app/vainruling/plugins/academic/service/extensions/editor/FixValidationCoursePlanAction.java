@@ -15,8 +15,8 @@ import net.thevpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.thevpc.common.util.Convert;
 
 import java.util.List;
-import net.thevpc.common.util.Collections2;
-import net.thevpc.common.util.ListValueMap;
+import net.thevpc.common.collections.Collections2;
+import net.thevpc.common.collections.ListValueMap;
 
 /**
  * @author taha.bensalah@gmail.com

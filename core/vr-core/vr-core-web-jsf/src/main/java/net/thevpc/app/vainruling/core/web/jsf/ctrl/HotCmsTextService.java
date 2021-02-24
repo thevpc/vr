@@ -8,7 +8,6 @@ package net.thevpc.app.vainruling.core.web.jsf.ctrl;
 import net.thevpc.app.vainruling.core.service.VrApp;
 import net.thevpc.app.vainruling.core.service.content.CmsTextDisposition;
 import net.thevpc.app.vainruling.core.service.model.content.AppArticleDisposition;
-import net.thevpc.app.vainruling.core.service.model.content.FullArticle;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
@@ -16,7 +15,8 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import java.util.List;
 import java.util.logging.Level;
-import net.thevpc.app.vainruling.core.service.content.ContentText;
+import net.thevpc.app.vainruling.core.service.content.VrContentText;
+import net.thevpc.app.vainruling.core.service.model.content.VrContentTextConfig;
 
 /**
  * @author vpc
@@ -34,7 +34,7 @@ public class HotCmsTextService extends AbstractCmsTextService {
     }
 
     @Override
-    public boolean isEnabledAction(String action, ContentText ctx) {
+    public boolean isEnabledAction(String action, VrContentText ctx) {
         if (action == null) {
             return false;
         }
@@ -47,7 +47,7 @@ public class HotCmsTextService extends AbstractCmsTextService {
     }
 
     @Override
-    public boolean onAction(String action, ContentText a) {
+    public boolean onAction(String action, VrContentText a) {
         ExternalContext ec = FacesContext.getCurrentInstance()
                 .getExternalContext();
         try {
@@ -91,7 +91,7 @@ public class HotCmsTextService extends AbstractCmsTextService {
     }
 
     @Override
-    public List<FullArticle> findArticles(String disposition) {
+    public List<VrContentText> findArticles(String disposition, VrContentTextConfig config) {
         return core.findAllCompletionFullArticles(core.getCurrentUserId(), disposition, null, null, null, Level.WARNING);
     }
 

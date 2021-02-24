@@ -1,7 +1,7 @@
 package net.thevpc.app.vainruling.core.service.cache;
 
 import net.thevpc.app.vainruling.core.service.util.EntityMapList;
-import net.thevpc.common.util.KeyValueList;
+import net.thevpc.common.collections.KeyValueList;
 import net.thevpc.upa.Action;
 import net.thevpc.upa.Entity;
 import net.thevpc.upa.UPA;
@@ -9,7 +9,7 @@ import net.thevpc.upa.UPA;
 import java.lang.ref.SoftReference;
 import java.util.HashMap;
 import java.util.Map;
-import net.thevpc.common.util.CollectionUtils;
+import net.thevpc.common.collections.CollectionUtils;
 
 /**
  * Created by vpc on 6/1/16.

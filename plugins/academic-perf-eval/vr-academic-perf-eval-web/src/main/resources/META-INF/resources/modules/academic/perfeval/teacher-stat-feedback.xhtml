@@ -200,6 +200,10 @@ and open the template in the editor.
                                         </div>
                                     </div>
                                 </p:column>
+                                
+                                <f:facet name="footer">
+                                    <p:outputLabel
+                                        value="Total #{teacherStatFeedbackCtrl.model.statData.studentinfos.size()}"/>
                             </p:dataTable>
                         </p:tab>
                     </p:tabView>

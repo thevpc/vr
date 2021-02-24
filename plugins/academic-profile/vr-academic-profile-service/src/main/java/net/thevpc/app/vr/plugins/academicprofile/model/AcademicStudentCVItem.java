@@ -34,7 +34,7 @@ public class AcademicStudentCVItem {
     private AppCompany company;
     @Field(max = "1024")
     private String keywords;
-
+    
     public int getId() {
         return id;
     }

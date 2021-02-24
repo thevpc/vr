@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import net.thevpc.upa.Document;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -41,6 +42,7 @@ public class PropertyView implements Serializable {
     private List<SelectItem> items = new ArrayList<>();
     //TODO change this to simple NamedId values (no need to bother of all Entity Values
     private List<NamedId> values = new ArrayList<>();
+    private List<String> selectedItems = new ArrayList<>();
     private boolean required;
     private boolean bulkSelected;
     private String componentId;
@@ -468,6 +470,22 @@ public class PropertyView implements Serializable {
 
     public void setForControl(PropertyView forControl) {
         this.forControl = forControl;
+    }
+
+    public List<String> getSelectedItems() {
+        return selectedItems;
+    }
+
+    public void setSelectedItems(List<String> selectedItems) {
+        this.selectedItems = selectedItems;
+    }
+
+    public void onPostUpdate(Entity entity, Document document) {
+
+    }
+
+    public void onPostPersist(Entity entity, Document c) {
+
     }
 
 }

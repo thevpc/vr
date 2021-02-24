@@ -22,7 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
-import net.thevpc.common.util.MapUtils;
+import net.thevpc.common.collections.MapUtils;
 
 public class WebScriptServiceInvoker {
 

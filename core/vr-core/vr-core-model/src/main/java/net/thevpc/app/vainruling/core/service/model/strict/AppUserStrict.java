@@ -9,8 +9,14 @@ public class AppUserStrict {
     private String fullName;
     private String fullTitle;
     private String genderCode;
+    private String iconPath;
 
     public AppUserStrict() {
+    }
+
+    public AppUserStrict(AppUser u, String icon) {
+        this(u);
+        setIconPath(icon);
     }
 
     public AppUserStrict(AppUser u) {
@@ -23,6 +29,14 @@ public class AppUserStrict {
                 genderCode = u.getGender().getCode();
             }
         }
+    }
+
+    public String getIconPath() {
+        return iconPath;
+    }
+
+    public void setIconPath(String iconPath) {
+        this.iconPath = iconPath;
     }
 
     public int getId() {

@@ -8,8 +8,8 @@ package net.thevpc.app.vainruling.plugins.academic.service.stat;
 import net.thevpc.app.vainruling.plugins.academic.model.current.AcademicTeacherDegree;
 import net.thevpc.app.vainruling.plugins.academic.model.config.AcademicSemester;
 import net.thevpc.app.vainruling.plugins.academic.model.config.AcademicTeacherSituation;
-import net.thevpc.common.util.AutoValueMap;
-import net.thevpc.common.util.Collections2;
+import net.thevpc.common.collections.AutoValueMap;
+import net.thevpc.common.collections.Collections2;
 
 import java.util.*;
 import java.util.function.Function;

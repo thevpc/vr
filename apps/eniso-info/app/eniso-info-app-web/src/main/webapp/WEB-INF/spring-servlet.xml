@@ -10,7 +10,7 @@
         http://www.springframework.org/schema/mvc
         http://www.springframework.org/schema/mvc/spring-mvc.xsd">
 
-<context:component-scan base-package="net.vpc" />
+<context:component-scan base-package="net.thevpc" />
 <mvc:annotation-driven />
 <!--<bean class="net.thevpc.app.vainruling.core.web.CoreWS"/>-->
 </beans>

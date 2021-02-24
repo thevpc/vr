@@ -28,12 +28,12 @@
                                              style="width: 100%;">
                                     #{articlesCtrl.updateVisit(articlesCtrl.model.current.id)}
                                     <div style="text-align: justify;text-justify: inter-word;color: #929da5;">
-                                        <h3>#{articlesCtrl.model.current.subject}</h3>
+                                        <h3>#{articlesCtrl.model.current.title}</h3>
                                         <p:imageSwitch effect="zoom" slideshowAuto="true" style="float: left;
                                                margin-right: 10px;
                                                margin-bottom: 10px;
                                                ">
-                                            <ui:repeat value="#{articlesCtrl.model.current.imageAttachments}" var="im">
+                                            <ui:repeat value="#{vr.findImageAttachments(articlesCtrl.model.current.attachments)}" var="im">
                                                 <p:graphicImage value="#{vr.url(im.path)}" alt="#{im.name}"
                                                                 width="400"
                                                                 height="200"/>
@@ -93,7 +93,7 @@
                                             paginatorPosition="bottom"
                                 >
                                     <h3 style="font-size: small;margin-top: 0px;margin-bottom: 0px;padding-top: 0px;">
-                                        <span style="padding: 0 5px;background: #1777B1;color: #FFFFFF;">#{vr.date(i.publishTime,'dd/MM')}:</span> #{i.subject}
+                                        <span style="padding: 0 5px;background: #1777B1;color: #FFFFFF;">#{vr.date(i.publishTime,'dd/MM')}:</span> #{i.title}
                                     </h3>
 
                                     <p style="font-size: x-small"><p:commandLink

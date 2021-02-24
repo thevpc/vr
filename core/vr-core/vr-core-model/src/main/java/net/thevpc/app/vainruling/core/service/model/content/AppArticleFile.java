@@ -34,6 +34,8 @@ public class AppArticleFile implements AppFile {
     )
     @Summary
     private String path;
+    
+    private String linkPath;
 
 
     private String style;
@@ -88,6 +90,15 @@ public class AppArticleFile implements AppFile {
         this.style = style;
     }
 
+    public String getLinkPath() {
+        return linkPath;
+    }
+
+    public void setLinkPath(String linkPath) {
+        this.linkPath = linkPath;
+    }
+    
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -100,6 +111,7 @@ public class AppArticleFile implements AppFile {
         if (article != null ? !article.equals(that.article) : that.article != null) return false;
         if (name != null ? !name.equals(that.name) : that.name != null) return false;
         if (path != null ? !path.equals(that.path) : that.path != null) return false;
+        if (linkPath != null ? !linkPath.equals(that.linkPath) : that.linkPath != null) return false;
         return style != null ? style.equals(that.style) : that.style == null;
 
     }
@@ -110,6 +122,7 @@ public class AppArticleFile implements AppFile {
         result = 31 * result + (article != null ? article.hashCode() : 0);
         result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + (path != null ? path.hashCode() : 0);
+        result = 31 * result + (linkPath != null ? linkPath.hashCode() : 0);
         result = 31 * result + (style != null ? style.hashCode() : 0);
         result = 31 * result + position;
         return result;

@@ -141,11 +141,11 @@ and open the template in the editor.
                                 </p:splitButton>
 
                                 <p:selectOneMenu style="margin-left: 20px;height: 40px;"
-                                                 value="#{internshipsPlanningCtrl.model.selectedGroup}">
-                                    <p:ajax listener="#{internshipsPlanningCtrl.onGroupChanged}"
+                                                 value="#{internshipsPlanningCtrl.model.selectedBoard}">
+                                    <p:ajax listener="#{internshipsPlanningCtrl.onBoardChanged}"
                                             update=":listForm"/>
-                                    <f:selectItem itemLabel="Selectionner Groupe..." itemValue=""/>
-                                    <f:selectItems value="#{internshipsPlanningCtrl.model.groups}"/>
+                                    <f:selectItem itemLabel="Selectionner Session..." itemValue=""/>
+                                    <f:selectItems value="#{internshipsPlanningCtrl.model.boards}"/>
                                 </p:selectOneMenu>
 
                                 <p:selectOneMenu style="margin-left: 20px;height: 40px;"

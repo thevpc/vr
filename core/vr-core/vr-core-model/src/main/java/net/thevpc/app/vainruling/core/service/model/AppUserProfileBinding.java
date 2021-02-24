@@ -5,6 +5,7 @@
  */
 package net.thevpc.app.vainruling.core.service.model;
 
+import net.thevpc.app.vainruling.core.service.util.UIConstants;
 import net.thevpc.upa.RelationshipType;
 import net.thevpc.upa.config.*;
 
@@ -27,6 +28,8 @@ public class AppUserProfileBinding {
     private int id;
 
     @Summary
+    @Property(name = UIConstants.Form.COMPOSITION_LIST_FIELD, value = "profile")
+    @ManyToOne(relationType = RelationshipType.COMPOSITION)
     private AppUser user;
 
     @Summary

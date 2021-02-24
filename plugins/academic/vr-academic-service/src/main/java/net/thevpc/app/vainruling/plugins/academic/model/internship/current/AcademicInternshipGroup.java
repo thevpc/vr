@@ -12,6 +12,7 @@ import net.thevpc.upa.config.*;
 /**
  * @author taha.bensalah@gmail.com
  */
+@Deprecated
 @Entity
 @Path("Education/Projects/Internships")
 @Properties(

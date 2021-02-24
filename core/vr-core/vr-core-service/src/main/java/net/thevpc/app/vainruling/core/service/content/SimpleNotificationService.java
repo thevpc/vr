@@ -49,13 +49,13 @@ public class SimpleNotificationService implements VrNotificationTextService {
     }
 
     @Override
-    public List<ContentText> getContentTextList(String id) {
+    public List<VrContentText> getContentTextList(String id) {
         return (List)notificationTexts;
     }
 
     @Override
-    public List<ContentText> getContentTextListHead(String id, int max) {
-        List<ContentText> list = getContentTextList(id);
+    public List<VrContentText> getContentTextListHead(String id, int max) {
+        List<VrContentText> list = getContentTextList(id);
         if (list.size() > max) {
             return list.subList(0, max);
         }

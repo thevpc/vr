@@ -1,6 +1,6 @@
 package net.thevpc.app.vainruling.core.service.util;
 
-import net.thevpc.common.util.DefaultKeyValueList;
+import net.thevpc.common.collections.DefaultKeyValueList;
 import net.thevpc.upa.Entity;
 
 import java.util.List;

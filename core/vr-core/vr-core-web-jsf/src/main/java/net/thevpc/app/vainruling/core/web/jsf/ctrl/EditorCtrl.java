@@ -29,10 +29,7 @@ import net.thevpc.app.vainruling.core.service.editor.DialogResult;
 import net.thevpc.app.vainruling.core.service.editor.ParamType;
 import net.thevpc.app.vainruling.core.service.editor.ActionParam;
 import net.thevpc.app.vainruling.core.service.VrApp;
-import net.thevpc.app.vainruling.core.service.util.*;
-import net.thevpc.app.vainruling.core.web.*;
 import net.thevpc.app.vainruling.core.web.jsf.DialogBuilder;
-import net.thevpc.app.vainruling.core.web.jsf.ctrl.obj.*;
 import net.thevpc.app.vainruling.VrBreadcrumbItem;
 import net.thevpc.app.vainruling.core.web.menu.VrMenuManager;
 import net.thevpc.common.jsf.FacesUtils;
@@ -69,6 +66,9 @@ import net.thevpc.app.vainruling.VrPage;
 import net.thevpc.app.vainruling.VrPathItem;
 import net.thevpc.app.vainruling.VrOnPageLoad;
 import net.thevpc.app.vainruling.VrEditorSearch;
+import org.primefaces.model.menu.DefaultMenuItem;
+import org.primefaces.model.menu.DefaultMenuModel;
+import org.primefaces.model.menu.MenuModel;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -473,7 +473,8 @@ public class EditorCtrl extends AbstractObjectCtrl<EditorRow> implements VrPageI
     }
 
     public Entity getEntity() {
-        return UPA.getPersistenceUnit().getEntity(getModel().getEntityName());
+        String entityName = getModel().getEntityName();
+        return entityName == null ? null : UPA.getPersistenceUnit().getEntity(entityName);
     }
 
     @Override
@@ -584,6 +585,9 @@ public class EditorCtrl extends AbstractObjectCtrl<EditorRow> implements VrPageI
                 case PERSIST: {
                     Document c = getModel().getCurrentDocument();
                     core.save(getEntityName(), c);
+                    for (PropertyView property : properties.toArray(new PropertyView[0])) {
+                        property.onPostPersist(getEntity(), c);
+                    }
                     updateMode(VrAccessMode.UPDATE);
                     if (close) {
                         onCancelCurrent();
@@ -595,6 +599,9 @@ public class EditorCtrl extends AbstractObjectCtrl<EditorRow> implements VrPageI
                 case UPDATE: {
                     Document c = getModel().getCurrentDocument();
                     core.save(getEntityName(), c);
+                    for (PropertyView property : properties.toArray(new PropertyView[0])) {
+                        property.onPostUpdate(getEntity(), c);
+                    }
                     if (close) {
                         onCancelCurrent();
                     } else {
@@ -608,6 +615,9 @@ public class EditorCtrl extends AbstractObjectCtrl<EditorRow> implements VrPageI
                             Document document = editorRow.getDocument();
                             mergeBulkUpdates(document);
                             core.save(getEntityName(), document);
+                            for (PropertyView property : properties) {
+                                property.onPostUpdate(getEntity(), document);
+                            }
                         }
                         updateMode(VrAccessMode.READ);
                     }
@@ -843,10 +853,13 @@ public class EditorCtrl extends AbstractObjectCtrl<EditorRow> implements VrPageI
     }
 
     public boolean isEnabledMainPhoto() {
-        return core.isEnabledMainPhoto(getEntityName());
+        return getEntityName() == null ? false : core.isEnabledMainPhoto(getEntityName());
     }
 
     public String getMainName(EditorRow row) {
+        if (getEntity() == null) {
+            return null;
+        }
         String t = getEntity().getMainFieldValue(row.getDocument());
         if (StringUtils.isBlank(t)) {
             t = "NoName";
@@ -871,17 +884,37 @@ public class EditorCtrl extends AbstractObjectCtrl<EditorRow> implements VrPageI
         }
         HashMap<String, Object> parameters = new HashMap<>();
         int autoFilterIndex = 1;
-        for (AutoFilter o : getAutoFilters()) {
-            String filterExpression = o.createFilterExpression(parameters, "af" + autoFilterIndex);
-            if (!StringUtils.isBlank(filterExpression)) {
-                if (!StringUtils.isBlank(_listFilter)) {
-                    _listFilter += " and ";
+        for (AutoFilter o : getAutoFilters().toArray(new AutoFilter[0])) {
+            if (Objects.equals(o.getData().getEntityName(), getEntityName())) {
+                String filterExpression = o.createFilterExpression(parameters, "af" + autoFilterIndex);
+                if (!StringUtils.isBlank(filterExpression)) {
+                    if (!StringUtils.isBlank(_listFilter)) {
+                        _listFilter += " and ";
+                    }
+                    _listFilter += "(" + filterExpression + ")";
                 }
-                _listFilter += "(" + filterExpression + ")";
+                autoFilterIndex++;
+            } else {
+                log.log(Level.SEVERE, "Error : the same session is shared between multiple entities");
             }
-            autoFilterIndex++;
         }
-        List<Document> found = core.findDocumentsByFilter(getEntityName(), _listFilter, getModel().getSearchType(), getModel().getSearchText(), parameters);
+        List<Document> found = null;
+        try {
+            found = core.findDocumentsByFilter(getEntityName(), _listFilter, getModel().getSearchType(), getModel().getSearchText(), parameters);
+        } catch (Exception ex) {
+            log.log(Level.SEVERE, "Error : findDocumentsByFilter("
+                    + getEntityName()
+                    + "," + _listFilter
+                    + "," + getModel().getSearchType()
+                    + "," + getModel().getSearchText()
+                    + "," + parameters
+                    + ")",
+                    ex);
+            FacesUtils.addErrorMessage("error loading items of type " + getEntityName());
+        }
+        if (found == null) {
+            found = new ArrayList<>();
+        }
         List<EditorRow> filteredObjects = new ArrayList<>();
         Entity entity = getEntity();
         UPASecurityManager sm = entity.getPersistenceUnit().getSecurityManager();
@@ -947,7 +980,10 @@ public class EditorCtrl extends AbstractObjectCtrl<EditorRow> implements VrPageI
     }
 
     protected Object getPropertyColumnCodeValue(String propertyCodeName, String property, EditorRow row) {
-        Field p = getEntity().getField(property);
+        Field p = getEntity().findField(property);
+        if (p == null) {
+            return null;
+        }
         String v = p.getProperties().getString(propertyCodeName);
         if (v != null) {
             v = v.trim();
@@ -1001,7 +1037,10 @@ public class EditorCtrl extends AbstractObjectCtrl<EditorRow> implements VrPageI
                 return null;
             }
             Entity e = getEntity();
-            Field field = e.getField(property);
+            Field field = e.findField(property);
+            if (field == null) {
+                return null;
+            }
             Object v = field.getMainValue(o);
 
             if (v != null) {
@@ -1163,7 +1202,7 @@ public class EditorCtrl extends AbstractObjectCtrl<EditorRow> implements VrPageI
         }
         updateViewFlag = true;
         try {
-        resetButtons();
+            resetButtons();
             try {
                 //reset table state
                 FacesContext currentInstance = FacesContext.getCurrentInstance();
@@ -1264,15 +1303,15 @@ public class EditorCtrl extends AbstractObjectCtrl<EditorRow> implements VrPageI
                 for (EntityItem entityPart : entityParts) {
                     if (entityPart instanceof Section) {
                         List<Field> sectionFields = ((Section) entityPart).getFields(FieldFilters.byModifiersNoneOf(FieldModifier.SYSTEM));
-                        List<Field> sectionSortedFields = VrUtils.sortPreserveIndex(sectionFields, new Comparator<Field>() {
-                            @Override
-                            public int compare(Field o1, Field o2) {
-//                    return Integer.compare(o1.getPreferredIndex(),o2.getPreferredIndex());
-                                return 0;
-                            }
-                        });
+//                        List<Field> sectionSortedFields = VrUtils.sortPreserveIndex(sectionFields, new Comparator<Field>() {
+//                            @Override
+//                            public int compare(Field o1, Field o2) {
+////                    return Integer.compare(o1.getPreferredIndex(),o2.getPreferredIndex());
+//                                return 0;
+//                            }
+//                        });
 
-                        for (Field field : sectionSortedFields) {
+                        for (Field field : sectionFields) {
                             updateViewForField(field, viewContext, propertyViews);
                         }
 
@@ -1303,17 +1342,37 @@ public class EditorCtrl extends AbstractObjectCtrl<EditorRow> implements VrPageI
                         if (relation.getTargetEntity().getName().equals(ot.getName())) {
                             if (!core.isInaccessibleEntity(relation.getSourceRole().getEntity().getName())) {
                                 if (relation.getRelationshipType() == RelationshipType.COMPOSITION) {
-                                    EntityDetailPropertyView details = new EntityDetailPropertyView(relation.getName(), relation, UIConstants.Control.ENTITY_DETAIL, propertyViewManager);
-                                    details.setPrependNewLine((counter % maxPerLine) == 0);
-                                    details.setAppendNewLine(false);
-                                    details.setColspan(1);
-                                    details.setDisabled(!UPA.getPersistenceUnit().getSecurityManager().isAllowedNavigate(relation.getSourceEntity()));
-                                    counter++;
-                                    if (firstDetailRelation) {
-                                        details.setSeparatorText("Details");
-                                        firstDetailRelation = false;
+                                    //relation.getT
+                                    String listByField = null;
+                                    if (relation.getTargetRole().getFields().size() == 1) {
+                                        //@net.thevpc.upa.config.Property(name = UIConstants.Form.COMPOSITION_LIST_FIELD, value = "teacher")
+                                        listByField = relation.getSourceRole().getEntityField().getProperties().getString(UIConstants.Form.COMPOSITION_LIST_FIELD);
                                     }
-                                    propertyViews.add(new OrderedPropertyView(propertyViews.size(), details));
+                                    if (listByField != null) {
+                                        EntityDetailSimplePropertyView details = new EntityDetailSimplePropertyView(relation.getName(), relation, UIConstants.Control.ENTITY_DETAIL_SIMPLE, listByField, propertyViewManager);
+                                        details.setPrependNewLine(true);
+                                        details.setAppendNewLine(true);
+                                        details.setColspan(1);
+                                        details.setDisabled(!UPA.getPersistenceUnit().getSecurityManager().isAllowedNavigate(relation.getSourceEntity()));
+                                        counter++;
+                                        if (firstDetailRelation) {
+                                            details.setSeparatorText("Details");
+                                            firstDetailRelation = false;
+                                        }
+                                        propertyViews.add(new OrderedPropertyView(propertyViews.size(), details));
+                                    } else {
+                                        EntityDetailPropertyView details = new EntityDetailPropertyView(relation.getName(), relation, UIConstants.Control.ENTITY_DETAIL, propertyViewManager);
+                                        details.setPrependNewLine((counter % maxPerLine) == 0);
+                                        details.setAppendNewLine(false);
+                                        details.setColspan(1);
+                                        details.setDisabled(!UPA.getPersistenceUnit().getSecurityManager().isAllowedNavigate(relation.getSourceEntity()));
+                                        counter++;
+                                        if (firstDetailRelation) {
+                                            details.setSeparatorText("Details");
+                                            firstDetailRelation = false;
+                                        }
+                                        propertyViews.add(new OrderedPropertyView(propertyViews.size(), details));
+                                    }
                                 }
                             }
                         }
@@ -2109,6 +2168,59 @@ public class EditorCtrl extends AbstractObjectCtrl<EditorRow> implements VrPageI
                 property.storeTo(target);
             }
         }
+    }
+
+    public MenuModel getActionsMenuModel() {
+        DefaultMenuModel model = new DefaultMenuModel();
+        int id = 100;
+        for (EditorActionConfig aac : getModel().getActions()) {
+
+            /**
+             *
+             * <p:menuitem value="#{aac.value}" rendered="#{(aac.type eq 'invoke') or (aac.type eq 'dialog')}"
+             * process=":listForm :listForm:listTable @form"
+             * action="#{editorCtrl.openActionDialog(aac.key)}"
+             * update=" :listForm   :pageTitleForm"
+             * ajax="true"
+             * >
+             * <span class="fa fa-#{aac.icon}"></span>
+             * </p:menuitem>
+             * <p:menuitem value="#{aac.value}" rendered="#{(aac.type eq 'goto')}"
+             * title="#{aac.description}"
+             * process=":listForm:listTable @form"
+             * action="#{vr.gotoPage(aac.command[0],aac.command[1])}"
+             * ajax="true"
+             * />
+             *
+             *
+             */
+            if (aac.getType().equals("invoke") || aac.getType().equals("dialog")) {
+                model.getElements().add(
+                        DefaultMenuItem.builder()
+                                .id(String.valueOf(id++))
+                                .value(aac.getValue())
+                                .process(":listForm :listForm:listTable @form")
+                                .title(aac.getDescription())
+                                .command("#{editorCtrl.openActionDialog('" + aac.getKey() + "')}")
+                                .update(":listForm   :pageTitleForm")
+                                .icon("fa fa-" + aac.getIcon())
+                                .build()
+                );
+            } else if (aac.getType().equals("goto")) {
+                model.getElements().add(
+                        DefaultMenuItem.builder()
+                                .id(String.valueOf(id++))
+                                .value(aac.getValue())
+                                .process(":listForm :listForm:listTable @form")
+                                .title(aac.getDescription())
+                                .command("#{vr.gotoPage('" + aac.getCommand()[0] + "','" + aac.getCommand()[1] + "')}")
+                                .update(":listForm:listTable @form")
+                                .icon("fa fa-" + aac.getIcon())
+                                .build()
+                );
+            }
+        }
+        return model;
     }
 
     private static class FormHelper {

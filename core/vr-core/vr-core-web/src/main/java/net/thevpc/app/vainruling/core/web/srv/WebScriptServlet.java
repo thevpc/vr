@@ -25,41 +25,44 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Objects;
 import java.util.logging.Logger;
+import net.thevpc.app.vainruling.core.service.model.content.VrContentTextConfig;
+import net.thevpc.common.util.Convert;
+import net.thevpc.common.util.IntegerParserConfig;
 
 /**
  * @author taha.bensalah@gmail.com
  */
 @WebServlet(name = "WebScriptServlet", urlPatterns = "/ws/*")
 public class WebScriptServlet extends HttpServlet {
+
     private static final Logger log = Logger.getLogger(WebScriptServlet.class.getName());
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        doGet(request,response);
+        doGet(request, response);
     }
 
     protected void doOptions(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException
-    {
-        resp.setHeader("Allow","GET, POST, HEAD, TRACE, OPTIONS");
-        prepareHeaders(req,resp);
+            throws ServletException, IOException {
+        resp.setHeader("Allow", "GET, POST, HEAD, TRACE, OPTIONS");
+        prepareHeaders(req, resp);
     }
 
     private void updateSessionHeaders(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        TokenManagerFilter tokenManagerFilter =(TokenManagerFilter) request.getServletContext().getAttribute(TokenManagerFilter.class.getName());
+        TokenManagerFilter tokenManagerFilter = (TokenManagerFilter) request.getServletContext().getAttribute(TokenManagerFilter.class.getName());
         HttpSessionId old = tokenManagerFilter.resolveSessionId();
         HttpSessionId newSessionId = (HttpSessionId) request.getAttribute(HttpSessionId.class.getName());
-        if(newSessionId==null) {
+        if (newSessionId == null) {
 
             UserToken token = VrApp.getBean(UserTokenProvider.class).getToken();
             String sessionId = null;
             if (token != null) {
                 sessionId = token.getSessionId();
             }
-            newSessionId=new HttpSessionId_XJSESSIONID(sessionId);
+            newSessionId = new HttpSessionId_XJSESSIONID(sessionId);
         }
-        String oldStr=old==null?null:new Gson().toJson(old);
-        String newStr=new Gson().toJson(newSessionId);
-        if(!Objects.equals(oldStr,newStr)) {
+        String oldStr = old == null ? null : new Gson().toJson(old);
+        String newStr = new Gson().toJson(newSessionId);
+        if (!Objects.equals(oldStr, newStr)) {
             tokenManagerFilter.updateHeaders(newSessionId, request, response);
         }
     }
@@ -92,85 +95,90 @@ public class WebScriptServlet extends HttpServlet {
             } catch (Exception e) {
                 sendResult(request, response, WebScriptServiceInvoker.buildError(e, null));
             }
-        }else if (pathInfo.equals("/core/authenticate") || pathInfo.equals("/authenticate") || pathInfo.startsWith("/core/authenticate/") || pathInfo.startsWith("/authenticate")) {
+        } else if (pathInfo.equals("/core/authenticate") || pathInfo.equals("/authenticate") || pathInfo.startsWith("/core/authenticate/") || pathInfo.startsWith("/authenticate")) {
             try {
-                String login=request.getParameter("login");
-                if(pathInfo.startsWith("/core/authenticate/")){
-                    login=pathInfo.substring(("/core/authenticate/").length());
-                }else if(pathInfo.startsWith("/authenticate/")){
-                    login=pathInfo.substring(("/authenticate/").length());
+                String login = request.getParameter("login");
+                if (pathInfo.startsWith("/core/authenticate/")) {
+                    login = pathInfo.substring(("/core/authenticate/").length());
+                } else if (pathInfo.startsWith("/authenticate/")) {
+                    login = pathInfo.substring(("/authenticate/").length());
                 }
                 VrWebHelper.prepareUserSession();
-                UserSessionInfo u = VrApp.getBean(CorePlugin.class).authenticate(login, request.getParameter("password"),"WS/S",request.getParameter("app"));
+                UserSessionInfo u = VrApp.getBean(CorePlugin.class).authenticate(login, request.getParameter("password"), "WS/S", request.getParameter("app"));
                 if (u != null) {
-                    updateSessionHeaders(request,response);
+                    updateSessionHeaders(request, response);
 //                    response.setHeader("X-JSESSIONID",userSession.getSessionId());
-                    sendSimpleResult(request,response, u);
+                    sendSimpleResult(request, response, u);
                 } else {
-                    sendError(request,response, "SecurityException", "Invalid login or password");
+                    sendError(request, response, "SecurityException", "Invalid login or password");
                 }
             } catch (Exception e) {
-                sendResult(request,response, WebScriptServiceInvoker.buildError(e, null));
+                sendResult(request, response, WebScriptServiceInvoker.buildError(e, null));
             }
         } else if (pathInfo.equals("/core/logout") || pathInfo.equals("/logout")) {
             try {
                 VrApp.getBean(CorePlugin.class).logout();
-                sendSimpleResult(request,response,"bye");
+                sendSimpleResult(request, response, "bye");
             } catch (Exception e) {
-                sendError(request,response,e);
+                sendError(request, response, e);
             }
         } else if (pathInfo.startsWith("/core/rss/")) {
             try {
-                sendSimpleResult(request,response,VrApp.getBean(CorePlugin.class).getRSS(pathInfo.substring(("/core/rss/").length())));
+                sendSimpleResult(request, response, VrApp.getBean(CorePlugin.class).getRSS(pathInfo.substring(("/core/rss/").length())));
             } catch (Exception e) {
-                sendError(request,response,e);
+                sendError(request, response, e);
             }
         } else if (pathInfo.startsWith("/core/articles/")) {
             try {
                 String disposition = pathInfo.substring(("/core/articles/").length());
                 String group = null;
-                if(disposition.indexOf("/")>0){
-                    group=disposition.substring(0,disposition.indexOf("/"));
-                    disposition=disposition.substring(disposition.indexOf("/")+1);
+                VrContentTextConfig config = new VrContentTextConfig();
+                if (disposition.indexOf("/") > 0) {
+                    group = disposition.substring(0, disposition.indexOf("/"));
+                    disposition = disposition.substring(disposition.indexOf("/") + 1);
                 }
-                sendSimpleResult(request,response,VrApp.getBean(CorePlugin.class).findFullArticlesByDisposition(group,disposition));
+                config.setImageHeight(Convert.toInt(request.getParameter("imageHeight"), IntegerParserConfig.LENIENT));
+                config.setImageWidth(Convert.toInt(request.getParameter("imageWidth"), IntegerParserConfig.LENIENT));
+                config.setThumbnailHeight(Convert.toInt(request.getParameter("thumbnailHeight"), IntegerParserConfig.LENIENT));
+                config.setThumbnailWidth(Convert.toInt(request.getParameter("thumbnailWidth"), IntegerParserConfig.LENIENT));
+                sendSimpleResult(request, response, VrApp.getBean(CorePlugin.class).findFullArticlesByDisposition(group, disposition, config));
             } catch (Exception e) {
-                sendError(request,response,e);
+                sendError(request, response, e);
             }
         } else if (pathInfo.equals("/core/wscript") || pathInfo.equals("/wscript")) {
-            TokenManagerFilter tokenManagerFilter =(TokenManagerFilter) request.getServletContext().getAttribute(TokenManagerFilter.class.getName());
-            Gson g=new Gson();
+            TokenManagerFilter tokenManagerFilter = (TokenManagerFilter) request.getServletContext().getAttribute(TokenManagerFilter.class.getName());
+            Gson g = new Gson();
             String before = g.toJson(tokenManagerFilter.resolveSessionId());
-            WebScriptServiceInvoker e=new WebScriptServiceInvoker();
-            String s=request.getParameter("s");
-            if(s==null){
-                s=request.getParameter("script");
-                if(s==null){
-                    s= VrUtils.toString(request.getReader());
+            WebScriptServiceInvoker e = new WebScriptServiceInvoker();
+            String s = request.getParameter("s");
+            if (s == null) {
+                s = request.getParameter("script");
+                if (s == null) {
+                    s = VrUtils.toString(request.getReader());
                 }
             }
             Map invoke = e.invoke(s);
-            updateSessionHeaders(request,response);
-            sendResult(request,response, invoke);
+            updateSessionHeaders(request, response);
+            sendResult(request, response, invoke);
 
         } else {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST);
         }
     }
 
-    private void sendSimpleResult(HttpServletRequest request,HttpServletResponse response, Object simpleObj) throws IOException {
-        sendResult(request,response,WebScriptServiceInvoker.buildSimpleResult(simpleObj,null));
+    private void sendSimpleResult(HttpServletRequest request, HttpServletResponse response, Object simpleObj) throws IOException {
+        sendResult(request, response, WebScriptServiceInvoker.buildSimpleResult(simpleObj, null));
     }
 
-    private void sendError(HttpServletRequest request,HttpServletResponse response,Exception m) throws IOException {
-        sendResult(request,response,WebScriptServiceInvoker.buildError(m,null));
+    private void sendError(HttpServletRequest request, HttpServletResponse response, Exception m) throws IOException {
+        sendResult(request, response, WebScriptServiceInvoker.buildError(m, null));
     }
 
-    private void sendError(HttpServletRequest request,HttpServletResponse response,String type,String m) throws IOException {
-        sendResult(request,response,WebScriptServiceInvoker.buildError(type,m,null));
+    private void sendError(HttpServletRequest request, HttpServletResponse response, String type, String m) throws IOException {
+        sendResult(request, response, WebScriptServiceInvoker.buildError(type, m, null));
     }
 
-    private void prepareHeaders(HttpServletRequest request,HttpServletResponse response){
+    private void prepareHeaders(HttpServletRequest request, HttpServletResponse response) {
 //        String receivedCookie = request.getHeader("Cookie");
 //        if(receivedCookie==null){
 //            response.addHeader("X-RECEIVED-COOKIE","NONE");
@@ -184,17 +192,16 @@ public class WebScriptServlet extends HttpServlet {
 //        response.addHeader("Access-Control-Expose-Headers","Content-Length, Set-Cookie, Server, Date, X-JSESSIONID, X-RECEIVED-COOKIE");
     }
 
-    private void sendResult(HttpServletRequest request,HttpServletResponse response,Map m) throws IOException {
-        prepareHeaders(request,response);
+    private void sendResult(HttpServletRequest request, HttpServletResponse response, Map m) throws IOException {
+        prepareHeaders(request, response);
         response.setContentType("application/json; charset=utf-8");
         String s = "";
-        try{
-            s=VrUtils.formatJSONObject(m);
-        }catch(Throwable ex){
-            s=VrUtils.formatJSONObject(WebScriptServiceInvoker.buildError(ex,null));
+        try {
+            s = VrUtils.formatJSONObject(m);
+        } catch (Throwable ex) {
+            s = VrUtils.formatJSONObject(WebScriptServiceInvoker.buildError(ex, null));
         }
         response.getWriter().write(s);
     }
-
 
 }

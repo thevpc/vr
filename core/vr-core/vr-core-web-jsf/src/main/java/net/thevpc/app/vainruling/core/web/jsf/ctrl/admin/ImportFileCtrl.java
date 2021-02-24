@@ -24,10 +24,8 @@ import javax.faces.model.SelectItem;
 import net.thevpc.app.vainruling.core.service.CorePluginSSE;
 import net.thevpc.app.vainruling.VrPage;
 import net.thevpc.app.vainruling.core.service.VrApp;
-import net.thevpc.app.vainruling.core.service.model.AppProfile;
 import net.thevpc.app.vainruling.core.service.util.I18n;
 import net.thevpc.app.vainruling.core.web.jsf.VrJsf;
-import net.thevpc.app.vainruling.core.web.jsf.ctrl.actions.UpdateProfileUsersActionCtrl;
 import net.thevpc.common.strings.StringUtils;
 
 /**
@@ -65,7 +63,7 @@ public class ImportFileCtrl {
         getModel().getTemplates().sort((FileTemplate o1, FileTemplate o2) -> StringUtils.trim(o1.getName()).compareTo(o2.getName()));
         for (VrImportFileAction a : VrApp.getBeansForType(VrImportFileAction.class)) {
             getModel().getTemplateTypes().add(
-                    FacesUtils.createSelectItem(a.getName(), I18n.get().get("VrImportFileAction." + a.getName()))
+                    FacesUtils.createSelectItem(a.getName(), I18n.get().get("VrImportFileAction." + a.getName() + ".description"))
             );
         }
     }

@@ -1,3 +1,19 @@
+version = 1.2.14
+build-date = 2021-02-02
+build-number = 178
+
+version = 1.2.13
+build-date = 2021-01-01
+build-number = 177
+
+version = 1.2.12
+build-date = 2020-12-18
+build-number = 176
+
+version = 1.2.11
+build-date = 2020-08-27
+build-number = 175
+
 version = 1.2.10
 build-date = 2019-10-22
 build-number = 174

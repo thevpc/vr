@@ -5,7 +5,6 @@ import net.thevpc.jeep.core.DefaultJeep;
 import net.thevpc.jeep.core.JFunctionBase;
 import net.thevpc.jeep.core.imports.PlatformHelperImports;
 import net.thevpc.jeep.core.tokens.JavaIdPattern;
-import net.thevpc.jeep.impl.vars.JVarReadOnly;
 import net.thevpc.jeep.util.JeepUtils;
 
 import java.util.*;
@@ -25,8 +24,9 @@ public class SimpleJavaEvaluator implements InSetEvaluator {
     public SimpleJavaEvaluator() {
         jeep = new DefaultJeep();
         JTokenConfigBuilder tokenizerConfig = new JTokenConfigBuilder();
-        tokenizerConfig.setAcceptIntNumber(false);
-        tokenizerConfig.setAcceptFloatNumber(false);
+        tokenizerConfig.setParseWhitespaces(true);
+        tokenizerConfig.setParseDoubleQuotesString(true);
+        tokenizerConfig.setParseSimpleQuotesString(true);
         tokenizerConfig.setIdPattern(new JavaIdPattern() {
             @Override
             public boolean accept(CharSequence prefix, char cc) {
@@ -123,10 +123,7 @@ public class SimpleJavaEvaluator implements InSetEvaluator {
 
         expression = VrUtils.normalizeName(expression);
         try {
-            final JContext ctx = jeep.newContext();
-            ctx.vars().declareVar("set", Set.class, items);
-
-            Object ret = ctx.evaluate(expression);
+            Object ret = jeep.evaluate(expression, items);
             return JeepUtils.convertToBoolean(ret);
         } catch (Exception ex) {
             return false;
@@ -151,10 +148,13 @@ public class SimpleJavaEvaluator implements InSetEvaluator {
 
         @Override
         public Object evaluate(JNode node, JInvokeContext invokeContext) {
+            if (node == null) {
+                return false;
+            }
             JSimpleNode jsnode = (JSimpleNode) node;
             switch (jsnode.getNodeTypeName()) {
                 case "Identifier": {
-                    Set<String> s = (Set<String>) invokeContext.getContext().vars().getValue("set", invokeContext);
+                    Set<String> s = (Set<String>) invokeContext.getExtra();
                     return s.contains((String) jsnode.getArguments()[0]);
                 }
                 case "Literal": {
@@ -165,12 +165,11 @@ public class SimpleJavaEvaluator implements InSetEvaluator {
                     JNode left = (JNode) jsnode.getArguments()[1];
                     JNode right = (JNode) jsnode.getArguments()[2];
                     switch (op.image) {
-                        case "+": 
-                        case "&": 
-                        case "&&": 
-                        case "et": 
-                        case "and": 
-                        {
+                        case "+":
+                        case "&":
+                        case "&&":
+                        case "et":
+                        case "and": {
                             if (!JeepUtils.convertToBoolean(evaluate(left, invokeContext))) {
                                 return false;
                             }
@@ -179,12 +178,11 @@ public class SimpleJavaEvaluator implements InSetEvaluator {
                             }
                             return true;
                         }
-                        case "|": 
-                        case "||": 
-                        case ",": 
-                        case "ou": 
-                        case "or": 
-                        {
+                        case "|":
+                        case "||":
+                        case ",":
+                        case "ou":
+                        case "or": {
                             if (JeepUtils.convertToBoolean(evaluate(left, invokeContext))) {
                                 return true;
                             }
@@ -193,10 +191,9 @@ public class SimpleJavaEvaluator implements InSetEvaluator {
                             }
                             return false;
                         }
-                        case "-": 
-                        case "sauf": 
-                        case "but": 
-                        {
+                        case "-":
+                        case "sauf":
+                        case "but": {
                             if (!JeepUtils.convertToBoolean(evaluate(left, invokeContext))) {
                                 return false;
                             }

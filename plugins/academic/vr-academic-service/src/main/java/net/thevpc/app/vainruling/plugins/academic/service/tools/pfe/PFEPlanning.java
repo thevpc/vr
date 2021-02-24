@@ -353,7 +353,7 @@ public class PFEPlanning {
     public void generate(int maxActivities, int days, File file) throws IOException {
         VrApp.runStandaloneNoLog();
         AcademicPlugin internships = VrApp.getBean(AcademicPlugin.class);
-        List<AcademicInternship> internshipsList = internships.findInternships(-1, -1, -1, -1, -1, true);
+        List<AcademicInternship> internshipsList = internships.findInternships(-1, -1, -1, -1, true);
         if (maxActivities > internshipsList.size() || maxActivities <= 0) {
             maxActivities = internshipsList.size();
         } else if (maxActivities < 3) {

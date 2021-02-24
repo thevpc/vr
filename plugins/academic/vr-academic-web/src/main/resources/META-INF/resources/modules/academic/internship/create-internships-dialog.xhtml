@@ -48,35 +48,6 @@ and open the template in the editor.
                                          value="#{createInternshipsActionCtrl.model.internship.description}"/>
                     </div>
 
-
-                    <div class="row" style="display: inline-flex;">
-                        <div class="col-md-2">
-                            <p:outputLabel value="Groupe"/>
-                        </div>
-                        <div class="col-md-4">
-                            <p:selectOneMenu
-                                    value="#{createInternshipsActionCtrl.model.group.selectedItem}"
-                                    required="#{createInternshipsActionCtrl.model.group.required}"
-                                    disabled="#{createInternshipsActionCtrl.model.group.disabled}"
-                            >
-                                <f:selectItems value="#{createInternshipsActionCtrl.model.group.items}"/>
-                            </p:selectOneMenu>
-                        </div>
-                        <div class="col-md-2">
-                            <p:outputLabel value="Comité"/>
-                        </div>
-                        <div class="col-md-4">
-                            <p:selectOneMenu
-                                    value="#{createInternshipsActionCtrl.model.board.selectedItem}"
-                                    required="#{createInternshipsActionCtrl.model.board.required}"
-                                    disabled="#{createInternshipsActionCtrl.model.board.disabled}"
-                            >
-                                <f:selectItems value="#{createInternshipsActionCtrl.model.board.items}"/>
-                            </p:selectOneMenu>
-                        </div>
-                    </div>
-
-
                     <div class="row" style="display: inline-flex;">
                         <div class="col-md-2">
                             <p:outputLabel value="Variante"/>

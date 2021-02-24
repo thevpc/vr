@@ -28,7 +28,7 @@ import net.thevpc.app.vainruling.core.service.VrApp;
 import net.thevpc.app.vainruling.core.service.cache.CacheService;
 import net.thevpc.app.vainruling.plugins.academic.service.stat.*;
 import net.thevpc.common.strings.StringUtils;
-import net.thevpc.common.util.*;
+import net.thevpc.common.collections.*;
 import net.thevpc.common.vfs.VFile;
 import net.thevpc.upa.Action;
 import net.thevpc.upa.PersistenceUnit;

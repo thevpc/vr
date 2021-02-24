@@ -224,7 +224,9 @@ public class EventsCalendarsCtrl {
     }
 
     public void onEventResize(ScheduleEntryResizeEvent event) {
-        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Event resized", "Day delta:" + event.getDayDelta() + ", Minute delta:" + event.getMinuteDelta());
+        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Event resized", "Day delta start:" 
+                + event.getDayDeltaStart()+ ", Day delta end:" + event.getDayDeltaEnd()
+        );
 
         addMessage(message);
         //TODO save ??

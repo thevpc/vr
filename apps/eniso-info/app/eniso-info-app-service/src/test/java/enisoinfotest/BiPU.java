@@ -21,7 +21,23 @@ import java.util.regex.Pattern;
 public class BiPU {
 
     public static void main(String[] args) {
-        String html="<a href=\"docs://Calendriers/DS\">/Mes Documents/Calendriers/DS</a>";
+        if (true) {
+//            System.out.println("PRIMARY(0), ");
+//            for (int i = 0; i < 255; i++) {
+//                System.out.println("PRIMARY" + (i + 1) + "(" + i+1 + "), ");
+//            }
+//            System.out.println("SECONDARY(0), ");
+//            for (int i = 0; i < 255; i++) {
+//                System.out.println("SECONDARY" + (i + 1) + "(" + i+1 + "), ");
+//            }
+
+            System.out.println("case SECONDARY"+ ":");
+            for (int i = 0; i < 255; i++) {
+                System.out.println("case SECONDARY" + (i + 1) + ":");
+            }
+            return;
+        }
+        String html = "<a href=\"docs://Calendriers/DS\">/Mes Documents/Calendriers/DS</a>";
 ////        Matcher m = Pattern.compile(".*[\"](.+])[\"].*").matcher(html);
 //        Matcher m = Pattern.compile(".*[\"](.+)[\"].*").matcher(html);
 //        StringBuffer sb=new StringBuffer();
@@ -40,23 +56,23 @@ public class BiPU {
         Matcher m = pattern.matcher(format);
         while (m.find()) {
             String url = m.group("url");
-            int x=url.indexOf("://");
-            String processed=null;
-            if(x>0){
-                String protocol=url.substring(0,x);
-                if("docs".equals(protocol)){
-                    String path=url=url.substring(protocol.length()+"://".length());
-                    if(!path.startsWith("/")){
-                        path="/"+path;
+            int x = url.indexOf("://");
+            String processed = null;
+            if (x > 0) {
+                String protocol = url.substring(0, x);
+                if ("docs".equals(protocol)) {
+                    String path = url = url.substring(protocol.length() + "://".length());
+                    if (!path.startsWith("/")) {
+                        path = "/" + path;
                     }
-                    path=path.replace('\'','_');//fix injection issues
-                    processed=("http://eniso.info/p/documents?a={path='"+path+"'}");
+                    path = path.replace('\'', '_');//fix injection issues
+                    processed = ("http://eniso.info/p/documents?a={path='" + path + "'}");
                 }
             }
-            if(processed!=null) {
-                m.appendReplacement(sb,"href=\""+processed+"\"");
-            }else{
-                m.appendReplacement(sb,m.group());
+            if (processed != null) {
+                m.appendReplacement(sb, "href=\"" + processed + "\"");
+            } else {
+                m.appendReplacement(sb, m.group());
             }
         }
         m.appendTail(sb);
@@ -68,7 +84,6 @@ public class BiPU {
 //        BiPU b = new BiPU();
 //        b.go();
 //    }
-
     public void go() {
         VrApp.runStandalone("admin", "admin");
 //        net.thevpc.common.util.LogUtils.configure(Level.SEVERE, "net.vpc");
@@ -128,6 +143,5 @@ public class BiPU {
         });
         System.out.println("Import finished in " + chronometer.stop());
     }
-
 
 }

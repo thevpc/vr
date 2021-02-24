@@ -5,7 +5,9 @@
  */
 package net.thevpc.app.vainruling.plugins.academic.model.internship.current;
 
+import net.thevpc.app.vainruling.core.service.util.UIConstants;
 import net.thevpc.app.vainruling.plugins.academic.model.config.AcademicStudent;
+import net.thevpc.upa.RelationshipType;
 import net.thevpc.upa.config.*;
 
 /**
@@ -21,8 +23,12 @@ public class AcademicInternshipStudentRole {
 
     private int id;
     @Main
+    @Property(name = UIConstants.Form.COMPOSITION_LIST_FIELD, value = "student")
+    @ManyToOne(relationType = RelationshipType.COMPOSITION)
     private AcademicInternship internship;
     @Summary
+    @Property(name = UIConstants.Form.COMPOSITION_LIST_FIELD, value = "internship")
+    @ManyToOne(relationType = RelationshipType.COMPOSITION)
     private AcademicStudent student;
 
     public int getId() {

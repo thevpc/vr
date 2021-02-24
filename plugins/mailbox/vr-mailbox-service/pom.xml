@@ -32,7 +32,7 @@
         </dependency>
 
         <dependency>
-            <groupId>net.thevpc.common</groupId>
+            <groupId>net.thevpc</groupId>
             <artifactId>gomail</artifactId>
             <version>1.2.8</version>
         </dependency>

@@ -22,10 +22,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import net.thevpc.app.vainruling.core.service.content.ContentPath;
-import net.thevpc.app.vainruling.core.service.content.ContentText;
 import net.thevpc.app.vainruling.core.service.model.strict.AppUserStrict;
 import net.thevpc.app.vainruling.VrPage;
+import net.thevpc.app.vainruling.core.service.content.VrContentPath;
+import net.thevpc.app.vainruling.core.service.content.VrContentText;
+import net.thevpc.app.vainruling.core.service.model.content.DefaultVrContentText;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -97,13 +98,13 @@ public class MailboxPreviewCtrl implements VrPollService, VrMessageTextService {
     }
 
     @Override
-    public List<ContentText> getContentTextList(String id) {
+    public List<VrContentText> getContentTextList(String id) {
         return (List) getModel().getInbox();
     }
 
     @Override
-    public List<ContentText> getContentTextListHead(String id, int max) {
-        List<ContentText> list = getContentTextList(id);
+    public List<VrContentText> getContentTextListHead(String id, int max) {
+        List<VrContentText> list = getContentTextList(id);
         if (list.size() > max) {
             return list.subList(0, max);
         }
@@ -114,57 +115,30 @@ public class MailboxPreviewCtrl implements VrPollService, VrMessageTextService {
         return VrApp.getBean(MailboxPreviewModel.class);
     }
 
-    public static class MessagePreview implements ContentText {
+    public static class MessagePreview extends DefaultVrContentText {
 
-        private MailboxReceived mailboxReceived;
-        private AppUserStrict user;
+//        private MailboxReceived mailboxReceived;
         private String from;
-        private String category;
-        private String subject;
         private String text;
         private String date;
-        private String recipients;
-
-        public MessagePreview(MailboxReceived mailboxReceived, AppUser user, String from, String category, String subject, String text, String date, String recipients) {
-            this.mailboxReceived = mailboxReceived;
-            this.user = new AppUserStrict(user);
-            this.from = from;
-            this.category = category;
-            this.subject = subject;
-            this.text = text;
-            this.date = date;
-            this.recipients = recipients;
-        }
-
-        @Override
-        public String getRecipients() {
-            return recipients;
-        }
-
-        @Override
-        public String getDecoration() {
-            return category;
-        }
-
-        public String getCategory() {
-            return category;
-        }
-
-        public String getSubject() {
-            return subject;
-        }
-
-        @Override
-        public String getSubTitle() {
-            return null;
-        }
-
-        public AppUserStrict getUser() {
-            return user;
-        }
 
         public MessagePreview() {
         }
+        public MessagePreview(MailboxReceived mailboxReceived, AppUser user, String from, String category, String subject, String text, String date, String recipients) {
+            setUser(new AppUserStrict(user,CorePlugin.get().getUserIcon(user==null?-1:user.getId())));
+            setRecipients(recipients);
+            setCategories(category==null?new String[0]:new String[]{category});
+            setTitle(subject);
+            setContent(mailboxReceived.getContent());
+            setImportant(mailboxReceived.isImportant());
+            setPublishTime(mailboxReceived.getSendTime());
+            setVisitCount(mailboxReceived.isRead() ? 1 : 0);
+            this.from = from;
+            this.text = text;
+            this.date = date;
+        }
+
+
 
         public String getFrom() {
             return from;
@@ -190,70 +164,7 @@ public class MailboxPreviewCtrl implements VrPollService, VrMessageTextService {
             this.date = date;
         }
 
-        @Override
-        public int getId() {
-            return mailboxReceived.getId();
-        }
 
-        @Override
-        public String getContent() {
-            return mailboxReceived.getContent();
-        }
-
-        @Override
-        public String getImageURL() {
-            return null;
-        }
-
-        @Override
-        public List<ContentPath> getAttachments() {
-            return Collections.EMPTY_LIST;
-        }
-
-        @Override
-        public List<ContentPath> getImageAttachments() {
-            return Collections.EMPTY_LIST;
-        }
-
-        @Override
-        public List<ContentPath> getNonImageAttachments() {
-            return Collections.EMPTY_LIST;
-        }
-
-        @Override
-        public String getLinkClassStyle() {
-            return null;
-        }
-
-        @Override
-        public boolean isImportant() {
-            return mailboxReceived.isImportant();
-        }
-
-        @Override
-        public boolean isNoSubject() {
-            return false;
-        }
-
-        @Override
-        public String getLinkText() {
-            return null;
-        }
-
-        @Override
-        public String getLinkURL() {
-            return null;
-        }
-
-        @Override
-        public Date getPublishTime() {
-            return mailboxReceived.getSendTime();
-        }
-
-        @Override
-        public int getVisitCount() {
-            return mailboxReceived.isRead() ? 1 : 0;
-        }
     }
 
 }

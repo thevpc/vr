@@ -7,8 +7,6 @@ package net.thevpc.app.vainruling.core.web.jsf;
 
 import com.google.gson.JsonPrimitive;
 import net.thevpc.app.vainruling.core.service.CorePlugin;
-import net.thevpc.app.vainruling.core.service.content.ContentPath;
-import net.thevpc.app.vainruling.core.service.content.ContentText;
 import net.thevpc.app.vainruling.core.service.util.VrUtils;
 import net.thevpc.app.vainruling.core.web.DummyMessageTextService;
 import net.thevpc.app.vainruling.core.web.DummyTaskTextService;
@@ -20,14 +18,12 @@ import net.thevpc.app.vainruling.core.web.themes.VrTheme;
 import net.thevpc.app.vainruling.core.web.util.StrLabel;
 import net.thevpc.app.vainruling.core.web.util.VrWebHelper;
 import net.thevpc.app.vainruling.core.service.VrApp;
-import net.thevpc.app.vainruling.core.service.content.*;
 import net.thevpc.app.vainruling.core.service.model.AppProperty;
 import net.thevpc.app.vainruling.core.service.model.AppUser;
 import net.thevpc.app.vainruling.core.service.security.UserSessionInfo;
 import net.thevpc.app.vainruling.core.service.security.UserToken;
 import net.thevpc.app.vainruling.core.service.util.VrUPAUtils;
 import net.thevpc.app.vainruling.core.service.util.wiki.VrWikiParser;
-import net.thevpc.app.vainruling.core.web.jsf.ctrl.*;
 import net.thevpc.app.vainruling.VrBreadcrumbItem;
 import net.thevpc.app.vainruling.VrMenuInfo;
 import net.thevpc.common.io.URLUtils;
@@ -39,6 +35,7 @@ import net.thevpc.common.vfs.VFile;
 import net.thevpc.common.vfs.VFileFilter;
 import net.thevpc.common.vfs.VFileVisitor;
 import net.thevpc.common.vfs.VirtualFileSystem;
+import net.thevpc.common.collections.CollectionUtils;
 import net.thevpc.upa.Action;
 import net.thevpc.upa.Entity;
 import net.thevpc.upa.PersistenceUnit;
@@ -76,6 +73,8 @@ import net.thevpc.app.vainruling.VrCmsTextService;
 import net.thevpc.app.vainruling.VrNotificationTextService;
 import net.thevpc.app.vainruling.VrTaskTextService;
 import net.thevpc.app.vainruling.VrMessageTextService;
+import net.thevpc.app.vainruling.core.service.content.VrContentPath;
+import net.thevpc.app.vainruling.core.service.content.VrContentText;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -238,11 +237,11 @@ public class Vr {
         return any;
     }
 
-    public List<ContentPath> findImageAttachments(List<ContentPath> paths) {
-        List<ContentPath> filtered = new ArrayList<>();
+    public List<VrContentPath> findImageAttachments(List<VrContentPath> paths) {
+        List<VrContentPath> filtered = new ArrayList<>();
         if (paths != null) {
             LinkedHashSet<String> all = new LinkedHashSet<>();
-            for (ContentPath path : paths) {
+            for (VrContentPath path : paths) {
                 if (path != null && !StringUtils.isBlank(path.getPath())) {
                     if (!all.contains(path.getPath())) {
                         all.add(path.getPath());
@@ -250,7 +249,7 @@ public class Vr {
                 }
             }
             HashSet<String> ok = new HashSet<>(findValidImages(all.toArray(new String[all.size()])));
-            for (ContentPath path : paths) {
+            for (VrContentPath path : paths) {
                 if (path != null && ok.contains(path.getPath())) {
                     filtered.add(path);
                 }
@@ -259,11 +258,11 @@ public class Vr {
         return filtered;
     }
 
-    public List<ContentPath> findNonImageAttachments(List<ContentPath> paths) {
-        List<ContentPath> filtered = new ArrayList<>();
+    public List<VrContentPath> findNonImageAttachments(List<VrContentPath> paths) {
+        List<VrContentPath> filtered = new ArrayList<>();
         if (paths != null) {
             LinkedHashSet<String> all = new LinkedHashSet<>();
-            for (ContentPath path : paths) {
+            for (VrContentPath path : paths) {
                 if (path != null && !StringUtils.isBlank(path.getPath())) {
                     if (!all.contains(path.getPath())) {
                         all.add(path.getPath());
@@ -271,7 +270,7 @@ public class Vr {
                 }
             }
             HashSet<String> ok = new HashSet<>(findNonImages(all.toArray(new String[all.size()])));
-            for (ContentPath path : paths) {
+            for (VrContentPath path : paths) {
                 if (path != null && ok.contains(path.getPath())) {
                     filtered.add(path);
                 }
@@ -382,7 +381,7 @@ public class Vr {
         return values[randomize(values.length)];
     }
 
-    public boolean contextTextHasDecoration(ContentText text, String decoration) {
+    public boolean contextTextHasDecoration(VrContentText text, String decoration) {
         if (text != null && !StringUtils.isBlank(decoration)) {
             String decoration1 = text.getDecoration();
             if (decoration1 != null) {
@@ -451,9 +450,9 @@ public class Vr {
         )));
     }
 
-    public List<String> contentPathToFSUrlList(List<ContentPath> paths) {
+    public List<String> contentPathToFSUrlList(List<VrContentPath> paths) {
         List<String> ret = new ArrayList<>(paths.size());
-        for (ContentPath path : paths) {
+        for (VrContentPath path : paths) {
             ret.add(url(path.getPath()));
         }
         return ret;
@@ -708,8 +707,8 @@ public class Vr {
             return "";
         }
         String v = null;
-        if (value instanceof ContentText) {
-            v = ((ContentText) value).getContent();
+        if (value instanceof VrContentText) {
+            v = ((VrContentText) value).getContent();
             if (v == null) {
                 v = "";
             }
@@ -1665,9 +1664,9 @@ public class Vr {
         return m.format(size);
     }
 
-    public void prepareCurrArticleType(ContentText listItem) {
+    public void prepareCurrArticleType(VrContentText listItem) {
         setHttpRequestAttribute("currArticleType",
-                (isEmpty(listItem.getImageURL()) ? "center"
+                ((listItem.getMainPath() == null || !listItem.getMainPath().isImage()) ? "center"
                 : (this.contextTextHasDecoration(listItem, "left") ? "left"
                 : this.contextTextHasDecoration(listItem, "right") ? "right"
                 : this.contextTextHasDecoration(listItem, "center") ? "center"
@@ -1676,26 +1675,31 @@ public class Vr {
 
         this.setHttpRequestAttribute("currArticleBackground",
                 this.contextTextHasDecoration(listItem, "bg-rand-image") ? "rand-image"
-                : this.contextTextHasDecoration(listItem, "bg-image") ? (this.isEmpty(listItem.getImageURL()) ? "rand-image" : "image")
+                : this.contextTextHasDecoration(listItem, "bg-image") ? ((listItem.getMainPath() == null || !listItem.getMainPath().isImage()) ? "rand-image" : "image")
                 : this.contextTextHasDecoration(listItem, "bg-solid") ? "solid"
-                : this.isEmpty(listItem.getImageURL()) ? this.randomize("solid", "solid")
+                : (listItem.getMainPath() == null || !listItem.getMainPath().isImage()) ? this.randomize("solid", "solid")
                 : "solid"
         );
 
         this.setHttpRequestAttribute("currArticleBackgroundImage",
                 (this.getHttpRequest().getAttribute("currArticleBackground") == "rand-image")
-                ? (this.randomizeList(this.listFlattenAndTrimAndAppend(this.strcat(this.getPublicThemeContext(), "/wplugins/crew/images/slide_5.jpg"), this.fsurlList(this.findValidImages("/Site/wplugins/crew/images/slider")))))
+                ? (this.randomizeList(this.listFlattenAndTrimAndAppend(this.strcat(this.getPublicThemeContext(), "/wplugins/crew/images/slide_5.jpg"),
+                        this.fsurlList(this.findValidImages("/Site/wplugins/crew/images/slider")))))
                 : (this.getHttpRequest().getAttribute("currArticleBackground") == "image")
-                ? (this.randomizeList(this.fsurlList(this.findValidImages(listItem.getImageURL()))))
+                ? (this.randomizeList(this.fsurlList(this.findValidImages(
+                        listItem.getMainPath() == null ? "" : listItem.getMainPath().getPath()
+                ))))
                 : ""
         );
 
         this.setHttpRequestAttribute("currArticleCompanionImage",
                 (this.getHttpRequest().getAttribute("currArticleBackground") == "rand-image")
-                ? this.url(listItem.getImageURL())
+                ? this.url(listItem.getMainPath() == null ? "" : listItem.getMainPath().getPath())
                 : (this.getHttpRequest().getAttribute("currArticleBackground") == "image")
-                ? (this.randomizeList(this.contentPathToFSUrlList(this.findImageAttachments(listItem.getImageAttachments()))))
-                : this.url(listItem.getImageURL())
+                ? (this.randomizeList(this.contentPathToFSUrlList(this.findImageAttachments(
+                        listItem.getAttachments().stream().filter(x -> x.isImage()).collect(Collectors.toList())
+                ))))
+                : this.url(listItem.getMainPath() == null ? "" : listItem.getMainPath().getPath())
         );
 
         this.setHttpRequestAttribute("currArticleBackgroundSolid",
@@ -1781,7 +1785,7 @@ public class Vr {
         getMenuManager().getModel().setSearchText(value);
     }
 
-    public List<String> contentPathToString(List<ContentPath> c) {
+    public List<String> contentPathToString(List<VrContentPath> c) {
         return c.stream().map(x -> x.getPath()).collect(Collectors.toList());
     }
 
@@ -1823,7 +1827,7 @@ public class Vr {
         return VrJsf.getContent(path);
     }
 
-    public List<ContentText> filterImportant(List<ContentText> a, boolean important) {
+    public List<VrContentText> filterImportant(List<VrContentText> a, boolean important) {
         return a.stream().filter(x -> x.isImportant() == important).collect(Collectors.toList());
     }
 
@@ -1839,4 +1843,13 @@ public class Vr {
     public Object getOr(boolean v, Object a, Object b) {
         return v ? a : b;
     }
+
+    public List<VrContentPath> filterImagesOnly(List<VrContentPath> a) {
+        return a.stream().filter(x -> x.isImage()).collect(Collectors.toList());
+    }
+
+    public List<VrContentPath> filterNonImagesOnly(List<VrContentPath> a) {
+        return a.stream().filter(x -> !x.isImage()).collect(Collectors.toList());
+    }
+
 }

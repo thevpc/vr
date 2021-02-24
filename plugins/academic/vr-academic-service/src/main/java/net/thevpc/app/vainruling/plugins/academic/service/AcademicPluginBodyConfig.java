@@ -27,9 +27,7 @@ import net.thevpc.app.vainruling.plugins.academic.model.config.AcademicOfficialD
 import net.thevpc.app.vainruling.plugins.academic.model.current.AcademicClass;
 import net.thevpc.app.vainruling.core.service.cache.CacheService;
 import net.thevpc.app.vainruling.core.service.cache.EntityCache;
-import net.thevpc.app.vainruling.core.service.model.*;
 import net.thevpc.app.vainruling.core.service.util.DateFormatUtils;
-import net.thevpc.app.vainruling.plugins.academic.model.internship.current.AcademicInternshipGroup;
 import net.thevpc.common.strings.StringUtils;
 import net.thevpc.upa.Action;
 import net.thevpc.upa.Document;
@@ -564,11 +562,6 @@ public class AcademicPluginBodyConfig extends AcademicPluginBody {
     public AcademicPreClass findAcademicPreClass(int id) {
         return (AcademicPreClass) UPA.getPersistenceUnit()
                 .findById(AcademicPreClass.class, id);
-    }
-
-    public AcademicInternshipGroup findInternshipGroup(int id) {
-        return (AcademicInternshipGroup) UPA.getPersistenceUnit()
-                .findById(AcademicInternshipGroup.class, id);
     }
 
     public AcademicPreClassType findAcademicPreClassType(int id) {

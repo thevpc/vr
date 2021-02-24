@@ -8,41 +8,39 @@ import java.util.List;
 /**
  * Created by vpc on 9/5/16.
  */
-public interface ContentText {
+public interface VrContentText {
+
     int getId();
 
-    String getCategory();
+    String[] getCategories();
 
     String getDecoration();
-    
+
     String getRecipients();
 
-    String getSubject();
+    String getTitle();
 
     String getSubTitle();
 
     String getContent();
 
-    String getImageURL();
-
     AppUserStrict getUser();
 
-    List<ContentPath> getAttachments();
+    VrContentPath getMainPath();
 
+    List<VrContentPath> getAttachments();
 
-    List<ContentPath> getImageAttachments();
+    boolean isHasImageAttachments();
 
-    List<ContentPath> getNonImageAttachments();
-
-    String getLinkClassStyle();
+    boolean isHasNonImageAttachments();
 
     boolean isImportant();
 
-    boolean isNoSubject();
+    boolean isNoTitle();
 
-    String getLinkText();
+    boolean isDeleted();
 
-    String getLinkURL();
+    boolean isArchived();
 
     Date getPublishTime();
 

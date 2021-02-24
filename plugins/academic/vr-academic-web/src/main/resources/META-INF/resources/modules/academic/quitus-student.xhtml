@@ -80,7 +80,7 @@ and open the template in the editor.
                                                     <ui:repeat value="#{col}" var="a">
                                                         <div class="box #{vr.mapToken(a.decoration,'box-default','default','box-default','primary','box-primary','danger','box-danger','warning','box-warning','info','box-info','success','box-success')}">
                                                             <div class="box-header with-border">
-                                                                <h3 class="box-title">#{a.subject}</h3>
+                                                                <h3 class="box-title">#{a.title}</h3>
                                                                 <ui:fragment rendered="#{not vr.isEmpty(a.subTitle)}">
                                                                     <h3 class="box-sub-title">#{a.subTitle}</h3>
                                                                 </ui:fragment>

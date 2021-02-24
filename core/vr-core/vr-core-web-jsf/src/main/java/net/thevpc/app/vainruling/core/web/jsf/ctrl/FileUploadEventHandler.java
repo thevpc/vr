@@ -26,7 +26,7 @@ public class FileUploadEventHandler implements UploadedFileHandler{
 
     @Override
     public void write(String path) throws IOException {
-        try (InputStream is=event.getFile().getInputstream()){
+        try (InputStream is=event.getFile().getInputStream()){
             IOUtils.copy(is, new File(path));
         } catch (Exception e) {
             throw new IOException(e);

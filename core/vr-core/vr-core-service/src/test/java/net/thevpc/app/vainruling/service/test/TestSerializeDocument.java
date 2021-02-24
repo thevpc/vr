@@ -19,10 +19,12 @@ public class TestSerializeDocument {
     @Test
     public void test() {
         DefaultDocument d = new DefaultDocument();
+        System.out.println(d);
         d.setObject("Hello", "World");
         String s = VrUtils.GSON.toJson(d);
         System.out.println(s);
         Document d2 = (Document) VrUtils.GSON.fromJson(s, Document.class);
         System.out.println(d2);
+        org.junit.Assert.assertEquals(d, d2);
     }
 }

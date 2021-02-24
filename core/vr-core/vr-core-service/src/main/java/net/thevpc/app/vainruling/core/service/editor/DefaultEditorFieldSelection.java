@@ -78,8 +78,10 @@ public class DefaultEditorFieldSelection extends EditorFieldSelection {
             requireSave = true;
             //do nothing!
             oldSelection = new HashSet<>();
-            for (Field field : getEntity().getFields(FieldFilters.byModifiersAnyOf(FieldModifier.MAIN, FieldModifier.SUMMARY))) {
-                oldSelection.add(field.getName());
+            if (getEntity() != null) {
+                for (Field field : getEntity().getFields(FieldFilters.byModifiersAnyOf(FieldModifier.MAIN, FieldModifier.SUMMARY))) {
+                    oldSelection.add(field.getName());
+                }
             }
         }
         updateFields(mode, entity, oldSelection, requireSave);
@@ -102,6 +104,9 @@ public class DefaultEditorFieldSelection extends EditorFieldSelection {
 
     private void updateFields(VrAccessMode mode, Entity entity, Set<String> selectedFieldNames, boolean requireSave) {
         fields.clear();
+        if(entity==null){
+            return;
+        }
         int pos = 0;
         CorePlugin core = VrApp.getBean(CorePlugin.class);
         boolean admin = core.isCurrentSessionAdmin();
@@ -204,7 +209,7 @@ public class DefaultEditorFieldSelection extends EditorFieldSelection {
             }
         }
         if (result.isEmpty()) {
-            return getEntity().getFields(FieldFilters.byModifiersAnyOf(FieldModifier.MAIN, FieldModifier.SUMMARY));
+            return getEntity() == null ? Collections.emptyList() : getEntity().getFields(FieldFilters.byModifiersAnyOf(FieldModifier.MAIN, FieldModifier.SUMMARY));
         }
         return result;
     }

@@ -7,9 +7,8 @@ import net.thevpc.app.vainruling.core.service.plugins.PluginComponent;
 import net.thevpc.app.vainruling.core.service.plugins.PluginInfo;
 import net.thevpc.app.vainruling.core.service.util.AppVersion;
 import net.thevpc.app.vainruling.core.service.util.PlatformReflector;
-import net.thevpc.app.vainruling.core.service.plugins.*;
-import net.thevpc.common.util.Collections2;
-import net.thevpc.common.util.ListValueMap;
+import net.thevpc.common.collections.Collections2;
+import net.thevpc.common.collections.ListValueMap;
 import net.thevpc.upa.PersistenceUnit;
 import net.thevpc.upa.UPA;
 

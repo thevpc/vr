@@ -8,7 +8,7 @@ package net.thevpc.app.vainruling.core.service.util;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import net.thevpc.common.util.MapUtils;
+import net.thevpc.common.collections.MapUtils;
 
 import net.thevpc.common.util.PlatformUtils;
 

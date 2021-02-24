@@ -5,11 +5,11 @@
  */
 package net.thevpc.app.vainruling.core.web.jsf.ctrl;
 
-import net.thevpc.app.vainruling.core.service.model.content.FullArticle;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import net.thevpc.app.vainruling.core.service.content.VrContentText;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -17,25 +17,25 @@ import java.util.Map;
 public abstract class AbstractCmsModel {
 
 
-    private FullArticle current;
+    private VrContentText current;
     private String disposition;
 
-    private Map<String, List<FullArticle>> articles = new HashMap<>();
+    private Map<String, List<VrContentText>> articles = new HashMap<>();
 
-    public FullArticle getCurrent() {
+    public VrContentText getCurrent() {
         return current;
     }
 
-    public void setCurrent(FullArticle current) {
+    public void setCurrent(VrContentText current) {
         this.current = current;
     }
 
-    public Map<String, List<FullArticle>> getArticles() {
+    public Map<String, List<VrContentText>> getArticles() {
         return articles;
     }
 
 
-    public void setArticles(Map<String, List<FullArticle>> articles) {
+    public void setArticles(Map<String, List<VrContentText>> articles) {
         this.articles = articles;
     }
 

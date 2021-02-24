@@ -1,7 +1,7 @@
 package net.thevpc.app.vainruling;
 
 import net.thevpc.app.vainruling.core.service.content.CmsTextDisposition;
-import net.thevpc.app.vainruling.core.service.content.ContentText;
+import net.thevpc.app.vainruling.core.service.content.VrContentText;
 
 /**
  * Created by vpc on 9/5/16.
@@ -10,7 +10,7 @@ public interface VrCmsTextService extends VrContentTextService {
 
     void setSelectedContentTextById(String disposition, int id);
 
-    ContentText getSelectedContentText(String name);
+    VrContentText getSelectedContentText(String name);
 
     void setContentDisposition(String name);
 
@@ -18,7 +18,7 @@ public interface VrCmsTextService extends VrContentTextService {
 
     CmsTextDisposition getContentDisposition();
 
-    boolean isEnabledAction(String action, ContentText ctx);
+    boolean isEnabledAction(String action, VrContentText ctx);
 
     boolean isEnabledActionById(String action, int id);
 
@@ -31,9 +31,9 @@ public interface VrCmsTextService extends VrContentTextService {
      */
     boolean onActionById(String action, int id);
 
-    public void runAction(String action, ContentText a);
+    public void runAction(String action, VrContentText a);
     
-    public boolean onAction(String action, ContentText a);
+    public boolean onAction(String action, VrContentText a);
 
     boolean isDispositionEnabled(String disposition);
 

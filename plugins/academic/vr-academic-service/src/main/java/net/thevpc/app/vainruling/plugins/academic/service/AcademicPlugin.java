@@ -36,7 +36,6 @@ import net.thevpc.app.vainruling.plugins.academic.model.current.AcademicCourseTy
 import net.thevpc.app.vainruling.plugins.academic.model.history.AcademicHistCourseAssignment;
 import net.thevpc.app.vainruling.plugins.academic.model.config.AcademicDiscipline;
 import net.thevpc.app.vainruling.plugins.academic.model.internship.current.AcademicInternshipSessionType;
-import net.thevpc.app.vainruling.plugins.academic.model.internship.current.AcademicInternshipGroup;
 import net.thevpc.app.vainruling.plugins.academic.model.current.AcademicCourseIntent;
 import net.thevpc.app.vainruling.plugins.academic.model.current.AcademicPreClassType;
 import net.thevpc.app.vainruling.plugins.academic.model.current.AcademicTeacherDegree;
@@ -68,7 +67,6 @@ import net.thevpc.app.vainruling.plugins.academic.model.current.AcademicCourseAs
 import net.thevpc.app.vainruling.core.service.TraceService;
 import net.thevpc.app.vainruling.core.service.VrApp;
 import net.thevpc.app.vainruling.core.service.cache.CacheService;
-import net.thevpc.app.vainruling.core.service.model.*;
 import net.thevpc.app.vainruling.core.service.stats.KPI;
 import net.thevpc.app.vainruling.core.service.stats.KPIGroupBy;
 import net.thevpc.app.vainruling.core.service.stats.KPIProcessProcessor;
@@ -79,11 +77,10 @@ import net.thevpc.app.vainruling.plugins.academic.service.integration.CopyAcadem
 import net.thevpc.app.vainruling.plugins.academic.model.imp.AcademicStudentImport;
 import net.thevpc.app.vainruling.plugins.academic.model.imp.AcademicTeacherImport;
 import net.thevpc.app.vainruling.plugins.academic.model.internship.ext.AcademicInternshipExtList;
-import net.thevpc.app.vainruling.plugins.academic.service.stat.*;
 import net.thevpc.app.vainruling.plugins.academic.service.util.CourseAssignmentFilter;
 import net.thevpc.app.vainruling.plugins.academic.service.integration.ImportOptions;
 import net.thevpc.common.strings.StringComparator;
-import net.thevpc.common.util.*;
+import net.thevpc.common.collections.*;
 import net.thevpc.common.vfs.VFile;
 import net.thevpc.upa.Document;
 import net.thevpc.upa.NamedId;
@@ -93,6 +90,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.function.Function;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import net.thevpc.app.vainruling.core.service.ProfileRightBuilder;
 
 import net.thevpc.app.vainruling.core.service.util.DefaultObjectToMapConverter;
@@ -106,6 +104,7 @@ import net.thevpc.common.strings.StringUtils;
 import net.thevpc.upa.PersistenceUnit;
 import net.thevpc.upa.UPA;
 import net.thevpc.app.vainruling.plugins.academic.model.current.AcademicCourseCore;
+import net.thevpc.app.vainruling.plugins.academic.model.internship.config.AcademicInternshipBoardClass;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -626,10 +625,6 @@ public class AcademicPlugin {
         return internships.findEnabledInternshipBoardsByDepartment(periodId, departmentId, enabled);
     }
 
-    public List<AcademicInternshipGroup> findEnabledInternshipGroupsByDepartment(int departmentId) {
-        return internships.findEnabledInternshipGroupsByDepartment(departmentId);
-    }
-
     public List<AcademicInternshipSessionType> findAcademicInternshipSessionType() {
         return internships.findAcademicInternshipSessionType();
     }
@@ -652,6 +647,10 @@ public class AcademicPlugin {
 
     public List<AcademicInternshipBoardTeacher> findInternshipTeachersByBoard(int boardId) {
         return internships.findInternshipTeachersByBoard(boardId);
+    }
+
+    public List<AcademicInternshipBoardClass> findInternshipClassesByBoard(int boardId) {
+        return internships.findInternshipClassesByBoard(boardId);
     }
 
     public void addBoardMessage(AcademicInternshipBoardMessage m) {
@@ -706,8 +705,8 @@ public class AcademicPlugin {
         return internships.findInternshipsByTeacherExt(periodId, deptId, teacherId, internshipTypeId, boardId, openOnly);
     }
 
-    public List<AcademicInternship> findInternships(int teacherId, int groupId, int boardId, int deptId, int internshipTypeId, boolean openOnly) {
-        return internships.findInternships(teacherId, groupId, boardId, deptId, internshipTypeId, openOnly);
+    public List<AcademicInternship> findInternships(int teacherId, int boardId, int deptId, int internshipTypeId, boolean openOnly) {
+        return internships.findInternships(teacherId, boardId, deptId, internshipTypeId, openOnly);
     }
 
     public AcademicInternshipSupervisorIntent findInternshipTeacherIntent(int internship, int teacherId) {
@@ -986,8 +985,8 @@ public class AcademicPlugin {
         return config.findOfficialDisciplines();
     }
 
-    public List<AcademicCourseCore> findAcademicCourseCores(Integer periodId,Integer programId) {
-        return config.findAcademicCourseCores(periodId,programId);
+    public List<AcademicCourseCore> findAcademicCourseCores(Integer periodId, Integer programId) {
+        return config.findAcademicCourseCores(periodId, programId);
     }
 
     public AcademicDiscipline findDiscipline(String nameOrCode) {
@@ -1068,10 +1067,6 @@ public class AcademicPlugin {
 
     public AcademicPreClass findAcademicPreClass(int id) {
         return config.findAcademicPreClass(id);
-    }
-
-    public AcademicInternshipGroup findInternshipGroup(int id) {
-        return config.findInternshipGroup(id);
     }
 
     public AcademicPreClassType findAcademicPreClassType(int id) {
@@ -1183,7 +1178,7 @@ public class AcademicPlugin {
             d.setGroupCountPM(2);
             saveMe = true;
         }
-        
+
 //        if (d.getGroupCountC() > 0) {
 //            if (d.getGroupCountTP() > 0 && d.getGroupCountTP() != d.getGroupCountC() * 2) {
 //                d.setGroupCountTP(d.getGroupCountC() * 2);
@@ -1192,7 +1187,6 @@ public class AcademicPlugin {
 //                d.setGroupCountPM(d.getGroupCountC() * 2);
 //            }
 //        }
-
         if (saveMe) {
             pu.merge(d);
         }
@@ -1506,6 +1500,15 @@ public class AcademicPlugin {
                 }
             }
             ).filterList(info.getNonFilteredOthers()));
+        }
+        if (info.getMaxVisibleOthers() > 0 && info.getOthers().size() > info.getMaxVisibleOthers()) {
+            info.setNotAllOtherDataVisible(true);
+            info.setVisibleOthers(
+                    info.getOthers().stream().limit(info.getMaxVisibleOthers()).collect(Collectors.toList())
+            );
+        } else {
+            info.setNotAllOtherDataVisible(false);
+            info.setVisibleOthers(info.getOthers());
         }
         info.setLoadSum(new LoadValue());
         AcademicConversionTableHelper conversionTableByPeriodId = findConversionTableByPeriodId(info.getPeriodId());

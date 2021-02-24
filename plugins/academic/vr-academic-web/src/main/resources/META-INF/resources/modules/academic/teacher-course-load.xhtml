@@ -36,10 +36,13 @@ and open the template in the editor.
                     <!-- /.row -->
                     <div>
                         <div id="buttons">
-                            <p:commandButton value="Rafr."
+                            <p:commandButton 
+                                             id="refresh"
+                                             value="Actualiser"
                                              styleClass="btn btn-default vr-form-field vr-form-fixed-width-medium ui-ribbon-bigbutton "
                                              ajax="true"
-                                             actionListener="#{teacherCourseLoadCtrl.onRefresh}" update=":listForm"/>
+                                             style="#{teacherCourseLoadCtrl.model.filterChanged?'background: darkkhaki':''}"
+                                             actionListener="#{teacherCourseLoadCtrl.onRefresh}" update=":listForm :buttonsForm:refresh"/>
 
                             <p:selectOneMenu styleClass="vr-toolbox-select-one"
                                              value="#{teacherCourseLoadCtrl.teacherFilter.model.selectedPeriod}">
@@ -103,7 +106,7 @@ and open the template in the editor.
                                     label="Departements"
                                     filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
                                     <p:ajax listener="#{teacherCourseLoadCtrl.onChangeOther}"
-                                            update=":listForm :buttonsForm"/>
+                                            update=":buttonsForm:teachersList"/>
                                     <f:selectItems value="#{teacherCourseLoadCtrl.teacherFilter.model.departmentItems}"/>
                                 </p:selectCheckboxMenu>
 
@@ -113,7 +116,7 @@ and open the template in the editor.
                                     label="Grades"
                                     filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
                                     <p:ajax listener="#{teacherCourseLoadCtrl.onChangeOther}"
-                                            update=":listForm :buttonsForm"/>
+                                            update=":buttonsForm:teachersList"/>
                                     <f:selectItems value="#{teacherCourseLoadCtrl.teacherFilter.model.degreeItems}"/>
                                 </p:selectCheckboxMenu>
                                 <p:selectCheckboxMenu
@@ -122,7 +125,7 @@ and open the template in the editor.
                                     label="Situations"
                                     filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
                                     <p:ajax listener="#{teacherCourseLoadCtrl.onChangeOther}"
-                                            update=":listForm :buttonsForm"/>
+                                            update=":buttonsForm:teachersList"/>
                                     <f:selectItems value="#{teacherCourseLoadCtrl.teacherFilter.model.situationItems}"/>
                                 </p:selectCheckboxMenu>
                                 <p:selectCheckboxMenu
@@ -131,7 +134,7 @@ and open the template in the editor.
                                     label="Disciplines"
                                     filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
                                     <p:ajax listener="#{teacherCourseLoadCtrl.onChangeOther}"
-                                            update=":listForm :buttonsForm"/>
+                                            update=":buttonsForm:teachersList"/>
                                     <f:selectItems
                                         value="#{teacherCourseLoadCtrl.teacherFilter.model.teacherDisciplineItems}"/>
                                 </p:selectCheckboxMenu>
@@ -157,7 +160,7 @@ and open the template in the editor.
                                             filter="true" filterMatchMode="startsWith"
                                             panelStyle="width:250px">
                                             <p:ajax listener="#{teacherCourseLoadCtrl.onRefreshFiltersChanged}"
-                                                    update=":listForm :buttonsForm"/>
+                                                    update=":listForm:refresh2 :listForm:refresh2Label :buttonsForm:refresh"/>
                                             <f:selectItems
                                                 value="#{teacherCourseLoadCtrl.courseFilter.model.semesterItems}"/>
                                         </p:selectCheckboxMenu>
@@ -168,7 +171,7 @@ and open the template in the editor.
                                             filter="true" filterMatchMode="startsWith"
                                             panelStyle="width:250px">
                                             <p:ajax listener="#{teacherCourseLoadCtrl.onRefreshFiltersChanged}"
-                                                    update=":listForm :buttonsForm"/>
+                                                    update=":listForm:refresh2 :listForm:refresh2Label :buttonsForm:refresh"/>
                                             <f:selectItems
                                                 value="#{teacherCourseLoadCtrl.courseFilter.model.programTypeItems}"/>
                                         </p:selectCheckboxMenu>
@@ -179,7 +182,7 @@ and open the template in the editor.
                                             filter="true" filterMatchMode="startsWith"
                                             panelStyle="width:250px">
                                             <p:ajax listener="#{teacherCourseLoadCtrl.onRefreshFiltersChanged}"
-                                                    update=":listForm :buttonsForm"/>
+                                                    update=":listForm:refresh2 :listForm:refresh2Label :buttonsForm:refresh"/>
                                             <f:selectItems
                                                 value="#{teacherCourseLoadCtrl.courseFilter.model.courseTypeItems}"/>
                                         </p:selectCheckboxMenu>
@@ -190,7 +193,7 @@ and open the template in the editor.
                                             filter="true" filterMatchMode="startsWith"
                                             panelStyle="width:250px">
                                             <p:ajax listener="#{teacherCourseLoadCtrl.onRefreshFiltersChanged}"
-                                                    update=":listForm :buttonsForm"/>
+                                                    update=":listForm:refresh2 :listForm:refresh2Label :buttonsForm:refresh"/>
                                             <f:selectItems value="#{teacherCourseLoadCtrl.courseFilter.model.classItems}"/>
                                         </p:selectCheckboxMenu>
                                     </div>
@@ -202,7 +205,7 @@ and open the template in the editor.
                                             filter="true" filterMatchMode="startsWith"
                                             panelStyle="width:250px">
                                             <p:ajax listener="#{teacherCourseLoadCtrl.onRefreshFiltersChanged}"
-                                                    update=":listForm :buttonsForm"/>
+                                                    update=":listForm:refresh2 :listForm:refresh2Label :buttonsForm:refresh"/>
                                             <f:selectItems
                                                 value="#{teacherCourseLoadCtrl.courseFilter.model.departmentItems}"/>
                                         </p:selectCheckboxMenu>
@@ -213,7 +216,7 @@ and open the template in the editor.
                                             filter="true" filterMatchMode="startsWith"
                                             panelStyle="width:250px">
                                             <p:ajax listener="#{teacherCourseLoadCtrl.onRefreshFiltersChanged}"
-                                                    update=":listForm :buttonsForm"/>
+                                                    update=":listForm:refresh2 :listForm:refresh2Label :buttonsForm:refresh"/>
                                             <f:selectItems
                                                 value="#{teacherCourseLoadCtrl.courseFilter.model.departmentItems}"/>
                                         </p:selectCheckboxMenu>
@@ -224,7 +227,7 @@ and open the template in the editor.
                                             filter="true" filterMatchMode="startsWith"
                                             panelStyle="width:250px">
                                             <p:ajax listener="#{teacherCourseLoadCtrl.onRefreshFiltersChanged}"
-                                                    update=":listForm :buttonsForm"/>
+                                                    update=":listForm:refresh2 :listForm:refresh2Label :buttonsForm:refresh"/>
                                             <f:selectItems value="#{teacherCourseLoadCtrl.courseFilter.model.labelItems}"/>
                                         </p:selectCheckboxMenu>
                                         <p:selectCheckboxMenu
@@ -234,7 +237,7 @@ and open the template in the editor.
                                             filter="true" filterMatchMode="startsWith"
                                             panelStyle="width:250px">
                                             <p:ajax listener="#{teacherCourseLoadCtrl.onRefreshFiltersChanged}"
-                                                    update=":listForm :buttonsForm"/>
+                                                    update=":listForm:refresh2 :listForm:refresh2Label :buttonsForm:refresh"/>
                                             <f:selectItems
                                                 value="#{teacherCourseLoadCtrl.courseFilter.model.deviationGroupItems}"/>
                                         </p:selectCheckboxMenu>
@@ -243,7 +246,8 @@ and open the template in the editor.
                                             value="#{teacherCourseLoadCtrl.courseFilter.model.selectedInitiatorStatus}"
                                             label="Proposition/Voeu"
                                             filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
-                                            <p:ajax listener="#{teacherCourseLoadCtrl.onRefreshFiltersChanged}" update=":listForm :buttonsForm"/>
+                                            <p:ajax listener="#{teacherCourseLoadCtrl.onRefreshFiltersChanged}" 
+                                                    update=":listForm:refresh2 :listForm:refresh2Label :buttonsForm:refresh"/>
                                             <f:selectItems value="#{teacherCourseLoadCtrl.courseFilter.model.initiatorStatusItems}"/>
                                         </p:selectOneMenu>
 
@@ -255,7 +259,7 @@ and open the template in the editor.
                                                                   layout="grid"
                                                                   columns="5">
                                                 <p:ajax listener="#{teacherCourseLoadCtrl.onRefreshFiltersChanged}"
-                                                        update=":listForm"/>
+                                                        update=":listForm:refresh2 :listForm:refresh2Label :buttonsForm:refresh"/>
                                                 <f:selectItems
                                                     value="#{teacherCourseLoadCtrl.courseFilter.model.refreshFilterItems}"/>
                                             </p:selectManyCheckbox>
@@ -268,7 +272,7 @@ and open the template in the editor.
 
                                                               >
                                             <p:ajax listener="#{teacherCourseLoadCtrl.onCurrentTeacherFiltersChanged}"
-                                                    update=":listForm"/>
+                                                    update=":listForm:refresh2 :listForm:refresh2Label :buttonsForm:refresh"/>
                                             <f:selectItems
                                                 value="#{teacherCourseLoadCtrl.model.currentTeacherFiltersSelectItems}"/>
                                         </p:selectManyCheckbox>
@@ -532,33 +536,33 @@ and open the template in the editor.
                                             <p:menuButton value="..."
                                                           rendered="#{teacherCourseLoadCtrl.model.enableLoadEditing and teacherCourseLoadCtrl.model.multipleSelection}"
                                                           >
-                                                <p:menuitem value="Aj. Proposition"
+                                                <p:menuitem value="Aj. Proposition :buttonsForm:teachersList"
                                                             actionListener="#{teacherCourseLoadCtrl.addProposalToMineCurrSelected()}"
                                                             update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
-                                                <p:menuitem value="Supp. Proposition"
+                                                <p:menuitem value="Supp. Proposition :buttonsForm:teachersList"
                                                             actionListener="#{teacherCourseLoadCtrl.removeProposalFromMineCurrSelected()}"
                                                             update=":listForm" icon="ui-icon-close"/>
-                                                <p:menuitem value="Aj. Voeu"
+                                                <p:menuitem value="Aj. Voeu :buttonsForm:teachersList"
                                                             actionListener="#{teacherCourseLoadCtrl.addWishToMineCurrSelected()}"
                                                             update=":listForm" icon="ui-icon-close"/>
-                                                <p:menuitem value="Supp. Voeu"
+                                                <p:menuitem value="Supp. Voeu :buttonsForm:teachersList"
                                                             actionListener="#{teacherCourseLoadCtrl.removeWishFromMineCurrSelected()}"
-                                                            update=":listForm" icon="ui-icon-close"/>
+                                                            update=":listForm :buttonsForm:teachersList" icon="ui-icon-close"/>
                                                 <p:separator/>
                                                 <p:menuitem value="Affecter"
                                                             actionListener="#{teacherCourseLoadCtrl.doAssignSelected()}"
                                                             update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
                                                 <p:menuitem value="Supp. Affectation"
                                                             actionListener="#{teacherCourseLoadCtrl.doUnAssignSelected()}"
-                                                            update=":listForm" icon="ui-icon-close"/>
+                                                            update=":listForm :buttonsForm:teachersList" icon="ui-icon-close"/>
                                                 <p:separator/>
                                                 <p:menuitem value="Supp. Definitivement"
                                                             actionListener="#{teacherCourseLoadCtrl.doDeleteSelected()}"
-                                                            update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
+                                                            update=":listForm :buttonsForm:teachersList" icon="ui-icon-arrowrefresh-1-w"/>
                                                 <p:menuitem value="Inverser Verouillage"
                                                             disabled="#{!vr.currentToken.admin and !vr.currentToken.manager}"
                                                             actionListener="#{teacherCourseLoadCtrl.doSwitchLockAssignmentSelected()}"
-                                                            update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
+                                                            update=":listForm :buttonsForm:teachersList" icon="ui-icon-arrowrefresh-1-w"/>
                                             </p:menuButton>
                                         </f:facet>
                                         <p:selectBooleanCheckbox
@@ -573,28 +577,28 @@ and open the template in the editor.
                                             <p:menuitem value="Aj. Proposition"
                                                         disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineIntents(i.assignment.id)}"
                                                         actionListener="#{teacherCourseLoadCtrl.addToMine(i.assignment.id)}"
-                                                        update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
+                                                        update=":listForm :buttonsForm:teachersList" icon="ui-icon-arrowrefresh-1-w"/>
                                             <p:menuitem value="Supp. Proposition"
                                                         disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineIntents(i.assignment.id)}"
                                                         actionListener="#{teacherCourseLoadCtrl.removeFromMine(i.assignment.id)}"
-                                                        update=":listForm" icon="ui-icon-close"/>
+                                                        update=":listForm :buttonsForm:teachersList" icon="ui-icon-close"/>
                                             <p:menuitem value="Aj. Voeu"
                                                         disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineIntents(i.assignment.id)}"
                                                         actionListener="#{teacherCourseLoadCtrl.addWishToMine(i.assignment.id)}"
-                                                        update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
+                                                        update=":listForm :buttonsForm:teachersList" icon="ui-icon-arrowrefresh-1-w"/>
                                             <p:menuitem value="Supp. Voeu"
                                                         disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineIntents(i.assignment.id)}"
                                                         actionListener="#{teacherCourseLoadCtrl.removeWishFromMine(i.assignment.id)}"
-                                                        update=":listForm" icon="ui-icon-close"/>
+                                                        update=":listForm :buttonsForm:teachersList" icon="ui-icon-close"/>
                                             <p:separator/>
                                             <p:menuitem value="Affecter"
                                                         disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineAssignments(i.assignment.id)}"
                                                         actionListener="#{teacherCourseLoadCtrl.doAssign(i.assignment.id)}"
-                                                        update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
+                                                        update=":listForm :buttonsForm:teachersList" icon="ui-icon-arrowrefresh-1-w"/>
                                             <p:menuitem value="Supp. Affectation"
                                                         disabled="#{!teacherCourseLoadCtrl.isAllowedUpdateMineAssignments(i.assignment.id)}"
                                                         actionListener="#{teacherCourseLoadCtrl.doUnAssign(i.assignment.id)}"
-                                                        update=":listForm" icon="ui-icon-close"/>
+                                                        update=":listForm :buttonsForm:teachersList" icon="ui-icon-close"/>
                                             <p:separator/>
                                             <p:menuitem value="Supp. Definitivement"
                                                         actionListener="#{teacherCourseLoadCtrl.doDeleteAssignment(i.assignment.id)}"
@@ -602,7 +606,7 @@ and open the template in the editor.
                                             <p:menuitem value="Inverser Verouillage"
                                                         disabled="#{!vr.currentToken.admin and !vr.currentToken.manager}"
                                                         actionListener="#{teacherCourseLoadCtrl.doSwitchLockAssignment(i.assignment.id)}"
-                                                        update=":listForm" icon="ui-icon-arrowrefresh-1-w"/>
+                                                        update=":listForm :buttonsForm:teachersList" icon="ui-icon-arrowrefresh-1-w"/>
                                         </p:menuButton>
                                     </p:column>
                                     <p:column headerText="Etat" width="5%">
@@ -695,7 +699,7 @@ and open the template in the editor.
                         <div class="table-responsive">
                             <h1>Autres modules <p:commandButton value="Afficher/Cacher"
                                                                 action="#{teacherCourseLoadCtrl.onSwitchDisplayOtherModules}"
-                                                                style="margin-left:10px; width:130px" update=":listForm"/>
+                                                                style="margin-left:10px; width:230px" update=":listForm"/>
                             </h1>
                             <div>
                                 <p:fieldset legend="Filtres Autres..." toggleable="true" toggleSpeed="500"
@@ -714,7 +718,7 @@ and open the template in the editor.
                                                         filter="true" filterMatchMode="startsWith"
                                                         panelStyle="width:250px">
                                                         <p:ajax listener="#{teacherCourseLoadCtrl.onRefreshFiltersChanged}"
-                                                                update=":listForm :buttonsForm"/>
+                                                                update=":listForm:refresh2 :listForm:refresh2Label :buttonsForm:refresh"/>
                                                         <f:selectItems
                                                             value="#{teacherCourseLoadCtrl.othersCourseFilter.model.teacherItems}"/>
                                                     </p:selectCheckboxMenu>
@@ -725,7 +729,7 @@ and open the template in the editor.
                                                         filter="true" filterMatchMode="startsWith"
                                                         panelStyle="width:250px">
                                                         <p:ajax listener="#{teacherCourseLoadCtrl.onRefreshFiltersChanged}"
-                                                                update=":listForm :buttonsForm"/>
+                                                                update=":listForm:refresh2 :listForm:refresh2Label :buttonsForm:refresh"/>
                                                         <f:selectItems
                                                             value="#{teacherCourseLoadCtrl.othersCourseFilter.model.teacherDegreeItems}"/>
                                                     </p:selectCheckboxMenu>
@@ -736,7 +740,7 @@ and open the template in the editor.
                                                         filter="true" filterMatchMode="startsWith"
                                                         panelStyle="width:250px">
                                                         <p:ajax listener="#{teacherCourseLoadCtrl.onRefreshFiltersChanged}"
-                                                                update=":listForm :buttonsForm"/>
+                                                                update=":listForm:refresh2 :listForm:refresh2Label :buttonsForm:refresh"/>
                                                         <f:selectItems
                                                             value="#{teacherCourseLoadCtrl.othersCourseFilter.model.departmentItems}"/>
                                                     </p:selectCheckboxMenu>
@@ -747,7 +751,7 @@ and open the template in the editor.
                                                         filter="true" filterMatchMode="startsWith"
                                                         panelStyle="width:250px">
                                                         <p:ajax listener="#{teacherCourseLoadCtrl.onRefreshFiltersChanged}"
-                                                                update=":listForm :buttonsForm"/>
+                                                                update=":listForm:refresh2 :listForm:refresh2Label :buttonsForm:refresh"/>
                                                         <f:selectItems
                                                             value="#{teacherCourseLoadCtrl.othersCourseFilter.model.teacherDisciplineItems}"/>
                                                     </p:selectCheckboxMenu>
@@ -758,7 +762,7 @@ and open the template in the editor.
                                                         filter="true" filterMatchMode="startsWith"
                                                         panelStyle="width:250px">
                                                         <p:ajax listener="#{teacherCourseLoadCtrl.onRefreshFiltersChanged}"
-                                                                update=":listForm :buttonsForm"/>
+                                                                update=":listForm:refresh2 :listForm:refresh2Label :buttonsForm:refresh"/>
                                                         <f:selectItems
                                                             value="#{teacherCourseLoadCtrl.othersCourseFilter.model.teacherSituationItems}"/>
                                                     </p:selectCheckboxMenu>
@@ -771,7 +775,7 @@ and open the template in the editor.
                                                         filter="true" filterMatchMode="startsWith"
                                                         panelStyle="width:250px">
                                                         <p:ajax listener="#{teacherCourseLoadCtrl.onRefreshFiltersChanged}"
-                                                                update=":listForm :buttonsForm"/>
+                                                                update=":listForm:refresh2 :listForm:refresh2Label :buttonsForm:refresh"/>
                                                         <f:selectItems
                                                             value="#{teacherCourseLoadCtrl.othersCourseFilter.model.semesterItems}"/>
                                                     </p:selectCheckboxMenu>
@@ -782,7 +786,7 @@ and open the template in the editor.
                                                         filter="true" filterMatchMode="startsWith"
                                                         panelStyle="width:250px">
                                                         <p:ajax listener="#{teacherCourseLoadCtrl.onRefreshFiltersChanged}"
-                                                                update=":listForm :buttonsForm"/>
+                                                                update=":listForm:refresh2 :listForm:refresh2Label :buttonsForm:refresh"/>
                                                         <f:selectItems
                                                             value="#{teacherCourseLoadCtrl.othersCourseFilter.model.programTypeItems}"/>
                                                     </p:selectCheckboxMenu>
@@ -793,7 +797,7 @@ and open the template in the editor.
                                                         filter="true" filterMatchMode="startsWith"
                                                         panelStyle="width:250px">
                                                         <p:ajax listener="#{teacherCourseLoadCtrl.onRefreshFiltersChanged}"
-                                                                update=":listForm :buttonsForm"/>
+                                                                update=":listForm:refresh2 :listForm:refresh2Label :buttonsForm:refresh"/>
                                                         <f:selectItems
                                                             value="#{teacherCourseLoadCtrl.othersCourseFilter.model.courseTypeItems}"/>
                                                     </p:selectCheckboxMenu>
@@ -804,7 +808,7 @@ and open the template in the editor.
                                                         filter="true" filterMatchMode="startsWith"
                                                         panelStyle="width:250px">
                                                         <p:ajax listener="#{teacherCourseLoadCtrl.onRefreshFiltersChanged}"
-                                                                update=":listForm :buttonsForm"/>
+                                                                update=":listForm:refresh2 :listForm:refresh2Label :buttonsForm:refresh"/>
                                                         <f:selectItems
                                                             value="#{teacherCourseLoadCtrl.othersCourseFilter.model.teacherDisciplineItems}"/>
                                                     </p:selectCheckboxMenu>
@@ -815,7 +819,7 @@ and open the template in the editor.
                                                         filter="true" filterMatchMode="startsWith"
                                                         panelStyle="width:250px">
                                                         <p:ajax listener="#{teacherCourseLoadCtrl.onRefreshFiltersChanged}"
-                                                                update=":listForm :buttonsForm"/>
+                                                                update=":listForm:refresh2 :listForm:refresh2Label :buttonsForm:refresh"/>
                                                         <f:selectItems
                                                             value="#{teacherCourseLoadCtrl.othersCourseFilter.model.classItems}"/>
                                                     </p:selectCheckboxMenu>
@@ -828,7 +832,7 @@ and open the template in the editor.
                                                         filter="true" filterMatchMode="startsWith"
                                                         panelStyle="width:250px">
                                                         <p:ajax listener="#{teacherCourseLoadCtrl.onRefreshFiltersChanged}"
-                                                                update=":listForm :buttonsForm"/>
+                                                                update=":listForm:refresh2 :listForm:refresh2Label :buttonsForm:refresh"/>
                                                         <f:selectItems
                                                             value="#{teacherCourseLoadCtrl.othersCourseFilter.model.departmentItems}"/>
                                                     </p:selectCheckboxMenu>
@@ -839,7 +843,7 @@ and open the template in the editor.
                                                         filter="true" filterMatchMode="startsWith"
                                                         panelStyle="width:250px">
                                                         <p:ajax listener="#{teacherCourseLoadCtrl.onRefreshFiltersChanged}"
-                                                                update=":listForm :buttonsForm"/>
+                                                                update=":listForm:refresh2 :listForm:refresh2Label :buttonsForm:refresh"/>
                                                         <f:selectItems
                                                             value="#{teacherCourseLoadCtrl.othersCourseFilter.model.departmentItems}"/>
                                                     </p:selectCheckboxMenu>
@@ -850,7 +854,7 @@ and open the template in the editor.
                                                         filter="true" filterMatchMode="startsWith"
                                                         panelStyle="width:250px">
                                                         <p:ajax listener="#{teacherCourseLoadCtrl.onRefreshFiltersChanged}"
-                                                                update=":listForm :buttonsForm"/>
+                                                                update=":listForm:refresh2 :listForm:refresh2Label :buttonsForm:refresh"/>
                                                         <f:selectItems
                                                             value="#{teacherCourseLoadCtrl.othersCourseFilter.model.labelItems}"/>
                                                     </p:selectCheckboxMenu>
@@ -861,7 +865,7 @@ and open the template in the editor.
                                                         filter="true" filterMatchMode="startsWith"
                                                         panelStyle="width:250px">
                                                         <p:ajax listener="#{teacherCourseLoadCtrl.onRefreshFiltersChanged}"
-                                                                update=":listForm :buttonsForm"/>
+                                                                update=":listForm:refresh2 :listForm:refresh2Label :buttonsForm:refresh"/>
                                                         <f:selectItems
                                                             value="#{teacherCourseLoadCtrl.othersCourseFilter.model.deviationGroupItems}"/>
                                                     </p:selectCheckboxMenu>
@@ -873,7 +877,7 @@ and open the template in the editor.
                                                                               layout="grid" 
                                                                               columns="5">
                                                             <p:ajax listener="#{teacherCourseLoadCtrl.onRefreshFiltersChanged}"
-                                                                    update=":listForm"/>
+                                                                    update=":listForm:refresh2 :listForm:refresh2Label :buttonsForm:refresh"/>
                                                             <f:selectItems
                                                                 value="#{teacherCourseLoadCtrl.othersCourseFilter.model.refreshFilterItems}"/>
                                                         </p:selectManyCheckbox>
@@ -885,8 +889,8 @@ and open the template in the editor.
                                                                           layout="grid" columns="3"
 
                                                                           >
-                                                        <p:ajax listener="#{teacherCourseLoadCtrl.onOthersFiltersChanged}"
-                                                                update=":listForm"/>
+                                                        <p:ajax listener="#{teacherCourseLoadCtrl.onRefreshFiltersChanged}"
+                                                                update=":listForm:refresh2 :listForm:refresh2Label :buttonsForm:refresh"/>
                                                         <f:selectItems
                                                             value="#{teacherCourseLoadCtrl.model.othersFiltersSelectItems}"/>
                                                     </p:selectManyCheckbox>
@@ -896,25 +900,44 @@ and open the template in the editor.
                                     </div>
                                 </p:fieldset>
 
-                            </div>
+                                <div style="margin-bottom: 10px;margin-top: 10px;">
+                                    <p:inputText
+                                        rendered="#{teacherCourseLoadCtrl.model.displayOtherModules}"
+                                        value="#{teacherCourseLoadCtrl.model.othersTextFilter}" placeholder="Chercher ..."
+                                        styleClass="form-control"
+                                        style="width: 80%;margin-bottom: 10px; display: inline"
+                                        onkeypress="if (event.keyCode == 13) {
+                                                    onSearchByText();
+                                                    return false;
+                                                }"
+                                        />
+                                    <p:remoteCommand name="onSearchByText"
+                                                     actionListener="#{teacherCourseLoadCtrl.applyOthersTextFilter}"
+                                                     update=":listForm :buttonsForm:refresh"/>
+                                    <p:commandButton 
+                                        id="refresh2"
+                                        rendered="#{teacherCourseLoadCtrl.model.displayOtherModules}"
+                                        actionListener="#{teacherCourseLoadCtrl.onRefresh()}"
+                                        value="Actualiser" icon="vr-form-field vr-form-fixed-width-medium ui-ribbonicon-refresh"
+                                        styleClass="ui-ribbon-bigbutton " ajax="true"
+                                        style="width: 15%; display: inline; #{teacherCourseLoadCtrl.model.filterChanged?'background: darkkhaki':''}"
+                                        update=":listForm :buttonsForm:refresh"
+                                        />
+                                </div>
 
-                            <div style="margin-bottom: 10px;">
-                                <p:inputText
-                                    rendered="#{teacherCourseLoadCtrl.model.displayOtherModules}"
-                                    value="#{teacherCourseLoadCtrl.model.othersTextFilter}" placeholder="Chercher ..."
-                                    styleClass="form-control"
-                                    style="width: 100%"
-                                    onkeypress="if (event.keyCode == 13) {
-                                                onSearchByText();
-                                                return false;
-                                            }"
+                                <div style="margin-bottom: 10px;">
+                                    <p:outputLabel 
+                                        id="refresh2Label"
+                                        rendered="#{teacherCourseLoadCtrl.model.displayOtherModules}"
+                                        value="#{teacherCourseLoadCtrl.model.filterChanged?'Le filtre a changé. Cliquez sur Actualiser':''}"
+                                                   style="width: 100%; color: brown"
                                     />
-                                <p:remoteCommand name="onSearchByText"
-                                                 actionListener="#{teacherCourseLoadCtrl.applyOthersTextFilter}"
-                                                 update=":listForm"/>
+                                </div>
+
                             </div>
 
-                            <p:dataTable var="i" value="#{teacherCourseLoadCtrl.model.others}"
+
+                            <p:dataTable var="i" value="#{teacherCourseLoadCtrl.model.othersVisible}"
                                          class="table table-bordered table-hover"
                                          paginatorAlwaysVisible="false"
                                          paginator="true"
@@ -1092,9 +1115,11 @@ and open the template in the editor.
 
                                 <f:facet name="footer">
                                     <p:outputLabel
-                                        value="Total #{teacherCourseLoadCtrl.model.others.size()} ; C=#{vr.dblCustomFormat(teacherCourseLoadCtrl.model.othersSumC,'#.000')}  ; TD=#{vr.dblCustomFormat(teacherCourseLoadCtrl.model.othersSumTD,'#.000')}  ; TP=#{vr.dblCustomFormat(teacherCourseLoadCtrl.model.othersSumTP,'#.000')}  ; PM=#{vr.dblCustomFormat(teacherCourseLoadCtrl.model.othersSumPM,'#.000')}   ; MA=#{vr.dblCustomFormat(teacherCourseLoadCtrl.model.othersSumMA,'#.00')} "/>
+                                        value="Total #{teacherCourseLoadCtrl.model.othersVisible.size()}/ #{teacherCourseLoadCtrl.model.others.size()} ; C=#{vr.dblCustomFormat(teacherCourseLoadCtrl.model.othersSumC,'#.000')}  ; TD=#{vr.dblCustomFormat(teacherCourseLoadCtrl.model.othersSumTD,'#.000')}  ; TP=#{vr.dblCustomFormat(teacherCourseLoadCtrl.model.othersSumTP,'#.000')}  ; PM=#{vr.dblCustomFormat(teacherCourseLoadCtrl.model.othersSumPM,'#.000')}   ; MA=#{vr.dblCustomFormat(teacherCourseLoadCtrl.model.othersSumMA,'#.00')} "/>
 
-
+                                    <p:outputLabel value="#{teacherCourseLoadCtrl.model.teacherLoadInfoResult.notAllOtherDataVisible?' (Trop de données à afficher. Utilisez les filter pour affiner)':''}"
+                                                   style="color: red"
+                                                   />
                                     <div style="float: right;">
                                         <h:commandLink>
                                             <p:graphicImage url="#{vr.privateThemePath}/images/icons/file-xls16.png"

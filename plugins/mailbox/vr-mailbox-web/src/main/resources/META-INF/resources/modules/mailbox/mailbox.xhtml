@@ -198,7 +198,7 @@ and open the template in the editor.
                                                                update=":mainForm :pageTitleForm">
 
                                                 <span class="pull-right-container">
-                                                    <small class="label pull-right vr-mailbox-label-emblem #{vr.hashToArr(i.value.category,'bg-red','bg-yellow','bg-aqua','bg-blue','bg-light-blue','bg-green','bg-navy','bg-teal','bg-olive','bg-lime','bg-orange','bg-fuchsi','bg-purple','bg-maroon','bg-black')}">#{vr.strcut(i.value.category, 10)}</small>
+                                                    <small class="label pull-right vr-mailbox-label-emblem #{vr.hashToArr(i.value.categories[0],'bg-red','bg-yellow','bg-aqua','bg-blue','bg-light-blue','bg-green','bg-navy','bg-teal','bg-olive','bg-lime','bg-orange','bg-fuchsi','bg-purple','bg-maroon','bg-black')}">#{vr.strcut(i.value.categories[0], 10)}</small>
                                                 </span>
                                                     <p:outputLabel
                                                             value="#{vr.strcat(mailboxCtrl.model.sent ?'A: ':'De: ',i.value.userFullName)}"
@@ -222,7 +222,7 @@ and open the template in the editor.
                                                     <f:setPropertyActionListener target="#{mailboxCtrl.model.current}"
                                                                                  value="#{i.value}"/>
                                                 </p:commandLink>
-                                                <ui:fragment rendered="#{!vr.isEmpty(i.value.category)}">
+                                                <ui:fragment rendered="#{!vr.isEmpty(i.value.categories[0])}">
                                                 </ui:fragment>
                                             </p:column>
                                             <p:column class="vr-mailbox-attachment">
@@ -491,7 +491,7 @@ and open the template in the editor.
                                     <div class="form-group">
                                         <p:autoComplete styleClass="vr-form-control" placeholder="Label:"
                                                         completeMethod="#{mailboxCtrl.completeCategoryExpr}"
-                                                        value="#{mailboxCtrl.model.newItem.category}"/>
+                                                        value="#{mailboxCtrl.model.newItem.categories[0]}"/>
                                     </div>
                                     <div class="form-group">
                                         <p:inputText styleClass="form-control" placeholder="Sujet:"

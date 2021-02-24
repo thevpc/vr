@@ -263,14 +263,14 @@ and open the template in the editor.
                     <div class="row">
                         <div class="col-md-4 to-animate">
                             <a class="fancybox"
-                               href="#{vr.articleImageOrDefault(vr.cmsTextService.getSelectedContentText('About').imageURL)}"
+                               href="#{vr.articleImageOrDefault(vr.cmsTextService.getSelectedContentText('About').mainPath.path)}"
                                data-fancybox-group="gallery"><img
-                                    src="#{vr.articleImageOrRand(vr.cmsTextService.getSelectedContentText('About').imageURL)}"
+                                    src="#{vr.articleImageOrRand(vr.cmsTextService.getSelectedContentText('About').mainPath.path)}"
                                     class="img-responsive img-rounded"
-                                    alt="#{vr.cmsTextService.getSelectedContentText('About').subject}"/></a>
+                                    alt="#{vr.cmsTextService.getSelectedContentText('About').title}"/></a>
                         </div>
                         <div class="col-md-8 to-animate">
-                            <h2>#{vr.cmsTextService.getSelectedContentText('About').subject}</h2>
+                            <h2>#{vr.cmsTextService.getSelectedContentText('About').title}</h2>
                             <div style="text-align: justify"><h:outputText escape="false"
                                                                          value="#{(vr.lightHtml(vr.cmsTextService.getSelectedContentText('About')))}"></h:outputText>
                             </div>
@@ -354,7 +354,7 @@ and open the template in the editor.
                                         <div class="icon colored-#{vr.randomize(6)+1}"><span><i
                                                 class="#{vr.randomize('icon-mustache','icon-heart','icon-screen-desktop','icon-rocket','icon-eye','icon-user')}"></i></span>
                                         </div>
-                                        <h3>#{listItem.subject}</h3>
+                                        <h3>#{listItem.title}</h3>
                                         <p style="text-align: justify;">#{vr.strcut(vr.html2txt(listItem.content),200)}</p>
                                         <div class="row">
                                             <div class="col-md-4 col-md-offset-4 animate-features-3">
@@ -398,7 +398,7 @@ and open the template in the editor.
                                             class="#{vr.randomize('icon-eye','icon-crop','icon-speedometer','icon-heart','icon-umbrella','icon-present')}"></i>
                                     </div>
                                     <div class="fh5co-desc">
-                                        <h3>#{listItem.subject}</h3>
+                                        <h3>#{listItem.title}</h3>
                                         <p style="text-align: justify;">#{vr.strcut(vr.html2txt(listItem.content),200)}</p>
                                     </div>
                                     <div class="row">
@@ -452,7 +452,7 @@ and open the template in the editor.
                                             <p>#{vr.strcut(vr.html2txt(listItem.content),200)}</p>
                                         </blockquote>
                                         <p class="author">#{listItem.user.fullName}<span
-                                                class="subtext">#{listItem.subject}</span></p>
+                                                class="subtext">#{listItem.title}</span></p>
                                         <div class="row">
                                             <div class="col-md-4 col-md-offset-4 single-animate animate-features-3">
                                                 <h:outputLink
@@ -493,7 +493,7 @@ and open the template in the editor.
                                     <div class="price-box #{listItem.important ?'popular':''}"
                                          style="text-align: justify">
                                         <div class="popular-text">#{listItem.decoration}</div>
-                                        <h2 class="pricing-plan">#{listItem.subject}</h2>
+                                        <h2 class="pricing-plan">#{listItem.title}</h2>
                                         <p style="height: 250px;max-height: 250px;">#{vr.strcut(vr.html2txt(listItem.content),200)}</p>
                                         <hr/>
                                         <h:outputLink
@@ -532,11 +532,11 @@ and open the template in the editor.
                             <div class="col-md-6">
                                 <div class="fh5co-press-item to-animate">
                                     <div class="fh5co-press-img"
-                                         style="background-image: url(#{vr.articleImageOrRand(listItem.imageURL)})">
+                                         style="background-image: url(#{vr.articleImageOrRand(listItem.mainPath.path)})">
                                     </div>
                                     <div class="fh5co-press-text">
                                         <h3 class="h2 fh5co-press-title"
-                                            title="#{listItem.subject}">#{vr.strcut(listItem.subject,25)}
+                                            title="#{listItem.title}">#{vr.strcut(listItem.title,25)}
                                             <span class="fh5co-border"></span>
                                         </h3>
                                         <p>#{vr.strcut(vr.html2txt(listItem.content),60)}</p>
@@ -585,11 +585,11 @@ and open the template in the editor.
                             <div class="col-md-6">
                                 <div class="fh5co-press-item to-animate">
                                     <div class="fh5co-press-img"
-                                         style="background-image: url(#{vr.articleImageOrRand(listItem.imageURL)})">
+                                         style="background-image: url(#{vr.articleImageOrRand(listItem.mainPath.path)})">
                                     </div>
                                     <div class="fh5co-press-text">
                                         <h3 class="h2 fh5co-press-title"
-                                            title="#{listItem.subject}">#{vr.strcut(listItem.subject,25)}
+                                            title="#{listItem.title}">#{vr.strcut(listItem.title,25)}
                                             <span class="fh5co-border"></span>
                                         </h3>
                                         <p>#{vr.strcut(vr.html2txt(listItem.content),60)}</p>
@@ -616,21 +616,21 @@ and open the template in the editor.
                     <h:panelGroup layout="block"
                                   rendered="#{vr.cmsTextService.getContentTextList('Footer').size() gt 0}">
                         <div class="col-md-2">
-                            <h2 style="font-size: small;">#{vr.cmsTextService.getContentTextList('Footer')[0].subject}</h2>
+                            <h2 style="font-size: small;">#{vr.cmsTextService.getContentTextList('Footer')[0].title}</h2>
                             <p>#{vr.strcut(vr.html2txt(vr.cmsTextService.getContentTextList('Footer')[0].content),20000)}</p>
                         </div>
                     </h:panelGroup>
                     <h:panelGroup layout="block"
                                   rendered="#{vr.cmsTextService.getContentTextList('Footer').size() gt 1}">
                         <div class="col-md-5">
-                            <h2 style="font-size: small;">#{vr.cmsTextService.getContentTextList('Footer')[1].subject}</h2>
+                            <h2 style="font-size: small;">#{vr.cmsTextService.getContentTextList('Footer')[1].title}</h2>
                             <p>#{vr.strcut(vr.html2txt(vr.cmsTextService.getContentTextList('Footer')[1].content),20000)}</p>
                         </div>
                     </h:panelGroup>
                     <h:panelGroup layout="block"
                                   rendered="#{vr.cmsTextService.getContentTextList('Footer').size() gt 2}">
                         <div class="col-md-3">
-                            <h2 style="font-size: small;">#{vr.cmsTextService.getContentTextList('Footer')[2].subject}</h2>
+                            <h2 style="font-size: small;">#{vr.cmsTextService.getContentTextList('Footer')[2].title}</h2>
                             <p>#{vr.strcut(vr.html2txt(vr.cmsTextService.getContentTextList('Footer')[2].content),20000)}</p>
                         </div>
                     </h:panelGroup>
@@ -642,9 +642,9 @@ and open the template in the editor.
                             <ul class="footer-links">
                                 <ui:repeat value="#{vr.cmsTextService.getContentTextListHead('Footer.Links',10)}"
                                            var="i">
-                                    <li><h:outputLink value="#{i.linkURL}">
-                                        <h:graphicImage value="#{i.imageURL}" rendered="#{not vr.isEmpty(i.imageURL)}"/>
-                                        #{i.linkText}
+                                    <li><h:outputLink value="#{i.mainPath.linkPath}">
+                                        <h:graphicImage value="#{i.mainPath.path}" rendered="#{not vr.isEmpty(i.mainPath.path)}"/>
+                                        #{i.mainPath.name}
                                     </h:outputLink></li>
                                 </ui:repeat>
                             </ul>

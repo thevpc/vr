@@ -12,8 +12,8 @@ import net.thevpc.app.vainruling.plugins.academic.model.current.AcademicTeacherD
 import net.thevpc.app.vainruling.plugins.academic.service.util.AcademicCourseAssignmentIdConverter;
 import net.thevpc.app.vainruling.plugins.academic.model.config.AcademicSemester;
 import net.thevpc.app.vainruling.plugins.academic.model.config.AcademicTeacherSituation;
-import net.thevpc.common.util.Collections2;
-import net.thevpc.common.util.KeyValueList;
+import net.thevpc.common.collections.Collections2;
+import net.thevpc.common.collections.KeyValueList;
 
 import java.util.HashMap;
 import java.util.Map;

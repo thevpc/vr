@@ -15,9 +15,7 @@ import net.thevpc.app.vainruling.core.service.util.AppVersion;
 import net.thevpc.app.vainruling.core.service.util.ProfilePatternFilter;
 import net.thevpc.app.vainruling.core.service.util.VrUtils;
 import net.thevpc.common.strings.StringUtils;
-import net.thevpc.common.util.Collections2;
-import net.thevpc.common.util.ListValueMap;
-import net.thevpc.common.util.KeyValueList;
+import net.thevpc.common.collections.KeyValueList;
 import net.thevpc.common.vfs.VFile;
 import net.thevpc.common.vfs.VirtualFileSystem;
 import net.thevpc.upa.*;
@@ -30,18 +28,28 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.*;
 import java.util.logging.Level;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import net.thevpc.app.vainruling.core.service.model.content.AppArticleDisposition;
 import net.thevpc.app.vainruling.core.service.model.content.AppArticleDispositionGroup;
 import net.thevpc.app.vainruling.core.service.model.content.AppArticleDispositionBundle;
 import net.thevpc.app.vainruling.core.service.model.content.AppArticleFile;
 import net.thevpc.app.vainruling.core.service.model.content.AppArticle;
-import net.thevpc.app.vainruling.core.service.model.content.AppArticleStrict;
+import net.thevpc.app.vainruling.core.service.model.content.DefaultVrContentText;
 import net.thevpc.app.vainruling.core.service.model.content.AppArticleProperty;
-import net.thevpc.app.vainruling.core.service.model.content.FullArticle;
+import net.thevpc.app.vainruling.core.service.model.content.DefaultVrContentPath;
+import net.thevpc.app.vainruling.core.service.model.content.VrContentTextConfig;
 import net.thevpc.common.util.MutableDate;
+import net.thevpc.app.vainruling.core.service.content.VrContentPath;
+import net.thevpc.app.vainruling.core.service.content.VrContentText;
+import net.thevpc.app.vainruling.core.service.model.content.AppArticleDispositionBinding;
+import net.thevpc.app.vainruling.core.service.model.content.ArticlesDispositionStrict;
+import net.thevpc.app.vainruling.core.service.model.strict.AppUserStrict;
 
 class CorePluginBodyContentManager extends CorePluginBody {
+
+    private static final Pattern VR_FILESYSTEM_URL_PATTERN = Pattern.compile("(?<ctx>http(s)?://[a-z.]+(:[0-9]+)/([a-z-]+/))fs(?<a>/.*)");
 
     private static final java.util.logging.Logger log = java.util.logging.Logger.getLogger(CorePluginBodyContentManager.class.getName());
 
@@ -77,46 +85,46 @@ class CorePluginBodyContentManager extends CorePluginBody {
         findOrCreateArticleDisposition("News.Header", "Press", null);
         findOrCreateArticleDisposition("Activities", "Activities", "Activities");
         findOrCreateArticleDisposition("Activities.Header", "Activities", null);
-        if (core.findFullArticlesByDisposition(null, "About.Header").isEmpty()) {
+        if (core.findFullArticlesByDisposition(null, "About.Header", null).isEmpty()) {
             core.save(new AppArticle("About", null, findArticleDisposition("About.Header")));
         }
-        if (core.findFullArticlesByDisposition(null, "About").isEmpty()) {
+        if (core.findFullArticlesByDisposition(null, "About", null).isEmpty()) {
             core.save(new AppArticle("Nos Valeurs", null, findArticleDisposition("About.Header")));
         }
-        if (core.findFullArticlesByDisposition(null, "About").isEmpty()) {
+        if (core.findFullArticlesByDisposition(null, "About", null).isEmpty()) {
             core.save(new AppArticle("Reinvention", null, findArticleDisposition("About.Header")));
         }
-        if (core.findFullArticlesByDisposition(null, "About").isEmpty()) {
+        if (core.findFullArticlesByDisposition(null, "About", null).isEmpty()) {
             core.save(new AppArticle("Actualite", null, findArticleDisposition("About.Header")));
         }
-        if (core.findFullArticlesByDisposition(null, "About").isEmpty()) {
+        if (core.findFullArticlesByDisposition(null, "About", null).isEmpty()) {
             core.save(new AppArticle("APropos", null, findArticleDisposition("About.Header")));
         }
-        if (core.findFullArticlesByDisposition(null, "News.Header").isEmpty()) {
+        if (core.findFullArticlesByDisposition(null, "News.Header", null).isEmpty()) {
             AppArticle a = new AppArticle();
             a.setSubject("Press");
             a.setDisposition(findArticleDisposition("News.Header"));
             core.save(a);
         }
-        if (core.findFullArticlesByDisposition(null, "Activities.Header").isEmpty()) {
+        if (core.findFullArticlesByDisposition(null, "Activities.Header", null).isEmpty()) {
             AppArticle a = new AppArticle();
             a.setSubject("Activities");
             a.setDisposition(findArticleDisposition("Activities.Header"));
             core.save(a);
         }
-        if (core.findFullArticlesByDisposition(null, "Featured.Header").isEmpty()) {
+        if (core.findFullArticlesByDisposition(null, "Featured.Header", null).isEmpty()) {
             AppArticle a = new AppArticle();
             a.setSubject("Featured");
             a.setDisposition(findArticleDisposition("Featured.Header"));
             core.save(a);
         }
-        if (core.findFullArticlesByDisposition(null, "Testimonials.Header").isEmpty()) {
+        if (core.findFullArticlesByDisposition(null, "Testimonials.Header", null).isEmpty()) {
             AppArticle a = new AppArticle();
             a.setSubject("Testimonials");
             a.setDisposition(findArticleDisposition("Testimonials.Header"));
             core.save(a);
         }
-        if (core.findFullArticlesByDisposition(null, "Services.Header").isEmpty()) {
+        if (core.findFullArticlesByDisposition(null, "Services.Header", null).isEmpty()) {
             AppArticle a = new AppArticle();
             a.setSubject("Services");
             a.setDisposition(findArticleDisposition("Services.Header"));
@@ -227,81 +235,6 @@ class CorePluginBodyContentManager extends CorePluginBody {
                 .getResultList();
     }
 
-    public FullArticle findFullArticle(int id) {
-        //invoke privileged to find out article not created by self.
-        //when using non privileged mode, users can see SOLELY articles they have created
-        AppArticle a = UPA.getPersistenceUnit().invokePrivileged(new Action<AppArticle>() {
-            @Override
-            public AppArticle run() {
-                return findArticle(id);
-            }
-        });
-        if (a == null) {
-            return null;
-        }
-        List<AppArticle> ok = filterArticles(Arrays.asList(a));
-        if (ok.isEmpty()) {
-            return null;
-        }
-        a = ok.get(0);
-
-        String aname = a.getLinkText();
-        String aurl = a.getLinkURL();
-        String acss = a.getLinkClassStyle();
-        List<AppArticleFile> att = new ArrayList<>();
-        if (!StringUtils.isBlank(aname) || !StringUtils.isBlank(aurl)) {
-            AppArticleFile baseArt = new AppArticleFile();
-            baseArt.setId(-1);
-            baseArt.setName(VrUtils.resolveFileName(aname, aurl));
-            boolean added = false;
-            if (aurl != null && aurl.startsWith("/")) {
-                VFile vFile = getRootFileSystem0().get(aurl);
-                if (vFile.isDirectory()) {
-                    for (VFile file : vFile.listFiles()) {
-                        AppArticleFile baseArt2 = new AppArticleFile();
-                        baseArt2.setId(-1);
-                        baseArt2.setName(file.getName());
-                        baseArt2.setPath(file.getPath());
-                        baseArt2.setStyle(acss);
-                        att.add(baseArt2);
-                    }
-                    added = true;
-                }
-            }
-            if (!added) {
-                baseArt.setPath(aurl);
-                baseArt.setStyle(acss);
-                att.add(baseArt);
-            }
-        }
-        List<AppArticleFile> c = findArticleFiles(a.getId());
-        if (c != null) {
-            for (AppArticleFile articleFile : c) {
-                boolean added = false;
-                aurl = articleFile.getPath();
-                if (aurl != null && aurl.startsWith("/")) {
-                    VFile vFile = getRootFileSystem0().get(aurl);
-                    if (vFile.isDirectory()) {
-                        for (VFile file : vFile.listFiles()) {
-                            AppArticleFile baseArt2 = new AppArticleFile();
-                            baseArt2.setId(-1);
-                            baseArt2.setName(VrUtils.resolveFileName(file.getName(), file.getPath()));
-                            baseArt2.setPath(file.getPath());
-                            baseArt2.setStyle(acss);
-                            att.add(baseArt2);
-                        }
-                        added = true;
-                    }
-                }
-                if (!added) {
-                    att.add(articleFile);
-                }
-            }
-        }
-        FullArticle f = new FullArticle(new AppArticleStrict(a), att);
-        return f;
-    }
-
     private VirtualFileSystem getRootFileSystem0() {
         return UPA.getContext().invokePrivileged(new Action<VirtualFileSystem>() {
             @Override
@@ -336,7 +269,7 @@ class CorePluginBodyContentManager extends CorePluginBody {
 //    public List<FullArticle> findFullArticlesByCategory(String disposition) {
 //        return findFullArticlesByDisposition(null, disposition);
 //    }
-    public List<FullArticle> findFullArticlesByDisposition(Integer userId, String group, String disposition) {
+    public List<VrContentText> findFullArticlesByDisposition(Integer userId, String group, String disposition, VrContentTextConfig config) {
         if (group == null) {
             if (!getContext().getCorePlugin().isStarted()) {
                 group = "";
@@ -355,130 +288,306 @@ class CorePluginBodyContentManager extends CorePluginBody {
         if (g == null) {
             g = findArticleDispositionGroup("II");
         }
-        return findFullArticlesByDisposition(userId/*current user*/, g == null ? -1 : g.getId(), true, disposition);
+        return findFullArticlesByDisposition(userId/*current user*/, g == null ? -1 : g.getId(), true, disposition, config);
     }
 
-    public List<FullArticle> findFullArticlesByDisposition(Integer userId, int dispositionGroupId, boolean includeNoDept, final String disposition) {
+    public List<VrContentText> findFullArticlesByAnonymousDisposition(Integer dispositionGroupId, boolean includeNoDept, final String disposition, VrContentTextConfig config) {
+        return findFullArticlesByDisposition(-1, dispositionGroupId, includeNoDept, disposition, config);
+    }
+
+    protected VrContentText articleToFullArticle(AppArticle a, VrContentTextConfig config) {
+        AppArticleDisposition d = a.getDisposition();
+        if (d != null) {
+            int periodCalendarType = -1;
+            if (d.getPeriodType() != null && d.getMaxPeriod() > 0) {
+                switch (d.getPeriodType()) {
+                    case DAY:
+                    case WEEK:
+                    case MONTH:
+                    case YEAR: {
+                        periodCalendarType = d.getPeriodType().getCalendarId();
+                        break;
+                    }
+                }
+            }
+            if (periodCalendarType > 0) {
+                DateTime dd = a.getSendTime();
+                MutableDate d2 = new MutableDate().addField(periodCalendarType, -d.getMaxPeriod());
+                if (dd == null) {
+                    log.log(Level.SEVERE, "Article with null SendTime : Article.id=" + a.getId());
+                }
+                if (dd != null && dd.compareTo(d2.getDateTime()) < 0) {
+                    return null;
+                }
+            }
+
+        }
+        AppArticleFile mainArticle = new AppArticleFile();
+        mainArticle.setArticle(a);
+        mainArticle.setId(-1);
+        mainArticle.setName(a.getLinkText());
+        mainArticle.setPath(a.getImageURL());
+        mainArticle.setLinkPath(a.getLinkURL());
+        mainArticle.setStyle(a.getLinkClassStyle());
+
+        List<VrContentPath> attachments = new ArrayList<>();
+        List<VrContentPath> imageAttachments = new ArrayList<>();
+        List<VrContentPath> nonImageAttachments = new ArrayList<>();
+        VrContentPath mainImage = null;
+        VrContentPath[] mainList = expandArticleFileToContentPathArray(mainArticle, config);
+        if (mainList.length == 1 && mainList[0].isImage()) {
+            mainImage = mainList[0];
+        } else {
+            for (VrContentPath vrContentPath : mainList) {
+                attachments.add(vrContentPath);
+                if (vrContentPath.isImage()) {
+                    imageAttachments.add(vrContentPath);
+                } else {
+                    nonImageAttachments.add(vrContentPath);
+                }
+            }
+        }
+        List<AppArticleFile> c = findArticleFiles(a.getId());
+        if (c != null) {
+            for (AppArticleFile articleFile : c) {
+                mainList = expandArticleFileToContentPathArray(articleFile, config);
+                for (VrContentPath vrContentPath : mainList) {
+                    attachments.add(vrContentPath);
+                    if (vrContentPath.isImage()) {
+                        imageAttachments.add(vrContentPath);
+                    } else {
+                        nonImageAttachments.add(vrContentPath);
+                    }
+                }
+            }
+        }
+        DefaultVrContentText aa = new DefaultVrContentText();
+        AppUserStrict suser = new AppUserStrict();
+        AppUser user = a.getSender();
+        if (user == null) {
+            suser.setId(-1);
+            suser.setLogin("anonymous");
+            suser.setFullName("anonymous");
+            suser.setFullTitle("anonymous");
+            suser.setIconPath(this.getContext().getCorePlugin().getUserIcon(-1));
+        } else {
+            suser.setId(user.getId());
+            suser.setLogin(user.getLogin());
+            suser.setFullName(user.getFullName());
+            suser.setFullTitle(user.getFullTitle());
+            suser.setGenderCode(user.getGender() != null ? user.getGender().getCode() : "M");
+            suser.setIconPath(this.getContext().getCorePlugin().getUserIcon(a.getSender().getId()));
+        }
+        aa.setUser(suser);
+        aa.setId(a.getId());
+        aa.setRecipients(a.getRecipientProfiles());
+        aa.setDecoration(a.getDecoration());
+        aa.setContent(a.getContent());
+        aa.setTitle(a.getSubject());
+        aa.setSubTitle(a.getSubTitle());
+        aa.setDispositionGroup(a.getDispositionGroup());
+        aa.setPosition(a.getPosition());
+        aa.setVisitCount(a.getVisitCount());
+        aa.setNoTitle(a.isNoSubject());
+        aa.setImportant(a.isImportant());
+        aa.setDeleted(a.isDeleted());
+        aa.setArchived(a.isArchived());
+        aa.setPublishTime(a.getSendTime());
+        Set<String> allCats = new HashSet<>();
+        if (a.getDisposition() != null) {
+            allCats.add(a.getDisposition().getName());
+        }
+        if (aa.getId() >= 0) {
+            List<AppArticleDispositionBinding> found = UPA.getPersistenceUnit().createQuery("Select ab from AppArticleDispositionBinding ab where ab.articleId=:id")
+                    .setParameter("id", aa.getId()).getResultList();
+            for (AppArticleDispositionBinding ab : found) {
+                if (ab.getDisposition() != null) {
+                    allCats.add(a.getDisposition().getName());
+                }
+            }
+        }
+        aa.setCategories(allCats.stream().filter(x -> (x != null && x.trim().length() > 0)).distinct().toArray(String[]::new));
+        aa.setMainPath(mainImage == null ? new DefaultVrContentPath() : mainImage);//never null
+        aa.setAttachments(attachments);
+        aa.setHasImageAttachments(imageAttachments.size() > 0);
+        aa.setHasNonImageAttachments(nonImageAttachments.size() > 0);
+        return aa;
+    }
+
+    private DefaultVrContentPath[] expandArticleFileToContentPathArray(AppArticleFile attachment, VrContentTextConfig config) {
+        List<DefaultVrContentPath> all = new ArrayList<>();
+        for (AppArticleFile a : expandArticleFiles(attachment)) {
+            if (a != null) {
+                DefaultVrContentPath b = articleFileToContentPath(a, config);
+                if (b != null) {
+                    all.add(b);
+                }
+            }
+        }
+        return all.toArray(new DefaultVrContentPath[0]);
+    }
+
+    private DefaultVrContentPath articleFileToContentPath(AppArticleFile attachment, VrContentTextConfig config) {
+        String aname = attachment.getName();
+        String path = attachment.getPath();
+        String lpath = attachment.getLinkPath();
+        if (StringUtils.isBlank(path) && !StringUtils.isBlank(lpath)) {
+            path = lpath;
+            lpath = null;
+        }
+        if (StringUtils.isBlank(lpath)) {
+            lpath = null;
+        }
+        String pathLowercased = path != null ? path.toLowerCase() : "";
+        if (StringUtils.isBlank(aname)) {
+            aname = VrUtils.getURLName(path);
+        }
+        if (StringUtils.isBlank(aname)) {
+            aname = "NoName";
+        }
+        String style = attachment.getStyle();
+        String path0 = path;
+        if (VrUtils.getImageTypeByName(pathLowercased, false) != null) {
+            if (pathLowercased.startsWith("/")) {
+                DefaultVrContentPath cp = (DefaultVrContentPath) UPA.getContext().invokePrivileged(() -> {
+                    VFile file = CorePlugin.get().getRootFileSystem().get(path0);
+                    return VrUtils.getOrResizePhotoContentPath(file, config);
+                });
+                cp.setName(aname);
+                cp.setStyle(style);
+                cp.setLinkPath(attachment.getLinkPath());
+                return cp;
+            } else {
+                Pattern pat = VR_FILESYSTEM_URL_PATTERN;
+                Matcher m = pat.matcher(pathLowercased);
+                boolean resolved = false;
+                if (m.find()) {
+                    String pp = m.group("a");
+                    DefaultVrContentPath cp = (DefaultVrContentPath) UPA.getContext().invokePrivileged(() -> {
+                        VFile file = CorePlugin.get().getRootFileSystem().get(pp);
+                        if (file.exists()) {
+                            return VrUtils.getOrResizePhotoContentPath(file, config);
+                        }
+                        return null;
+                    });
+                    if (cp != null) {
+                        cp.setName(aname);
+                        cp.setStyle(style);
+                        cp.setLinkPath(lpath);
+                        cp.setImage(true);
+                        return cp;
+                    }
+                }
+                if (!resolved) {
+                    DefaultVrContentPath cp = new DefaultVrContentPath();
+                    cp.setName(aname);
+                    cp.setPath(path);
+                    cp.setStyle(style);
+                    cp.setImage(true);
+                    cp.setLinkPath(lpath);
+                    return cp;
+                }
+            }
+        } else {
+            DefaultVrContentPath cp = new DefaultVrContentPath();
+            cp.setName(aname);
+            cp.setPath(path);
+            cp.setStyle(style);
+            return cp;
+        }
+        return null;
+    }
+
+    private AppArticleFile[] expandArticleFiles(AppArticleFile aFile) {
+        List<AppArticleFile> all = new ArrayList<>();
+        boolean added = false;
+        String acss = aFile.getStyle();
+        String aurl = aFile.getPath();
+        String lpath = aFile.getLinkPath();
+        if (StringUtils.isBlank(aurl) && !StringUtils.isBlank(lpath)) {
+            aurl = lpath;
+            lpath = null;
+        }
+        if (StringUtils.isBlank(lpath)) {
+            lpath = null;
+        }
+        if (StringUtils.isBlank(aurl)) {
+            aurl = null;
+        }
+        if (lpath == null && aurl == null) {
+            return new AppArticleFile[0];
+        }
+
+        if (aurl != null && aurl.trim().length() > 0 && aurl.startsWith("/")) {
+            VFile vFile = getRootFileSystem0().get(aurl);
+            if (vFile.isDirectory()) {
+                for (VFile file : vFile.listFiles()) {
+                    AppArticleFile baseArt2 = new AppArticleFile();
+                    baseArt2.setId(-1);
+                    baseArt2.setName(file.getName());
+                    baseArt2.setPath(file.getPath());
+                    baseArt2.setLinkPath(lpath);
+                    baseArt2.setStyle(acss);
+                    all.addAll(Arrays.asList(expandArticleFiles(baseArt2)));
+                }
+                added = true;
+            }
+        }
+        if (!added) {
+            if (aurl != null && aurl.trim().length() > 0) {
+                aurl = aurl.trim();
+                AppArticleFile copy = new AppArticleFile();
+                copy.setId(aFile.getId());
+                copy.setName((aFile.getName() == null || aFile.getName().trim().length() == 0) ? VrUtils.getURLName(aurl) : aFile.getName());
+                copy.setPath(aurl);
+                copy.setLinkPath(lpath);
+                copy.setStyle(aFile.getStyle());
+                all.add(copy);
+            }
+        }
+        return all.toArray(new AppArticleFile[0]);
+    }
+
+    public VrContentText findFullArticle(int id, VrContentTextConfig config) {
+        //invoke privileged to find out article not created by self.
+        //when using non privileged mode, users can see SOLELY articles they have created
+        AppArticle a = UPA.getPersistenceUnit().invokePrivileged(new Action<AppArticle>() {
+            @Override
+            public AppArticle run() {
+                return findArticle(id);
+            }
+        });
+        if (a == null) {
+            return null;
+        }
+        List<AppArticle> ok = filterArticles(Arrays.asList(a));
+        if (ok.isEmpty()) {
+            return null;
+        }
+        a = ok.get(0);
+        return articleToFullArticle(a, config);
+    }
+
+    public List<VrContentText> findFullArticlesByDisposition(Integer userId, Integer dispositionGroupId, boolean includeNoDept, final String disposition, VrContentTextConfig config) {
         AppUser u = null;
         if (userId == null) {
             u = getContext().getCorePlugin().getCurrentUser();
-        } else {
-            u = getContext().getCorePlugin().findUser(userId);
+            userId = u == null ? null : u.getId();
+        } else if (userId.intValue() < 0) {
+            userId = null;
         }
-        if (u == null) {
-            return findFullArticlesByUserAndDisposition(null, dispositionGroupId, includeNoDept, disposition);
-        }
-        return findFullArticlesByUserAndDisposition(u.getId(), dispositionGroupId, includeNoDept, disposition);
-    }
-
-    public List<FullArticle> findFullArticlesByAnonymousDisposition(int dispositionGroupId, boolean includeNoDept, final String disposition) {
-        return findFullArticlesByUserAndDisposition(null, dispositionGroupId, includeNoDept, disposition);
-    }
-
-    protected List<FullArticle> findFullArticlesByUserAndDisposition(final Integer userId, int dispositionGroupId, boolean includeNoDept, final String disposition) {
-        return UPA.getContext().invokePrivileged(new Action<List<FullArticle>>() {
+        Integer finalUserId = userId;
+        return UPA.getContext().invokePrivileged(new Action<List<VrContentText>>() {
 
             @Override
-            public List<FullArticle> run() {
-                List<FullArticle> all = new ArrayList<>();
-                List<AppArticle> articles = findArticlesByUserAndCategory(userId, dispositionGroupId, includeNoDept, disposition);
-                int[] articleIds = new int[articles.size()];
-                for (int i = 0; i < articleIds.length; i++) {
-                    articleIds[i] = articles.get(i).getId();
-                }
-                ListValueMap<Integer, AppArticleFile> articleFilesMap = Collections2.arrayListValueHashMap();
-                for (AppArticleFile articleFile : findArticleFiles(articleIds)) {
-                    articleFilesMap.add(articleFile.getArticle().getId(), articleFile);
-                }
+            public List<VrContentText> run() {
+                List<VrContentText> all = new ArrayList<>();
+                List<AppArticle> articles = findArticlesByUserAndCategory(finalUserId, dispositionGroupId, includeNoDept, disposition);
                 for (AppArticle a : articles) {
-                    AppArticleDisposition d = a.getDisposition();
-                    if (d != null) {
-                        int periodCalendarType = -1;
-                        if (d.getPeriodType() != null && d.getMaxPeriod() > 0) {
-                            switch (d.getPeriodType()) {
-                                case DAY:
-                                case WEEK:
-                                case MONTH:
-                                case YEAR: {
-                                    periodCalendarType = d.getPeriodType().getCalendarId();
-                                    break;
-                                }
-                            }
-                        }
-                        if (periodCalendarType > 0) {
-                            DateTime dd = a.getSendTime();
-                            MutableDate d2 = new MutableDate().addField(periodCalendarType, -d.getMaxPeriod());
-                            if (dd == null) {
-                                log.log(Level.SEVERE, "Article with null SendTime : Article.id=" + a.getId());
-                            }
-                            if (dd != null && dd.compareTo(d2.getDateTime()) < 0) {
-                                continue;
-                            }
-                        }
-
+                    VrContentText fa = articleToFullArticle(a, config);
+                    if (fa != null) {
+                        all.add(fa);
                     }
-                    String aname = a.getLinkText();
-                    String aurl = a.getLinkURL();
-                    String acss = a.getLinkClassStyle();
-                    List<AppArticleFile> att = new ArrayList<>();
-                    if (!StringUtils.isBlank(aname) || !StringUtils.isBlank(aurl)) {
-                        if (StringUtils.isBlank(aname)) {
-                            aname = VrUtils.getURLName(aurl);
-                        }
-                        if (StringUtils.isBlank(aname)) {
-                            aname = "NoName";
-                        }
-                        AppArticleFile baseArt = new AppArticleFile();
-                        baseArt.setId(-1);
-                        baseArt.setName(aname);
-                        baseArt.setPath(aurl);
-                        baseArt.setStyle(acss);
-                        boolean added = false;
-                        if (aurl != null && aurl.startsWith("/")) {
-                            VFile vFile = getRootFileSystem0().get(aurl);
-                            if (vFile.isDirectory()) {
-                                for (VFile file : vFile.listFiles()) {
-                                    AppArticleFile baseArt2 = new AppArticleFile();
-                                    baseArt2.setId(-1);
-                                    baseArt2.setName(file.getName());
-                                    baseArt2.setPath(file.getPath());
-                                    baseArt2.setStyle(acss);
-                                    att.add(baseArt2);
-                                }
-                                added = true;
-                            }
-                        }
-                        if (!added) {
-                            att.add(baseArt);
-                        }
-                    }
-
-                    List<AppArticleFile> c = articleFilesMap.getValues(a.getId());
-                    if (c != null) {
-                        for (AppArticleFile articleFile : c) {
-                            boolean added = false;
-                            aurl = articleFile.getPath();
-                            if (aurl != null && aurl.startsWith("/")) {
-                                VFile vFile = getRootFileSystem0().get(aurl);
-                                if (vFile.isDirectory()) {
-                                    for (VFile file : vFile.listFiles()) {
-                                        AppArticleFile baseArt2 = new AppArticleFile();
-                                        baseArt2.setId(-1);
-                                        baseArt2.setName(file.getName());
-                                        baseArt2.setPath(file.getPath());
-                                        baseArt2.setStyle(acss);
-                                        att.add(baseArt2);
-                                    }
-                                    added = true;
-                                }
-                            }
-                            if (!added) {
-                                att.add(articleFile);
-                            }
-                        }
-                    }
-                    FullArticle f = new FullArticle(new AppArticleStrict(a), att);
-                    all.add(f);
                 }
                 return all;
             }
@@ -486,29 +595,45 @@ class CorePluginBodyContentManager extends CorePluginBody {
         }, null);
     }
 
-    protected List<AppArticle> findArticlesByUserAndCategory(Integer userId, int dispositionGroupId, boolean includeNoDept, String... dispositions) {
+    protected List<AppArticle> findArticlesByUserAndCategory(Integer userId, Integer dispositionGroupId, boolean includeNoDept, String... dispositions) {
         if (dispositions.length == 0) {
             return Collections.EMPTY_LIST;
         }
         StringBuilder queryStr = new StringBuilder("Select u from AppArticle u where ");
         queryStr.append(" u.deleted=false ");
         queryStr.append(" and u.archived=false");
-        queryStr.append(" and (");
+        StringBuilder queryStr2 = new StringBuilder();
+        StringBuilder queryStr3 = new StringBuilder();
         Map<String, Object> disps = new HashMap<>();
         for (int i = 0; i < dispositions.length; i++) {
             String disposition = dispositions[i];
-            if (i > 0) {
-                queryStr.append(" or ");
+            for (String disp : disposition.split("[,; ]+")) {
+                if (queryStr2.length() > 0) {
+                    queryStr2.append(" or ");
+                }
+                if (queryStr3.length() > 0) {
+                    queryStr3.append(" or ");
+                }
+                if (userId == null) {
+                    queryStr2.append(" (u.disposition.name=:disposition" + i + " and u.disposition.requiresAuthentication=false)");
+                    queryStr3.append(" (ab.disposition.name=:disposition" + i + " and ab.disposition.requiresAuthentication=false)");
+                } else {
+                    queryStr2.append(" u.disposition.name=:disposition" + i);
+                    queryStr3.append(" ab.disposition.name=:disposition" + i);
+                }
+                disps.put("disposition" + i, disposition);
             }
-            if (userId == null) {
-                queryStr.append(" (u.disposition.name=:disposition" + i + " and u.disposition.requiresAuthentication=false)");
-            } else {
-                queryStr.append(" u.disposition.name=:disposition" + i);
-            }
-            disps.put("disposition" + i, disposition);
         }
-        queryStr.append(" )");
-        if (dispositionGroupId >= 0) {
+        if (queryStr2.length() > 0) {
+            queryStr.append(" and (");
+            queryStr.append(" (");
+            queryStr.append(queryStr2);
+            queryStr.append(" ) or ");
+            queryStr.append(" ");
+            queryStr.append("exists( select 1 from AppArticleDispositionBinding ab where ab.articleId=u.id and (" + queryStr3 + "))");
+            queryStr.append(" )");
+        }
+        if (dispositionGroupId != null && dispositionGroupId >= 0) {
             if (includeNoDept) {
                 queryStr.append(" and (u.dispositionGroupId=:dispositionGroupId or u.dispositionGroupId=null)");
                 disps.put("dispositionGroupId", dispositionGroupId);
@@ -576,7 +701,7 @@ class CorePluginBodyContentManager extends CorePluginBody {
     public void getRSS(String rss, OutputStream out) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         AppArticleDisposition t = pu.findByMainField(AppArticleDisposition.class, "rss." + rss);
-        List<FullArticle> articles = findFullArticlesByDisposition(null, -1, true, "rss." + rss);
+        List<VrContentText> articles = findFullArticlesByDisposition(-1, null, true, "rss." + rss, null);
         try {
             String feedType = "rss_2.0";
 //            String fileName = "feed.xml";
@@ -596,10 +721,10 @@ class CorePluginBodyContentManager extends CorePluginBody {
             List<SyndEntry> entries = new ArrayList<>();
             SyndEntry entry;
             SyndContent description;
-            for (FullArticle art : articles) {
+            for (VrContentText art : articles) {
                 entry = new SyndEntryImpl();
-                entry.setTitle(art.getSubject());
-                entry.setLink(art.getLinkURL() == null ? feed.getLink() : art.getLinkURL());
+                entry.setTitle(art.getTitle());
+                entry.setLink(art.getMainPath() == null ? feed.getLink() : art.getMainPath().getPath());
                 entry.setPublishedDate(art.getPublishTime());
                 description = new SyndContentImpl();
                 description.setType("text/html;charset=UTF-8");

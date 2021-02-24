@@ -1,0 +1,172 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:pe="http://primefaces.org/ui/extensions"
+    xmlns:f="http://java.sun.com/jsf/core"
+    >
+
+    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+        <p:commandButton
+            value="yes"
+            type="submit"
+            styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+        <p:commandButton
+            value="no"
+            type="submit" styleClass="ui-confirmdialog-no"
+            icon="ui-icon-close" />
+    </p:confirmDialog>
+    <p:toolbar>
+        <f:facet name="left">
+            <p:commandButton title="Actualiser" rendered="#{editorCtrl.isEnabledButton('Refresh')}"
+                             icon="pi pi-refresh"
+                             styleClass="p-mr-2"
+                             ajax="true"
+                             actionListener="#{editorCtrl.onRefreshCurrent}"
+                             update=" :listForm  :pageTitleForm" alt=""
+                             value="Actualiser"
+                             />
+            <p:menuButton value="Enregistrer" rendered="#{editorCtrl.newOrUpdateMode}">
+                <p:menuitem 
+                    value="#{editorCtrl.bulkUpdateMode ?'Tout Mettre à jour': editorCtrl.updateMode ? 'Mettre à jour':'Enregistrer'}" 
+                    title ="#{editorCtrl.bulkUpdateMode ?'Tout Mettre à jour': editorCtrl.updateMode ? 'Mettre à jour':'Enregistrer'}"
+                    action="#{editorCtrl.onSaveCurrent()}"
+                    rendered="#{editorCtrl.newOrUpdateMode}"
+                    ajax="true"
+                    update=" :listForm  :pageTitleForm"
+                    icon="pi pi-save"/>
+                <p:menuitem 
+                    value="Enregisrer + Fermer" title ="Enregisrer puis Fermer"
+                    action="#{editorCtrl.onSaveCurrentAndClose()}"
+                    ajax="true" update=" :listForm  :pageTitleForm"
+                    icon="pi pi-refresh"
+                    rendered="#{editorCtrl.newOrUpdateMode}"
+                    />
+                <p:menuitem 
+                    value="Enregisrer + Suivant" title ="Enregisrer puis passer au Suivant"
+                    action="#{editorCtrl.onSaveCurrentAndNext()}"
+                    ajax="true" update=" :listForm  :pageTitleForm"
+                    icon="pi pi-refresh"
+                    rendered="#{editorCtrl.updateMode}"/>
+                <p:menuitem 
+                    value="Enregisrer + Précédent" title ="Enregisrer puis passer au Précédent"
+                    action="#{editorCtrl.onSaveCurrentAndPrevious()}"
+                    ajax="true" update=" :listForm  :pageTitleForm"
+                    icon="pi pi-refresh"
+                    rendered="#{editorCtrl.updateMode}"/>
+                <p:menuitem 
+                    value="Enregitrer Copie" title ="Enregister une Copie"
+                    action="#{editorCtrl.onCloneCurrent()}"
+                    ajax="true" update=" :listForm  :pageTitleForm"
+                    icon="pi pi-refresh"
+                    rendered="#{editorCtrl.updateMode}"/>
+            </p:menuButton>
+
+            <p:commandButton title="Nouveau" rendered="#{editorCtrl.isEnabledButton('New')}" 
+                             icon="pi pi-plus"
+                             styleClass="ui-button-success"
+                             ajax="true"
+                             action="#{editorCtrl.onNew}"
+                             update=" :listForm  :pageTitleForm"
+                             value="Nouveau"
+                             />
+            <p:commandButton title="Supprimer" rendered="#{editorCtrl.isEnabledButton('Remove')}"
+                             icon="pi pi-trash"
+                             styleClass="ui-button-danger"
+                             ajax="true"
+                             value="Supprimer"
+                             actionListener="#{editorCtrl.onDeleteCurrent()}"
+                             oncomplete="window.location.replace(window.location.href);"
+                             >
+                <p:confirm header="Confirmation" message="Are you sure you want to proceed?" icon="pi pi-exclamation-triangle"/>
+            </p:commandButton>
+
+
+            <p:menuButton value="Administration" rendered="#{editorCtrl.isEnabledButton('AdminGroup')}">
+                <p:menuitem 
+                    rendered="#{editorCtrl.isEnabledButton('BulkUpdate')}"
+                    value="Mise à jour par lot"
+                    title="Mise à jour par lot"
+                    ajax="true"
+                    action="#{editorCtrl.onBulkUpdate}"
+                    update=" :listForm  :pageTitleForm"
+                    />
+                <p:menuitem rendered="#{(editorCtrl.updateMode or editorCtrl.listMode) and editorCtrl.isEnabledButton('Archive')}" 
+                            value="Archiver"
+                            action="#{editorCtrl.onArchiveCurrent()}"
+                            ajax="true" >
+                    <p:confirm header="Confirmation" message="Are you sure you want to proceed?" icon="pi pi-exclamation-triangle"/>
+                </p:menuitem>
+                <p:menuitem rendered="#{(editorCtrl.updateMode or editorCtrl.listMode) and editorCtrl.isEnabledButton('ReCalc')}" 
+                            value="Calculer Sélection" 
+                            title="Reclaculer les lignes sélectionnées"
+                            ajax="true"
+                            action="#{editorCtrl.onReCalcSelection}" >
+                </p:menuitem>
+                <p:menuitem rendered="#{(editorCtrl.updateMode or editorCtrl.listMode) and editorCtrl.isEnabledButton('ReCalc')}" 
+                            value="Enregister Sélection" 
+                            title="Reenregistrer les lignes sélectionnées"
+                            ajax="true"
+                            action="#{editorCtrl.onReSaveSelection}" >
+                </p:menuitem>
+                <p:menuitem rendered="#{editorCtrl.listMode and editorCtrl.isEnabledButton('ReCalc')}" 
+                            value="Calculer BD" title="Reclaculer Toutes les entités"
+                            ajax="true"
+                            action="#{editorCtrl.onReCalcAll}" >
+                </p:menuitem>
+
+                <p:menuitem rendered="#{editorCtrl.listMode and editorCtrl.isEnabledButton('ReCalc')}" 
+                            value="Calculer Entité" title="Reclaculer Toutes les lignes"
+                            ajax="true"
+                            action="#{editorCtrl.onReCalcEntity}" >
+                </p:menuitem>
+            </p:menuButton>
+            <p:menuButton value="Affichage"  rendered="#{editorCtrl.isEnabledButton('DisplayGroup') and editorCtrl.listMode}">
+                <p:menuitem value="Colonnes" title="Sélectionner les colonnes à afficher" 
+                            onclick="document.getElementById('listForm:processOnSimpleFieldSelectionLink').click();"
+                            ajax="true" update=" :listForm  :pageTitleForm" >
+                </p:menuitem>
+
+
+                <p:menuitem value="Reini. Colonnes" title="Reinitialiser les Colonnes à afficher"  icon="ui-icon-close"
+                            onclick="processOnClearFieldSelection()" ajax="true"
+                            update=" :listForm  :pageTitleForm" >
+                </p:menuitem>
+
+            </p:menuButton>
+            <p:commandButton value="Liste" title="Afficher la Liste" 
+                             rendered="#{editorCtrl.isEnabledButton('List')}"
+                             icon="fa fa-list-ol"
+                             styleClass="btn btn-default" ajax="true"
+                             actionListener="#{editorCtrl.onList}"
+                             update=" :listForm  :pageTitleForm"/>
+
+            <p:commandButton title="Precédant" icon="fa fa-angle-left"
+                             action="#{editorCtrl.onSelectPrevious}"
+                             rendered="#{editorCtrl.enabledSelectPrevious}"
+                             ajax="true" styleClass="btn btn-default"
+                             update=" :listForm  :pageTitleForm"
+                             />
+
+            <p:commandButton value="#{editorCtrl.navigateLabel}"
+                             rendered="#{editorCtrl.enabledNavigate}"
+                             styleClass="btn btn-default"
+                             disabled="true"
+                             />
+
+            <p:commandButton title="Suivant" icon="fa fa-angle-right"
+                             action="#{editorCtrl.onSelectNext}"
+                             rendered="#{editorCtrl.enabledSelectNext}"
+                             ajax="true" styleClass="btn btn-default"
+                             update=" :listForm  :pageTitleForm"
+                             />
+
+        </f:facet>
+
+        <f:facet name="right">
+            <p:menuButton value="Actions"  rendered="#{editorCtrl.model.actions.size() gt 0}" model="#{editorCtrl.actionsMenuModel}"/>
+        </f:facet>
+
+    </p:toolbar>
+</ui:composition>

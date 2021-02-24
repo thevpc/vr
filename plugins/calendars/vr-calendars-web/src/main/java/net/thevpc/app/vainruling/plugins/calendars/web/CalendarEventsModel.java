@@ -15,7 +15,7 @@ import net.thevpc.upa.UPA;
 public class CalendarEventsModel implements ScheduleModel {
 
     private Map<String, AppCalendarEvent> events;
-    private List<ScheduleEvent> cachedEventsList;
+    private List<ScheduleEvent<?>> cachedEventsList;
     private boolean eventLimit = false;
 
     public CalendarEventsModel() {
@@ -55,9 +55,10 @@ public class CalendarEventsModel implements ScheduleModel {
 //        return this.events.remove(scheduleEvent.getId()) != null;
     }
 
-    public List<ScheduleEvent> getEvents() {
+    @Override
+    public List<ScheduleEvent<?>> getEvents() {
         if (cachedEventsList == null) {
-            List<ScheduleEvent> list = new ArrayList<>();
+            List<ScheduleEvent<?>> list = new ArrayList<>();
             for (AppCalendarEvent value : events.values()) {
                 list.add(new CalendarEventAdapter(value));
             }

@@ -18,7 +18,7 @@ import net.thevpc.common.io.IOUtils;
 import net.thevpc.common.io.PathInfo;
 import net.thevpc.common.strings.StringCollection;
 import net.thevpc.common.strings.StringUtils;
-import net.thevpc.common.util.ListValueMap;
+import net.thevpc.common.collections.ListValueMap;
 import net.thevpc.common.util.PlatformUtils;
 import net.thevpc.common.vfs.VFile;
 import net.thevpc.upa.CustomDefaultObject;
@@ -37,11 +37,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.io.Reader;
+import java.io.UncheckedIOException;
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import net.thevpc.app.vainruling.core.service.model.content.DefaultVrContentPath;
+import net.thevpc.app.vainruling.core.service.model.content.VrContentTextConfig;
 import net.thevpc.common.strings.StringConverter;
 import net.thevpc.upa.Action;
 import net.thevpc.upa.Entity;
@@ -56,6 +62,7 @@ import org.springframework.expression.PropertyAccessor;
 import org.springframework.expression.TypedValue;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
+import net.thevpc.app.vainruling.core.service.content.VrContentPath;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -597,13 +604,13 @@ public class VrUtils {
         if (url == null) {
             url = "";
         }
-        int i = url.lastIndexOf('/');
-        if (i >= 0) {
-            url = url.substring(i + 1);
-        }
-        i = url.lastIndexOf('?');
+        int i = url.indexOf('?');
         if (i >= 0) {
             url = url.substring(0, i);
+        }
+        i = url.lastIndexOf('/');
+        if (i >= 0) {
+            url = url.substring(i + 1);
         }
         return url;
     }
@@ -836,32 +843,40 @@ public class VrUtils {
         return s;
     }
 
-    public static String combineAndProfile(String oldProfile, String newProfile) {
-        boolean empty1 = StringUtils.isBlank(oldProfile);
-        boolean empty2 = StringUtils.isBlank(newProfile);
-        if (empty1 && empty2) {
-            return null;
-        } else if (empty1) {
-            return newProfile;
-        } else if (empty2) {
-            return oldProfile;
-        } else {
-            return "(" + oldProfile + ") + (" + newProfile + ")";
+    public static String combineAndProfile(String... profiles) {
+        String combinedProfile = null;
+        for (String newProfile : profiles) {
+            boolean empty1 = StringUtils.isBlank(combinedProfile);
+            boolean empty2 = StringUtils.isBlank(newProfile);
+            if (empty1 && empty2) {
+                combinedProfile = null;
+            } else if (empty1) {
+                combinedProfile = newProfile;
+            } else if (empty2) {
+                //
+            } else {
+                combinedProfile = "(" + combinedProfile + ") + (" + newProfile + ")";
+            }
         }
+        return combinedProfile;
     }
 
-    public static String combineOrProfile(String oldProfile, String newProfile) {
-        boolean empty1 = StringUtils.isBlank(oldProfile);
-        boolean empty2 = StringUtils.isBlank(newProfile);
-        if (empty1 && empty2) {
-            return null;
-        } else if (empty1) {
-            return newProfile;
-        } else if (empty2) {
-            return oldProfile;
-        } else {
-            return "(" + oldProfile + ") , (" + newProfile + ")";
+    public static String combineOrProfile(String... profiles) {
+        String combinedProfile = null;
+        for (String newProfile : profiles) {
+            boolean empty1 = StringUtils.isBlank(combinedProfile);
+            boolean empty2 = StringUtils.isBlank(newProfile);
+            if (empty1 && empty2) {
+                combinedProfile = null;
+            } else if (empty1) {
+                combinedProfile = newProfile;
+            } else if (empty2) {
+                //
+            } else {
+                combinedProfile = "(" + combinedProfile + ") , (" + newProfile + ")";
+            }
         }
+        return combinedProfile;
     }
 
     public static String toString(Reader initialReader) throws IOException {
@@ -1093,16 +1108,11 @@ public class VrUtils {
         if (!file.isFile()) {
             return file;
         }
-        PathInfo pathInfo = PathInfo.create(file.getPath());
-        String extension = pathInfo.getExtensionPart();
-        String bestExtension = extension;
+        String extension = getImageTypeByName(file.getName(), true);
         VFile validFile = VrPlatformUtils.changeFileSuffix(file, "-" + width);
-        if ("jpeg".equalsIgnoreCase(bestExtension) || "png".equalsIgnoreCase(bestExtension) || "jpg".equalsIgnoreCase(bestExtension)) {
-            //ok
-            bestExtension = bestExtension.toLowerCase();
-        } else {
+        if (extension == null) {
             validFile = VrPlatformUtils.changeFileExtension(validFile, "png");
-            bestExtension = "png";
+            extension = "png";
         }
         if (validFile.exists() && validFile.lastModified() > file.lastModified()) {
             return validFile;
@@ -1113,9 +1123,136 @@ public class VrUtils {
         g.drawImage(originalImage, 0, 0, width, width, null);
 
         g.dispose();
-        VrPlatformUtils.writeImage(resizedImage, bestExtension, validFile);
+        VrPlatformUtils.writeImage(resizedImage, extension, validFile);
         return validFile;
 
+    }
+
+    public static String getImageTypeByName(String name, boolean bestOnly) {
+        if (name != null) {
+            name = getURLName(name);
+            int p = name.lastIndexOf('.');
+            if (p >= 0) {
+                String t = name.substring(p + 1).toLowerCase();
+                switch (t) {
+                    case "jpeg":
+                    case "jpg":
+                    case "png": {
+                        return t;
+                    }
+                    case "gif": {
+                        if (bestOnly) {
+                            return null;
+                        }
+                        return t;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    public static VrContentPath getOrResizePhotoContentPath(VFile file, VrContentTextConfig config) {
+        DefaultVrContentPath p = new DefaultVrContentPath();
+        if (!file.isFile() || config == null || (config.getImageWidth() <= 0 && config.getImageHeight() <= 0
+                && config.getThumbnailWidth() <= 0 && config.getThumbnailHeight() <= 0)) {
+            p.setPath(file.getPath());
+            p.setName(file.getName());
+            p.setImage(true);
+            if (file.isFile()) {
+                Image originalImage;
+                try {
+                    originalImage = VrPlatformUtils.readImage(file);
+                } catch (IOException ex) {
+                    throw new UncheckedIOException(ex);
+                }
+                int owidth = originalImage.getWidth(null);
+                int oheight = originalImage.getHeight(null);
+                p.setImageWidth(owidth);
+                p.setImageHeight(oheight);
+            }
+            return p;
+        }
+        Image originalImage;
+        try {
+            originalImage = VrPlatformUtils.readImage(file);
+        } catch (IOException ex) {
+            Logger.getLogger(VrUtils.class.getName()).log(Level.SEVERE, null, ex);
+            throw new UncheckedIOException(ex);
+        }
+        int owidth = originalImage.getWidth(null);
+        int oheight = originalImage.getHeight(null);
+        int w = config.getImageWidth();
+        int h = config.getImageHeight();
+        if (owidth > 0 && oheight > 0 && (w >= 0 || h >= 0)) {
+            if (w <= 0) {
+                w = h * owidth / oheight;
+            } else if (h <= 0) {
+                h = w * oheight / owidth;
+            }
+            VFile f = getOrResizePhotoContentPathElement(file, originalImage, w, h);
+            if (f == null) {
+                f = file;
+            }
+            p.setPath(f.getPath());
+            p.setName(file.getName());
+            p.setImageWidth(w);
+            p.setImageHeight(h);
+        } else {
+            p.setPath(file.getPath());
+            p.setName(file.getName());
+            p.setImageWidth(owidth);
+            p.setImageHeight(oheight);
+        }
+        w = config.getThumbnailWidth();
+        h = config.getThumbnailHeight();
+        if (w >= 0 || h >= 0) {
+            if (owidth > 0 && oheight > 0) {
+                if (w <= 0) {
+                    w = h * owidth / oheight;
+                } else if (h <= 0) {
+                    h = w * oheight / owidth;
+                }
+                VFile f = getOrResizePhotoContentPathElement(file, originalImage, w, h);
+                if (f == null) {
+                    f = file;
+                }
+                p.setThumbnailPath(f.getPath());
+                p.setThumbnailWidth(w);
+                p.setThumbnailHeight(h);
+            } else {
+                p.setThumbnailPath(file.getPath());
+                p.setThumbnailWidth(owidth);
+                p.setThumbnailHeight(oheight);
+            }
+        }
+        p.setImage(true);
+        return p;
+
+    }
+
+    private static VFile getOrResizePhotoContentPathElement(VFile baseFile, Image originalImage, int w, int h) {
+        VFile validFile = VrPlatformUtils.changeFileSuffix(baseFile, "-" + w + "x" + h);
+        String extension = getImageTypeByName(validFile.getName(), true);
+        if (extension != null) {
+            validFile = VrPlatformUtils.changeFileExtension(validFile, "png");
+            extension = "png";
+        }
+        if (validFile.exists() && validFile.lastModified() > baseFile.lastModified()) {
+            return validFile;
+        }
+        BufferedImage resizedImage = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = resizedImage.createGraphics();
+        g.drawImage(originalImage, 0, 0, w, h, null);
+
+        g.dispose();
+        try {
+            VrPlatformUtils.writeImage(resizedImage, extension, validFile);
+        } catch (IOException ex) {
+            Logger.getLogger(VrUtils.class.getName()).log(Level.SEVERE, null, ex);
+            throw new UncheckedIOException(ex);
+        }
+        return validFile;
     }
 
     public static String strcatsep(String sep, Object... a) {
@@ -1538,4 +1675,5 @@ public class VrUtils {
         intersection.retainAll(b);
         return intersection;
     }
+
 }

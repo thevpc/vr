@@ -11,7 +11,6 @@ import net.thevpc.app.vainruling.plugins.academic.model.internship.config.Academ
 import net.thevpc.app.vainruling.plugins.academic.model.internship.config.AcademicInternshipType;
 import net.thevpc.app.vainruling.plugins.academic.model.internship.current.AcademicInternship;
 import net.thevpc.app.vainruling.plugins.academic.model.internship.current.AcademicInternshipBoard;
-import net.thevpc.app.vainruling.plugins.academic.model.internship.current.AcademicInternshipGroup;
 import net.thevpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.thevpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
 import net.thevpc.common.jsf.FacesUtils;
@@ -69,17 +68,6 @@ public class UpdateStatusInternshipsActionCtrl {
         reloadInternshipStatuses();
     }
 
-    public void reloadInternshipGroups() {
-        List<SelectItem> internshipGroupsItems = new ArrayList<>();
-        AcademicTeacher tt = ap.getCurrentTeacher();
-        List<AcademicInternshipGroup> internshipGroups = pi.findEnabledInternshipGroupsByDepartment(tt.getUser().getDepartment().getId());
-        for (AcademicInternshipGroup t : internshipGroups) {
-            String n = t.getName();
-            internshipGroupsItems.add(FacesUtils.createSelectItem(String.valueOf(t.getId()), n));
-        }
-        getModel().setGroups(internshipGroupsItems);
-    }
-
     public void reloadInternshipTypes() {
         List<SelectItem> list = new ArrayList<>();
         List<AcademicInternshipType> internshipGroups = pi.findInternshipTypes();
@@ -116,7 +104,6 @@ public class UpdateStatusInternshipsActionCtrl {
         getModel().setDisabled(false);
         getModel().setMessage("");
         reloadInternshipBoards();
-        reloadInternshipGroups();
         reloadInternshipTypes();
         reloadInternshipStatuses();
         getModel().setSelectedBoard(null);
@@ -152,12 +139,11 @@ public class UpdateStatusInternshipsActionCtrl {
                 !StringUtils.isBlank(getModel().getSelectedStatusFrom())
                         && !StringUtils.isBlank(getModel().getSelectedStatusTo())) {
             int boardId = Convert.toInt(getModel().getSelectedBoard(), IntegerParserConfig.LENIENT_F);
-            int groupId = Convert.toInt(getModel().getSelectedGroup(), IntegerParserConfig.LENIENT_F);
             int from = StringUtils.isBlank(getModel().getSelectedStatusFrom()) ? -1 : Integer.parseInt(getModel().getSelectedStatusFrom());
             int to = Integer.parseInt(getModel().getSelectedStatusTo());
             AcademicInternshipStatus toObj = pi.findInternshipStatus(to);
 
-            List<AcademicInternship> all = pi.findInternships(-1, groupId, boardId, -1, -1, true);
+            List<AcademicInternship> all = pi.findInternships(-1, boardId, -1, -1, true);
             for (AcademicInternship ii : all) {
                 AcademicInternshipStatus s = ii.getInternshipStatus();
                 if (s != null && s.getId() == from) {
@@ -193,12 +179,10 @@ public class UpdateStatusInternshipsActionCtrl {
         private AcademicInternship internship;
         private String selectedInternshipType;
         private String selectedBoard;
-        private String selectedGroup;
         private String selectedStatusFrom;
         private String selectedStatusTo;
         private boolean userSelectedOnly;
         private List<SelectItem> boards = new ArrayList<SelectItem>();
-        private List<SelectItem> groups = new ArrayList<SelectItem>();
         private List<SelectItem> statuses = new ArrayList<SelectItem>();
         private List<SelectItem> internshipTypes = new ArrayList<SelectItem>();
 
@@ -296,22 +280,6 @@ public class UpdateStatusInternshipsActionCtrl {
 
         public void setSelectionIdList(List<String> selectionIdList) {
             this.selectionIdList = selectionIdList;
-        }
-
-        public String getSelectedGroup() {
-            return selectedGroup;
-        }
-
-        public void setSelectedGroup(String selectedGroup) {
-            this.selectedGroup = selectedGroup;
-        }
-
-        public List<SelectItem> getGroups() {
-            return groups;
-        }
-
-        public void setGroups(List<SelectItem> groups) {
-            this.groups = groups;
         }
     }
 

@@ -34,7 +34,7 @@ public class VrJsf {
     public static VFile createTempFile(FileUploadEvent event) {
         MirroredPath temp = CorePlugin.get().createTempUploadFolder();
         VFile o = temp.getPath().get(event.getFile().getFileName());
-        try (InputStream is = event.getFile().getInputstream()) {
+        try (InputStream is = event.getFile().getInputStream()) {
             try (OutputStream os = o.getOutputStream()) {
                 IOUtils.copy(is, os);
             }
@@ -132,12 +132,41 @@ public class VrJsf {
             }
         }
         f.getParentFile().mkdirs();
-        try (InputStream is=event.getFile().getInputstream()){
+        try (InputStream is = event.getFile().getInputStream()) {
             IOUtils.copy(is, f);
         } catch (Exception e) {
             throw new IOException(e);
         }
         return rootfs.get(path).getParentFile().get(f.getName());
+    }
+
+    public static SelectItem toSelectItem(Object o) {
+        Class<?> lastEntityClass = null;
+        EntityBuilder lastBuilder = null;
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        if (o == null) {
+            return (FacesUtils.createSelectItem("", ""));
+        } else if (o instanceof SelectItem) {
+            return ((SelectItem) o);
+        } else if (o instanceof NamedId) {
+            NamedId n = (NamedId) o;
+            return (FacesUtils.createSelectItem(n.getStringId(), n.getStringName()));
+        } else {
+            Class<?> newClass = o.getClass();
+            if (newClass.equals(lastEntityClass)) {
+                NamedId n = lastBuilder.objectToNamedId(o);
+                return (FacesUtils.createSelectItem(n.getStringId(), n.getStringName()));
+            } else {
+                Entity entity = pu.findEntity(newClass);
+                if (entity != null) {
+                    lastBuilder = entity.getBuilder();
+                    NamedId n = lastBuilder.objectToNamedId(o);
+                    return (FacesUtils.createSelectItem(n.getStringId(), n.getStringName()));
+                } else {
+                    return (FacesUtils.createSelectItem(String.valueOf(o), String.valueOf(o)));
+                }
+            }
+        }
     }
 
     public static List<SelectItem> toSelectItemList(List any) {

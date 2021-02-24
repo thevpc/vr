@@ -24,21 +24,48 @@ public class TeacherLoadInfo {
     private Map<Integer, AcademicCourseAssignmentInfoByVisitor> all;
     private TeacherPeriodStatExt stat;
     private List<AcademicCourseAssignmentInfoByVisitor> nonFilteredOthers;
+    private List<AcademicCourseAssignmentInfoByVisitor> visibleOthers;
 
     private List<AcademicCourseAssignmentInfoByVisitor> others;
     private LoadValue loadSum = new LoadValue();
     private double maLoad = 0;
     private int periodId = -1;
+    private int maxVisibleOthers = 100;
+    boolean notAllOtherDataVisible;
 
     public TeacherLoadInfo(int periodId) {
         this.periodId = periodId;
         this.nonFilteredOthers = (new ArrayList<AcademicCourseAssignmentInfoByVisitor>());
+        this.visibleOthers = (new ArrayList<AcademicCourseAssignmentInfoByVisitor>());
         this.others = (new ArrayList<AcademicCourseAssignmentInfoByVisitor>());
         this.all = (new HashMap<Integer, AcademicCourseAssignmentInfoByVisitor>());
         TeacherPeriodStat teacherStat = new TeacherPeriodStat();
         teacherStat.setTeacher(new AcademicTeacher());
         this.stat = (new TeacherPeriodStatExt(teacherStat, this.getAll()));
+    }
 
+    public boolean isNotAllOtherDataVisible() {
+        return notAllOtherDataVisible;
+    }
+
+    public void setNotAllOtherDataVisible(boolean notAllOtherDataVisible) {
+        this.notAllOtherDataVisible = notAllOtherDataVisible;
+    }
+
+    public int getMaxVisibleOthers() {
+        return maxVisibleOthers;
+    }
+
+    public void setMaxVisibleOthers(int maxVisibleOthers) {
+        this.maxVisibleOthers = maxVisibleOthers;
+    }
+
+    public List<AcademicCourseAssignmentInfoByVisitor> getVisibleOthers() {
+        return visibleOthers;
+    }
+
+    public void setVisibleOthers(List<AcademicCourseAssignmentInfoByVisitor> visibleOthers) {
+        this.visibleOthers = visibleOthers;
     }
 
     public Map<Integer, AcademicCourseAssignmentInfoByVisitor> getAll() {

@@ -21,7 +21,7 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 import net.thevpc.app.vainruling.core.service.model.AppDepartment;
 import net.thevpc.app.vainruling.core.service.model.AppUser;
-import net.thevpc.common.util.MapUtils;
+import net.thevpc.common.collections.MapUtils;
 import net.thevpc.app.vainruling.core.service.editor.KeywordsEditorSearch;
 import net.thevpc.app.vainruling.core.service.model.AppGender;
 import net.thevpc.app.vainruling.core.service.model.AppUserType;
@@ -594,6 +594,120 @@ class CorePluginBodyDAOManager extends CorePluginBody {
         Chronometer c = Chronometer.start();
         List<NamedId> entityList = pu.createQuery(q)
                 .getResultList(NamedId.class);
+        entityList.size();
+        c.stop();
+        return entityList;
+    }
+
+    public List<NamedId> findAllNamedIds(String entityName, String criteria, String textSearchType, String textSearchExpression, Map<String, Object> parameters) {
+        checkNavigate(entityName);
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        final String aliasName = "o";
+
+        Entity entity = pu.getEntity(entityName);
+        Select q = new Select();
+
+        Field primaryField = entity.getIdFields().get(0);
+        q.field(" o." + primaryField.getName(), "id");
+        Field mainField = entity.getMainField();
+        if (mainField == null) {
+            mainField = primaryField;
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append(aliasName + "." + mainField.getName());
+        while (mainField.getDataType() instanceof ManyToOneType) {
+            Entity t = ((ManyToOneType) mainField.getDataType()).getRelationship().getTargetEntity();
+            mainField = t.getMainField();
+            sb.append("." + mainField.getName());
+        }
+        q.field(sb.toString(), "name");
+
+        q.from(entityName, aliasName);
+        q.orderBy(entity.getListOrder());
+
+        Expression filterExpression = null;
+        if (criteria != null) {
+            filterExpression = new UserExpression(criteria);
+        }
+        VrEditorSearch u = null;
+        if (!StringUtils.isBlank(textSearchType)) {
+            u = getEditorSearch(textSearchType);
+        }
+        if (u != null) {
+            String c = u.createPreProcessingExpression(entityName, parameters, "os");
+            if (c != null) {
+                if (filterExpression == null) {
+                    filterExpression = new UserExpression(c);
+                } else {
+                    filterExpression = new And(filterExpression, new UserExpression(c));
+                }
+            }
+        }
+        if (filterExpression != null) {
+            q.where(filterExpression);
+        }
+        Query query = pu.createQuery(q.toString());
+        if (parameters != null) {
+            for (Map.Entry<String, Object> pp : parameters.entrySet()) {
+                query.setParameter(pp.getKey(), pp.getValue());
+            }
+        }
+        Chronometer c = Chronometer.start();
+        List<NamedId> entityList = pu.createQuery(q)
+                .getResultList(NamedId.class);
+        entityList.size();
+        c.stop();
+        return entityList;
+    }
+
+    public List<Document> findAllDocuments(String entityName, String[] fields, String criteria, String textSearchType, String textSearchExpression, Map<String, Object> parameters) {
+        checkNavigate(entityName);
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        final String aliasName = "o";
+
+        Entity entity = pu.getEntity(entityName);
+        Select q = new Select();
+
+        if (fields == null || fields.length == 0) {
+            q.field(aliasName);
+        } else {
+            for (String field : fields) {
+                q.field(aliasName + "." + field);
+            }
+        }
+        q.from(entityName, aliasName);
+        q.orderBy(entity.getListOrder());
+
+        Expression filterExpression = null;
+        if (criteria != null) {
+            filterExpression = new UserExpression(criteria);
+        }
+        VrEditorSearch u = null;
+        if (!StringUtils.isBlank(textSearchType)) {
+            u = getEditorSearch(textSearchType);
+        }
+        if (u != null) {
+            String c = u.createPreProcessingExpression(entityName, parameters, "os");
+            if (c != null) {
+                if (filterExpression == null) {
+                    filterExpression = new UserExpression(c);
+                } else {
+                    filterExpression = new And(filterExpression, new UserExpression(c));
+                }
+            }
+        }
+        if (filterExpression != null) {
+            q.where(filterExpression);
+        }
+        Query query = pu.createQuery(q.toString());
+        if (parameters != null) {
+            for (Map.Entry<String, Object> pp : parameters.entrySet()) {
+                query.setParameter(pp.getKey(), pp.getValue());
+            }
+        }
+        Chronometer c = Chronometer.start();
+        List<Document> entityList = query
+                .getDocumentList();
         entityList.size();
         c.stop();
         return entityList;

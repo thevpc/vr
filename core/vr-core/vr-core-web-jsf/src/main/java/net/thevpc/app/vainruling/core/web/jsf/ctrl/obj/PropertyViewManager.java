@@ -6,7 +6,7 @@
 package net.thevpc.app.vainruling.core.web.jsf.ctrl.obj;
 
 import net.thevpc.app.vainruling.core.service.editor.ViewContext;
-import net.thevpc.common.util.ClassMap;
+import net.thevpc.common.collections.ClassMap;
 import net.thevpc.upa.Entity;
 import net.thevpc.upa.Field;
 import net.thevpc.upa.UPA;

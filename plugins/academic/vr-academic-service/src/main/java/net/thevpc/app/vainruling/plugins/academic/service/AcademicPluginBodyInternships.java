@@ -9,7 +9,6 @@ import net.thevpc.app.vainruling.plugins.academic.model.internship.current.Acade
 import net.thevpc.app.vainruling.plugins.academic.model.internship.config.AcademicInternshipStatus;
 import net.thevpc.app.vainruling.plugins.academic.model.internship.config.AcademicInternshipBoardMessage;
 import net.thevpc.app.vainruling.plugins.academic.model.internship.current.AcademicInternshipSessionType;
-import net.thevpc.app.vainruling.plugins.academic.model.internship.current.AcademicInternshipGroup;
 import net.thevpc.app.vainruling.plugins.academic.model.internship.config.AcademicInternshipDuration;
 import net.thevpc.app.vainruling.plugins.academic.model.internship.config.AcademicInternshipVariant;
 import net.thevpc.app.vainruling.plugins.academic.model.internship.current.AcademicInternship;
@@ -27,7 +26,7 @@ import net.thevpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
 import net.thevpc.app.vainruling.plugins.academic.model.internship.ext.AcademicInternshipExt;
 import net.thevpc.app.vainruling.plugins.academic.model.internship.ext.AcademicInternshipExtList;
 import net.thevpc.app.vainruling.core.service.util.LocationInfo;
-import net.thevpc.common.util.ListValueMap;
+import net.thevpc.common.collections.ListValueMap;
 import net.thevpc.upa.PersistenceUnit;
 import net.thevpc.upa.QueryBuilder;
 import net.thevpc.upa.UPA;
@@ -37,9 +36,10 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 import net.thevpc.app.vainruling.core.service.ProfileRightBuilder;
+import net.thevpc.app.vainruling.plugins.academic.model.internship.config.AcademicInternshipBoardClass;
 import net.thevpc.app.vainruling.plugins.academic.service.util.AcademicUtils;
-import net.thevpc.common.util.Collections2;
-import net.thevpc.common.util.MapUtils;
+import net.thevpc.common.collections.Collections2;
+import net.thevpc.common.collections.MapUtils;
 
 public class AcademicPluginBodyInternships extends AcademicPluginBody {
 
@@ -387,150 +387,137 @@ public class AcademicPluginBodyInternships extends AcademicPluginBody {
         return circle1;
     }
 
-    public int generateInternships(AcademicInternship internship, String studentProfiles) {
+    public int generateInternships(final AcademicInternship internship, final String studentProfiles0) {
         if (internship.getBoard() == null) {
             throw new RuntimeException("Internship board missing");
         }
-        if (internship.getMainGroup() == null) {
-            throw new RuntimeException("Internship group missing");
-        }
         CorePlugin core = VrApp.getBean(CorePlugin.class);
         AcademicPlugin acad = VrApp.getBean(AcademicPlugin.class);
-        DecimalFormat df = new DecimalFormat("000");
-        int pos = 1;
         PersistenceUnit pu = UPA.getPersistenceUnit();
+        List<AcademicClass> classes = AcademicPlugin.get().findInternshipClassesByBoard(internship.getBoard().getId())
+                .stream().map(x -> x.getAcademicClass())
+                .filter(x -> x != null)
+                .collect(Collectors.toList());
+        if (classes.isEmpty()) {
+            throw new RuntimeException("Internship classes missing");
+        }
 
-        List<AcademicInternship> allFound = pu.createQuery("Select u from AcademicInternship u where "
-                + "u.boardId=:boardId "
-        )
-                .setParameter("boardId", internship.getBoard().getId())
-                .getResultList();
-        HashSet<Integer> validStudents = new HashSet<>();
+        return pu.<Integer>invokePrivileged(() -> {
+            int pos = 1;
+            String studentProfiles = studentProfiles0;
+            DecimalFormat df = new DecimalFormat("000");
+            List<AcademicInternship> allFound = pu.createQuery("Select u from AcademicInternship u where "
+                    + "u.boardId=:boardId "
+            )
+                    .setParameter("boardId", internship.getBoard().getId())
+                    .getResultList();
+            HashSet<Integer> validStudents = new HashSet<>();
 
-        HashSet<String> validCodes = new HashSet<>();
-        for (AcademicInternship vc : allFound) {
-            validCodes.add(vc.getCode());
-            if (vc.getStudent() != null) {
-                validStudents.add(vc.getStudent().getId());
+            HashSet<String> validCodes = new HashSet<>();
+            for (AcademicInternship vc : allFound) {
+                validCodes.add(vc.getCode());
+                if (vc.getStudent() != null) {
+                    validStudents.add(vc.getStudent().getId());
+                }
+                if (vc.getSecondStudent() != null) {
+                    validStudents.add(vc.getSecondStudent().getId());
+                }
             }
-            if (vc.getSecondStudent() != null) {
-                validStudents.add(vc.getSecondStudent().getId());
+            AppDepartment department2 = internship.getBoard().getDepartment();
+            AcademicProgram prog = internship.getBoard().getProgram();
+
+            AppUserType studentType = core.findUserType("Student");
+            studentProfiles = VrUtils.combineAndProfile(studentProfiles,
+                    VrUtils.combineOrProfile(
+                            classes.stream().map(x -> x.getName()).toArray(String[]::new)
+                    )
+            );
+            Set<Integer> possibleClasses = new HashSet<>();
+            for (AcademicClass cls : classes) {
+                possibleClasses.addAll(acad.findClassDownHierarchyList(new AcademicClass[]{cls}, null).stream().map(x -> x.getId()).collect(Collectors.toSet()));
             }
-        }
-        AppDepartment department = internship.getMainGroup().getDepartment();
-        AppDepartment department2 = internship.getBoard().getDepartment();
-        AcademicClass cls = internship.getBoard().getAcademicClass();
-        AcademicProgram prog = internship.getBoard().getProgram();
+            if (department2 != null) {
+                studentProfiles = VrUtils.combineAndProfile(studentProfiles, department2.getCode());
+            }
+            if (prog != null) {
+                studentProfiles = VrUtils.combineAndProfile(studentProfiles, prog.getName());
+            }
+            int matchedCount = 0;
+            int generatedCount = 0;
+            int alreadyFoundCount = 0;
+            List<AppUser> usersFound = core.findUsersByProfileFilter(studentProfiles, studentType.getId(), null);
+            for (AppUser appUser : usersFound) {
+                AcademicStudent student = acad.findStudentByUser(appUser.getId());
+                if (student != null) {
+                    if (validStudents.contains(student.getId())) {
+                        alreadyFoundCount++;
+                        continue;
+                    }
+                    if (department2 != null) {
+                        if (student.getUser().getDepartment() == null || department2.getId() != student.getUser().getDepartment().getId()) {
+                            continue;
+                        }
+                    }
+                    if (!possibleClasses.isEmpty()) {
+                        Set<Integer> userClasses = AcademicUtils.getStudentClassIds(student);
+                        if (VrUtils.intersect(possibleClasses, userClasses).isEmpty()) {
+                            continue;
+                        }
+                    }
+                    if (prog != null) {
+                        if ((student.getLastClass1() == null || student.getLastClass1().resolveProgramType() == null || prog.getId() != student.getLastClass1().resolveProgram().getId())
+                                && (student.getLastClass2() == null || student.getLastClass2().resolveProgramType() == null || prog.getId() != student.getLastClass2().resolveProgramType().getId())
+                                && (student.getLastClass3() == null || student.getLastClass3().resolveProgramType() == null || prog.getId() != student.getLastClass3().resolveProgramType().getId())) {
+                            continue;
+                        }
+                    }
+                    matchedCount++;
+                    AcademicInternship i = pu.createQuery("Select u from AcademicInternship u where "
+                            + "(u.studentId=:studentId or u.secondStudentId==:studentId) "
+                            + "and u.boardId=:boardId "
+                    )
+                            .setParameter("studentId", student.getId())
+                            .setParameter("boardId", internship.getBoard().getId())
+                            .getFirstResultOrNull();
 
-        AppUserType studentType = core.findUserType("Student");
-        if (cls != null) {
-            studentProfiles = VrUtils.combineAndProfile(studentProfiles, cls.getName());
-        }
-        if (department != null) {
-            studentProfiles = VrUtils.combineAndProfile(studentProfiles, department.getCode());
-        }
-        if (department2 != null) {
-            studentProfiles = VrUtils.combineAndProfile(studentProfiles, department2.getCode());
-        }
-        if (prog != null) {
-            studentProfiles = VrUtils.combineAndProfile(studentProfiles, prog.getName());
-        }
-        int generatedCount = 0;
-        int alreadyFoundCount = 0;
-        for (AppUser appUser : core.findUsersByProfileFilter(studentProfiles, studentType.getId(), null)) {
-            AcademicStudent student = acad.findStudentByUser(appUser.getId());
-            if (student != null) {
-                if (validStudents.contains(student.getId())) {
-                    alreadyFoundCount++;
-                    continue;
-                }
-                if (department != null) {
-                    if ((student.getUser().getDepartment() == null) || (department.getId() != student.getUser().getDepartment().getId())) {
-                        continue;
-                    }
-                }
-                if (department2 != null) {
-                    if (student.getUser().getDepartment() == null || department2.getId() != student.getUser().getDepartment().getId()) {
-                        continue;
-                    }
-                }
-                if (cls != null) {
-                    Set<Integer> possibleClasses = acad.findAcademicUpHierarchyList(new AcademicClass[]{cls}, null).stream().map(x->x.getId()).collect(Collectors.toSet());
-                    Set<Integer> userClasses = AcademicUtils.getStudentClassIds(student);
-                    if(VrUtils.intersect(possibleClasses,userClasses).isEmpty()){
-                       continue;
-                    }
-                }
-                if (prog != null) {
-                    if ((student.getLastClass1() == null || student.getLastClass1().resolveProgramType() == null || prog.getId() != student.getLastClass1().resolveProgramType().getId())
-                            && (student.getLastClass2() == null || student.getLastClass2().resolveProgramType() == null || prog.getId() != student.getLastClass2().resolveProgramType().getId())
-                            && (student.getLastClass3() == null || student.getLastClass3().resolveProgramType() == null || prog.getId() != student.getLastClass3().resolveProgramType().getId())) {
-                        continue;
-                    }
-                }
-                AcademicInternship i = pu.createQuery("Select u from AcademicInternship u where "
-                        + "(u.studentId=:studentId or u.secondStudentId==:studentId) "
-                        + "and u.boardId=:boardId "
-                )
-                        .setParameter("studentId", student.getId())
-                        .setParameter("boardId", internship.getBoard().getId())
-                        .getFirstResultOrNull();
-
-                if (i == null) {
-                    i = new AcademicInternship();
-                    i.setStudent(student);
-                    i.setBoard(internship.getBoard());
-                    i.setMainGroup(internship.getMainGroup());
-                    i.setDescription(internship.getDescription());
-                    i.setStartDate(internship.getStartDate());
-                    i.setEndDate(internship.getEndDate());
-                    i.setExamDate(internship.getExamDate());
-                    i.setInternshipStatus(internship.getInternshipStatus());
-                    i.setMainDiscipline(internship.getMainDiscipline());
-                    i.setName(internship.getName());
-                    i.setValidationObservations(internship.getValidationObservations());
-                    i.setTechnologies(internship.getTechnologies());
-//                    i.setSecondStudent(student);
-                    while (validCodes.contains(df.format(pos))) {
+                    if (i == null) {
+                        i = new AcademicInternship();
+                        i.setStudent(student);
+                        i.setBoard(internship.getBoard());
+                        i.setDescription(internship.getDescription());
+                        i.setStartDate(internship.getStartDate());
+                        i.setEndDate(internship.getEndDate());
+                        i.setExamDate(internship.getExamDate());
+                        i.setInternshipStatus(internship.getInternshipStatus());
+                        i.setMainDiscipline(internship.getMainDiscipline());
+                        i.setName(internship.getName());
+                        i.setValidationObservations(internship.getValidationObservations());
+                        i.setTechnologies(internship.getTechnologies());
+                        while (validCodes.contains(df.format(pos))) {
+                            pos++;
+                        }
+                        i.setCode(df.format(pos));
+                        validCodes.add(i.getCode());
+                        pu.persist(i);
+                        generatedCount++;
                         pos++;
                     }
-                    i.setCode(df.format(pos));
-                    validCodes.add(i.getCode());
-                    pu.persist(i);
-                    generatedCount++;
-                    pos++;
-                } else {
-//                    i.setStudent(student);
-//                    i.setDepartment(internship.getDepartment());
-//                    i.setDescription(internship.getDescription());
-//                    i.setStartDate(internship.getStartDate());
-//                    i.setEndDate(internship.getEndDate());
-//                    i.setExamDate(internship.getExamDate());
-//                    i.setInternshipStatus(internship.getInternshipStatus());
-//                    i.setInternshipType(internship.getInternshipType());
-//                    i.setMainDiscipline(internship.getMainDiscipline());
-//                    i.setName(internship.getName());
-//                    i.setPeriod(internship.getPeriod());
-//                    i.setProgram(internship.getProgram());
-//                    i.setValidationObservations(internship.getValidationObservations());
-//                    i.setTechnologies(internship.getTechnologies());
-//                    i.setSecondStudent(student);
-//                    while (validCodes.contains(df.format(pos))) {
-//                        pos++;
-//                    }
-//                    i.setCode(df.format(pos));
-//                    validCodes.add(i.getCode());
-//                    pu.persist(i);
                 }
             }
-        }
-        if (generatedCount > 0) {
-            TraceService.get().trace("Academic.generated-internships", "success",
-                    MapUtils.map("name", internship.getBoard().getName(), "count", generatedCount, "oldCount", alreadyFoundCount),
-                    "/Education/Internships", Level.INFO
-            );
-        }
-        return generatedCount;
+            if (matchedCount != usersFound.size()) {
+                TraceService.get().trace("Academic.generated-internships.inconsistency", "warning",
+                        MapUtils.map("matchedCount", matchedCount, "usersFound", usersFound),
+                        "/Education/Internships", Level.INFO
+                );
+            }
+            if (generatedCount > 0) {
+                TraceService.get().trace("Academic.generated-internships", "success",
+                        MapUtils.map("name", internship.getBoard().getName(), "count", generatedCount, "oldCount", alreadyFoundCount),
+                        "/Education/Internships", Level.INFO
+                );
+            }
+            return generatedCount;
+        });
     }
 
     public void addSupervisorIntent(int internship, int teacherId) {
@@ -616,13 +603,6 @@ public class AcademicPluginBodyInternships extends AcademicPluginBody {
             b.byField("periodId", periodId);
         }
         return b.getResultList();
-    }
-
-    public List<AcademicInternshipGroup> findEnabledInternshipGroupsByDepartment(int departmentId) {
-        PersistenceUnit pu = UPA.getPersistenceUnit();
-        return pu.createQuery("Select u from AcademicInternshipGroup u where u.enabled=true and (u.departmentId=:departmentId or u.departmentId=null)")
-                .setParameter("departmentId", departmentId)
-                .getResultList();
     }
 
     public List<AcademicInternshipSessionType> findAcademicInternshipSessionType() {
@@ -716,6 +696,13 @@ public class AcademicPluginBodyInternships extends AcademicPluginBody {
                 .getResultList();
     }
 
+    public List<AcademicInternshipBoardClass> findInternshipClassesByBoard(int boardId) {
+        PersistenceUnit pu = UPA.getPersistenceUnit();
+        return pu.createQuery("Select u from AcademicInternshipBoardClass u where u.boardId=:boardId")
+                .setParameter("boardId", boardId)
+                .getResultList();
+    }
+
     public void addBoardMessage(AcademicInternshipBoardMessage m) {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         m.setObsUpdateDate(new Date());
@@ -758,7 +745,7 @@ public class AcademicPluginBodyInternships extends AcademicPluginBody {
 
     public AcademicInternship findStudentPFE(int studentId) {
         for (AcademicInternship aa : findActualInternshipsByStudent(studentId)) {
-            if (aa.getMainGroup() != null && aa.getMainGroup().getName().toUpperCase().startsWith("PFE")) {
+            if (aa.getBoard() != null && aa.getBoard().getInternshipType().getName().toUpperCase().startsWith("PFE")) {
                 //this is the PFE
                 return aa;
             }
@@ -1016,7 +1003,7 @@ public class AcademicPluginBodyInternships extends AcademicPluginBody {
         }
     }
 
-    public List<AcademicInternship> findInternships(int teacherId, int groupId, int boardId, int deptId, int internshipTypeId, boolean openOnly) {
+    public List<AcademicInternship> findInternships(int teacherId, int boardId, int deptId, int internshipTypeId, boolean openOnly) {
         AcademicPlugin ap = VrApp.getBean(AcademicPlugin.class);
         CorePlugin cp = VrApp.getBean(CorePlugin.class);
         AcademicTeacher t = teacherId < 0 ? null : ap.findTeacher(teacherId);
@@ -1028,10 +1015,6 @@ public class AcademicPluginBodyInternships extends AcademicPluginBody {
         if (boardId > 0) {
             q.byExpression("u.boardId=:boardId").setParameter("boardId", boardId);
         }
-        if (groupId > 0) {
-            q.byExpression("u.mainGroupId=:groupId").setParameter("groupId", groupId);
-        }
-
         if (deptId > 0) {
             q.byExpression("(u.boardId==null or u.board.departmentId=:departmentId)").setParameter("departmentId", deptId);
         }

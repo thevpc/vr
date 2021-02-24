@@ -1,7 +1,7 @@
 package net.thevpc.app.vainruling;
 
 import java.util.List;
-import net.thevpc.app.vainruling.core.service.content.ContentText;
+import net.thevpc.app.vainruling.core.service.content.VrContentText;
 
 /**
  * Created by vpc on 9/5/16.
@@ -12,9 +12,9 @@ public interface VrContentTextService {
     
     void loadContentTexts(String name);
 
-    List<ContentText> getContentTextList(String id);
+    List<VrContentText> getContentTextList(String id);
 
-    List<ContentText> getContentTextListHead(String id, int max);
+    List<VrContentText> getContentTextListHead(String id, int max);
 
 //    public void setSelectedContentTextById(int id);
 }

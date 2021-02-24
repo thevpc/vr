@@ -58,10 +58,10 @@ and open the template in the editor.
                             <p:column styleClass="ui-widget-header" headerText="" width="5%">
                                 <p:commandButton rendered="#{i.selectable and !i.assignedToMe and !i.demandedByMe}"
                                                  value="+" actionListener="#{allInternshipBoardsCtrl.addToMine(i)}"
-                                                 update="listTable" title="Clickez ici pour exprimez votre voeux"/>
+                                                 update=":listForm" title="Clickez ici pour exprimez votre voeux"/>
                                 <p:commandButton rendered="#{i.selectable and i.demandedByMe}" value="-"
                                                  actionListener="#{allInternshipBoardsCtrl.removeFromMine(i)}"
-                                                 update="listTable" title="Clickez ici pour supprimer votre voeux"/>
+                                                 update=":listForm" title="Clickez ici pour supprimer votre voeux"/>
                             </p:column>
                             <p:column headerText="Code"
                                       sortBy="#{i.internship.code}"

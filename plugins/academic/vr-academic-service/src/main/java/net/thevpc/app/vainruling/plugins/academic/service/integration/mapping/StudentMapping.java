@@ -15,7 +15,7 @@ public class StudentMapping {
     
     @ColumnMapping(value = {"Numero CIN", "CIN"})
     public int COL_NIN = 0;
-    @ColumnMapping(value = {"Numero Inscription","N° Inscription","Inscription","Num Inscription"})
+    @ColumnMapping(value = {"Numero Inscription","N°? Inscription","Inscription","Num Inscription"})
     public int COL_SUBSCRIPTION_NBR = 1;
     @ColumnMapping(value = {"Prenom"})
     public int COL_FIRST_NAME = 2;
@@ -25,13 +25,13 @@ public class StudentMapping {
     public int COL_EMAIL = 4;
     @ColumnMapping(value = {"Téléphone","phone","GSM"})
     public int COL_GSM = 5;
-    @ColumnMapping(value = {"Annee", "Period", "Année universitaire", "periode","PREMIERE INSCRIPTION (En 1ere année)","PREMIERE INSCRIPTION"})
+    @ColumnMapping(value = {"Annee", "Period", "Année universitaire", "periode","PREMIERE INSCRIPTION \\(.*\\)","PREMIERE INSCRIPTION"})
     public int COL_YEAR1 = 6;
     @ColumnMapping(value = {"Classe","Class"})
     public int COL_CLASS = 7;
-    @ColumnMapping(value = {"Genre","GENRE (M ou F)"})
+    @ColumnMapping(value = {"Genre","GENRE (.*)"})
     public int COL_GENDER = 8;
-    @ColumnMapping(value = {"Civilité","CIVILITE (M., Mlle Ou Mme)"})
+    @ColumnMapping(value = {"Civilité","CIVILITE \\(.*\\)"})
     public int COL_CIVILITY = 9;
     @ColumnMapping(value = {"Prenom arabe"})
     public int COL_LAST_NAME2 = 10;

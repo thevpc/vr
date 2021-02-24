@@ -18,8 +18,8 @@ import net.thevpc.upa.UPA;
 
 import java.util.List;
 import net.thevpc.app.vainruling.VrAccessMode;
-import net.thevpc.common.util.Collections2;
-import net.thevpc.common.util.ListValueMap;
+import net.thevpc.common.collections.Collections2;
+import net.thevpc.common.collections.ListValueMap;
 import net.thevpc.upa.Entity;
 import net.thevpc.upa.EntityUsage;
 

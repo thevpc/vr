@@ -8,10 +8,8 @@ package net.thevpc.app.vainruling.core.web.jsf.ctrl;
 import net.thevpc.app.vainruling.core.service.CorePlugin;
 import net.thevpc.app.vainruling.core.service.VrApp;
 import net.thevpc.app.vainruling.core.service.content.CmsTextDisposition;
-import net.thevpc.app.vainruling.core.service.content.ContentText;
 import net.thevpc.app.vainruling.core.service.model.AppUser;
 import net.thevpc.app.vainruling.core.service.model.content.AppArticle;
-import net.thevpc.app.vainruling.core.service.model.content.FullArticle;
 import net.thevpc.app.vainruling.core.web.jsf.Vr;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
@@ -19,6 +17,7 @@ import org.springframework.stereotype.Controller;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import java.util.List;
+import net.thevpc.app.vainruling.core.service.content.VrContentText;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -75,16 +74,8 @@ public class ArticlesCtrl extends AbstractCmsTextService {
         return false;
     }
 
-    @Override
-    public boolean onAction(String action, ContentText a) {
-        if (a instanceof FullArticle) {
-            return onAction(action, (FullArticle) a);
-        }
-        return false;
-    }
-
 //    @Override
-    public boolean onAction(String action, FullArticle a) {
+    public boolean onAction(String action, VrContentText a) {
         if (a == null) {
             return false;
         }
@@ -97,12 +88,12 @@ public class ArticlesCtrl extends AbstractCmsTextService {
                     return true;
                 }
             } else if ("delete".equals(action)) {
-                if (!a.getArticle().isDeleted()) {
+                if (!a.isDeleted()) {
                     core.remove("AppArticle", a.getId());
                     return true;
                 }
             } else if ("archive".equals(action)) {
-                if (!a.getArticle().isArchived()) {
+                if (!a.isArchived()) {
                     AppArticle aa = core.findArticle(a.getId());
                     if (aa != null && !aa.isArchived()) {
                         aa.setArchived(true);
@@ -139,13 +130,13 @@ public class ArticlesCtrl extends AbstractCmsTextService {
     }
 
     @Override
-    public FullArticle findArticle(int id) {
-        return core.findFullArticle(id);
+    public VrContentText findArticle(int id) {
+        return core.findFullArticle(id,null);
     }
 
     @Override
-    public List<FullArticle> findArticles(String disposition) {
-        return core.findFullArticlesByDisposition(null, disposition);
+    public List<VrContentText> findArticles(String disposition, net.thevpc.app.vainruling.core.service.model.content.VrContentTextConfig config) {
+        return core.findFullArticlesByDisposition(null, disposition,config);
     }
 
     @Override
@@ -163,7 +154,7 @@ public class ArticlesCtrl extends AbstractCmsTextService {
     }
 
     @Override
-    public boolean isEnabledAction(String action, ContentText a) {
+    public boolean isEnabledAction(String action, VrContentText a) {
         if (a == null) {
             return false;
         }

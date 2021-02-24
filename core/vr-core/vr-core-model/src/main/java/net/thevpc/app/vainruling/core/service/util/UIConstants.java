@@ -44,6 +44,7 @@ public final class UIConstants {
          * number or cells suffixing control that should be emptied
          */
         public static final String EMPTY_SUFFIX = "ui.form.empty.suffix";
+        public static final String COMPOSITION_LIST_FIELD = "ui.form.composition.listfield";
     }
 
     public static final class Control {
@@ -66,6 +67,7 @@ public final class UIConstants {
         public static final String SEPARATOR = "separator";
         public static final String LABEL = "label";
         public static final String ENTITY_DETAIL = "entityDetail";
+        public static final String ENTITY_DETAIL_SIMPLE = "entityDetailSimple";
         public static final String PROFILE_EXPRESSION = "profileExpr";
         public static final String DISCIPLINE = "discipline";
         public static final String FILE = "file";

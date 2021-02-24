@@ -8,14 +8,13 @@ package net.thevpc.app.vainruling.core.web.jsf.ctrl;
 import net.thevpc.app.vainruling.VrCmsTextService;
 import net.thevpc.app.vainruling.core.service.CorePlugin;
 import net.thevpc.app.vainruling.core.service.content.CmsTextDisposition;
-import net.thevpc.app.vainruling.core.service.content.ContentText;
 import net.thevpc.app.vainruling.core.service.model.AppUser;
-import net.thevpc.app.vainruling.core.service.model.content.FullArticle;
 import net.thevpc.common.strings.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Collections;
 import java.util.List;
+import net.thevpc.app.vainruling.core.service.content.VrContentText;
 
 /**
  * @author vpc
@@ -61,7 +60,7 @@ public abstract class AbstractCmsTextService implements VrCmsTextService {
 
     @Override
     public void loadContentTexts(String disposition) {
-        List<FullArticle> a = findArticles(disposition);
+        List<VrContentText> a = findArticles(disposition, null);
         getModel().setDisposition(disposition);
         getModel().getArticles().put(disposition, a);
         if (getModel().getCurrent() == null) {
@@ -69,7 +68,7 @@ public abstract class AbstractCmsTextService implements VrCmsTextService {
                 if (a.get(0) != null) {
                     updateVisit(a.get(0).getId());
                 }
-                setSelectedContentTextById(a.get(0).getDisposition().getName(), a.get(0).getId());
+                setSelectedContentTextById(a.get(0).getContent(), a.get(0).getId());
             } else {
                 getModel().setCurrent(null);
             }
@@ -85,8 +84,8 @@ public abstract class AbstractCmsTextService implements VrCmsTextService {
         return imageSwitchEffects[(int) (Math.random() * imageSwitchEffects.length)];
     }
 
-    public FullArticle getFullArticle(String disposition, int pos) {
-        List<FullArticle> a = getModel().getArticles().get(disposition);
+    public VrContentText getFullArticle(String disposition, int pos) {
+        List<VrContentText> a = getModel().getArticles().get(disposition);
         if (a != null && a.size() > pos && pos >= 0) {
             return a.get(pos);
         }
@@ -94,14 +93,14 @@ public abstract class AbstractCmsTextService implements VrCmsTextService {
     }
 
     //    public AppArticle getArticle(String disposition, int pos) {
-//        FullArticle a = getFullArticle(disposition, pos);
+//        VrFullArticle a = getFullArticle(disposition, pos);
 //        if (a != null) {
 //            return a.getArticle();
 //        }
 //        return null;
 //    }
     @Override
-    public List<ContentText> getContentTextList(String id) {
+    public List<VrContentText> getContentTextList(String id) {
         List list = getModel().getArticles().get(id);
         if (list == null) {
             list = Collections.EMPTY_LIST;
@@ -112,16 +111,16 @@ public abstract class AbstractCmsTextService implements VrCmsTextService {
     @Override
     public void setSelectedContentTextById(String disposition, int id) {
         getModel().setCurrent(findArticle(id));
-        FullArticle c = getModel().getCurrent();
-        if (c != null && c.getDisposition() != null) {
+        VrContentText c = getModel().getCurrent();
+        if (c.getCategories().length > 0) {
             updateVisit(c.getId());
-            loadContentTexts(c.getDisposition().getName());
+            loadContentTexts(c.getCategories()[0]);
         }
     }
 
     @Override
-    public List<ContentText> getContentTextListHead(String id, int max) {
-        List<ContentText> list = getContentTextList(id);
+    public List<VrContentText> getContentTextListHead(String id, int max) {
+        List<VrContentText> list = getContentTextList(id);
         if (list.size() > max) {
             return list.subList(0, max);
         }
@@ -134,7 +133,7 @@ public abstract class AbstractCmsTextService implements VrCmsTextService {
     }
 
     @Override
-    public ContentText getSelectedContentText(String name) {
+    public VrContentText getSelectedContentText(String name) {
         return getModel().getCurrent();
     }
 
@@ -144,7 +143,7 @@ public abstract class AbstractCmsTextService implements VrCmsTextService {
     }
 
     @Override
-    public boolean isEnabledAction(String action, ContentText a) {
+    public boolean isEnabledAction(String action, VrContentText a) {
         if (a == null) {
             return false;
         }
@@ -182,9 +181,9 @@ public abstract class AbstractCmsTextService implements VrCmsTextService {
         return actionName;
     }
 
-    protected FullArticle findArticle(int id) {
-        for (List<FullArticle> fullArticles : getModel().getArticles().values()) {
-            for (FullArticle fullArticle : fullArticles) {
+    protected VrContentText findArticle(int id) {
+        for (List<VrContentText> fullArticles : getModel().getArticles().values()) {
+            for (VrContentText fullArticle : fullArticles) {
                 if (fullArticle.getId() == id) {
                     return fullArticle;
                 }
@@ -193,12 +192,12 @@ public abstract class AbstractCmsTextService implements VrCmsTextService {
         return null;
     }
 
-    protected abstract List<FullArticle> findArticles(String disposition);
+    protected abstract List<VrContentText> findArticles(String disposition, net.thevpc.app.vainruling.core.service.model.content.VrContentTextConfig config);
 
     public abstract void updateVisit(int articleId);
 
     @Override
-    public void runAction(String action, ContentText a) {
+    public void runAction(String action, VrContentText a) {
         onAction(action, a);
     }
 

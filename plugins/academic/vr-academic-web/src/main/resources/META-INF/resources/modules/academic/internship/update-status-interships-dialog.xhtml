@@ -41,15 +41,6 @@ and open the template in the editor.
                             </div>
                             <ui:fragment rendered="#{!updateStatusInternshipsActionCtrl.model.userSelectedOnly}">
                                 <div class="form-group">
-                                    <label>Filtrer par Groupe</label>
-                                    <p:selectOneMenu styleClass="form-control vf-form-control"
-                                                     value="#{updateStatusInternshipsActionCtrl.model.selectedGroup}">
-                                        <f:selectItem itemLabel="Selectionner Groupe..." itemValue=""/>
-                                        <f:selectItems value="#{updateStatusInternshipsActionCtrl.model.groups}"/>
-                                    </p:selectOneMenu>
-                                </div>
-
-                                <div class="form-group">
                                     <label>Filtrer par Comité</label>
                                     <p:selectOneMenu styleClass="form-control vf-form-control"
                                                      value="#{updateStatusInternshipsActionCtrl.model.selectedBoard}">

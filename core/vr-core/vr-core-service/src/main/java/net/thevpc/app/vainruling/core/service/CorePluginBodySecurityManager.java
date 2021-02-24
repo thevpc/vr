@@ -6,7 +6,7 @@ import net.thevpc.app.vainruling.core.service.util.*;
 import net.thevpc.app.vainruling.core.service.model.*;
 import net.thevpc.app.vainruling.core.service.util.*;
 import net.thevpc.common.strings.StringUtils;
-import net.thevpc.common.util.KeyValueList;
+import net.thevpc.common.collections.KeyValueList;
 import net.thevpc.upa.*;
 
 import java.util.*;

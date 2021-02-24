@@ -20,7 +20,7 @@ import net.thevpc.app.vainruling.plugins.academic.service.stat.TeacherSemesterSt
 import net.thevpc.app.vainruling.plugins.academic.web.dialog.CopyPeriodDialogCtrl;
 import net.thevpc.app.vainruling.plugins.academic.web.dialog.GenerateLoadDialogCtrl;
 import net.thevpc.common.jsf.FacesUtils;
-import net.thevpc.common.util.KeyValueList;
+import net.thevpc.common.collections.KeyValueList;
 
 import javax.faces.model.SelectItem;
 import java.util.*;

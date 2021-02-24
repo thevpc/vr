@@ -4,8 +4,8 @@ import net.thevpc.app.vainruling.plugins.academic.model.current.AcademicCourseAs
 import net.thevpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.thevpc.app.vainruling.plugins.academic.service.util.AcademicCourseAssignmentIdConverter;
 import net.thevpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
-import net.thevpc.common.util.Collections2;
-import net.thevpc.common.util.KeyValueList;
+import net.thevpc.common.collections.Collections2;
+import net.thevpc.common.collections.KeyValueList;
 
 /**
  * Created by vpc on 3/9/17.

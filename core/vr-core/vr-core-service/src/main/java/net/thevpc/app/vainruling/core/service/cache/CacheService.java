@@ -1,7 +1,7 @@
 package net.thevpc.app.vainruling.core.service.cache;
 
 import net.thevpc.app.vainruling.core.service.VrApp;
-import net.thevpc.common.util.KeyValueList;
+import net.thevpc.common.collections.KeyValueList;
 import net.thevpc.upa.Action;
 import net.thevpc.upa.Entity;
 import net.thevpc.upa.PersistenceUnit;

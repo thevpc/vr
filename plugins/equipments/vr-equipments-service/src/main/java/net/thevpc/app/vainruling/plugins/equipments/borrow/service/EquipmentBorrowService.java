@@ -533,12 +533,16 @@ public class EquipmentBorrowService {
 
     public List<AppUserStrict> findBorrowVisaUsers() {
         _requireBorrowRole();
-        return UPA.getPersistenceUnit().invokePrivileged(() -> CorePlugin.get().findUsersByProfile("BorrowVisa").stream().map(AppUserStrict::new).collect(Collectors.toList()));
+        return UPA.getPersistenceUnit().invokePrivileged(() -> CorePlugin.get().findUsersByProfile("BorrowVisa").stream().map(
+                x->new AppUserStrict(x,CorePlugin.get().getUserIcon(x.getId()))
+        ).collect(Collectors.toList()));
     }
 
     public List<AppUserStrict> findBorrowUsers() {
         _requireBorrowRole();
-        return UPA.getPersistenceUnit().invokePrivileged(() -> CorePlugin.get().findUsersByProfile("Borrower").stream().map(AppUserStrict::new).collect(Collectors.toList()));
+        return UPA.getPersistenceUnit().invokePrivileged(() -> CorePlugin.get().findUsersByProfile("Borrower").stream().map(
+                x->new AppUserStrict(x,CorePlugin.get().getUserIcon(x.getId()))
+        ).collect(Collectors.toList()));
     }
 
     public boolean isBorrowVisaUser(Integer userId) {

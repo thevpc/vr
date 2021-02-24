@@ -65,7 +65,7 @@ and open the template in the editor.
                                                     <!-- text input -->
                                                     <div class="form-group">
                                                         <p:outputLabel value="Titre"/>
-                                                        <p:inputText value="#{postWelcomeCtrl.model.subject}" class="form-control" placeholder="titre"/>
+                                                        <p:inputText value="#{postWelcomeCtrl.model.title}" class="form-control" placeholder="titre"/>
                                                     </div>
                                                     <div class="form-group">
                                                         <p:inputText value="#{postWelcomeCtrl.model.subTitle}" class="form-control" placeholder="sous-titre"/>
@@ -123,7 +123,7 @@ and open the template in the editor.
                                                         <div class="#{vr.mapBootstrapColMdCount(importantTexts.size())}">
                                                             <div class="box box-danger">
                                                                 <div class="box-header with-border">
-                                                                    <h3 class="box-title">#{a.subject}</h3>
+                                                                    <h3 class="box-title">#{a.title}</h3>
                                                                     <ui:fragment rendered="#{not vr.isEmpty(a.subTitle)}">
                                                                         <h3 class="box-sub-title">#{a.subTitle}</h3>
                                                                     </ui:fragment>
@@ -164,7 +164,7 @@ and open the template in the editor.
                                                                                 <ui:fragment rendered="#{vr.cmsTextService.isEnabledAction('important',a)}">
                                                                                     <li>
                                                                                         <p:commandLink action="#{vr.cmsTextService.runAction('important',a)}" update=":itemForm" process="@this" ajax="true">
-                                                                                            <i class="fa #{a.article.important ? 'fa-bookmark':'fa-bookmark-o'}" style="#{a.article.important ? 'color: #dd4b39;':''}"></i> Important
+                                                                                            <i class="fa #{a.important ? 'fa-bookmark':'fa-bookmark-o'}" style="#{a.important ? 'color: #dd4b39;':''}"></i> Important
                                                                                         </p:commandLink>
                                                                                     </li>
                                                                                 </ui:fragment>
@@ -186,30 +186,31 @@ and open the template in the editor.
                                                                         <h:outputText
                                                                             value="#{vr.replaceCustomURLs(a.content)}"
                                                                             escape="false"/>
-                                                                        <p:galleria value="#{a.imageAttachments}" var="image" panelWidth="500" panelHeight="313" showCaption="true"
-                                                                                    rendered="#{a.imageAttachments.size() ne 0}" 
+                                                                        <p:galleria value="#{vr.filterImagesOnly(a.attachments)}" 
+                                                                                    var="image" panelWidth="500" panelHeight="313" showCaption="true"
+                                                                                    rendered="#{vr.filterImagesOnly(a.attachments).size() ne 0}" 
                                                                                     >
                                                                             <p:graphicImage url="#{vr.url(image.path)}" alt="#{vr.urlName(image.path,image.name,'Image')}" 
                                                                                             title="#{vr.nvl(image.name,'Image')}"
                                                                                             style="width:500px;height:313px"
+                                                                                            rendered="#{image.image}"
                                                                                             />
                                                                         </p:galleria>
                                                                         <p:outputPanel
-                                                                            rendered="#{a.nonImageAttachments.size() ne 0}">
-                                                                            <ui:repeat value="#{a.nonImageAttachments}" var="att">
+                                                                            rendered="#{vr.filterNonImagesOnly(a.attachments) ne 0}">
+                                                                            <ui:repeat value="#{vr.filterNonImagesOnly(a.attachments)}" var="att">
                                                                                 <h:outputLink
                                                                                     rendered="#{!vr.isFSPath(att.path)}"
-                                                                                    target="_blank"
                                                                                     value="#{vr.url(att.path)}"
                                                                                     styleClass="#{(att.style eq null or att.style eq '')?'btn  btn-default':att.style}"
                                                                                     style="margin-left: 3px;margin-right: 3px;margin-top: 5px;"
                                                                                     >
                                                                                     <h:outputText value="#{vr.urlName(att.path,att.name,'Document')}"/>
                                                                                 </h:outputLink>
+                                                                                    <!--target="_blank"-->
 
                                                                                 <p:commandLink
                                                                                     rendered="#{vr.isFSPath(att.path)}"
-                                                                                    target="_blank"
                                                                                     value="#{att.name}"
                                                                                     styleClass="#{(att.style eq null or att.style eq '')?'btn  btn-default':att.style}"
                                                                                     style="margin-left: 3px;margin-right: 3px;margin-top: 5px;"
@@ -218,6 +219,7 @@ and open the template in the editor.
                                                                                     <p:fileDownload
                                                                                         value="#{vr.downloadPath(att.path)}"/>
                                                                                 </p:commandLink>
+                                                                                    <!--target="_blank"-->
                                                                             </ui:repeat>
                                                                         </p:outputPanel>
                                                                     </div>
@@ -225,7 +227,7 @@ and open the template in the editor.
                                                                 <!-- /.box-body -->
 
                                                                 <div class="box-footer"
-                                                                     title="Destination : #{a.article.recipientProfiles}">
+                                                                     title="Destination : #{vr.nvl(a.recipients,'Tout le monde')}">
                                                                     écrit par #{(a.user eq null)?'//inconnu//':a.user.fullName} #{(a.publishTime eq null)?'' : (vr.str(' - (le ',vr.date(a.publishTime,'dd MMM yyyy') ,')'))}
                                                                 </div>
                                                             </div>
@@ -253,7 +255,7 @@ and open the template in the editor.
                                                             <ui:repeat value="#{col}" var="a">
                                                                 <div class="box #{vr.mapToken(a.decoration,'box-default','default','box-default','primary','box-primary','danger','box-danger','warning','box-warning','info','box-info','success','box-success')}">
                                                                     <div class="box-header with-border">
-                                                                        <h3 class="box-title">#{a.subject}</h3>
+                                                                        <h3 class="box-title">#{a.title}</h3>
                                                                         <ui:fragment rendered="#{not vr.isEmpty(a.subTitle)}">
                                                                             <h3 class="box-sub-title">#{a.subTitle}</h3>
                                                                         </ui:fragment>
@@ -294,7 +296,7 @@ and open the template in the editor.
                                                                                     <ui:fragment rendered="#{vr.cmsTextService.isEnabledAction('important',a)}">
                                                                                         <li>
                                                                                             <p:commandLink actionListener="#{vr.cmsTextService.runAction('important',a)}" update=":itemForm" process="@this"  ajax="true">
-                                                                                                <i class="fa #{a.article.important ? 'fa-bookmark':'fa-bookmark-o'}" style="#{a.article.important ? 'color: #dd4b39;':''}"></i> Important
+                                                                                                <i class="fa #{a.important ? 'fa-bookmark':'fa-bookmark-o'}" style="#{a.important ? 'color: #dd4b39;':''}"></i> Important
                                                                                             </p:commandLink>
                                                                                         </li>
                                                                                     </ui:fragment>
@@ -317,8 +319,8 @@ and open the template in the editor.
                                                                                 value="#{vr.replaceCustomURLs(a.content)}"
                                                                                 escape="false"/>
 
-                                                                            <p:galleria value="#{a.imageAttachments}" var="image" panelWidth="500" panelHeight="313" showCaption="true"
-                                                                                        rendered="#{a.imageAttachments.size() ne 0}" 
+                                                                            <p:galleria value="#{vr.filterImagesOnly(a.attachments)}" var="image" panelWidth="500" panelHeight="313" showCaption="true"
+                                                                                        rendered="#{vr.filterImagesOnly(a.attachments).size() ne 0}" 
                                                                                         >
                                                                                 <p:graphicImage url="#{vr.url(image.path)}" alt="#{vr.urlName(image.path,image.name,'Image')}" 
                                                                                                 title="#{vr.nvl(image.name,'Image')}"
@@ -327,8 +329,8 @@ and open the template in the editor.
                                                                             </p:galleria>
 
                                                                             <p:outputPanel
-                                                                                rendered="#{a.nonImageAttachments.size() ne 0}">
-                                                                                <ui:repeat value="#{a.nonImageAttachments}" var="att">
+                                                                                rendered="#{vr.filterNonImagesOnly(a.attachments).size() ne 0}">
+                                                                                <ui:repeat value="#{vr.filterNonImagesOnly(a.attachments)}" var="att">
                                                                                     <h:outputLink
                                                                                         rendered="#{!vr.isFSPath(att.path)}"
                                                                                         target="_blank"
@@ -357,7 +359,7 @@ and open the template in the editor.
                                                                     <!-- /.box-body -->
 
                                                                     <div class="box-footer"
-                                                                         title="Destination : #{a.article.recipientProfiles}">
+                                                                         title="Destination : #{a.recipients}">
                                                                         écrit par #{(a.user eq null)?'//inconnu//':a.user.fullName} #{(a.publishTime eq null)?'' : (vr.str(' - (le ',vr.date(a.publishTime,'dd MMM yyyy') ,')'))}
                                                                     </div>
                                                                 </div>
@@ -389,7 +391,7 @@ and open the template in the editor.
                                                             <ui:repeat value="#{col}" var="a">
                                                                 <div class="box #{vr.mapToken(a.decoration,'box-default','default','box-default','primary','box-primary','danger','box-danger','warning','box-warning','info','box-info','success','box-success')}">
                                                                     <div class="box-header with-border">
-                                                                        <h3 class="box-title">#{a.subject}</h3>
+                                                                        <h3 class="box-title">#{a.title}</h3>
                                                                         <ui:fragment rendered="#{not vr.isEmpty(a.subTitle)}">
                                                                             <h3 class="box-sub-title">#{a.subTitle}</h3>
                                                                         </ui:fragment>
@@ -430,7 +432,7 @@ and open the template in the editor.
                                                                                     <ui:fragment rendered="#{vr.cmsTextService.isEnabledAction('important',a)}">
                                                                                         <li>
                                                                                             <p:commandLink actionListener="#{vr.cmsTextService.runAction('important',a)}" update=":itemForm" process="@this">
-                                                                                                <i class="fa #{a.article.important ? 'fa-bookmark':'fa-bookmark-o'}" style="#{a.article.important ? 'color: #dd4b39;':''}"></i> Important
+                                                                                                <i class="fa #{a.important ? 'fa-bookmark':'fa-bookmark-o'}" style="#{a.important ? 'color: #dd4b39;':''}"></i> Important
                                                                                             </p:commandLink>
                                                                                         </li>
                                                                                     </ui:fragment>
@@ -453,8 +455,8 @@ and open the template in the editor.
                                                                                 value="#{vr.replaceCustomURLs(a.content)}"
                                                                                 escape="false"/>
 
-                                                                            <p:galleria value="#{a.imageAttachments}" var="image" panelWidth="500" panelHeight="313" showCaption="true"
-                                                                                        rendered="#{a.imageAttachments.size() ne 0}" 
+                                                                            <p:galleria value="#{vr.filterImagesOnly(a.attachments)}" var="image" panelWidth="500" panelHeight="313" showCaption="true"
+                                                                                        rendered="#{vr.filterImagesOnly(a.attachments).size() ne 0}" 
                                                                                         >
                                                                                 <p:graphicImage url="#{vr.url(image.path)}" alt="#{vr.urlName(image.path,image.name,'Image')}" 
                                                                                                 title="#{vr.nvl(image.name,'Image')}"
@@ -463,8 +465,8 @@ and open the template in the editor.
                                                                             </p:galleria>
 
                                                                             <p:outputPanel
-                                                                                rendered="#{a.nonImageAttachments.size() ne 0}">
-                                                                                <ui:repeat value="#{a.nonImageAttachments}" var="att">
+                                                                                rendered="#{vr.filterNonImagesOnly(a.attachments).size() ne 0}">
+                                                                                <ui:repeat value="#{vr.filterNonImagesOnly(a.attachments)}" var="att">
                                                                                     <h:outputLink
                                                                                         rendered="#{!vr.isFSPath(att.path)}"
                                                                                         target="_blank"
@@ -493,7 +495,7 @@ and open the template in the editor.
                                                                     <!-- /.box-body -->
 
                                                                     <div class="box-footer"
-                                                                         title="Destination : #{a.article.recipientProfiles}">
+                                                                         title="Destination : #{a.recipients}">
                                                                         écrit par #{(a.user eq null)?'//inconnu//':a.user.fullName} #{(a.publishTime eq null)?'' : (vr.str(' - (le ',vr.date(a.publishTime,'dd MMM yyyy') ,')'))}
                                                                     </div>
                                                                 </div>
@@ -571,7 +573,7 @@ and open the template in the editor.
                                                         <ui:repeat value="#{col}" var="a">
                                                             <div class="box #{vr.mapToken(a.decoration,'box-default','default','box-default','primary','box-primary','danger','box-danger','warning','box-warning','info','box-info','success','box-success')}">
                                                                 <div class="box-header with-border">
-                                                                    <h3 class="box-title">#{a.subject}</h3>
+                                                                    <h3 class="box-title">#{a.title}</h3>
                                                                     <ui:fragment rendered="#{not vr.isEmpty(a.subTitle)}">
                                                                         <h3 class="box-sub-title">#{a.subTitle}</h3>
                                                                     </ui:fragment>
@@ -616,7 +618,7 @@ and open the template in the editor.
                                                                                 <ui:fragment rendered="#{vr.cmsTextService.isEnabledAction('important',a)}">
                                                                                     <li>
                                                                                         <p:commandLink actionListener="#{vr.cmsTextService.onAction('important',a)}" update=":itemForm" process="@this">
-                                                                                            <i class="fa #{a.article.important ? 'fa-bookmark':'fa-bookmark-o'}" style="#{a.article.important ? 'color: #dd4b39;':''}"></i> Important
+                                                                                            <i class="fa #{a.important ? 'fa-bookmark':'fa-bookmark-o'}" style="#{a.important ? 'color: #dd4b39;':''}"></i> Important
                                                                                         </p:commandLink>
                                                                                     </li>
                                                                                 </ui:fragment>
@@ -638,8 +640,8 @@ and open the template in the editor.
                                                                         <h:outputText
                                                                             value="#{vr.replaceCustomURLs(a.content)}"
                                                                             escape="false"/>
-                                                                        <p:galleria value="#{a.imageAttachments}" var="image" panelWidth="500" panelHeight="313" showCaption="true"
-                                                                                    rendered="#{a.imageAttachments.size() ne 0}" 
+                                                                        <p:galleria value="#{vr.filterImagesOnly(a.attachments)}" var="image" panelWidth="500" panelHeight="313" showCaption="true"
+                                                                                    rendered="#{vr.filterImagesOnly(a.attachments).size() ne 0}" 
                                                                                     >
                                                                             <p:graphicImage url="#{vr.url(image.path)}" alt="#{vr.urlName(image.path,image.name,'Image')}" 
                                                                                             title="#{vr.nvl(image.name,'Image')}"
@@ -647,8 +649,8 @@ and open the template in the editor.
                                                                                             />
                                                                         </p:galleria>
                                                                         <p:outputPanel
-                                                                            rendered="#{a.nonImageAttachments.size() ne 0}">
-                                                                            <ui:repeat value="#{a.nonImageAttachments}" var="att">
+                                                                            rendered="#{vr.filterNonImagesOnly(a.attachments).size() ne 0}">
+                                                                            <ui:repeat value="#{vr.filterNonImagesOnly(a.attachments)}" var="att">
                                                                                 <h:outputLink
                                                                                     rendered="#{!vr.isFSPath(att.path)}"
                                                                                     target="_blank"
@@ -677,7 +679,7 @@ and open the template in the editor.
                                                                 <!-- /.box-body -->
 
                                                                 <div class="box-footer"
-                                                                     title="Destination : #{a.article.recipientProfiles}">
+                                                                     title="Destination : #{a.recipients}">
                                                                     écrit par #{(a.user eq null)?'//inconnu//':a.user.fullName} #{(a.publishTime eq null)?'' : (vr.str(' - (le ',vr.date(a.publishTime,'dd MMM yyyy') ,')'))}
                                                                 </div>
                                                             </div>

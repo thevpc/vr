@@ -13,7 +13,6 @@ import net.thevpc.app.vainruling.plugins.academic.model.internship.config.Academ
 import net.thevpc.app.vainruling.plugins.academic.model.internship.config.AcademicInternshipVariant;
 import net.thevpc.app.vainruling.plugins.academic.model.internship.current.AcademicInternship;
 import net.thevpc.app.vainruling.plugins.academic.model.internship.current.AcademicInternshipBoard;
-import net.thevpc.app.vainruling.plugins.academic.model.internship.current.AcademicInternshipGroup;
 import net.thevpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.thevpc.app.vainruling.core.service.VrApp;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +20,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.logging.Logger;
+import net.thevpc.app.vainruling.core.web.jsf.ctrl.EditorCtrl;
 
 /**
  * @author taha.bensalah@gmail.com
@@ -48,40 +48,40 @@ public class CreateInternshipsActionCtrl {
                 .open();
     }
 
-    private void initModel(){
+    private void initModel() {
         getModel().setMessage("");
         getModel().setProfile("");
         AcademicInternship internship = new AcademicInternship();
         getModel().setInternship(internship);
-        getModel().setBoard((FieldPropertyView) propertyViewManager.createPropertyView(AcademicInternshipBoard.class));
-        getModel().setGroup((FieldPropertyView) propertyViewManager.createPropertyView(AcademicInternshipGroup.class));
+
         getModel().setInternshipVariant((FieldPropertyView) propertyViewManager.createPropertyView(AcademicInternshipVariant.class));
         getModel().setStatus((FieldPropertyView) propertyViewManager.createPropertyView(AcademicInternshipStatus.class));
         getModel().getInternship().setName("Ecrire le titre de ton PFE ici");
         getModel().getInternship().setDescription("Ecrire une description longue de ton PFE ici. N'oublie pas par contre d'attacher le PDF de cahier des charges de ton  PFE. Tous les champs doivent etre remplis correctement.");
-        if(getModel().getInternshipVariant().getValues().size()>0) {
+        if (getModel().getInternshipVariant().getValues().size() > 0) {
             getModel().getInternshipVariant().setSelectedItem(getModel().getInternshipVariant().getValues().get(0).getId());
         }
-        if(getModel().getStatus().getValues().size()>0) {
+        if (getModel().getStatus().getValues().size() > 0) {
             getModel().getStatus().setSelectedItem(getModel().getStatus().getValues().get(0).getId());
         }
         //        getModel().getInternship().setInternshipStatus();
     }
 
     public void save() {
-        getModel().getInternship().setMainGroup((AcademicInternshipGroup) getModel().getGroup().getObjectValue());
-        getModel().getInternship().setBoard((AcademicInternshipBoard) getModel().getBoard().getObjectValue());
+//        getModel().getInternship().setMainGroup((AcademicInternshipGroup) getModel().getGroup().getObjectValue());
+        AcademicInternshipBoard board = (AcademicInternshipBoard) CorePlugin.get().find(AcademicInternshipBoard.class.getSimpleName(), getModel().getBoardId());
+        getModel().getInternship().setBoard(board);
         getModel().getInternship().setInternshipStatus((AcademicInternshipStatus) getModel().getStatus().getObjectValue());
         getModel().getInternship().setInternshipVariant((AcademicInternshipVariant) getModel().getInternshipVariant().getObjectValue());
         if (getModel().getInternship().getBoard() == null) {
-            getModel().setMessage("Merci de preciser le Comité");
+            getModel().setMessage("Merci de preciser la Session");
         } else if (getModel().getInternship().getInternshipStatus() == null) {
             getModel().setMessage("Merci de preciser l'étape");
         } else {
-            int count=VrApp.getBean(AcademicPlugin.class).generateInternships(getModel().getInternship(), getModel().getProfile());
-            if(count>0) {
+            int count = VrApp.getBean(AcademicPlugin.class).generateInternships(getModel().getInternship(), getModel().getProfile());
+            if (count > 0) {
                 fireEventExtraDialogClosed();
-            }else{
+            } else {
                 getModel().setMessage("Aucun Stage généré");
             }
         }
@@ -104,26 +104,17 @@ public class CreateInternshipsActionCtrl {
         private String profile;
         private boolean disabled;
         private String message;
-        private FieldPropertyView group;
-        private FieldPropertyView board;
+        private Integer boardId;
         private FieldPropertyView status;
         private FieldPropertyView internshipVariant;
         private AcademicInternship internship;
 
-        public FieldPropertyView getGroup() {
-            return group;
+        public Integer getBoardId() {
+            return boardId;
         }
 
-        public void setGroup(FieldPropertyView group) {
-            this.group = group;
-        }
-
-        public FieldPropertyView getBoard() {
-            return board;
-        }
-
-        public void setBoard(FieldPropertyView board) {
-            this.board = board;
+        public void setBoardId(Integer boardId) {
+            this.boardId = boardId;
         }
 
         public FieldPropertyView getStatus() {

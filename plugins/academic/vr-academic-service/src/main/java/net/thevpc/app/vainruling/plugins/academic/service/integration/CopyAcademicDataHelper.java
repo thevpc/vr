@@ -11,8 +11,8 @@ import net.thevpc.app.vainruling.core.service.TraceService;
 import net.thevpc.app.vainruling.core.service.VrApp;
 import net.thevpc.app.vainruling.core.service.model.AppPeriod;
 import net.thevpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
-import net.thevpc.common.util.Collections2;
-import net.thevpc.common.util.KeyValueList;
+import net.thevpc.common.collections.Collections2;
+import net.thevpc.common.collections.KeyValueList;
 import net.thevpc.upa.PersistenceUnit;
 import net.thevpc.upa.UPA;
 
@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.thevpc.common.util.MapUtils;
+import net.thevpc.common.collections.MapUtils;
 
 /**
  * Created by vpc on 6/25/16.
