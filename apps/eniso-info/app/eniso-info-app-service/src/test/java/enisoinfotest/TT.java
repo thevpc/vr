@@ -4,7 +4,7 @@ import net.thevpc.app.vainruling.core.service.TraceService;
 import net.thevpc.app.vainruling.core.service.VrApp;
 import net.thevpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.thevpc.app.vainruling.plugins.academic.service.stat.DeviationConfig;
-import net.thevpc.common.util.Chronometer;
+import net.thevpc.common.time.Chronometer;
 import org.junit.Test;
 
 /*

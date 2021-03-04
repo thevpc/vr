@@ -43,7 +43,7 @@ import net.thevpc.app.vainruling.plugins.equipments.core.model.EquipmentStatusTy
 import net.thevpc.app.vainruling.plugins.equipments.core.model.EquipmentType;
 import net.thevpc.app.vainruling.plugins.equipments.core.service.EquipmentPluginSecurity;
 import net.thevpc.common.strings.StringUtils;
-import net.thevpc.common.util.MutableDate;
+import net.thevpc.common.time.MutableDate;
 import net.thevpc.upa.PersistenceUnit;
 import net.thevpc.upa.UPA;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -15,6 +15,15 @@ public class VrContentTextConfig {
     private int imageHeight;
     private int thumbnailWidth;
     private int thumbnailHeight;
+    private boolean computeWidth;
+
+    public boolean isComputeWidth() {
+        return computeWidth;
+    }
+
+    public void setComputeWidth(boolean computeWidth) {
+        this.computeWidth = computeWidth;
+    }
 
     public int getImageWidth() {
         return imageWidth;
@@ -50,6 +59,11 @@ public class VrContentTextConfig {
     public VrContentTextConfig setThumbnailHeight(int thumbnailHeight) {
         this.thumbnailHeight = thumbnailHeight;
         return this;
+    }
+
+    @Override
+    public String toString() {
+        return "VrContentTextConfig{" + "imageWidth=" + imageWidth + ", imageHeight=" + imageHeight + ", thumbnailWidth=" + thumbnailWidth + ", thumbnailHeight=" + thumbnailHeight + '}';
     }
 
 }

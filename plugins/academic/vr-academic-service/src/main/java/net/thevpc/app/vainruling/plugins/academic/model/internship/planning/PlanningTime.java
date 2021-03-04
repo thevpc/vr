@@ -1,6 +1,6 @@
 package net.thevpc.app.vainruling.plugins.academic.model.internship.planning;
 
-import net.thevpc.common.util.MutableDate;
+import net.thevpc.common.time.MutableDate;
 import org.joda.time.Days;
 import org.joda.time.LocalDateTime;
 import org.joda.time.Minutes;

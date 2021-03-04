@@ -1,5 +1,10 @@
 package net.thevpc.app.vainruling.plugins.calendars.web;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -22,9 +27,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 import javax.faces.model.SelectItem;
 
-import net.thevpc.common.util.MutableDate;
+import net.thevpc.common.time.MutableDate;
 import org.apache.commons.lang3.StringUtils;
 import net.thevpc.app.vainruling.VrPage;
 
@@ -128,7 +134,7 @@ public class EventsCalendarsCtrl {
             for (AppCalendar ii : list) {
                 if (d != null && !d.getCode().equals(ii.getCode())) {
                     //
-                } else if(d!=null){
+                } else if (d != null) {
                     ii.setName("Mon Calendrier Privé");
                 }
             }
@@ -199,7 +205,17 @@ public class EventsCalendarsCtrl {
     }
 
     public void onDateSelect(SelectEvent selectEvent) {
-        Date d = (Date) selectEvent.getObject();
+        Temporal t = (Temporal) selectEvent.getObject();
+        Date d = null;
+        if (t instanceof LocalDateTime) {
+            LocalDateTime ldt = (LocalDateTime) t;
+            d = Date.from(ldt.toInstant(ZoneId.systemDefault().getRules().getOffset(ldt)));
+        } else if (t instanceof LocalDate) {
+            LocalDateTime ldt = ((LocalDate) t).atStartOfDay();
+            d = Date.from(ldt.toInstant(ZoneId.systemDefault().getRules().getOffset(ldt)));
+        } else {
+            throw new IllegalArgumentException("unexpected");
+        }
         MutableDate md = new MutableDate(d);
         Date s = md.getDateTime();
         md.addHours(1);
@@ -224,8 +240,8 @@ public class EventsCalendarsCtrl {
     }
 
     public void onEventResize(ScheduleEntryResizeEvent event) {
-        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Event resized", "Day delta start:" 
-                + event.getDayDeltaStart()+ ", Day delta end:" + event.getDayDeltaEnd()
+        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Event resized", "Day delta start:"
+                + event.getDayDeltaStart() + ", Day delta end:" + event.getDayDeltaEnd()
         );
 
         addMessage(message);

@@ -23,7 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 
-import net.thevpc.common.util.MutableDate;
+import net.thevpc.common.time.MutableDate;
 import net.thevpc.upa.Action;
 import net.thevpc.upa.PersistenceUnit;
 import net.thevpc.upa.UPA;

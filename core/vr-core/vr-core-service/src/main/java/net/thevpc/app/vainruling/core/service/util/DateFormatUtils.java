@@ -12,7 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import net.thevpc.common.util.MutableDate;
+import net.thevpc.common.time.MutableDate;
 
 /**
  * @author taha.bensalah@gmail.com

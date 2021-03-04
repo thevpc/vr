@@ -676,6 +676,10 @@ public class VrServiceMenu {
 
     public String gotoPage(String command, String arguments, boolean addToHistory) {
         VrPageInfoAndObject d = resolvePageInfoAndObjectByInstance(command, arguments);
+        if (d == null) {
+            LOG.log(Level.FINE, "gotoPage error: invalid command: {0} {1}", new Object[]{command, arguments});
+            return null;
+        }
         boolean loggedIn = CorePlugin.get().isLoggedIn();
         if (!loggedIn && !d.getInfo().isAcceptAnonymous()) {
             return null;
@@ -683,32 +687,35 @@ public class VrServiceMenu {
 //        String goodBeanName = resolveGoodBeanName(o);
         List<VrBreadcrumbItem> bc = new ArrayList<>();
         String url = null;
-        if (d != null) {
-            bc.addAll(Arrays.asList(d.getInfo().getBreadcrumb()));
-            url = d.getInfo().getUrl();
-            CorePlugin core = CorePlugin.get();
-            if (!StringUtils.isBlank(d.getInfo().getSecurityKey())) {
-                if (!"welcome".equals(command) && !UPA.getPersistenceUnit().getSecurityManager().isAllowedKey(d.getInfo().getSecurityKey())) {
-                    if ("publicIndex".equals(command)) {
-                        throw new SecurityException("Page is Inaccessible");
+        bc.addAll(Arrays.asList(d.getInfo().getBreadcrumb()));
+        url = d.getInfo().getUrl();
+        CorePlugin core = CorePlugin.get();
+        if (!StringUtils.isBlank(d.getInfo().getSecurityKey())) {
+            if (!"welcome".equals(command) && !UPA.getPersistenceUnit().getSecurityManager().isAllowedKey(d.getInfo().getSecurityKey())) {
+                if ("publicIndex".equals(command)) {
+                    throw new SecurityException("Page is Inaccessible");
+                } else {
+                    LOG.log(Level.WARNING, "Illegal Access to {0} for {1}. Required Authorization : {2}", new Object[]{
+                        command, core.getCurrentUser(), d.getInfo().getSecurityKey()
+                    }
+                    );
+                    //FacesUtils.addErrorMessage("Illegal Access to " + command + " by " + core.getCurrentUser());
+                    if (core.getCurrentUser() != null) {
+                        return gotoPage("welcome", "", true);
                     } else {
-                        LOG.warning("Illegal Access to " + command + " by " + core.getCurrentUser() + ". Required Authorization : " + d.getInfo().getSecurityKey());
-                        //FacesUtils.addErrorMessage("Illegal Access to " + command + " by " + core.getCurrentUser());
-                        if (core.getCurrentUser() != null) {
-                            return gotoPage("welcome", "", true);
-                        } else {
-                            return gotoPage("publicIndex", "", true);
-                        }
+                        return gotoPage("publicIndex", "", true);
                     }
                 }
             }
-            if (!isEnabled(d.getInfo().getEnabler(), d.getInfo(), command)) {
-                return gotoPage("publicIndex", "", true);
+        }
+        if (!isEnabled(d.getInfo().getEnabler(), d.getInfo(), command)) {
+            LOG.log(Level.WARNING, "Access disabled to {0} for {1}.", new Object[]{
+                command, core.getCurrentUser()
             }
+            );
+            return gotoPage("publicIndex", "", true);
         }
-        if (d == null) {
-            return null;
-        }
+
         prepareGoto(command, arguments, d, bc, addToHistory && !StringUtils.isBlank(url));
         if (StringUtils.isBlank(url)) {
             return null;

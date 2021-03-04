@@ -5,13 +5,13 @@
  */
 package net.thevpc.app.vainruling.core.web.jsf.converters;
 
-import net.thevpc.common.util.DatePart;
+import net.thevpc.common.time.DatePart;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import net.thevpc.common.util.TimeDuration;
+import net.thevpc.common.time.TimeDuration;
 
 /**
  * @author taha.bensalah@gmail.com

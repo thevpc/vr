@@ -8,13 +8,13 @@ package net.thevpc.app.vainruling.core.web.jsf.ctrl;
 import net.thevpc.app.vainruling.core.service.VrApp;
 import net.thevpc.app.vainruling.core.service.content.NotificationText;
 import net.thevpc.app.vainruling.core.web.jsf.Vr;
-import net.thevpc.common.util.DatePart;
+import net.thevpc.common.time.DatePart;
 import org.springframework.context.annotation.Scope;
 
 import java.util.Calendar;
 import java.util.Date;
 import net.thevpc.app.vainruling.VrPage;
-import net.thevpc.common.util.TimeDuration;
+import net.thevpc.common.time.TimeDuration;
 
 /**
  * @author taha.bensalah@gmail.com

@@ -54,7 +54,7 @@ public class PostWelcomeCtrl {
     public void cancelEdit() {
         getModel().setContent("");
         getModel().setRecipients("");
-        getModel().setSubject("");
+        getModel().setTitle("");
         getModel().setSubTitle("");
         getModel().setVisible(false);
         getModel().setDate(new Date());
@@ -65,11 +65,11 @@ public class PostWelcomeCtrl {
             refreshFiles();
             CorePlugin core = CorePlugin.get();
             AppArticleDisposition d = core.findArticleDisposition("Welcome");
-            if (d != null && !StringUtils.isBlank(getModel().getSubject())
+            if (d != null && !StringUtils.isBlank(getModel().getTitle())
                     && !StringUtils.isBlank(getModel().getContent())) {
                 AppArticle a = new AppArticle();
                 a.setSendTime(new DateTime());
-                a.setSubject(getModel().getSubject());
+                a.setSubject(getModel().getTitle());
                 a.setSubTitle(getModel().getSubTitle());
                 a.setContent(getModel().getContent());
                 a.setDisposition(d);
@@ -138,7 +138,7 @@ public class PostWelcomeCtrl {
     public static class Model {
 
         private String recipients;
-        private String subject;
+        private String title;
         private String subTitle;
         private String content;
         private Date date;
@@ -194,12 +194,12 @@ public class PostWelcomeCtrl {
             this.recipients = recipients;
         }
 
-        public String getSubject() {
-            return subject;
+        public String getTitle() {
+            return title;
         }
 
-        public void setSubject(String subject) {
-            this.subject = subject;
+        public void setTitle(String title) {
+            this.title = title;
         }
 
         public String getContent() {

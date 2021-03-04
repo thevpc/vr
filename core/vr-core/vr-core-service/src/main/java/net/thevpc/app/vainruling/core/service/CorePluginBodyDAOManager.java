@@ -7,7 +7,7 @@ import net.thevpc.app.vainruling.core.service.util.I18n;
 import net.thevpc.app.vainruling.core.service.util.VrUPAUtils;
 import net.thevpc.app.vainruling.core.service.util.VrUtils;
 import net.thevpc.common.strings.StringUtils;
-import net.thevpc.common.util.Chronometer;
+import net.thevpc.common.time.Chronometer;
 import net.thevpc.common.util.Convert;
 import net.thevpc.common.util.IntegerParserConfig;
 import net.thevpc.upa.*;

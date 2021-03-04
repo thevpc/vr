@@ -2,7 +2,7 @@ package net.thevpc.app.vainruling.service.test;
 
 import net.thevpc.app.vainruling.core.service.CorePlugin;
 import net.thevpc.app.vainruling.core.service.VrApp;
-import net.thevpc.common.util.Chronometer;
+import net.thevpc.common.time.Chronometer;
 import org.junit.Test;
 
 public class JustStart {

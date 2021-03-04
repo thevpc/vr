@@ -21,7 +21,7 @@ import net.thevpc.app.vainruling.core.service.security.UserToken;
 import net.thevpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
 import net.thevpc.common.jsf.FacesUtils;
 import net.thevpc.common.strings.StringUtils;
-import net.thevpc.common.util.Chronometer;
+import net.thevpc.common.time.Chronometer;
 import net.thevpc.common.util.Convert;
 import net.thevpc.common.util.IntegerParserConfig;
 import net.thevpc.upa.UPA;

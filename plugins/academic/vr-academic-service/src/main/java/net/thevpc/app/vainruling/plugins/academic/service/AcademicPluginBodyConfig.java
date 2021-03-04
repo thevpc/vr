@@ -37,7 +37,7 @@ import net.thevpc.upa.UPA;
 import java.util.*;
 import net.thevpc.app.vainruling.core.service.ProfileRightBuilder;
 import net.thevpc.app.vainruling.plugins.academic.model.current.AcademicCourseCore;
-import net.thevpc.common.util.MutableDate;
+import net.thevpc.common.time.MutableDate;
 import net.thevpc.upa.VoidAction;
 
 public class AcademicPluginBodyConfig extends AcademicPluginBody {

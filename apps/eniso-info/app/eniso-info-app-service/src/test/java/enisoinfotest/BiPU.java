@@ -6,7 +6,7 @@ package enisoinfotest;/*
 
 import net.thevpc.app.vainruling.core.service.TraceService;
 import net.thevpc.app.vainruling.core.service.VrApp;
-import net.thevpc.common.util.Chronometer;
+import net.thevpc.common.time.Chronometer;
 import net.thevpc.upa.*;
 import net.thevpc.upa.bulk.ImportPersistenceUnitListener;
 import net.thevpc.upa.exceptions.UPAException;

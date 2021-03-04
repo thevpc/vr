@@ -7,7 +7,7 @@ import net.thevpc.app.vainruling.core.service.model.AppUser;
 import net.thevpc.app.vainruling.plugins.academic.service.AcademicPlugin;
 import net.thevpc.common.io.IOUtils;
 import net.thevpc.common.strings.StringUtils;
-import net.thevpc.common.util.Chronometer;
+import net.thevpc.common.time.Chronometer;
 import net.thevpc.common.vfs.VFS;
 
 import java.io.File;

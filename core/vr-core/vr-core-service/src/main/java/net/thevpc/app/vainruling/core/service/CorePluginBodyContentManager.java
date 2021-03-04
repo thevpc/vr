@@ -30,6 +30,7 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import net.thevpc.app.vainruling.core.service.model.content.AppArticleDisposition;
 import net.thevpc.app.vainruling.core.service.model.content.AppArticleDispositionGroup;
@@ -40,18 +41,20 @@ import net.thevpc.app.vainruling.core.service.model.content.DefaultVrContentText
 import net.thevpc.app.vainruling.core.service.model.content.AppArticleProperty;
 import net.thevpc.app.vainruling.core.service.model.content.DefaultVrContentPath;
 import net.thevpc.app.vainruling.core.service.model.content.VrContentTextConfig;
-import net.thevpc.common.util.MutableDate;
+import net.thevpc.common.time.MutableDate;
 import net.thevpc.app.vainruling.core.service.content.VrContentPath;
 import net.thevpc.app.vainruling.core.service.content.VrContentText;
 import net.thevpc.app.vainruling.core.service.model.content.AppArticleDispositionBinding;
-import net.thevpc.app.vainruling.core.service.model.content.ArticlesDispositionStrict;
 import net.thevpc.app.vainruling.core.service.model.strict.AppUserStrict;
+import net.thevpc.common.collections.Collections2;
+import net.thevpc.common.collections.ListValueMap;
+import net.thevpc.common.time.Chronometer;
 
 class CorePluginBodyContentManager extends CorePluginBody {
 
     private static final Pattern VR_FILESYSTEM_URL_PATTERN = Pattern.compile("(?<ctx>http(s)?://[a-z.]+(:[0-9]+)/([a-z-]+/))fs(?<a>/.*)");
 
-    private static final java.util.logging.Logger log = java.util.logging.Logger.getLogger(CorePluginBodyContentManager.class.getName());
+    private static final java.util.logging.Logger LOG = java.util.logging.Logger.getLogger(CorePluginBodyContentManager.class.getName());
 
     @Override
     public void onInstall() {
@@ -245,6 +248,9 @@ class CorePluginBodyContentManager extends CorePluginBody {
     }
 
     public void markArticleVisited(int articleId) {
+        if (true) {
+            return; //disable
+        }
 //        TraceService.runSilenced(new Runnable() {
 //            @Override
 //            public void run() {
@@ -295,7 +301,7 @@ class CorePluginBodyContentManager extends CorePluginBody {
         return findFullArticlesByDisposition(-1, dispositionGroupId, includeNoDept, disposition, config);
     }
 
-    protected VrContentText articleToFullArticle(AppArticle a, VrContentTextConfig config) {
+    protected VrContentText articleToFullArticle(AppArticle a, VrContentTextConfig config, List<AppArticleFile> files, List<AppArticleDispositionBinding> dispositions) {
         AppArticleDisposition d = a.getDisposition();
         if (d != null) {
             int periodCalendarType = -1;
@@ -314,7 +320,7 @@ class CorePluginBodyContentManager extends CorePluginBody {
                 DateTime dd = a.getSendTime();
                 MutableDate d2 = new MutableDate().addField(periodCalendarType, -d.getMaxPeriod());
                 if (dd == null) {
-                    log.log(Level.SEVERE, "Article with null SendTime : Article.id=" + a.getId());
+                    LOG.log(Level.SEVERE, "Article with null SendTime : Article.id={0}", a.getId());
                 }
                 if (dd != null && dd.compareTo(d2.getDateTime()) < 0) {
                     return null;
@@ -347,9 +353,11 @@ class CorePluginBodyContentManager extends CorePluginBody {
                 }
             }
         }
-        List<AppArticleFile> c = findArticleFiles(a.getId());
-        if (c != null) {
-            for (AppArticleFile articleFile : c) {
+        if (files == null) {
+            files = findArticleFiles(a.getId());
+        }
+        if (files != null) {
+            for (AppArticleFile articleFile : files) {
                 mainList = expandArticleFileToContentPathArray(articleFile, config);
                 for (VrContentPath vrContentPath : mainList) {
                     attachments.add(vrContentPath);
@@ -398,9 +406,11 @@ class CorePluginBodyContentManager extends CorePluginBody {
             allCats.add(a.getDisposition().getName());
         }
         if (aa.getId() >= 0) {
-            List<AppArticleDispositionBinding> found = UPA.getPersistenceUnit().createQuery("Select ab from AppArticleDispositionBinding ab where ab.articleId=:id")
-                    .setParameter("id", aa.getId()).getResultList();
-            for (AppArticleDispositionBinding ab : found) {
+            if (dispositions == null) {
+                dispositions = UPA.getPersistenceUnit().createQuery("Select ab from AppArticleDispositionBinding ab where ab.articleId=:id")
+                        .setParameter("id", aa.getId()).getResultList();
+            }
+            for (AppArticleDispositionBinding ab : dispositions) {
                 if (ab.getDisposition() != null) {
                     allCats.add(a.getDisposition().getName());
                 }
@@ -565,10 +575,11 @@ class CorePluginBodyContentManager extends CorePluginBody {
             return null;
         }
         a = ok.get(0);
-        return articleToFullArticle(a, config);
+        return articleToFullArticle(a, config, null, null);
     }
 
     public List<VrContentText> findFullArticlesByDisposition(Integer userId, Integer dispositionGroupId, boolean includeNoDept, final String disposition, VrContentTextConfig config) {
+        Chronometer ch = Chronometer.start();
         AppUser u = null;
         if (userId == null) {
             u = getContext().getCorePlugin().getCurrentUser();
@@ -577,14 +588,34 @@ class CorePluginBodyContentManager extends CorePluginBody {
             userId = null;
         }
         Integer finalUserId = userId;
-        return UPA.getContext().invokePrivileged(new Action<List<VrContentText>>() {
-
+        List<VrContentText> r2 = UPA.getContext().invokePrivileged(new Action<List<VrContentText>>() {
             @Override
             public List<VrContentText> run() {
                 List<VrContentText> all = new ArrayList<>();
                 List<AppArticle> articles = findArticlesByUserAndCategory(finalUserId, dispositionGroupId, includeNoDept, disposition);
+                Integer[] artIds = articles.stream().map(x -> x.getId()).toArray(Integer[]::new);
+                String artIdsStr = Arrays.stream(artIds).map(x -> x.toString()).collect(Collectors.joining(","));
+                Map<Integer, List<AppArticleDispositionBinding>> bindingsList = artIds.length == 0 ? Collections.emptyMap()
+                        : UPA.getPersistenceUnit().createQuery("Select ab from AppArticleDispositionBinding ab where ab.articleId in("
+                                + artIdsStr
+                                + ")"
+                        ).<AppArticleDispositionBinding>getResultList().stream().collect(Collectors.groupingBy(x -> x.getArticle().getId()));
+                Map<Integer, List<AppArticleFile>> filesList = UPA.getPersistenceUnit().createQuery("Select u from AppArticleFile u where "
+                        + " u.articleId in ("
+                        + artIdsStr
+                        + " )"
+                        + " order by "
+                        + "  u.position asc"
+                ).<AppArticleFile>getResultList().stream().collect(Collectors.groupingBy(x -> x.getArticle().getId()));
                 for (AppArticle a : articles) {
-                    VrContentText fa = articleToFullArticle(a, config);
+                    List<AppArticleFile> files = filesList.get(a.getId());
+                    List<AppArticleDispositionBinding> bindings = bindingsList.get(a.getId());
+//                    Chronometer ch2 = Chronometer.start();
+                    VrContentText fa = articleToFullArticle(a, config, files == null ? Collections.emptyList() : files, bindings == null ? Collections.emptyList() : bindings);
+//                    ch2.stop();
+//                    LOG.log(Level.INFO, "articleToFullArticle({0}): {1}", new Object[]{
+//                        a.getId()+"::"+a.getSubject(), ch2
+//                    });
                     if (fa != null) {
                         all.add(fa);
                     }
@@ -593,6 +624,11 @@ class CorePluginBodyContentManager extends CorePluginBody {
             }
 
         }, null);
+        ch.stop();
+        LOG.log(Level.INFO, "findFullArticlesByDisposition(userId={0}, dispositionGroupId={1}, includeNoDept={2}, disposition={3}, config={4}): {5}", new Object[]{
+            userId, dispositionGroupId, includeNoDept, disposition, config, ch
+        });
+        return r2;
     }
 
     protected List<AppArticle> findArticlesByUserAndCategory(Integer userId, Integer dispositionGroupId, boolean includeNoDept, String... dispositions) {

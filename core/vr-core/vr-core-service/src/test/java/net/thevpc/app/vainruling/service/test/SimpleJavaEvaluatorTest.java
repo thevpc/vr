@@ -9,7 +9,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import net.thevpc.app.vainruling.core.service.util.SimpleJavaEvaluator;
-import net.thevpc.common.util.Chronometer;
+import net.thevpc.common.time.Chronometer;
 import org.junit.Assert;
 import org.junit.Test;
 

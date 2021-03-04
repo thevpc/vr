@@ -34,8 +34,11 @@ public class VRSecurityManager implements PersistenceGroupSecurityManager {
             denyOthers.addAll(Arrays.asList(CorePluginSecurity.getEntityRights(e)));
         }
     }
+    
+    
 
-    public boolean isSystem(String s) {
+    @Override
+    public boolean isPrivilegedLogin(String s) {
         return INTERNAL_LOGIN.equals(s);
     }
 
@@ -71,7 +74,7 @@ public class VRSecurityManager implements PersistenceGroupSecurityManager {
         PersistenceUnit pu = UPA.getPersistenceUnit();
         UserPrincipal userPrincipal = pu.getUserPrincipal();
         String u = userPrincipal == null ? null : userPrincipal.getName();
-        if (isSystem(u)) {
+        if (isPrivilegedLogin(u)) {
             return true;
         }
         if (isAdmin(u)) {

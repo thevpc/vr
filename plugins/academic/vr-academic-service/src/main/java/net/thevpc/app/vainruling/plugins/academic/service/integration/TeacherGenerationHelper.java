@@ -27,7 +27,7 @@ import net.thevpc.common.io.PathInfo;
 import net.thevpc.common.mon.ProgressMonitors;
 import net.thevpc.common.strings.StringConverterMap;
 import net.thevpc.common.strings.StringUtils;
-import net.thevpc.common.util.Chronometer;
+import net.thevpc.common.time.Chronometer;
 import net.thevpc.common.collections.KeyValueList;
 import net.thevpc.common.vfs.VFS;
 import net.thevpc.common.vfs.VFile;

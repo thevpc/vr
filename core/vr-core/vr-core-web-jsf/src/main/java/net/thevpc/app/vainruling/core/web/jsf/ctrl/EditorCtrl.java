@@ -108,8 +108,14 @@ public class EditorCtrl extends AbstractObjectCtrl<EditorRow> implements VrPageI
 
     @Override
     public VrPageInfo resolvePageInfo(String cmd) {
+        EditorConfig c = null;
         try {
-            EditorConfig c = VrUtils.parseJSONObject(cmd, EditorConfig.class);
+            c = VrUtils.parseJSONObject(cmd, EditorConfig.class);
+        } catch (Exception ex) {
+            log.log(Level.SEVERE, "unable to parse editor page json cmd: "+cmd, ex);
+            return null;
+        }
+        try {
             Entity entity = UPA.getPersistenceUnit().getEntity(c.entity);
             VrPageInfo d = new VrPageInfo();
             d.setControllerName("editor");

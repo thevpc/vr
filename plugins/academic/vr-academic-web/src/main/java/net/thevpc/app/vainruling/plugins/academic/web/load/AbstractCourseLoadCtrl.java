@@ -22,7 +22,7 @@ import net.thevpc.app.vainruling.core.service.VrApp;
 import net.thevpc.app.vainruling.core.service.editor.EditorConfig;
 import net.thevpc.app.vainruling.plugins.academic.model.config.AcademicTeacher;
 import net.thevpc.common.jsf.FacesUtils;
-import net.thevpc.common.util.Chronometer;
+import net.thevpc.common.time.Chronometer;
 
 import javax.faces.model.SelectItem;
 import java.util.*;

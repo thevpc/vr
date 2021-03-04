@@ -27,7 +27,7 @@ import net.thevpc.app.vainruling.VrPage;
 import net.thevpc.app.vainruling.plugins.equipments.borrow.model.EquipmentBorrowWorkflow;
 import net.thevpc.app.vainruling.plugins.equipments.borrow.model.info.EquipmentBorrowOperatorType;
 import net.thevpc.common.strings.StringUtils;
-import net.thevpc.common.util.MutableDate;
+import net.thevpc.common.time.MutableDate;
 import net.thevpc.common.util.Tuple2;
 
 //import javax.annotation.PostConstruct;

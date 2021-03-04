@@ -44,7 +44,7 @@ import net.thevpc.app.vainruling.core.service.util.VrPasswordStrategyRandom;
 import net.thevpc.app.vainruling.plugins.academic.model.imp.AcademicStudentImport;
 import net.thevpc.app.vainruling.plugins.academic.model.imp.AcademicTeacherImport;
 import net.thevpc.common.strings.StringUtils;
-import net.thevpc.common.util.Chronometer;
+import net.thevpc.common.time.Chronometer;
 import net.thevpc.common.util.Convert;
 import net.thevpc.common.util.DoubleParserConfig;
 import net.thevpc.common.util.IntegerParserConfig;

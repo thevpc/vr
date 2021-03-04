@@ -112,7 +112,7 @@ public abstract class AbstractCmsTextService implements VrCmsTextService {
     public void setSelectedContentTextById(String disposition, int id) {
         getModel().setCurrent(findArticle(id));
         VrContentText c = getModel().getCurrent();
-        if (c.getCategories().length > 0) {
+        if (c!=null && c.getCategories().length > 0) {
             updateVisit(c.getId());
             loadContentTexts(c.getCategories()[0]);
         }

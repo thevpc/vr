@@ -17,7 +17,7 @@ import net.thevpc.app.vainruling.core.service.model.AppUser;
 import net.thevpc.app.vainruling.core.service.security.UserSessionInfo;
 import net.thevpc.app.vainruling.core.service.security.UserToken;
 import net.thevpc.common.strings.StringUtils;
-import net.thevpc.common.util.DatePart;
+import net.thevpc.common.time.DatePart;
 import net.thevpc.upa.Action;
 import net.thevpc.upa.UPA;
 import org.primefaces.model.chart.DonutChartModel;
@@ -25,7 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 import net.thevpc.app.vainruling.VrPage;
-import net.thevpc.common.util.TimeDuration;
+import net.thevpc.common.time.TimeDuration;
 
 /**
  * @author taha.bensalah@gmail.com

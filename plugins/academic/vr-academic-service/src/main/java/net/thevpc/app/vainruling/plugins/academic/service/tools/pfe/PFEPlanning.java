@@ -12,7 +12,7 @@ import net.thevpc.app.vainruling.plugins.academic.model.internship.planning.Plan
 import net.thevpc.app.vainruling.core.service.VrApp;
 import net.thevpc.common.io.FileUtils;
 import net.thevpc.common.strings.StringUtils;
-import net.thevpc.common.util.Chronometer;
+import net.thevpc.common.time.Chronometer;
 import net.thevpc.upa.UPA;
 import net.thevpc.upa.bulk.DataReader;
 import net.thevpc.upa.bulk.DataRow;

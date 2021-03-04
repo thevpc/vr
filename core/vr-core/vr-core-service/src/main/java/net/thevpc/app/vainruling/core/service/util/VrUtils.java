@@ -1159,17 +1159,19 @@ public class VrUtils {
             p.setPath(file.getPath());
             p.setName(file.getName());
             p.setImage(true);
-            if (file.isFile()) {
-                Image originalImage;
-                try {
-                    originalImage = VrPlatformUtils.readImage(file);
-                } catch (IOException ex) {
-                    throw new UncheckedIOException(ex);
+            if (config!=null && config.isComputeWidth()) {
+                if (file.isFile()) {
+                    Image originalImage;
+                    try {
+                        originalImage = VrPlatformUtils.readImage(file);
+                    } catch (IOException ex) {
+                        throw new UncheckedIOException(ex);
+                    }
+                    int owidth = originalImage.getWidth(null);
+                    int oheight = originalImage.getHeight(null);
+                    p.setImageWidth(owidth);
+                    p.setImageHeight(oheight);
                 }
-                int owidth = originalImage.getWidth(null);
-                int oheight = originalImage.getHeight(null);
-                p.setImageWidth(owidth);
-                p.setImageHeight(oheight);
             }
             return p;
         }

@@ -46,7 +46,7 @@ import net.thevpc.app.vainruling.core.service.model.content.AppArticleDispositio
 import net.thevpc.app.vainruling.core.service.model.content.AppArticleDispositionBundle;
 import net.thevpc.app.vainruling.core.service.model.content.AppArticleFile;
 import net.thevpc.app.vainruling.core.service.model.content.AppArticle;
-import net.thevpc.common.util.MutableDate;
+import net.thevpc.common.time.MutableDate;
 import net.thevpc.upa.types.DataType;
 import org.springframework.context.annotation.DependsOn;
 import net.thevpc.app.vainruling.core.service.model.content.DefaultVrContentText;
