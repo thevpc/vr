@@ -5,7 +5,7 @@
     <groupId>net.thevpc.app.vain-ruling.plugins.blog</groupId>
     <artifactId>vr-blog-web</artifactId>
     <name>net.thevpc.app.vain-ruling.plugins.blog.vr-blog-web</name>
-    <version>1.13.16</version>
+    <version>1.13.17</version>
     <packaging>jar</packaging>
     <url>https://github.com/thevpc/vr/wiki</url>
 
@@ -18,7 +18,7 @@
 
     <properties>
         <vr-plugin.component-type>web</vr-plugin.component-type>
-        <version.vr-core-web-jsf>1.13.16</version.vr-core-web-jsf>
+        <version.vr-core-web-jsf>1.13.17</version.vr-core-web-jsf>
     </properties>
 
     <dependencies>
@@ -30,7 +30,7 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>vr-blog-service</artifactId>
-            <version>1.13.16</version>
+            <version>1.13.17</version>
         </dependency>
         <dependency>
             <groupId>javax</groupId>

@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.thevpc.nuts.toolbox</groupId>
     <artifactId>vr-box</artifactId>
-    <version>1.13.16.0</version>
+    <version>1.13.17.0</version>
     <packaging>jar</packaging>
     <name>net.thevpc.app.vain-ruling.core.vr-box</name>
 

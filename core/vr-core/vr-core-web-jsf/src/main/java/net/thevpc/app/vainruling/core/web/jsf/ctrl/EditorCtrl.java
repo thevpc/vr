@@ -112,7 +112,7 @@ public class EditorCtrl extends AbstractObjectCtrl<EditorRow> implements VrPageI
         try {
             c = VrUtils.parseJSONObject(cmd, EditorConfig.class);
         } catch (Exception ex) {
-            log.log(Level.SEVERE, "unable to parse editor page json cmd: "+cmd, ex);
+            log.log(Level.SEVERE, "unable to parse editor page json cmd: " + cmd, ex);
             return null;
         }
         try {
@@ -943,6 +943,34 @@ public class EditorCtrl extends AbstractObjectCtrl<EditorRow> implements VrPageI
         //dont know why!
         if (strId.equals("null")) {
             return null;
+        }
+        Class idType = getEntity().getIdType();
+        switch (idType.getName()) {
+            case "int":
+            case "java.lang.Integer": {
+                try {
+                    return Convert.toInt(strId);
+                } catch (Exception e) {
+                    return null;
+                }
+            }
+            case "long":
+            case "java.lang.Long": {
+                try {
+                    return Convert.toLong(strId);
+                } catch (Exception e) {
+                    return null;
+                }
+            }
+            case "java.lang.String": {
+                if(strId.startsWith("\"") && strId.length()>=2 && strId.charAt(strId.length()-1)=='"'){
+                    return strId.substring(1,strId.length()-1);
+                }else if(strId.startsWith("\'") && strId.length()>=2 && strId.charAt(strId.length()-1)=='"'){
+                    return strId.substring(1,strId.length()-1);
+                }else{
+                    return strId;
+                }
+            }
         }
         try {
             return Convert.toInt(strId);

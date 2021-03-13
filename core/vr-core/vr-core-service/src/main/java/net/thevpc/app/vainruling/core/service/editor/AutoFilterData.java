@@ -141,7 +141,6 @@ public class AutoFilterData implements Comparable<AutoFilterData> {
             return false;
         }
         return type != null ? type.equals(that.type) : that.type == null;
-
     }
 
     @Override
